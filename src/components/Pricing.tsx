@@ -16,45 +16,50 @@ interface PricingTier {
 
 const tiers: PricingTier[] = [
   {
-    name: 'Starter',
-    price: 'Free',
-    annualPrice: 'Free',
-    description: 'For individuals with a few supplements',
+    name: 'Core',
+    price: '$9.99',
+    annualPrice: '$99',
+    description: 'For individuals managing their personal wellness',
     features: [
       'Base supplement–medicine checker',
-      'Limited interaction reports per month',
+      'Up to 20 interaction checks per month',
       'Email reminders',
+      'Access to core database',
     ],
-    buttonText: 'Start free',
-    buttonStyle: 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50',
+    priceIdMonthly: 'PRICE_ID_CORE_MONTHLY',
+    priceIdAnnual: 'PRICE_ID_CORE_ANNUAL',
+    buttonText: 'Start Core',
+    buttonStyle: 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50',
   },
   {
     name: 'Pro',
-    price: '$29',
-    annualPrice: '$290',
-    description: 'For families / serious users',
+    price: '$24.99',
+    annualPrice: '$249',
+    description: 'For serious users and families',
     features: [
       'Unlimited checks',
       'Saved profiles for multiple people',
       'Downloadable PDF reports',
       'Priority data updates',
+      'Advanced interaction details',
     ],
     priceIdMonthly: 'PRICE_ID_PRO_MONTHLY',
     priceIdAnnual: 'PRICE_ID_PRO_ANNUAL',
     popular: true,
     buttonText: 'Upgrade to Pro',
-    buttonStyle: 'bg-blue-600 text-white hover:bg-blue-700',
+    buttonStyle: 'bg-green-600 text-white hover:bg-green-700',
   },
   {
     name: 'Premium',
-    price: '$49',
-    annualPrice: '$490',
-    description: 'For practitioners / advanced users',
+    price: '$47.99',
+    annualPrice: '$479',
+    description: 'For healthcare practitioners & advanced users',
     features: [
       'Everything in Pro',
-      'Extra interaction databases',
-      'Priority support',
-      'Advanced filters and notes',
+      'Extended interaction databases',
+      'Priority support (24/7)',
+      'Advanced filters and clinical notes',
+      'API access for integrations',
     ],
     priceIdMonthly: 'PRICE_ID_PREMIUM_MONTHLY',
     priceIdAnnual: 'PRICE_ID_PREMIUM_ANNUAL',
@@ -100,7 +105,7 @@ export default function Pricing() {
   };
 
   return (
-    <section id="pricing" className="py-20 px-4 bg-gradient-to-b from-blue-50 to-white">
+    <section id="pricing" className="py-20 px-4 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -117,12 +122,12 @@ export default function Pricing() {
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className={`bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all relative ${
-                tier.popular ? 'ring-2 ring-blue-600 scale-105' : 'border border-gray-200'
+              className={`bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all relative ${
+                tier.popular ? 'ring-2 ring-green-600 scale-105' : 'border border-gray-200'
               }`}
             >
               {tier.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
                   <Star className="w-4 h-4" />
                   Most Popular
                 </div>
@@ -138,16 +143,21 @@ export default function Pricing() {
                 </div>
 
                 {tier.annualPrice !== 'Free' && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    or {tier.annualPrice}/year
-                  </p>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600">
+                      or {tier.annualPrice}/year
+                    </p>
+                    <p className="text-xs text-green-600 font-semibold mt-1">
+                      Save 17% annually
+                    </p>
+                  </div>
                 )}
               </div>
 
               <ul className="space-y-4 mb-8">
                 {tier.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-700">{feature}</span>
                   </li>
                 ))}
