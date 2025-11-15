@@ -1,4 +1,5 @@
-import { Check, Star } from 'lucide-react';
+import { Check, Star, Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 interface PricingTier {
   name: string;
@@ -63,7 +64,13 @@ const tiers: PricingTier[] = [
 ];
 
 export default function Pricing() {
+  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const handleCheckout = async (priceIdKey: string) => {
+    setLoadingPriceId(priceIdKey);
+    setError(null);
+
     try {
       const response = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
@@ -73,20 +80,22 @@ export default function Pricing() {
         body: JSON.stringify({ priceIdKey }),
       });
 
-      const { url, error } = await response.json();
+      const data = await response.json();
 
-      if (error) {
-        console.error('Checkout error:', error);
-        alert('Failed to create checkout session. Please try again.');
+      if (!response.ok || data.error) {
+        console.error('Checkout error:', data.error);
+        setError(data.error || 'Failed to create checkout session. Please try again.');
+        setLoadingPriceId(null);
         return;
       }
 
-      if (url) {
-        window.location.href = url;
+      if (data.url) {
+        window.location.href = data.url;
       }
     } catch (err) {
       console.error('Network error:', err);
-      alert('Network error. Please try again.');
+      setError('Network error. Please check your connection and try again.');
+      setLoadingPriceId(null);
     }
   };
 
@@ -97,6 +106,11 @@ export default function Pricing() {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Choose your safety level
           </h2>
+          {error && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 max-w-md mx-auto">
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -143,15 +157,31 @@ export default function Pricing() {
                 <div className="space-y-3">
                   <button
                     onClick={() => handleCheckout(tier.priceIdMonthly!)}
-                    className={`w-full py-3 px-6 rounded-lg font-semibold transition-all ${tier.buttonStyle} shadow-md hover:shadow-lg`}
+                    disabled={loadingPriceId !== null}
+                    className={`w-full py-3 px-6 rounded-lg font-semibold transition-all ${tier.buttonStyle} shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
                   >
-                    {tier.buttonText} - Monthly
+                    {loadingPriceId === tier.priceIdMonthly ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Redirecting...</span>
+                      </>
+                    ) : (
+                      `Start ${tier.name} - Monthly`
+                    )}
                   </button>
                   <button
                     onClick={() => handleCheckout(tier.priceIdAnnual!)}
-                    className="w-full py-3 px-6 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all"
+                    disabled={loadingPriceId !== null}
+                    className="w-full py-3 px-6 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    {tier.buttonText} - Annual
+                    {loadingPriceId === tier.priceIdAnnual ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Redirecting...</span>
+                      </>
+                    ) : (
+                      `Start ${tier.name} - Annual`
+                    )}
                   </button>
                 </div>
               ) : (
