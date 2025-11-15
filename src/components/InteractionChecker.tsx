@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import { supabase } from '../lib/supabase';
 
 interface Supplement {
   id: string;
@@ -44,6 +39,11 @@ export default function InteractionChecker() {
   }, []);
 
   const loadData = async () => {
+    if (!supabase) {
+      console.warn('Supabase not available - skipping data load');
+      return;
+    }
+
     const { data: suppsData } = await supabase
       .from('supplements')
       .select('*')
@@ -61,6 +61,13 @@ export default function InteractionChecker() {
   const checkInteractions = async () => {
     if (!selectedSupplement || !selectedMedication) return;
 
+    if (!supabase) {
+      console.warn('Supabase not available - skipping interaction check');
+      setSearchPerformed(true);
+      setInteractions([]);
+      return;
+    }
+
     setLoading(true);
     setSearchPerformed(true);
 
@@ -75,10 +82,13 @@ export default function InteractionChecker() {
       .eq('medication_id', selectedMedication);
 
     if (data) {
-      const formattedData = data.map((item: any) => ({
-        ...item,
-        supplement_name: item.supplements?.name,
-        medication_name: item.medications?.name,
+      const formattedData = data.map((item) => ({
+        id: item.id,
+        severity: item.severity,
+        description: item.description,
+        recommendation: item.recommendation,
+        supplement_name: (item.supplements as { name: string } | null)?.name,
+        medication_name: (item.medications as { name: string } | null)?.name,
       }));
       setInteractions(formattedData);
     } else {
