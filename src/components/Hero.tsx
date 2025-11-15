@@ -1,87 +1,52 @@
-import { ShieldCheck, Search, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Pill } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className="bg-white py-12 md:py-20 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-24">
-          <div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Don't mix blind.
+    <section className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-600 to-cyan-400 py-20 md:py-32 px-4">
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-300 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-white">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              The Supplement Safety Bible
             </h1>
-            <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
-              Check dangerous interactions between supplements and prescription medicines in seconds, before they reach your body.
+            <p className="text-xl md:text-2xl mb-6 text-teal-50 leading-relaxed">
+              Your Complete Guide to Safe Supplement—Medication Combinations
+            </p>
+            <p className="text-lg md:text-xl mb-8 text-teal-100 leading-relaxed">
+              Make safe, confident choices with evidence-based guidance.
             </p>
             <a
-              href="/#checker"
-              className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl mb-3"
+              href="/#pricing"
+              className="inline-block bg-green-500 hover:bg-green-600 text-white px-10 py-5 rounded-xl text-xl font-semibold transition-all shadow-2xl hover:shadow-green-500/50 hover:scale-105"
             >
-              Start free safety check
+              Get Instant Access
             </a>
-            <p className="text-sm text-gray-500 mb-8">
-              No credit card needed. Includes 200+ of the most-used supplements.
-            </p>
-
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                </div>
-                <span className="text-gray-700">
-                  Covers 200+ supplements & common prescription drugs
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                  <AlertTriangle className="w-4 h-4 text-green-600" />
-                </div>
-                <span className="text-gray-700">
-                  Highlights risky combinations clearly (Low / Moderate / High)
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                  <ShieldCheck className="w-4 h-4 text-green-600" />
-                </div>
-                <span className="text-gray-700">
-                  Backed by scientific references & clinical data
-                </span>
-              </li>
-            </ul>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl shadow-xl border border-blue-100">
-            <div className="bg-white rounded-xl p-6 shadow-md mb-4">
-              <div className="flex items-center gap-3 mb-4">
-                <Search className="w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Add supplement..."
-                  className="flex-1 outline-none text-gray-600"
-                  disabled
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="bg-blue-50 px-4 py-3 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-blue-900">Vitamin D3</span>
-                </div>
-                <div className="bg-blue-50 px-4 py-3 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-blue-900">Fish Oil (Omega-3)</span>
-                </div>
-                <div className="bg-blue-50 px-4 py-3 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-blue-900">Warfarin (Blood Thinner)</span>
-                </div>
-              </div>
-            </div>
+          <div className="relative">
+            <div className="relative mx-auto max-w-md">
+              <div className="absolute inset-0 bg-gradient-to-br from-teal-800 to-teal-600 rounded-3xl transform rotate-6 shadow-2xl opacity-50"></div>
 
-            <div className="bg-orange-50 border-2 border-orange-300 rounded-xl p-6">
-              <div className="flex items-start gap-3 mb-3">
-                <AlertTriangle className="w-6 h-6 text-orange-600 flex-shrink-0" />
-                <div>
-                  <h4 className="font-bold text-orange-900 mb-1">High Risk Interaction</h4>
-                  <p className="text-sm text-orange-800 leading-relaxed">
-                    Fish Oil may increase bleeding risk when combined with Warfarin. Consult your doctor before combining.
+              <div className="relative bg-gradient-to-br from-teal-500 to-cyan-400 rounded-3xl shadow-2xl p-8 md:p-12 border-8 border-teal-700">
+                <div className="text-center mb-8">
+                  <p className="text-teal-100 text-sm uppercase tracking-wider mb-4">Certified Nutra Labs</p>
+                  <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 italic leading-tight">
+                    The Supplement Safety Bible
+                  </h2>
+                  <p className="text-white text-lg italic leading-relaxed">
+                    Your Complete Guide to Supplement—Medication Combinations
                   </p>
+                </div>
+
+                <div className="flex justify-center">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-6 border-4 border-teal-300/50 shadow-xl">
+                    <Pill className="w-16 h-16 md:w-20 md:h-20 text-teal-100 transform -rotate-45" strokeWidth={1.5} />
+                  </div>
                 </div>
               </div>
             </div>
