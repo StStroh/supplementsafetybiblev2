@@ -38,8 +38,8 @@ const tiers: PricingTier[] = [
     description: "For power users and health professionals.",
     monthlyPriceLabel: "$29 / mo",
     annualPriceLabel: "$289 / yr",
-    monthlyPriceId: "price_PRO_MONTHLY_REPLACE_ME",
-    annualPriceId: "price_PRO_ANNUAL_REPLACE_ME",
+    monthlyPriceId: "price_1SSERBLSpIuKqlsUsWSDz8n6",
+    annualPriceId: "price_1SSEW2LSpIuKqlsUKw2UAglX",
     features: [
       "Up to 200 interaction checks per month",
       "Extended interaction database",
@@ -55,8 +55,8 @@ const tiers: PricingTier[] = [
     description: "For clinics and small practices.",
     monthlyPriceLabel: "$79 / mo",
     annualPriceLabel: "$789 / yr",
-    monthlyPriceId: "price_PREMIUM_MONTHLY_REPLACE_ME",
-    annualPriceId: "price_PREMIUM_ANNUAL_REPLACE_ME",
+    monthlyPriceId: "price_1SSb9jLSpIuKqlsUMRo6AxHg",
+    annualPriceId: "price_1SSbB0LSpIuKqlsUCJP8sL8q",
     features: [
       "Unlimited interaction checks",
       "Support for multiple people / patients",
@@ -89,8 +89,8 @@ const handleCheckout = async (priceId: string) => {
 
     window.location.href = data.url;
   } catch (err) {
+    console.error("Network error during checkout:", err);
     alert("Network error. Please try again.");
-    console.error(err);
   }
 };
 
@@ -105,7 +105,8 @@ export default function Pricing() {
             Choose your plan
           </h1>
           <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
-            Get medical-grade insight into supplement and medication interactions.
+            Get medical-grade insight into supplement and medication
+            interactions.
           </p>
 
           <div className="mt-6 inline-flex items-center rounded-full bg-white shadow-sm border border-slate-200 p-1">
@@ -216,8 +217,12 @@ export default function Pricing() {
                       }`}
                     >
                       {tier.name === "Pro"
-                        ? `Start Pro – ${billing === "monthly" ? "Monthly" : "Annual"}`
-                        : `Start Premium – ${billing === "monthly" ? "Monthly" : "Annual"}`}
+                        ? `Start Pro – ${
+                            billing === "monthly" ? "Monthly" : "Annual"
+                          }`
+                        : `Start Premium – ${
+                            billing === "monthly" ? "Monthly" : "Annual"
+                          }`}
                     </button>
                   )}
                 </div>
@@ -227,7 +232,8 @@ export default function Pricing() {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-500">
-          You can cancel anytime. All plans include secure Stripe billing and encrypted data handling.
+          You can cancel anytime. All plans include secure Stripe billing and
+          encrypted data handling.
         </p>
       </div>
     </div>
