@@ -11,8 +11,8 @@ interface PricingTier {
   description: string;
   monthlyPriceLabel: string;
   annualPriceLabel: string;
-  monthlyPriceId: string; // Stripe price ID for monthly
-  annualPriceId: string;  // Stripe price ID for annual
+  monthlyPriceId: string;
+  annualPriceId: string;
   features: string[];
   popular?: boolean;
 }
@@ -22,13 +22,13 @@ const tiers: PricingTier[] = [
     id: "core",
     name: "Core",
     description: "For individuals managing their personal supplements.",
-    monthlyPriceLabel: "$9 / mo",
-    annualPriceLabel: "$89 / yr",
-    monthlyPriceId: "price_CORE_MONTHLY_REPLACE_ME",
-    annualPriceId: "price_CORE_YEARLY_REPLACE_ME",
+    monthlyPriceLabel: "Free (coming soon)",
+    annualPriceLabel: "Free (coming soon)",
+    monthlyPriceId: "",
+    annualPriceId: "",
     features: [
-      "Up to 20 interaction checks per month",
       "Basic supplement & medication database",
+      "Up to 20 interaction checks per month",
       "Email support",
     ],
   },
@@ -39,7 +39,7 @@ const tiers: PricingTier[] = [
     monthlyPriceLabel: "$29 / mo",
     annualPriceLabel: "$289 / yr",
     monthlyPriceId: "price_PRO_MONTHLY_REPLACE_ME",
-    annualPriceId: "price_PRO_YEARLY_REPLACE_ME",
+    annualPriceId: "price_PRO_ANNUAL_REPLACE_ME",
     features: [
       "Up to 200 interaction checks per month",
       "Extended interaction database",
@@ -56,7 +56,7 @@ const tiers: PricingTier[] = [
     monthlyPriceLabel: "$79 / mo",
     annualPriceLabel: "$789 / yr",
     monthlyPriceId: "price_PREMIUM_MONTHLY_REPLACE_ME",
-    annualPriceId: "price_PREMIUM_YEARLY_REPLACE_ME",
+    annualPriceId: "price_PREMIUM_ANNUAL_REPLACE_ME",
     features: [
       "Unlimited interaction checks",
       "Support for multiple people / patients",
@@ -67,36 +67,30 @@ const tiers: PricingTier[] = [
   },
 ];
 
-// 🔑 THIS IS THE IMPORTANT PART – the checkout handler
 const handleCheckout = async (priceId: string) => {
   try {
     const res = await fetch("/.netlify/functions/create-checkout-session", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ priceId }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      console.error("Checkout error:", data);
       alert(data.error || "Checkout error. Please try again.");
       return;
     }
 
     if (!data.url) {
-      console.error("No URL returned from checkout session", data);
-      alert("Unexpected response from payment server.");
+      alert("Unexpected payment server error.");
       return;
     }
 
-    // Redirect to Stripe Checkout
     window.location.href = data.url;
   } catch (err) {
-    console.error("Network error during checkout:", err);
     alert("Network error. Please try again.");
+    console.error(err);
   }
 };
 
@@ -111,10 +105,9 @@ export default function Pricing() {
             Choose your plan
           </h1>
           <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
-            Get medical-grade insight into supplement & medication interactions.
+            Get medical-grade insight into supplement and medication interactions.
           </p>
 
-          {/* billing toggle */}
           <div className="mt-6 inline-flex items-center rounded-full bg-white shadow-sm border border-slate-200 p-1">
             <button
               type="button"
@@ -127,6 +120,7 @@ export default function Pricing() {
             >
               Monthly
             </button>
+
             <button
               type="button"
               onClick={() => setBilling("annual")}
@@ -141,7 +135,6 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* tiers */}
         <div className="grid gap-6 md:grid-cols-3">
           {tiers.map((tier) => {
             const isAnnual = billing === "annual";
@@ -151,6 +144,8 @@ export default function Pricing() {
             const priceId = isAnnual
               ? tier.annualPriceId
               : tier.monthlyPriceId;
+
+            const isCore = tier.id === "core";
 
             return (
               <div
@@ -166,20 +161,30 @@ export default function Pricing() {
                     <h2 className="text-lg font-semibold text-slate-900">
                       {tier.name}
                     </h2>
+
                     {tier.popular && (
                       <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 border border-green-100">
                         Most popular
                       </span>
                     )}
                   </div>
+
                   <p className="mt-2 text-sm text-slate-600">
                     {tier.description}
                   </p>
+
                   <div className="mt-4">
                     <span className="text-2xl font-bold text-slate-900">
                       {priceLabel}
                     </span>
                   </div>
+
+                  {isCore && (
+                    <p className="mt-2 text-xs text-slate-500">
+                      Our free Core plan is being prepared. Soon you can use the
+                      basic interaction checker without a subscription.
+                    </p>
+                  )}
                 </div>
 
                 <ul className="flex-1 space-y-2 px-6 py-4 text-sm text-slate-700">
@@ -192,21 +197,29 @@ export default function Pricing() {
                 </ul>
 
                 <div className="px-6 pb-6 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => handleCheckout(priceId)}
-                    className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
-                      tier.popular
-                        ? "bg-green-600 hover:bg-green-700 text-white"
-                        : "bg-slate-900 hover:bg-slate-950 text-white"
-                    }`}
-                  >
-                    {tier.name === "Pro"
-                      ? `Start Pro – ${billing === "monthly" ? "Monthly" : "Annual"}`
-                      : tier.name === "Core"
-                      ? `Start Core – ${billing === "monthly" ? "Monthly" : "Annual"}`
-                      : `Start Premium – ${billing === "monthly" ? "Monthly" : "Annual"}`}
-                  </button>
+                  {isCore ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold bg-slate-300 text-slate-600 cursor-not-allowed"
+                    >
+                      Coming Soon – Free Core
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleCheckout(priceId)}
+                      className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm ${
+                        tier.popular
+                          ? "bg-green-600 hover:bg-green-700 text-white"
+                          : "bg-slate-900 hover:bg-slate-950 text-white"
+                      }`}
+                    >
+                      {tier.name === "Pro"
+                        ? `Start Pro – ${billing === "monthly" ? "Monthly" : "Annual"}`
+                        : `Start Premium – ${billing === "monthly" ? "Monthly" : "Annual"}`}
+                    </button>
+                  )}
                 </div>
               </div>
             );
@@ -214,8 +227,7 @@ export default function Pricing() {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-500">
-          You can cancel anytime. All plans include secure Stripe billing and
-          encrypted data handling.
+          You can cancel anytime. All plans include secure Stripe billing and encrypted data handling.
         </p>
       </div>
     </div>
