@@ -1,18 +1,16 @@
-// src/components/Pricing.tsx
-
-import { useState } from "react";
-import { Check } from "lucide-react";
+import React, { useState } from "react";
+import { Check, Loader2 } from "lucide-react";
 
 type BillingPeriod = "monthly" | "annual";
 
 interface PricingTier {
-  id: string;
+  id: "core" | "pro" | "premium";
   name: string;
   description: string;
   monthlyPriceLabel: string;
   annualPriceLabel: string;
-  monthlyPriceId: string;
-  annualPriceId: string;
+  stripeMonthlyPriceId?: string;
+  stripeAnnualPriceId?: string;
   features: string[];
   popular?: boolean;
 }
@@ -21,15 +19,13 @@ const tiers: PricingTier[] = [
   {
     id: "core",
     name: "Core",
-    description: "For individuals managing their personal supplements.",
-    monthlyPriceLabel: "Free (coming soon)",
-    annualPriceLabel: "Free (coming soon)",
-    monthlyPriceId: "",
-    annualPriceId: "",
+    description: "For individuals managing their own supplements and medications.",
+    monthlyPriceLabel: "Free",
+    annualPriceLabel: "Free",
     features: [
       "Basic supplement & medication database",
       "Up to 20 interaction checks per month",
-      "Email support",
+      "Email support"
     ],
   },
   {
@@ -38,8 +34,8 @@ const tiers: PricingTier[] = [
     description: "For power users and health professionals.",
     monthlyPriceLabel: "$14.99 / mo",
     annualPriceLabel: "$149 / yr",
-    monthlyPriceId: "price_1SSERBLSpIuKqlsUsWSDz8n6",
-    annualPriceId: "price_1SSEW2LSpIuKqlsUKw2UAglX",
+    stripeMonthlyPriceId: "price_1SSERBLSpIuKqlsUsWSDz8n6",
+    stripeAnnualPriceId: "price_1SSEW2LSpIuKqlsUKw2UAglX",
     features: [
       "Up to 200 interaction checks per month",
       "Extended interaction database",
@@ -55,8 +51,8 @@ const tiers: PricingTier[] = [
     description: "For clinics and small practices.",
     monthlyPriceLabel: "$24.99 / mo",
     annualPriceLabel: "$249 / yr",
-    monthlyPriceId: "price_1SSb9jLSpIuKqlsUMRo6AxHg",
-    annualPriceId: "price_1SSbB0LSpIuKqlsUCJP8sL8q",
+    stripeMonthlyPriceId: "price_1SSb9jLSpIuKqlsUMRo6AxHg",
+    stripeAnnualPriceId: "price_1SSbB0LSpIuKqlsUCJP8sL8q",
     features: [
       "Unlimited interaction checks",
       "Support for multiple people / patients",
@@ -67,162 +63,175 @@ const tiers: PricingTier[] = [
   },
 ];
 
-const handleCheckout = async (priceId: string) => {
-  try {
-    const res = await fetch("/.netlify/functions/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId }),
-    });
+const Pricing: React.FC = () => {
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
+  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
-    const data = await res.json();
+  const handleCheckout = async (priceId?: string) => {
+    if (!priceId) return;
 
-    if (!res.ok) {
-      alert(data.error || "Checkout error. Please try again.");
-      return;
+    try {
+      setLoadingPriceId(priceId);
+
+      const res = await fetch("/.netlify/functions/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ priceId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Checkout error:", data);
+        alert(data.error || "Checkout error. Please try again.");
+        setLoadingPriceId(null);
+        return;
+      }
+
+      if (!data.url) {
+        console.error("No URL returned from checkout session", data);
+        alert("Unexpected response from payment server.");
+        setLoadingPriceId(null);
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error("Network error during checkout:", err);
+      alert("Network error. Please try again.");
+      setLoadingPriceId(null);
     }
+  };
 
-    if (!data.url) {
-      alert("Unexpected payment server error.");
-      return;
+  const handleCoreClick = () => {
+    const checkerSection = document.getElementById('checker');
+    if (checkerSection) {
+      checkerSection.scrollIntoView({ behavior: 'smooth' });
     }
-
-    window.location.href = data.url;
-  } catch (err) {
-    console.error("Network error during checkout:", err);
-    alert("Network error. Please try again.");
-  }
-};
-
-export default function Pricing() {
-  const [billing, setBilling] = useState<BillingPeriod>("monthly");
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-5xl px-4 py-16">
+    <section id="pricing" className="py-16 bg-slate-50">
+      <div className="mx-auto max-w-6xl px-4">
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             Choose your plan
-          </h1>
-          <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
-            Get medical-grade insight into supplement and medication
-            interactions.
+          </h2>
+          <p className="mt-3 text-base text-slate-600">
+            Start with the free Core plan and upgrade as you need more power.
           </p>
 
-          <div className="mt-6 inline-flex items-center rounded-full bg-white shadow-sm border border-slate-200 p-1">
+          <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 text-xs font-medium text-slate-600">
             <button
               type="button"
-              onClick={() => setBilling("monthly")}
-              className={`px-4 py-1 text-sm rounded-full ${
-                billing === "monthly"
-                  ? "bg-green-600 text-white"
+              onClick={() => setBillingPeriod("monthly")}
+              className={`px-3 py-1 rounded-full ${
+                billingPeriod === "monthly"
+                  ? "bg-slate-900 text-white"
                   : "text-slate-600"
               }`}
             >
               Monthly
             </button>
-
             <button
               type="button"
-              onClick={() => setBilling("annual")}
-              className={`px-4 py-1 text-sm rounded-full ${
-                billing === "annual"
-                  ? "bg-green-600 text-white"
+              onClick={() => setBillingPeriod("annual")}
+              className={`px-3 py-1 rounded-full ${
+                billingPeriod === "annual"
+                  ? "bg-slate-900 text-white"
                   : "text-slate-600"
               }`}
             >
-              Annual (save 2 months)
+              Annual (save more)
             </button>
           </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
           {tiers.map((tier) => {
-            const isAnnual = billing === "annual";
-            const priceLabel = isAnnual
-              ? tier.annualPriceLabel
-              : tier.monthlyPriceLabel;
-            const priceId = isAnnual
-              ? tier.annualPriceId
-              : tier.monthlyPriceId;
-
             const isCore = tier.id === "core";
+            const isPopular = tier.popular;
+            const priceLabel =
+              billingPeriod === "monthly"
+                ? tier.monthlyPriceLabel
+                : tier.annualPriceLabel;
+            const activePriceId =
+              billingPeriod === "monthly"
+                ? tier.stripeMonthlyPriceId
+                : tier.stripeAnnualPriceId;
 
             return (
               <div
                 key={tier.id}
-                className={`flex flex-col rounded-2xl border bg-white shadow-sm ${
-                  tier.popular
-                    ? "border-green-500 shadow-md ring-1 ring-green-100"
-                    : "border-slate-200"
+                className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm ${
+                  isPopular ? "border-green-500 ring-2 ring-green-200" : ""
                 }`}
               >
-                <div className="p-6 border-b border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-slate-900">
-                      {tier.name}
-                    </h2>
-
-                    {tier.popular && (
-                      <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 border border-green-100">
-                        Most popular
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="mt-2 text-sm text-slate-600">
-                    {tier.description}
-                  </p>
-
-                  <div className="mt-4">
-                    <span className="text-2xl font-bold text-slate-900">
-                      {priceLabel}
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    {tier.name}
+                  </h3>
+                  {isPopular && (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                      Most popular
                     </span>
-                  </div>
-
-                  {isCore && (
-                    <p className="mt-2 text-xs text-slate-500">
-                      Our free Core plan is being prepared. Soon you can use the
-                      basic interaction checker without a subscription.
-                    </p>
                   )}
                 </div>
 
-                <ul className="flex-1 space-y-2 px-6 py-4 text-sm text-slate-700">
+                <p className="mt-2 text-sm text-slate-600">
+                  {tier.description}
+                </p>
+
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span className="text-3xl font-bold text-slate-900">
+                    {priceLabel.split(" ")[0]}
+                  </span>
+                  <span className="text-sm font-medium text-slate-600">
+                    {priceLabel.split(" ").slice(1).join(" ")}
+                  </span>
+                </div>
+
+                <ul className="mt-6 space-y-2 text-sm text-slate-700">
                   {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 mt-1 text-green-600" />
+                    <li key={feature} className="flex gap-2">
+                      <Check className="h-4 w-4 mt-0.5 text-green-600" />
                       <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
 
-                <div className="px-6 pb-6 pt-2">
+                <div className="mt-6">
                   {isCore ? (
                     <button
                       type="button"
-                      disabled
-                      className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold bg-slate-300 text-slate-600 cursor-not-allowed"
+                      onClick={handleCoreClick}
+                      className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold bg-slate-900 text-white hover:bg-slate-800 transition"
                     >
-                      Coming Soon – Free Core
+                      Start Free Core
                     </button>
                   ) : (
                     <button
                       type="button"
-                      onClick={() => handleCheckout(priceId)}
-                      className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm ${
-                        tier.popular
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-slate-900 hover:bg-slate-950 text-white"
+                      onClick={() => handleCheckout(activePriceId)}
+                      disabled={loadingPriceId === activePriceId}
+                      className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${
+                        loadingPriceId === activePriceId
+                          ? "bg-slate-400 cursor-wait"
+                          : "bg-green-600 hover:bg-green-700"
                       }`}
                     >
-                      {tier.name === "Pro"
-                        ? `Start Pro – ${
-                            billing === "monthly" ? "Monthly" : "Annual"
-                          }`
-                        : `Start Premium – ${
-                            billing === "monthly" ? "Monthly" : "Annual"
-                          }`}
+                      {loadingPriceId === activePriceId ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Processing…
+                        </span>
+                      ) : billingPeriod === "monthly" ? (
+                        `Start ${tier.name} – Monthly`
+                      ) : (
+                        `Start ${tier.name} – Annual`
+                      )}
                     </button>
                   )}
                 </div>
@@ -236,6 +245,8 @@ export default function Pricing() {
           encrypted data handling.
         </p>
       </div>
-    </div>
+    </section>
   );
-}
+};
+
+export default Pricing;
