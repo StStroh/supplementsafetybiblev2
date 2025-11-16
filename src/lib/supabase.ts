@@ -1,46 +1,37 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder';
+const rawUrl = import.meta.env.VITE_SUPABASE_URL;
+const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-  console.warn('⚠️ Supabase environment variables are not configured. Database features will not work.');
+// Make sure the URL is valid and avoid "Invalid supabaseUrl" crashes
+function normalizeSupabaseUrl(url: unknown): string | null {
+  if (typeof url !== 'string') return null;
+
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+
+  // must start with http or https
+  if (!/^https?:\/\//i.test(trimmed)) {
+    console.warn('[Supabase] Invalid VITE_SUPABASE_URL:', trimmed);
+    return null;
+  }
+
+  return trimmed;
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseUrl = normalizeSupabaseUrl(rawUrl);
+const supabaseAnonKey =
+  typeof rawKey === 'string' ? rawKey.trim() : '';
 
-export interface Database {
-  public: {
-    Tables: {
-      supplements: {
-        Row: {
-          id: string;
-          name: string;
-          category: string;
-          description: string;
-          created_at: string;
-        };
-      };
-      medications: {
-        Row: {
-          id: string;
-          name: string;
-          category: string;
-          description: string;
-          created_at: string;
-        };
-      };
-      interactions: {
-        Row: {
-          id: string;
-          supplement_id: string;
-          medication_id: string;
-          severity: 'low' | 'moderate' | 'high' | 'severe';
-          description: string;
-          recommendation: string;
-          created_at: string;
-        };
-      };
-    };
-  };
+let supabase: SupabaseClient | null = null;
+
+if (supabaseUrl && supabaseAnonKey) {
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
+} else {
+  console.warn(
+    '[Supabase] Supabase client NOT initialized. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify.'
+  );
 }
+
+// Always export something so the rest of the app can import safely
+export { supabase };
