@@ -1,19 +1,13 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-let supabase: SupabaseClient | null = null;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    'Supabase environment variables are missing. Running in offline mode.'
-  );
-} else {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  console.warn('Supabase environment variables are missing. Some features may not work.');
 }
 
-export { supabase };
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface Database {
   public: {
