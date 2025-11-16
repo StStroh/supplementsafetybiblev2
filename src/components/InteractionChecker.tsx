@@ -23,23 +23,22 @@ export default function InteractionChecker() {
   }, []);
 
   const loadData = async () => {
-    if (!supabase) {
-      console.warn('Supabase not available - skipping data load');
-      return;
+    try {
+      const { data: suppsData } = await supabase
+        .from('supplements')
+        .select('id, name')
+        .order('name');
+
+      const { data: medsData } = await supabase
+        .from('medications')
+        .select('id, name')
+        .order('name');
+
+      if (suppsData) setSupplements(suppsData as Supplement[]);
+      if (medsData) setMedications(medsData as Medication[]);
+    } catch (error) {
+      console.warn('Unable to load data from Supabase:', error);
     }
-
-    const { data: suppsData } = await supabase
-      .from('supplements')
-      .select('id, name')
-      .order('name');
-
-    const { data: medsData } = await supabase
-      .from('medications')
-      .select('id, name')
-      .order('name');
-
-    if (suppsData) setSupplements(suppsData as Supplement[]);
-    if (medsData) setMedications(medsData as Medication[]);
   };
 
   const checkInteractions = () => {
