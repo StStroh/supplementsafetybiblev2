@@ -36,8 +36,8 @@ const tiers: PricingTier[] = [
     id: "pro",
     name: "Pro",
     description: "For power users and health professionals.",
-    monthlyPriceLabel: "$29 / mo",
-    annualPriceLabel: "$289 / yr",
+    monthlyPriceLabel: "$14.99 / mo",
+    annualPriceLabel: "$149 / yr",
     monthlyPriceId: "price_1SSERBLSpIuKqlsUsWSDz8n6",
     annualPriceId: "price_1SSEW2LSpIuKqlsUKw2UAglX",
     features: [
