@@ -1,28 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Search, AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Supplement {
   id: string;
   name: string;
-  category: string;
-  description: string;
 }
 
 interface Medication {
   id: string;
   name: string;
-  category: string;
-  description: string;
-}
-
-interface Interaction {
-  id: string;
-  severity: 'low' | 'moderate' | 'high' | 'severe';
-  description: string;
-  recommendation: string;
-  supplement_name?: string;
-  medication_name?: string;
 }
 
 export default function InteractionChecker() {
@@ -30,9 +17,6 @@ export default function InteractionChecker() {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [selectedSupplement, setSelectedSupplement] = useState('');
   const [selectedMedication, setSelectedMedication] = useState('');
-  const [interactions, setInteractions] = useState<Interaction[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searchPerformed, setSearchPerformed] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -46,101 +30,22 @@ export default function InteractionChecker() {
 
     const { data: suppsData } = await supabase
       .from('supplements')
-      .select('*')
+      .select('id, name')
       .order('name');
 
     const { data: medsData } = await supabase
       .from('medications')
-      .select('*')
+      .select('id, name')
       .order('name');
 
-    if (suppsData) setSupplements(suppsData);
-    if (medsData) setMedications(medsData);
+    if (suppsData) setSupplements(suppsData as Supplement[]);
+    if (medsData) setMedications(medsData as Medication[]);
   };
 
-  const checkInteractions = async () => {
+  const checkInteractions = () => {
     if (!selectedSupplement || !selectedMedication) return;
 
-    if (!supabase) {
-      console.warn('Supabase not available - skipping interaction check');
-      setSearchPerformed(true);
-      setInteractions([]);
-      return;
-    }
-
-    setLoading(true);
-    setSearchPerformed(true);
-
-    const { data } = await supabase
-      .from('interactions')
-      .select(`
-        *,
-        supplements:supplement_id(name),
-        medications:medication_id(name)
-      `)
-      .eq('supplement_id', selectedSupplement)
-      .eq('medication_id', selectedMedication);
-
-    if (data) {
-      const formattedData = data.map((item) => ({
-        id: item.id,
-        severity: item.severity,
-        description: item.description,
-        recommendation: item.recommendation,
-        supplement_name: (item.supplements as { name: string } | null)?.name,
-        medication_name: (item.medications as { name: string } | null)?.name,
-      }));
-      setInteractions(formattedData);
-    } else {
-      setInteractions([]);
-    }
-
-    setLoading(false);
-  };
-
-  const getSeverityConfig = (severity: string) => {
-    switch (severity) {
-      case 'low':
-        return {
-          icon: Info,
-          color: 'text-blue-600',
-          bg: 'bg-blue-50',
-          border: 'border-blue-200',
-          label: 'Low Risk',
-        };
-      case 'moderate':
-        return {
-          icon: AlertTriangle,
-          color: 'text-yellow-600',
-          bg: 'bg-yellow-50',
-          border: 'border-yellow-200',
-          label: 'Moderate Risk',
-        };
-      case 'high':
-        return {
-          icon: AlertTriangle,
-          color: 'text-orange-600',
-          bg: 'bg-orange-50',
-          border: 'border-orange-200',
-          label: 'High Risk',
-        };
-      case 'severe':
-        return {
-          icon: XCircle,
-          color: 'text-red-600',
-          bg: 'bg-red-50',
-          border: 'border-red-200',
-          label: 'Severe Risk',
-        };
-      default:
-        return {
-          icon: Info,
-          color: 'text-gray-600',
-          bg: 'bg-gray-50',
-          border: 'border-gray-200',
-          label: 'Unknown',
-        };
-    }
+    window.location.href = `/result/${selectedSupplement}/${selectedMedication}`;
   };
 
   return (
@@ -169,7 +74,7 @@ export default function InteractionChecker() {
                 <option value="">Choose a supplement...</option>
                 {supplements.map((supp) => (
                   <option key={supp.id} value={supp.id}>
-                    {supp.name} {supp.category && `(${supp.category})`}
+                    {supp.name}
                   </option>
                 ))}
               </select>
@@ -187,7 +92,7 @@ export default function InteractionChecker() {
                 <option value="">Choose a medication...</option>
                 {medications.map((med) => (
                   <option key={med.id} value={med.id}>
-                    {med.name} {med.category && `(${med.category})`}
+                    {med.name}
                   </option>
                 ))}
               </select>
@@ -196,74 +101,14 @@ export default function InteractionChecker() {
 
           <button
             onClick={checkInteractions}
-            disabled={!selectedSupplement || !selectedMedication || loading}
+            disabled={!selectedSupplement || !selectedMedication}
             className="w-full bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
           >
             <Search className="w-5 h-5" />
-            {loading ? 'Checking...' : 'Check Interactions'}
+            Check Interactions
           </button>
         </div>
 
-        {searchPerformed && (
-          <div className="bg-white rounded-2xl shadow-xl p-8">
-            {interactions.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  No Known Interactions
-                </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
-                  Based on current research, no significant interactions have been documented between
-                  these two substances. However, always consult your healthcare provider.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  Interaction Results
-                </h3>
-                {interactions.map((interaction) => {
-                  const config = getSeverityConfig(interaction.severity);
-                  const Icon = config.icon;
-
-                  return (
-                    <div
-                      key={interaction.id}
-                      className={`${config.bg} ${config.border} border-2 rounded-xl p-6`}
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className={`${config.color} flex-shrink-0`}>
-                          <Icon className="w-8 h-8" />
-                        </div>
-                        <div className="flex-grow">
-                          <div className="flex items-center gap-3 mb-3">
-                            <h4 className={`text-lg font-bold ${config.color}`}>
-                              {config.label}
-                            </h4>
-                          </div>
-                          <p className="text-gray-900 font-semibold mb-2">
-                            Description:
-                          </p>
-                          <p className="text-gray-700 mb-4 leading-relaxed">
-                            {interaction.description}
-                          </p>
-                          <p className="text-gray-900 font-semibold mb-2">
-                            Recommendation:
-                          </p>
-                          <p className="text-gray-700 leading-relaxed">
-                            {interaction.recommendation}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </section>
   );
