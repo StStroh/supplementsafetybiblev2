@@ -53,8 +53,8 @@ const tiers: PricingTier[] = [
     id: "premium",
     name: "Premium",
     description: "For clinics and small practices.",
-    monthlyPriceLabel: "$79 / mo",
-    annualPriceLabel: "$790 / yr",
+    monthlyPriceLabel: "$24.99 / mo",
+    annualPriceLabel: "$249 / yr",
     monthlyPriceId: "price_1SSb9jLSpIuKqlsUMRo6AxHg",
     annualPriceId: "price_1SSbB0LSpIuKqlsUCJP8sL8q",
     features: [
