@@ -35,7 +35,7 @@ const tiers: PricingTier[] = [
     monthlyPriceLabel: "$14.99 / mo",
     annualPriceLabel: "$149 / yr",
     stripeMonthlyPriceId: import.meta.env.VITE_STRIPE_PRICE_PRO,
-    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PRO,
+    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
     features: [
       "Up to 200 interaction checks per month",
       "Extended interaction database",
@@ -52,7 +52,7 @@ const tiers: PricingTier[] = [
     monthlyPriceLabel: "$24.99 / mo",
     annualPriceLabel: "$249 / yr",
     stripeMonthlyPriceId: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
-    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
+    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
     features: [
       "Unlimited interaction checks",
       "Support for multiple people / patients",
