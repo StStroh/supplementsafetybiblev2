@@ -34,8 +34,8 @@ const tiers: PricingTier[] = [
     description: "For power users and health professionals.",
     monthlyPriceLabel: "$14.99 / mo",
     annualPriceLabel: "$149 / yr",
-    stripeMonthlyPriceId: "price_1SSERBLSpIuKqlsUsWSDz8n6",
-    stripeAnnualPriceId: "price_1SSEW2LSpIuKqlsUKw2UAglX",
+    stripeMonthlyPriceId: import.meta.env.VITE_STRIPE_PRICE_PRO,
+    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PRO,
     features: [
       "Up to 200 interaction checks per month",
       "Extended interaction database",
@@ -51,8 +51,8 @@ const tiers: PricingTier[] = [
     description: "For clinics and small practices.",
     monthlyPriceLabel: "$24.99 / mo",
     annualPriceLabel: "$249 / yr",
-    stripeMonthlyPriceId: "price_1SSb9jLSpIuKqlsUMRo6AxHg",
-    stripeAnnualPriceId: "price_1SSbB0LSpIuKqlsUCJP8sL8q",
+    stripeMonthlyPriceId: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
+    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
     features: [
       "Unlimited interaction checks",
       "Support for multiple people / patients",
