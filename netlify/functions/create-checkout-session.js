@@ -1,11 +1,35 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers,
+      body: "",
+    };
+  }
+
   try {
     if (event.httpMethod !== "POST") {
       return {
         statusCode: 405,
+        headers,
         body: JSON.stringify({ error: "Method Not Allowed" }),
+      };
+    }
+
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error("STRIPE_SECRET_KEY is not configured");
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: "Stripe is not configured on the server" }),
       };
     }
 
@@ -15,6 +39,7 @@ exports.handler = async (event) => {
     if (!priceId) {
       return {
         statusCode: 400,
+        headers,
         body: JSON.stringify({ error: "Missing priceId" }),
       };
     }
@@ -28,12 +53,13 @@ exports.handler = async (event) => {
           quantity: 1,
         },
       ],
-      success_url: "https://supplementsafetybible.com/success",
-      cancel_url: "https://supplementsafetybible.com/cancel",
+      success_url: `${event.headers.origin || "https://supplementsafetybible.com"}/success`,
+      cancel_url: `${event.headers.origin || "https://supplementsafetybible.com"}/cancel`,
     });
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({ url: session.url }),
     };
   } catch (error) {
@@ -41,6 +67,7 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({
         error: error.message || "Server error",
       }),
