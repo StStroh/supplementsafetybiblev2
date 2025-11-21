@@ -100,6 +100,22 @@ BACKEND (No VITE_ prefix - runtime only):
 - SUPABASE_SERVICE_ROLE_KEY (Optional, if needed)
 
 
+EASY COPY TABLE - SELECT AND COPY WITH MOUSE
+---------------------------------------------
+
+Variable Name                        Type      Required
+VITE_SUPABASE_URL                    Frontend  Yes
+VITE_SUPABASE_ANON_KEY               Frontend  Yes
+VITE_STRIPE_PUBLISHABLE_KEY          Frontend  Yes
+VITE_STRIPE_PRICE_PRO                Frontend  Yes
+VITE_STRIPE_PRICE_PRO_ANNUAL         Frontend  Yes
+VITE_STRIPE_PRICE_PREMIUM            Frontend  Yes
+VITE_STRIPE_PRICE_PREMIUM_ANNUAL     Frontend  Yes
+STRIPE_SECRET_KEY                    Backend   Yes
+STRIPE_WEBHOOK_SECRET                Backend   Optional
+SUPABASE_SERVICE_ROLE_KEY            Backend   Optional
+
+
 HOW TO FIX IN PRODUCTION
 -------------------------
 
