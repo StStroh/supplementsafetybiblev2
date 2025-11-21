@@ -36,11 +36,25 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body || "{}");
     const priceId = body.priceId;
 
+    console.log("Received checkout request:", { priceId, body });
+
     if (!priceId) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({ error: "Missing priceId" }),
+      };
+    }
+
+    // Validate price ID format
+    if (!priceId.startsWith('price_')) {
+      console.error("Invalid price ID format:", priceId);
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: `Invalid price ID format: ${priceId}. Price IDs should start with 'price_'. Check that VITE_STRIPE_PRICE_* environment variables are set in Netlify.`
+        }),
       };
     }
 
