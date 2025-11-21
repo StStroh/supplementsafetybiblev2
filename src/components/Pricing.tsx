@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, Loader2 } from "lucide-react";
 
 type BillingPeriod = "monthly" | "annual";
@@ -67,8 +67,32 @@ const Pricing: React.FC = () => {
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
+  // Debug: Log environment variables on component mount
+  useEffect(() => {
+    console.log('Stripe Environment Variables Check:', {
+      VITE_STRIPE_PRICE_PRO: import.meta.env.VITE_STRIPE_PRICE_PRO,
+      VITE_STRIPE_PRICE_PRO_ANNUAL: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
+      VITE_STRIPE_PRICE_PREMIUM: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
+      VITE_STRIPE_PRICE_PREMIUM_ANNUAL: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
+    });
+  }, []);
+
   const handleCheckout = async (priceId?: string) => {
-    if (!priceId) return;
+    if (!priceId) {
+      alert('Error: Price ID is not configured. Please contact support.');
+      console.error('Price ID is undefined. Check environment variables.');
+      return;
+    }
+
+    if (priceId.includes('undefined') || priceId.startsWith('$')) {
+      alert('Error: Environment variables not configured. Please contact support.');
+      console.error('Invalid price ID:', priceId);
+      console.error('Environment check:', {
+        VITE_STRIPE_PRICE_PRO: import.meta.env.VITE_STRIPE_PRICE_PRO,
+        VITE_STRIPE_PRICE_PREMIUM: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
+      });
+      return;
+    }
 
     try {
       setLoadingPriceId(priceId);
