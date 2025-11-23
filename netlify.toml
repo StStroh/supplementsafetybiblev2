@@ -1,13 +1,6 @@
 [build]
-  command = "npm run build"
   publish = "dist"
-
-[build.environment]
-  VITE_SUPABASE_URL = "${VITE_SUPABASE_URL}"
-  VITE_SUPABASE_ANON_KEY = "${VITE_SUPABASE_ANON_KEY}"
-  VITE_STRIPE_PUBLISHABLE_KEY = "${VITE_STRIPE_PUBLISHABLE_KEY}"
-  VITE_STRIPE_PRICE_PRO = "${VITE_STRIPE_PRICE_PRO}"
-  VITE_STRIPE_PRICE_PREMIUM = "${VITE_STRIPE_PRICE_PREMIUM}"
+  command = "npm run build"
 
 [functions]
   directory = "netlify/functions"
