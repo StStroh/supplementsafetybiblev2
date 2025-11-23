@@ -21,7 +21,12 @@ export default function InteractionChecker() {
       if (!u?.user?.email) { setState('no_user'); return; }
       setEmail(u.user.email);
 
-      const { data: profile } = await supabase.from('profiles').select('role, free_checks_count, free_last_check_at').eq('email', u.user.email).single();
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, free_checks_count, free_last_check_at')
+        .eq('email', u.user.email)
+        .single();
+
       const r = profile?.role ?? 'free';
       setRole(r);
 
@@ -29,6 +34,7 @@ export default function InteractionChecker() {
         supabase.from('supplements').select('id,name').order('name'),
         supabase.from('medications').select('id,name').order('name'),
       ]);
+
       setSupplements(supRes.data || []);
       setMedications(medRes.data || []);
 
@@ -53,69 +59,75 @@ export default function InteractionChecker() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ supplementId, medicationId, userEmail: email }),
     });
-    if (res.status === 403) { setState('free_locked'); setErrorMsg('You already used your free check this month.'); return; }
+
+    if (res.status === 403) {
+      setState('free_locked');
+      setErrorMsg('You already used your free check this month.');
+      return;
+    }
+
     const json = await res.json();
-    if (!json?.ok) { setErrorMsg('Interaction not found or an error occurred.'); return; }
+    if (!json?.ok) {
+      setErrorMsg('Interaction not found or error occurred.');
+      return;
+    }
+
     setPayload(json.data);
     setState('result');
   };
 
-  if (state === 'loading') return <div className="py-20 text-center">Loading…</div>;
-  if (state === 'no_user') return (
-    <section className="py-20 px-4 bg-gradient-to-b from-white to-blue-50">
-      <div className="max-w-2xl mx-auto text-center bg-white rounded-lg shadow-lg p-12">
-        <h2 className="text-3xl font-bold text-slate-900 mb-4">Sign in to use your free monthly interaction check</h2>
-        <a href="/#pricing" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">Sign in</a>
+  if (state === 'loading') return <div className="p-4">Loading…</div>;
+
+  if (state === 'no_user')
+    return (
+      <div className="p-6 bg-white rounded-xl shadow">
+        <h3 className="text-xl font-semibold mb-2">Sign in to use your free monthly interaction check</h3>
+        <a href="/login" className="text-blue-600 underline">Sign in</a>
       </div>
-    </section>
-  );
-  if (state === 'free_locked') return (
-    <section className="py-20 px-4 bg-gradient-to-b from-white to-blue-50">
-      <div className="max-w-2xl mx-auto text-center bg-white rounded-lg shadow-lg p-12">
-        <h2 className="text-3xl font-bold text-slate-900 mb-4">Free Tier Limit Reached</h2>
-        <p className="text-slate-600 mb-6">You already used your free check this month.</p>
-        <a href="/#pricing" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">Upgrade to Pro or Premium</a>
-        {errorMsg && <p className="text-red-600 mt-4">{errorMsg}</p>}
+    );
+
+  if (state === 'free_locked')
+    return (
+      <div className="p-6 bg-white rounded-xl shadow">
+        <h3 className="text-xl font-semibold mb-2">Free Tier Limit Reached</h3>
+        <p className="mb-4">You already used your free check this month.</p>
+        <a href="/#pricing?locked=interactions" className="inline-block px-4 py-2 bg-green-600 text-white rounded-md">Upgrade to Pro or Premium</a>
+        {errorMsg && <p className="mt-3 text-red-600">{errorMsg}</p>}
       </div>
-    </section>
-  );
+    );
 
   return (
-    <section id="checker" className="py-20 px-4 bg-gradient-to-b from-white to-blue-50">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">Check Interactions</h2>
-          <p className="text-slate-600">Current Plan: {roleName(role)}{state === 'free_ok' && ' • You have 1 check available this month'}</p>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Select Supplement</label>
-              <select value={supplementId} onChange={e => setSupplementId(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg">
-                <option value="">Choose a supplement…</option>
-                {supplements.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Select Medication</label>
-              <select value={medicationId} onChange={e => setMedicationId(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg">
-                <option value="">Choose a medication…</option>
-                {medications.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <button onClick={check} disabled={!supplementId || !medicationId} className="w-full bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">Check Interactions</button>
-          {errorMsg && <p className="text-red-600 mt-4">{errorMsg}</p>}
-          {state === 'result' && payload && (
-            <div className="mt-6 p-6 bg-slate-50 rounded-lg">
-              <h3 className="font-bold text-lg mb-2">Result</h3>
-              <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(payload, null, 2)}</pre>
-            </div>
-          )}
-        </div>
+    <div className="p-6 bg-white rounded-xl shadow">
+      <div className="mb-4 text-sm text-gray-600">
+        Current Plan: <strong>{roleName(role)}</strong>{state === 'free_ok' && ' • You have 1 check available this month'}
       </div>
-    </section>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <select value={supplementId} onChange={e=>setSupplementId(e.target.value)} className="border rounded p-2">
+          <option value="">Choose a supplement…</option>
+          {supplements.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
+
+        <select value={medicationId} onChange={e=>setMedicationId(e.target.value)} className="border rounded p-2">
+          <option value="">Choose a medication…</option>
+          {medications.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+        </select>
+      </div>
+
+      <button onClick={check} disabled={!supplementId || !medicationId} className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded">
+        Check Interactions
+      </button>
+
+      {errorMsg && <p className="mt-3 text-red-600">{errorMsg}</p>}
+
+      {state === 'result' && payload && (
+        <div className="mt-4 border-rounded p-3">
+          <div className="font-semibold mb-2">Result</div>
+          <pre className="text-sm whitespace-pre-wrap">
+            {JSON.stringify(payload, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
   );
 }
