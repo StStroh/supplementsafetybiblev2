@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Mail } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { SUPPORT_EMAIL } from "../lib/support";
+import Toast from "./Toast";
 
 type BillingPeriod = "monthly" | "annual";
 
@@ -75,6 +76,11 @@ const Pricing: React.FC = () => {
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [missingVars, setMissingVars] = useState<string[]>([]);
+  const [showResendModal, setShowResendModal] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Auto-scroll to pricing if locked=interactions in URL
   useEffect(() => {
@@ -201,6 +207,65 @@ const Pricing: React.FC = () => {
 
     console.info('[Pricing] Profile ensured, redirecting to /account');
     window.location.href = '/account?free=1';
+  };
+
+  const handleResendClick = () => {
+    console.info('[Pricing] Resend confirmation clicked');
+    setShowResendModal(true);
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!resendEmail || !resendEmail.includes('@')) {
+      setToast({ message: 'Please enter a valid email address', type: 'error' });
+      return;
+    }
+
+    setResendLoading(true);
+
+    try {
+      console.info('[Pricing] Attempting to resend confirmation to:', resendEmail);
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: resendEmail,
+      });
+
+      if (error) {
+        console.error('[Pricing] Resend error:', error);
+        setToast({
+          message: error.message || 'Failed to resend confirmation email',
+          type: 'error'
+        });
+      } else {
+        console.info('[Pricing] Confirmation email resent successfully');
+        setToast({
+          message: 'Confirmation sent. Please check your inbox.',
+          type: 'success'
+        });
+        setShowResendModal(false);
+        setResendEmail('');
+
+        // Start 30s cooldown
+        setResendCooldown(30);
+        const interval = setInterval(() => {
+          setResendCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+    } catch (err) {
+      console.error('[Pricing] Unexpected error during resend:', err);
+      setToast({
+        message: 'An unexpected error occurred. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -334,16 +399,30 @@ const Pricing: React.FC = () => {
 
                 <div className="mt-6">
                   {isCore ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const el = document.querySelector('#interaction-checker');
-                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }}
-                      className="w-full inline-flex items-center justify-center rounded-md border px-4 py-2 hover:bg-gray-50 transition"
-                    >
-                      Start Free
-                    </button>
+                    <div className="space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const el = document.querySelector('#interaction-checker');
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }}
+                        className="w-full inline-flex items-center justify-center rounded-md border px-4 py-2 hover:bg-gray-50 transition"
+                      >
+                        Start Free
+                      </button>
+                      <div className="text-center">
+                        <button
+                          type="button"
+                          onClick={handleResendClick}
+                          disabled={resendCooldown > 0}
+                          className="text-xs text-slate-600 hover:text-slate-900 underline disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {resendCooldown > 0
+                            ? `Resend available in ${resendCooldown}s`
+                            : "Didn't get it? Resend"}
+                        </button>
+                      </div>
+                    </div>
                   ) : (
                     <button
                       type="button"
@@ -381,6 +460,70 @@ const Pricing: React.FC = () => {
           Questions? Email us at <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">{SUPPORT_EMAIL}</a>
         </p>
       </div>
+
+      {/* Resend Confirmation Modal */}
+      {showResendModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Mail className="w-6 h-6 text-blue-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Resend Confirmation Email</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Enter your email address to receive a new confirmation link.
+            </p>
+            <input
+              type="email"
+              value={resendEmail}
+              onChange={(e) => setResendEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !resendLoading) {
+                  handleResendConfirmation();
+                }
+              }}
+            />
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowResendModal(false);
+                  setResendEmail('');
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                disabled={resendLoading}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleResendConfirmation}
+                disabled={resendLoading || !resendEmail}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center"
+              >
+                {resendLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Resend'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </section>
   );
 };
