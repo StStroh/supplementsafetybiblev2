@@ -34,13 +34,27 @@ export default function InteractionChecker() {
       const r = profile?.role ?? 'free';
       setRole(r);
 
-      const [supRes, medRes] = await Promise.all([
-        supabase.from('supplements').select('id,name').order('name'),
-        supabase.from('medications').select('id,name').order('name'),
-      ]);
+      if (isPaid(r)) {
+        console.info('[InteractionChecker] Paid user, loading data from Supabase');
+        const [supRes, medRes] = await Promise.all([
+          supabase.from('supplements').select('id,name').order('name'),
+          supabase.from('medications').select('id,name').order('name'),
+        ]);
 
-      setSupplements(supRes.data || []);
-      setMedications(medRes.data || []);
+        if (supRes.error || medRes.error) {
+          console.error('[InteractionChecker] Error loading data:', supRes.error || medRes.error);
+          setErrorMsg('Failed to load data. Please try again.');
+          setState('no_user');
+          return;
+        }
+
+        setSupplements(supRes.data || []);
+        setMedications(medRes.data || []);
+      } else {
+        console.info('[InteractionChecker] Free user, showing locked state');
+        setSupplements([]);
+        setMedications([]);
+      }
 
       if (isPaid(r)) { setState('paid'); return; }
 
@@ -115,12 +129,12 @@ export default function InteractionChecker() {
       </div>
     );
 
-  if (state === 'free_locked')
+  if (state === 'free_locked' || state === 'free_ok')
     return (
       <div className="p-6 bg-white rounded-xl shadow">
-        <h3 className="text-xl font-semibold mb-2">Free Tier Limit Reached</h3>
-        <p className="mb-4">You already used your free check this month.</p>
-        <a href="/#pricing?locked=interactions" className="inline-block px-4 py-2 bg-green-600 text-white rounded-md">Upgrade to Pro or Premium</a>
+        <h3 className="text-xl font-semibold mb-2">Upgrade to Access Interaction Checker</h3>
+        <p className="mb-4 text-gray-600">The Interaction Checker is available on Pro and Premium plans. Upgrade now to check supplement-medication interactions instantly.</p>
+        <a href="/#pricing?locked=interactions" className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">View Plans</a>
         {errorMsg && <p className="mt-3 text-red-600">{errorMsg}</p>}
       </div>
     );
