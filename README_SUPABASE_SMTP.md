@@ -353,5 +353,27 @@ If you encounter issues not covered in this guide:
 
 ---
 
-**Last Updated**: 2025-01-23
-**Version**: 1.0
+## Supabase Auth URL Configuration (REQUIRED)
+
+In Supabase Dashboard → Project Settings → Authentication → URL Configuration:
+
+- **Site URL**: `https://supplementsafetybible.com`
+- **Additional Redirect URLs**:
+  ```
+  https://supplementsafetybible.com
+  https://supplementsafetybible.netlify.app
+  https://supplementsafetybible-*.netlify.app
+  http://localhost:5173
+  http://localhost:3000
+  ```
+
+**Save** the URL configuration.
+
+Then go to **Authentication → Email Templates** and ensure no template hardcodes localhost.
+
+**Why this matters**: If the Site URL is set to localhost, all magic links and confirmation emails will redirect to localhost instead of your production domain, breaking auth for real users.
+
+---
+
+**Last Updated**: 2025-11-23
+**Version**: 1.1

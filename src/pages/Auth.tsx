@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Mail, Loader2, CheckCircle } from 'lucide-react';
 import { SUPPORT_EMAIL } from '../lib/support';
+import { SITE_URL } from '../lib/siteUrl';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -31,7 +32,7 @@ export default function Auth() {
       const { error: signInError } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}${redirect}`,
+          emailRedirectTo: `${SITE_URL}${redirect}`,
         },
       });
 
