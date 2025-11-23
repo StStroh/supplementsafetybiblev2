@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Mail, Loader2, CheckCircle } from 'lucide-react';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -114,16 +115,24 @@ export default function Auth() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
-          By signing in, you agree to our{' '}
-          <a href="/terms" className="text-blue-600 hover:underline">
-            Terms
-          </a>{' '}
-          and{' '}
-          <a href="/privacy" className="text-blue-600 hover:underline">
-            Privacy Policy
-          </a>
-        </p>
+        <div className="mt-6 space-y-3">
+          <p className="text-center text-sm text-gray-500">
+            By signing in, you agree to our{' '}
+            <a href="/terms" className="text-blue-600 hover:underline">
+              Terms
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" className="text-blue-600 hover:underline">
+              Privacy Policy
+            </a>
+          </p>
+          <p className="text-center text-sm text-gray-500">
+            For account issues, email{' '}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">
+              {SUPPORT_EMAIL}
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

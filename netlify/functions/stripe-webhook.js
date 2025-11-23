@@ -1,11 +1,16 @@
 const Stripe = require('stripe');
 const { createClient } = require('@supabase/supabase-js');
 
+const SUPPORT_EMAIL = "support@supplementsafetybible.com";
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: 'Method not allowed' }),
+      body: JSON.stringify({
+        error: 'Method not allowed',
+        support: SUPPORT_EMAIL
+      }),
     };
   }
 
@@ -30,7 +35,10 @@ exports.handler = async (event) => {
     console.error('Webhook signature verification failed:', err.message);
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: `Webhook Error: ${err.message}` }),
+      body: JSON.stringify({
+        error: `Webhook Error: ${err.message}`,
+        support: SUPPORT_EMAIL
+      }),
     };
   }
 
@@ -199,7 +207,10 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Webhook processing failed' }),
+      body: JSON.stringify({
+        error: 'Webhook processing failed',
+        support: SUPPORT_EMAIL
+      }),
     };
   }
 };

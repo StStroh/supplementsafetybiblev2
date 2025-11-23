@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { SUPPORT_EMAIL } from "../lib/support";
 
 type BillingPeriod = "monthly" | "annual";
 
@@ -362,6 +363,9 @@ const Pricing: React.FC = () => {
         <p className="mt-6 text-center text-xs text-slate-500">
           You can cancel anytime. All plans include secure Stripe billing and
           encrypted data handling.
+        </p>
+        <p className="mt-3 text-center text-sm text-slate-600">
+          Questions? Email us at <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">{SUPPORT_EMAIL}</a>
         </p>
       </div>
     </section>

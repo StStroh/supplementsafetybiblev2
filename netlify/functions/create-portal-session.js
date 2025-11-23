@@ -1,5 +1,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+const SUPPORT_EMAIL = "support@supplementsafetybible.com";
+
 exports.handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -29,7 +31,10 @@ exports.handler = async (event) => {
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "Stripe is not configured" }),
+        body: JSON.stringify({
+          error: "Stripe is not configured",
+          support: SUPPORT_EMAIL
+        }),
       };
     }
 
@@ -40,7 +45,10 @@ exports.handler = async (event) => {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: "Missing customerId" }),
+        body: JSON.stringify({
+          error: "Missing customerId",
+          support: SUPPORT_EMAIL
+        }),
       };
     }
 
@@ -67,6 +75,7 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({
         error: error.message || "Failed to create portal session",
+        support: SUPPORT_EMAIL
       }),
     };
   }

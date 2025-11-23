@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 interface SessionData {
   customer_email: string;
@@ -156,6 +157,13 @@ const Success: React.FC = () => {
             Manage Account
           </a>
         </div>
+
+        <p className="mt-6 text-center text-sm text-slate-600">
+          If you have any issues with your subscription, contact us at{' '}
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">
+            {SUPPORT_EMAIL}
+          </a>
+        </p>
       </div>
     </div>
   );

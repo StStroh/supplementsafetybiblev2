@@ -1,6 +1,7 @@
 import { ShieldCheck, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,6 +47,9 @@ export default function Navbar() {
                 Sign in
               </a>
             )}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-gray-700 hover:text-blue-600 transition-colors">
+              Contact
+            </a>
             <a href="/#pricing" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
               Get Started
             </a>
@@ -93,6 +97,13 @@ export default function Navbar() {
                   Sign in
                 </a>
               )}
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact
+              </a>
               <a
                 href="/#pricing"
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"

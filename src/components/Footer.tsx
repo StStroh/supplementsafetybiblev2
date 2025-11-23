@@ -1,4 +1,5 @@
 import { ShieldCheck } from 'lucide-react';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 export default function Footer() {
   return (
@@ -54,6 +55,9 @@ export default function Footer() {
           </p>
           <p className="text-gray-500 mt-2 text-xs">
             Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice.
+          </p>
+          <p className="text-gray-400 mt-3">
+            Support: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-400 hover:underline">{SUPPORT_EMAIL}</a>
           </p>
         </div>
       </div>
