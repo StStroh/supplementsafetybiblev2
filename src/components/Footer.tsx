@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <ShieldCheck className="w-8 h-8 text-blue-400" />
+              <img src="/logosafetybible.jpg" alt="Supplement Safety Bible" className="w-10 h-10 rounded-lg" />
               <span className="text-xl font-bold text-white">Supplement Safety Bible</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
