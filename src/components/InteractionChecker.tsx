@@ -18,7 +18,11 @@ export default function InteractionChecker() {
   useEffect(() => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
-      if (!u?.user?.email) { setState('no_user'); return; }
+      if (!u?.user?.email) {
+        console.info('[InteractionChecker] No authenticated user');
+        setState('no_user');
+        return;
+      }
       setEmail(u.user.email);
 
       const { data: profile } = await supabase
@@ -54,6 +58,19 @@ export default function InteractionChecker() {
 
   const check = async () => {
     setErrorMsg(null);
+
+    if (role === 'free') {
+      const lastCheck = localStorage.getItem('ssb_free_last_check');
+      const today = new Date().toISOString().split('T')[0];
+
+      if (lastCheck === today) {
+        console.info('[InteractionChecker] Free user already checked today');
+        setState('free_locked');
+        setErrorMsg('You already used your free check today. Upgrade for unlimited checks.');
+        return;
+      }
+    }
+
     const res = await fetch('/.netlify/functions/get-interactions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -72,6 +89,12 @@ export default function InteractionChecker() {
       return;
     }
 
+    if (role === 'free') {
+      const today = new Date().toISOString().split('T')[0];
+      localStorage.setItem('ssb_free_last_check', today);
+      console.info('[InteractionChecker] Free check logged for:', today);
+    }
+
     setPayload(json.data);
     setState('result');
   };
@@ -81,8 +104,14 @@ export default function InteractionChecker() {
   if (state === 'no_user')
     return (
       <div className="p-6 bg-white rounded-xl shadow">
-        <h3 className="text-xl font-semibold mb-2">Sign in to use your free monthly interaction check</h3>
-        <a href="/login" className="text-blue-600 underline">Sign in</a>
+        <h3 className="text-xl font-semibold mb-2">Sign in to use your free daily interaction check</h3>
+        <p className="text-gray-600 mb-4">Create a free account to check supplement-medication interactions.</p>
+        <a
+          href="/auth?redirect=/"
+          className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
+        >
+          Start Free
+        </a>
       </div>
     );
 
@@ -99,7 +128,11 @@ export default function InteractionChecker() {
   return (
     <div className="p-6 bg-white rounded-xl shadow">
       <div className="mb-4 text-sm text-gray-600">
-        Current Plan: <strong>{roleName(role)}</strong>{state === 'free_ok' && ' • You have 1 check available this month'}
+        Current Plan: <strong>{roleName(role)}</strong>{state === 'free_ok' && (() => {
+          const lastCheck = localStorage.getItem('ssb_free_last_check');
+          const today = new Date().toISOString().split('T')[0];
+          return lastCheck === today ? ' • Used today (resets tomorrow)' : ' • 1 check available today';
+        })()}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

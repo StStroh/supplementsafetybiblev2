@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { CreditCard, Loader2, AlertCircle, Calendar } from 'lucide-react';
+import { CreditCard, Loader2, AlertCircle, Calendar, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { ensureFreeProfile } from '../lib/profile';
 
 interface Profile {
   email: string;
@@ -26,7 +27,7 @@ const Account: React.FC = () => {
           return;
         }
 
-        const { data, error: fetchError } = await supabase
+        let { data, error: fetchError } = await supabase
           .from('profiles')
           .select('*')
           .eq('email', user.email)
@@ -35,10 +36,23 @@ const Account: React.FC = () => {
         if (fetchError) {
           console.error('Error fetching profile:', fetchError);
           setError('Failed to load profile data');
-        } else if (data) {
-          setProfile(data);
+        } else if (!data) {
+          console.info('[Account] No profile found, creating free profile');
+          const result = await ensureFreeProfile(supabase);
+          if (result.ok) {
+            const { data: refetched } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('email', user.email)
+              .maybeSingle();
+            if (refetched) {
+              setProfile(refetched);
+            }
+          } else {
+            setError('Failed to create profile');
+          }
         } else {
-          setError('No subscription found. Please subscribe to a plan.');
+          setProfile(data);
         }
       } catch (err) {
         console.error('Error:', err);
@@ -181,7 +195,41 @@ const Account: React.FC = () => {
                   </div>
                 </div>
 
-                {profile.stripe_customer_id && (
+                {profile.role === 'free' && (
+                  <div>
+                    <h2 className="text-xl font-semibold text-slate-900 mb-4">Free Plan Active</h2>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Zap className="w-5 h-5 text-blue-600" />
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
+                          Free Plan
+                        </span>
+                      </div>
+                      <ul className="space-y-2 text-slate-700 mb-4">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span>Read supplement & medication lists</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span>1 interaction check per day</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-600 mt-0.5">→</span>
+                          <span className="font-semibold">Upgrade for unlimited checks + evidence details</span>
+                        </li>
+                      </ul>
+                      <a
+                        href="/#pricing"
+                        className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                      >
+                        View Upgrade Options
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {profile.stripe_customer_id && profile.role !== 'free' && (
                   <div>
                     <h2 className="text-xl font-semibold text-slate-900 mb-4">Billing Management</h2>
                     <button
@@ -204,21 +252,6 @@ const Account: React.FC = () => {
                     <p className="text-sm text-slate-600 mt-3 text-center">
                       Update payment method, view invoices, or cancel subscription
                     </p>
-                  </div>
-                )}
-
-                {!profile.stripe_customer_id && profile.role === 'free' && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-blue-900 mb-2">Upgrade Your Plan</h3>
-                    <p className="text-blue-700 mb-4">
-                      You're currently on the free plan. Upgrade to unlock more features!
-                    </p>
-                    <a
-                      href="/#pricing"
-                      className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      View Plans
-                    </a>
                   </div>
                 )}
               </div>
