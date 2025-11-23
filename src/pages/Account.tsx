@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CreditCard, Loader2, AlertCircle, Calendar, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ensureFreeProfile } from '../lib/profile';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 interface Profile {
   email: string;
@@ -264,6 +265,12 @@ const Account: React.FC = () => {
               >
                 ← Back to Home
               </a>
+              <p className="mt-4 text-center text-sm text-slate-600">
+                Need help?{' '}
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">
+                  {SUPPORT_EMAIL}
+                </a>
+              </p>
             </div>
           </div>
         </div>

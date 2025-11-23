@@ -1,5 +1,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+const SUPPORT_EMAIL = "support@supplementsafetybible.com";
+
 exports.handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -29,7 +31,10 @@ exports.handler = async (event) => {
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "Stripe is not configured on the server" }),
+        body: JSON.stringify({
+          error: "Stripe is not configured on the server",
+          support: SUPPORT_EMAIL
+        }),
       };
     }
 
@@ -42,7 +47,10 @@ exports.handler = async (event) => {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: "Missing priceId" }),
+        body: JSON.stringify({
+          error: "Missing priceId",
+          support: SUPPORT_EMAIL
+        }),
       };
     }
 
@@ -53,7 +61,8 @@ exports.handler = async (event) => {
         statusCode: 400,
         headers,
         body: JSON.stringify({
-          error: `Invalid price ID format: ${priceId}. Price IDs should start with 'price_'. Check that VITE_STRIPE_PRICE_* environment variables are set in Netlify.`
+          error: `Invalid price ID format: ${priceId}. Price IDs should start with 'price_'. Check that VITE_STRIPE_PRICE_* environment variables are set in Netlify.`,
+          support: SUPPORT_EMAIL
         }),
       };
     }
@@ -84,6 +93,7 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({
         error: error.message || "Server error",
+        support: SUPPORT_EMAIL
       }),
     };
   }
