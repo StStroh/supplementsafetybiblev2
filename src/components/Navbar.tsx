@@ -20,6 +20,9 @@ export default function Navbar() {
             <a href="/faq" className="text-gray-700 hover:text-blue-600 transition-colors">
               FAQ
             </a>
+            <a href="/account" className="text-gray-700 hover:text-blue-600 transition-colors">
+              Account
+            </a>
             <a href="/#pricing" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
               Get Started
             </a>
@@ -49,6 +52,13 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
+              </a>
+              <a
+                href="/account"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Account
               </a>
               <a
                 href="/#pricing"
