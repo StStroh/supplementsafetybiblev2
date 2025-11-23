@@ -3,6 +3,8 @@ import { Check, Loader2, Mail } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { SUPPORT_EMAIL } from "../lib/support";
 import Toast from "./Toast";
+import FreePlan from "./FreePlan";
+import StickyFreeCTA from "./StickyFreeCTA";
 
 type BillingPeriod = "monthly" | "annual";
 
@@ -184,29 +186,9 @@ const Pricing: React.FC = () => {
     }
   };
 
-  const handleCoreClick = async () => {
-    console.info('[Pricing] Start Free clicked');
-
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      console.info('[Pricing] User not authenticated, redirecting to /auth');
-      window.location.href = '/auth?redirect=/account';
-      return;
-    }
-
-    console.info('[Pricing] User authenticated, ensuring free profile');
-    const { ensureFreeProfile } = await import('../lib/profile');
-    const result = await ensureFreeProfile(supabase);
-
-    if (!result.ok) {
-      console.error('[Pricing] Failed to ensure profile:', result.error);
-      alert('Error setting up your free account. Please try again.');
-      return;
-    }
-
-    console.info('[Pricing] Profile ensured, redirecting to /account');
-    window.location.href = '/account?free=1';
+  const startFree = async (email: string) => {
+    console.info('[Pricing] Start Free clicked with email:', email);
+    window.location.href = `/auth?redirect=/account&email=${encodeURIComponent(email)}`;
   };
 
   const handleResendClick = () => {
@@ -310,12 +292,14 @@ const Pricing: React.FC = () => {
             </div>
           </div>
         )}
-        <div className="text-center mb-10">
+        <FreePlan onStart={(email) => startFree(email)} />
+
+        <div className="text-center mb-10 mt-16">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Choose your plan
+            Pro & Premium Plans
           </h2>
           <p className="mt-3 text-base text-slate-600">
-            Start with the free Core plan and upgrade as you need more power.
+            Upgrade for unlimited checks and advanced features.
           </p>
 
           <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 text-xs font-medium text-slate-600">
@@ -344,9 +328,8 @@ const Pricing: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {tiers.map((tier) => {
-            const isCore = tier.id === "core";
+        <div className="grid gap-6 md:grid-cols-2">
+          {tiers.filter(tier => tier.id !== "core").map((tier) => {
             const isPopular = tier.popular;
             const priceLabel =
               billingPeriod === "monthly"
@@ -398,54 +381,27 @@ const Pricing: React.FC = () => {
                 </ul>
 
                 <div className="mt-6">
-                  {isCore ? (
-                    <div className="space-y-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const el = document.querySelector('#interaction-checker');
-                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }}
-                        className="w-full inline-flex items-center justify-center rounded-md border px-4 py-2 hover:bg-gray-50 transition"
-                      >
-                        Start Free
-                      </button>
-                      <div className="text-center">
-                        <button
-                          type="button"
-                          onClick={handleResendClick}
-                          disabled={resendCooldown > 0}
-                          className="text-xs text-slate-600 hover:text-slate-900 underline disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {resendCooldown > 0
-                            ? `Resend available in ${resendCooldown}s`
-                            : "Didn't get it? Resend"}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleCheckout(activePriceId)}
-                      disabled={loadingPriceId === activePriceId}
-                      className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${
-                        loadingPriceId === activePriceId
-                          ? "bg-slate-400 cursor-wait"
-                          : "bg-green-600 hover:bg-green-700"
-                      }`}
-                    >
-                      {loadingPriceId === activePriceId ? (
-                        <span className="inline-flex items-center gap-2">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Processing…
-                        </span>
-                      ) : billingPeriod === "monthly" ? (
-                        `Start ${tier.name} – Monthly`
-                      ) : (
-                        `Start ${tier.name} – Annual`
-                      )}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleCheckout(activePriceId)}
+                    disabled={loadingPriceId === activePriceId}
+                    className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${
+                      loadingPriceId === activePriceId
+                        ? "bg-slate-400 cursor-wait"
+                        : "bg-green-600 hover:bg-green-700"
+                    }`}
+                  >
+                    {loadingPriceId === activePriceId ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Processing…
+                      </span>
+                    ) : billingPeriod === "monthly" ? (
+                      `Start ${tier.name} – Monthly`
+                    ) : (
+                      `Start ${tier.name} – Annual`
+                    )}
+                  </button>
                 </div>
               </div>
             );
@@ -524,6 +480,8 @@ const Pricing: React.FC = () => {
           onClose={() => setToast(null)}
         />
       )}
+
+      <StickyFreeCTA onStart={() => document.querySelector("input[type=email]")?.focus()} />
     </section>
   );
 };
