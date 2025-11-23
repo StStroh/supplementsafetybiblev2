@@ -15,7 +15,9 @@ export default function Home() {
       <Hero />
       <HowItWorks />
       <WhyItMatters />
-      <InteractionChecker />
+      <section id="interaction-checker">
+        <InteractionChecker />
+      </section>
       <Pricing />
       <Trust />
       <FAQ />
