@@ -66,15 +66,34 @@ const tiers: PricingTier[] = [
 const Pricing: React.FC = () => {
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+  const [missingVars, setMissingVars] = useState<string[]>([]);
 
-  // Debug: Log environment variables on component mount
+  // Check for missing environment variables on mount
   useEffect(() => {
-    console.log('Stripe Environment Variables Check:', {
-      VITE_STRIPE_PRICE_PRO: import.meta.env.VITE_STRIPE_PRICE_PRO,
-      VITE_STRIPE_PRICE_PRO_ANNUAL: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
-      VITE_STRIPE_PRICE_PREMIUM: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
-      VITE_STRIPE_PRICE_PREMIUM_ANNUAL: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
+    const required = [
+      { name: 'VITE_STRIPE_PUBLISHABLE_KEY', value: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY },
+      { name: 'VITE_STRIPE_PRICE_PRO', value: import.meta.env.VITE_STRIPE_PRICE_PRO },
+      { name: 'VITE_STRIPE_PRICE_PRO_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL },
+      { name: 'VITE_STRIPE_PRICE_PREMIUM', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM },
+      { name: 'VITE_STRIPE_PRICE_PREMIUM_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL },
+    ];
+
+    const missing = required.filter(v => !v.value).map(v => v.name);
+
+    required.forEach(v => {
+      if (!v.value) {
+        console.warn(`⚠️  Missing environment variable: ${v.name}`);
+      } else {
+        console.log(`✅ ${v.name} is defined`);
+      }
     });
+
+    if (missing.length > 0) {
+      console.warn('❌ Missing required Stripe environment variables:', missing);
+      setMissingVars(missing);
+    } else {
+      console.log('✅ All Stripe environment variables are configured');
+    }
   }, []);
 
   const handleCheckout = async (priceId?: string) => {
@@ -139,6 +158,26 @@ const Pricing: React.FC = () => {
   return (
     <section id="pricing" className="py-16 bg-slate-50">
       <div className="mx-auto max-w-6xl px-4">
+        {missingVars.length > 0 && (
+          <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 text-red-600 text-xl">⚠️</div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-red-900">
+                  Configuration Error
+                </h3>
+                <p className="mt-1 text-sm text-red-700">
+                  Missing required environment variables. Payments will not work until these are configured in Netlify:
+                </p>
+                <ul className="mt-2 text-xs text-red-600 font-mono space-y-1">
+                  {missingVars.map(v => (
+                    <li key={v}>• {v}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             Choose your plan
