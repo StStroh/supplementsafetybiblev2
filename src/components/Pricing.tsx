@@ -70,30 +70,35 @@ const Pricing: React.FC = () => {
 
   // Check for missing environment variables on mount
   useEffect(() => {
+    console.log('=== STRIPE CONFIGURATION CHECK ===');
+
     const required = [
       { name: 'VITE_STRIPE_PUBLISHABLE_KEY', value: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY },
-      { name: 'VITE_STRIPE_PRICE_PRO', value: import.meta.env.VITE_STRIPE_PRICE_PRO },
-      { name: 'VITE_STRIPE_PRICE_PRO_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL },
-      { name: 'VITE_STRIPE_PRICE_PREMIUM', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM },
-      { name: 'VITE_STRIPE_PRICE_PREMIUM_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL },
+      { name: 'VITE_STRIPE_PRICE_PRO', value: import.meta.env.VITE_STRIPE_PRICE_PRO, label: 'Pro Monthly' },
+      { name: 'VITE_STRIPE_PRICE_PRO_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL, label: 'Pro Annual' },
+      { name: 'VITE_STRIPE_PRICE_PREMIUM', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM, label: 'Premium Monthly' },
+      { name: 'VITE_STRIPE_PRICE_PREMIUM_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL, label: 'Premium Annual' },
     ];
 
     const missing = required.filter(v => !v.value).map(v => v.name);
 
     required.forEach(v => {
       if (!v.value) {
-        console.warn(`⚠️  Missing environment variable: ${v.name}`);
+        console.warn(`⚠️  MISSING: ${v.name}${v.label ? ` (${v.label})` : ''}`);
       } else {
-        console.log(`✅ ${v.name} is defined`);
+        console.log(`✅ ${v.name}${v.label ? ` (${v.label})` : ''} is defined`);
       }
     });
 
     if (missing.length > 0) {
-      console.warn('❌ Missing required Stripe environment variables:', missing);
+      console.warn('❌ CRITICAL: Missing required Stripe price IDs:', missing);
+      console.warn('→ Monthly checkout will NOT work until these are set in Netlify');
       setMissingVars(missing);
     } else {
-      console.log('✅ All Stripe environment variables are configured');
+      console.log('✅ All Stripe price IDs are configured correctly');
     }
+
+    console.log('=================================');
   }, []);
 
   const handleCheckout = async (priceId?: string) => {
