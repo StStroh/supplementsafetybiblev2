@@ -121,6 +121,19 @@ exports.handler = async (event) => {
         break;
       }
 
+      case 'payment_intent.succeeded': {
+        const paymentIntent = stripeEvent.data.object;
+        console.log('✅ PAYMENT INTENT SUCCEEDED');
+        console.log(`   - Payment Intent ID: ${paymentIntent.id}`);
+        console.log(`   - Customer ID: ${paymentIntent.customer}`);
+        console.log(`   - Amount: ${paymentIntent.amount}`);
+        console.log(`   - Status: ${paymentIntent.status}`);
+
+        // TODO: Record successful payment in database
+
+        break;
+      }
+
       default:
         console.log(`⚠️  Unhandled event type: ${stripeEvent.type}`);
     }
