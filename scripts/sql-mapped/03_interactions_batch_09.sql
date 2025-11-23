@@ -1,0 +1,1754 @@
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+SELECT * FROM (VALUES
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 173'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 31'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 668'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 102'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 43'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 64'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 750'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 69'),
+        'high',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 586'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 105'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 995'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 83'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 683'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 41'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 523'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 61'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 642'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 68'),
+        'severe',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 37'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 72'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 16'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 34'),
+        'high',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 129'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 31'),
+        'low',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 543'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 22'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 597'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 76'),
+        'moderate',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 821'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 99'),
+        'high',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 55'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 135'),
+        'high',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 855'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 144'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 607'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 106'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 87'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 31'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 532'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 95'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 294'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 119'),
+        'severe',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 875'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 51'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 326'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 4'),
+        'moderate',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 491'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 55'),
+        'high',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 468'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 3'),
+        'high',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 675'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 46'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 140'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 30'),
+        'moderate',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 998'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 62'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 914'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 61'),
+        'severe',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 285'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 145'),
+        'moderate',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 532'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 40'),
+        'severe',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 529'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 122'),
+        'low',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 281'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 69'),
+        'moderate',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 1000'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 35'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 451'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 55'),
+        'high',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 209'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 45'),
+        'low',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 600'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 29'),
+        'severe',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 28'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 43'),
+        'low',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 779'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 100'),
+        'low',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 790'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 138'),
+        'high',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 731'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 55'),
+        'low',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 887'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 131'),
+        'moderate',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 596'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 138'),
+        'moderate',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 746'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 94'),
+        'severe',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 433'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 60'),
+        'high',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 616'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 60'),
+        'high',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 662'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 39'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 16'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 84'),
+        'low',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 630'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 130'),
+        'moderate',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 853'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 131'),
+        'low',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 491'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 138'),
+        'high',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 51'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 68'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 50'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 111'),
+        'high',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 141'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 82'),
+        'high',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 490'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 79'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 385'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 7'),
+        'high',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 527'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 102'),
+        'high',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 904'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 147'),
+        'high',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 252'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 143'),
+        'moderate',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 938'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 6'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 884'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 22'),
+        'high',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 216'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 114'),
+        'low',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 822'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 50'),
+        'high',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 49'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 55'),
+        'high',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 707'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 108'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 383'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 147'),
+        'low',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 48'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 36'),
+        'high',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 185'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 114'),
+        'moderate',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 277'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 55'),
+        'high',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 54'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 86'),
+        'low',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 970'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 131'),
+        'moderate',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 668'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 11'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 666'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 7'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 421'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 45'),
+        'severe',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 444'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 132'),
+        'moderate',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 726'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 128'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 87'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 40'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 131'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 127'),
+        'high',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 844'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 100'),
+        'low',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 313'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 100'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 591'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 81'),
+        'high',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 60'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 51'),
+        'moderate',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 128'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 25'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 38'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 43'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 297'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 22'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 823'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 110'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 182'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 29'),
+        'moderate',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 756'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 104'),
+        'moderate',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 731'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 67'),
+        'high',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 682'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 125'),
+        'low',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 759'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 139'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 284'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 138'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 464'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 33'),
+        'low',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 934'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 90'),
+        'moderate',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 536'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 38'),
+        'low',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 821'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 49'),
+        'high',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 8'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 33'),
+        'severe',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 590'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 12'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 530'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 48'),
+        'low',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 176'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 73'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 271'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 18'),
+        'high',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 36'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 27'),
+        'low',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 342'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 116'),
+        'high',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 657'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 27'),
+        'high',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 1'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 144'),
+        'severe',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 153'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 134'),
+        'moderate',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 618'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 128'),
+        'low',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 874'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 147'),
+        'low',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 161'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 74'),
+        'moderate',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 413'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 145'),
+        'high',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 567'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 114'),
+        'high',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 688'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 82'),
+        'high',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 173'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 148'),
+        'high',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 110'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 51'),
+        'low',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 514'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 125'),
+        'high',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 82'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 116'),
+        'high',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 902'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 49'),
+        'severe',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 697'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 17'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 289'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 106'),
+        'low',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 833'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 7'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 784'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 63'),
+        'high',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 783'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 140'),
+        'moderate',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 823'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 99'),
+        'high',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 681'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 125'),
+        'severe',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 269'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 135'),
+        'low',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 472'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 50'),
+        'high',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 744'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 84'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 764'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 103'),
+        'moderate',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 629'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 126'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 664'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 27'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 504'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 19'),
+        'low',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 102'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 119'),
+        'moderate',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 52'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 24'),
+        'severe',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 34'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 105'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 777'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 95'),
+        'low',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 27'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 136'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 78'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 38'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 282'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 115'),
+        'severe',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 576'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 112'),
+        'moderate',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 69'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 30'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 272'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 68'),
+        'severe',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 247'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 146'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 787'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 30'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 573'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 89'),
+        'severe',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 463'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 123'),
+        'moderate',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 604'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 134'),
+        'severe',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 564'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 136'),
+        'severe',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 130'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 142'),
+        'moderate',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 116'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 116'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 636'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 140'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 393'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 147'),
+        'moderate',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 591'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 15'),
+        'low',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 20'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 113'),
+        'low',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 659'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 32'),
+        'moderate',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 459'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 53'),
+        'moderate',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 777'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 20'),
+        'low',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 299'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 59'),
+        'moderate',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 14'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 100'),
+        'moderate',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 86'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 105'),
+        'high',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 191'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 140'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 531'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 112'),
+        'moderate',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 430'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 34'),
+        'moderate',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 211'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 116'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 256'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 19'),
+        'moderate',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 400'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 61'),
+        'low',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 259'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 130'),
+        'moderate',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 325'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 34'),
+        'high',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 595'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 75'),
+        'moderate',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 219'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 31'),
+        'low',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 85'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 70'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 771'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 144'),
+        'low',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 788'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 6'),
+        'high',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 69'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 129'),
+        'severe',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 264'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 81'),
+        'low',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 192'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 59'),
+        'severe',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 243'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 81'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 875'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 42'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 626'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 50'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 48'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 20'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 851'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 118'),
+        'low',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 198'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 68'),
+        'high',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 153'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 95'),
+        'high',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 563'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 69'),
+        'high',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 528'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 137'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 667'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 41'),
+        'moderate',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 818'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 138'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 49'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 29'),
+        'moderate',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 196'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 97'),
+        'moderate',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 956'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 26'),
+        'low',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 187'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 57'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 508'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 149'),
+        'high',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 839'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 16'),
+        'moderate',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 365'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 60'),
+        'low',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 806'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 149'),
+        'high',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 764'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 145'),
+        'low',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 626'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 50'),
+        'moderate',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 271'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 133'),
+        'high',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 5'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 18'),
+        'severe',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 195'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 35'),
+        'severe',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 662'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 39'),
+        'severe',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 207'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 103'),
+        'low',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 608'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 7'),
+        'high',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 53'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 29'),
+        'severe',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 40'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 29'),
+        'moderate',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 3'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 131'),
+        'moderate',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 666'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 47'),
+        'high',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 715'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 76'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 715'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 44'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 958'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 112'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 936'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 88'),
+        'severe',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 539'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 46'),
+        'low',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 732'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 142'),
+        'low',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 902'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 34'),
+        'severe',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 609'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 138'),
+        'moderate',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 214'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 70'),
+        'moderate',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 319'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 135'),
+        'high',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 464'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 8'),
+        'moderate',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 446'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 70'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 763'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 34'),
+        'high',
+        'Absorption reduction (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 47'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 78'),
+        'high',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 303'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 64'),
+        'moderate',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 754'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 102'),
+        'severe',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 968'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 124'),
+        'moderate',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 148'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 51'),
+        'low',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 378'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 103'),
+        'moderate',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 575'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 57'),
+        'low',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 420'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 3'),
+        'severe',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 844'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 14'),
+        'low',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 944'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 17'),
+        'severe',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 811'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 34'),
+        'moderate',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 965'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 44'),
+        'high',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 141'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 10'),
+        'severe',
+        'Absorption reduction (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 339'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 26'),
+        'moderate',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 451'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 17'),
+        'severe',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 779'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 46'),
+        'high',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 751'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 91'),
+        'low',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 560'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 147'),
+        'moderate',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 425'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 12'),
+        'moderate',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 234'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 4'),
+        'high',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 829'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 54'),
+        'high',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 938'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 55'),
+        'moderate',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 361'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 45'),
+        'severe',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 403'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 2'),
+        'severe',
+        'Unknown (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 489'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 30'),
+        'high',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 284'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 149'),
+        'severe',
+        'Additive effect (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 690'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 130'),
+        'moderate',
+        'Metabolism inhibition (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 766'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 26'),
+        'low',
+        'Unknown (Evidence: A)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 654'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 63'),
+        'low',
+        'Additive effect (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 866'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 25'),
+        'high',
+        'Metabolism inhibition (Evidence: C)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 68'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 106'),
+        'moderate',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      )
+) AS v(supplement_id, medication_id, severity, description, recommendation)
+WHERE v.supplement_id IS NOT NULL AND v.medication_id IS NOT NULL;
