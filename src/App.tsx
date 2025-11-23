@@ -4,9 +4,14 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Success from './pages/Success';
 import Account from './pages/Account';
+import Auth from './pages/Auth';
 
 function App() {
   const path = window.location.pathname;
+
+  if (path === '/auth') {
+    return <Auth />;
+  }
 
   if (path === '/faq') {
     return <FAQ />;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Check, Loader2 } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 type BillingPeriod = "monthly" | "annual";
 
@@ -163,9 +164,29 @@ const Pricing: React.FC = () => {
     }
   };
 
-  const handleCoreClick = () => {
-    const el = document.querySelector('#interaction-checker');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleCoreClick = async () => {
+    console.info('[Pricing] Start Free clicked');
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      console.info('[Pricing] User not authenticated, redirecting to /auth');
+      window.location.href = '/auth?redirect=/account';
+      return;
+    }
+
+    console.info('[Pricing] User authenticated, ensuring free profile');
+    const { ensureFreeProfile } = await import('../lib/profile');
+    const result = await ensureFreeProfile(supabase);
+
+    if (!result.ok) {
+      console.error('[Pricing] Failed to ensure profile:', result.error);
+      alert('Error setting up your free account. Please try again.');
+      return;
+    }
+
+    console.info('[Pricing] Profile ensured, redirecting to /account');
+    window.location.href = '/account?free=1';
   };
 
   const urlParams = new URLSearchParams(window.location.search);

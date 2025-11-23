@@ -1,8 +1,25 @@
 import { ShieldCheck, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      setIsLoggedIn(!!data?.user);
+    })();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <nav className="bg-white border-b border-blue-100 sticky top-0 z-50">
@@ -20,9 +37,15 @@ export default function Navbar() {
             <a href="/faq" className="text-gray-700 hover:text-blue-600 transition-colors">
               FAQ
             </a>
-            <a href="/account" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Account
-            </a>
+            {isLoggedIn ? (
+              <a href="/account" className="text-gray-700 hover:text-blue-600 transition-colors">
+                Account
+              </a>
+            ) : (
+              <a href="/auth" className="text-gray-700 hover:text-blue-600 transition-colors">
+                Sign in
+              </a>
+            )}
             <a href="/#pricing" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
               Get Started
             </a>
@@ -53,13 +76,23 @@ export default function Navbar() {
               >
                 FAQ
               </a>
-              <a
-                href="/account"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Account
-              </a>
+              {isLoggedIn ? (
+                <a
+                  href="/account"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Account
+                </a>
+              ) : (
+                <a
+                  href="/auth"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign in
+                </a>
+              )}
               <a
                 href="/#pricing"
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
