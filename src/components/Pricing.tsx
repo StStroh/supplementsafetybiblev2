@@ -15,6 +15,12 @@ interface PricingTier {
   popular?: boolean;
 }
 
+// Stripe Price IDs from environment variables
+const PRICE_PRO_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_PRO;
+const PRICE_PRO_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL;
+const PRICE_PREMIUM_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_PREMIUM;
+const PRICE_PREMIUM_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL;
+
 const tiers: PricingTier[] = [
   {
     id: "core",
@@ -34,8 +40,8 @@ const tiers: PricingTier[] = [
     description: "For power users and health professionals.",
     monthlyPriceLabel: "$14.99 / mo",
     annualPriceLabel: "$149 / yr",
-    stripeMonthlyPriceId: import.meta.env.VITE_STRIPE_PRICE_PRO,
-    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
+    stripeMonthlyPriceId: PRICE_PRO_MONTHLY,
+    stripeAnnualPriceId: PRICE_PRO_ANNUAL,
     features: [
       "Up to 200 interaction checks per month",
       "Extended interaction database",
@@ -51,8 +57,8 @@ const tiers: PricingTier[] = [
     description: "For clinics and small practices.",
     monthlyPriceLabel: "$24.99 / mo",
     annualPriceLabel: "$249 / yr",
-    stripeMonthlyPriceId: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
-    stripeAnnualPriceId: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
+    stripeMonthlyPriceId: PRICE_PREMIUM_MONTHLY,
+    stripeAnnualPriceId: PRICE_PREMIUM_ANNUAL,
     features: [
       "Unlimited interaction checks",
       "Support for multiple people / patients",
@@ -74,10 +80,10 @@ const Pricing: React.FC = () => {
 
     const required = [
       { name: 'VITE_STRIPE_PUBLISHABLE_KEY', value: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY },
-      { name: 'VITE_STRIPE_PRICE_PRO', value: import.meta.env.VITE_STRIPE_PRICE_PRO, label: 'Pro Monthly' },
-      { name: 'VITE_STRIPE_PRICE_PRO_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PRO_ANNUAL, label: 'Pro Annual' },
-      { name: 'VITE_STRIPE_PRICE_PREMIUM', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM, label: 'Premium Monthly' },
-      { name: 'VITE_STRIPE_PRICE_PREMIUM_ANNUAL', value: import.meta.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL, label: 'Premium Annual' },
+      { name: 'VITE_STRIPE_PRICE_PRO', value: PRICE_PRO_MONTHLY, label: 'Pro Monthly' },
+      { name: 'VITE_STRIPE_PRICE_PRO_ANNUAL', value: PRICE_PRO_ANNUAL, label: 'Pro Annual' },
+      { name: 'VITE_STRIPE_PRICE_PREMIUM', value: PRICE_PREMIUM_MONTHLY, label: 'Premium Monthly' },
+      { name: 'VITE_STRIPE_PRICE_PREMIUM_ANNUAL', value: PRICE_PREMIUM_ANNUAL, label: 'Premium Annual' },
     ];
 
     const missing = required.filter(v => !v.value).map(v => v.name);
@@ -92,7 +98,7 @@ const Pricing: React.FC = () => {
 
     if (missing.length > 0) {
       console.warn('❌ CRITICAL: Missing required Stripe price IDs:', missing);
-      console.warn('→ Monthly checkout will NOT work until these are set in Netlify');
+      console.warn('→ Checkout will NOT work until these are set in Netlify');
       setMissingVars(missing);
     } else {
       console.log('✅ All Stripe price IDs are configured correctly');
@@ -108,12 +114,16 @@ const Pricing: React.FC = () => {
       return;
     }
 
-    if (priceId.includes('undefined') || priceId.startsWith('$')) {
-      alert('Error: Environment variables not configured. Please contact support.');
-      console.error('Invalid price ID:', priceId);
+    // Validate that priceId is a real Stripe price ID
+    if (!priceId.startsWith('price_')) {
+      alert('Error: Invalid price ID. Please contact support.');
+      console.error('Invalid price ID format:', priceId);
+      console.error('Price IDs must start with "price_"');
       console.error('Environment check:', {
-        VITE_STRIPE_PRICE_PRO: import.meta.env.VITE_STRIPE_PRICE_PRO,
-        VITE_STRIPE_PRICE_PREMIUM: import.meta.env.VITE_STRIPE_PRICE_PREMIUM,
+        PRICE_PRO_MONTHLY,
+        PRICE_PRO_ANNUAL,
+        PRICE_PREMIUM_MONTHLY,
+        PRICE_PREMIUM_ANNUAL,
       });
       return;
     }
