@@ -1,0 +1,27 @@
+SEED DATA IMPORT INSTRUCTIONS
+===============================
+
+The seed data is ready in scripts/sql-mapped/ directory.
+
+OPTION 1: Import via Supabase Dashboard (Recommended)
+------------------------------------------------------
+1. Go to: https://supabase.com/dashboard/project/cyxfxjoadzxhxwxjqkez/sql
+2. Execute each file in this order:
+
+   Supplements (750 records):
+   - scripts/sql-mapped/01_supplements_batch_2.sql
+   - scripts/sql-mapped/01_supplements_batch_3.sql
+   - scripts/sql-mapped/01_supplements_batch_4.sql
+
+   Medications (150 records):
+   - scripts/sql-mapped/02_medications_batch_1.sql
+
+   Interactions (2500 records):
+   - scripts/sql-mapped/03_interactions_batch_01.sql through 03_interactions_batch_11.sql
+
+3. Verify counts:
+   SELECT count(*) FROM supplements;  -- Should be 1000
+   SELECT count(*) FROM medications;  -- Should be 150
+   SELECT count(*) FROM interactions; -- Should be 2500
+
+All files use ON CONFLICT DO NOTHING, so they're safe to re-run.
