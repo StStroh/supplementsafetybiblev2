@@ -1,0 +1,11 @@
+id,name,category,aliases,description
+sup-001,Vitamin D,Vitamins,Cholecalciferol;Vitamin D3,Fat-soluble vitamin essential for calcium absorption and bone health
+sup-002,Omega-3 Fish Oil,Fatty Acids,EPA;DHA;Fish Oil,Essential fatty acids with anti-inflammatory properties
+sup-003,Magnesium,Minerals,Mg,Essential mineral for muscle and nerve function
+sup-004,Vitamin C,Vitamins,Ascorbic Acid,Water-soluble antioxidant vitamin
+sup-005,Probiotics,Digestive,Lactobacillus;Bifidobacterium,Beneficial bacteria for gut health
+sup-006,Calcium,Minerals,Ca,Essential mineral for bone health
+sup-007,Zinc,Minerals,Zn,Essential trace mineral for immune function
+sup-008,B Complex,Vitamins,B Vitamins,Group of water-soluble vitamins
+sup-009,CoQ10,Antioxidants,Coenzyme Q10;Ubiquinone,Antioxidant supporting cellular energy
+sup-010,Turmeric,Herbs,Curcumin,Anti-inflammatory herb

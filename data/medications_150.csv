@@ -1,0 +1,11 @@
+id,name,class,otc_rx
+med-001,Aspirin,NSAID,OTC
+med-002,Ibuprofen,NSAID,OTC
+med-003,Acetaminophen,Analgesic,OTC
+med-004,Metformin,Antidiabetic,Rx
+med-005,Lisinopril,ACE Inhibitor,Rx
+med-006,Atorvastatin,Statin,Rx
+med-007,Omeprazole,PPI,OTC/Rx
+med-008,Levothyroxine,Thyroid Hormone,Rx
+med-009,Warfarin,Anticoagulant,Rx
+med-010,Sertraline,SSRI,Rx
