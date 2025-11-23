@@ -76,6 +76,19 @@ const Pricing: React.FC = () => {
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [missingVars, setMissingVars] = useState<string[]>([]);
 
+  // Auto-scroll to pricing if locked=interactions in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('locked') === 'interactions') {
+      setTimeout(() => {
+        const pricingSection = document.getElementById('pricing');
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
+
   // Check for missing environment variables on mount
   useEffect(() => {
     console.log('=== STRIPE CONFIGURATION CHECK ===');
