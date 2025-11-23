@@ -164,10 +164,8 @@ const Pricing: React.FC = () => {
   };
 
   const handleCoreClick = () => {
-    const checkerSection = document.getElementById('checker');
-    if (checkerSection) {
-      checkerSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    const el = document.querySelector('#interaction-checker');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -303,10 +301,13 @@ const Pricing: React.FC = () => {
                   {isCore ? (
                     <button
                       type="button"
-                      onClick={handleCoreClick}
-                      className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold bg-slate-900 text-white hover:bg-slate-800 transition"
+                      onClick={() => {
+                        const el = document.querySelector('#interaction-checker');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }}
+                      className="w-full inline-flex items-center justify-center rounded-md border px-4 py-2 hover:bg-gray-50 transition"
                     >
-                      Start Free Core
+                      Start Free
                     </button>
                   ) : (
                     <button
