@@ -170,9 +170,28 @@ const Pricing: React.FC = () => {
     }
   };
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const isLocked = urlParams.get('locked') === 'interactions';
+
   return (
     <section id="pricing" className="py-16 bg-slate-50">
       <div className="mx-auto max-w-6xl px-4">
+        {isLocked && (
+          <div className="mb-6 rounded-lg bg-blue-50 border border-blue-200 p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 text-blue-600 text-xl">ℹ️</div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-blue-900">
+                  Pro & Premium Feature
+                </h3>
+                <p className="mt-1 text-sm text-blue-700">
+                  The Interaction Checker is available on Pro and Premium plans. Upgrade now to unlock instant access.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {missingVars.length > 0 && (
           <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
             <div className="flex items-start gap-3">
