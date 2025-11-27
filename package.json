@@ -13,7 +13,7 @@
     "import:interactions": "node --loader ts-node/esm scripts/import-interactions.ts || ts-node scripts/import-interactions.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.4",
+    "@supabase/supabase-js": "^2.86.0",
     "dotenv": "^17.2.3",
     "lucide-react": "^0.344.0",
     "nodemailer": "^7.0.10",
