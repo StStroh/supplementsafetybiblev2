@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "seed": "node scripts/seed.js",
+    "seed": "ts-node scripts/run-seed.ts",
     "import:interactions": "node --loader ts-node/esm scripts/import-interactions.ts || ts-node scripts/import-interactions.ts"
   },
   "dependencies": {
