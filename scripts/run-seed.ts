@@ -66,17 +66,21 @@ async function main() {
   if (e4) console.error('Staging table error (may be OK):', e4.message);
 
   console.log('Step 5: Loading CSV into staging...');
-  const csvPath = path.resolve('artifacts/interactions_sample.csv');
+  const fullPath = path.resolve('artifacts/interactions_full.csv');
+  const samplePath = path.resolve('artifacts/interactions_sample.csv');
+  const csvPath = fs.existsSync(fullPath) && fs.readFileSync(fullPath, 'utf8').split('\n').length > 10 ? fullPath : samplePath;
+
+  console.log(`Using: ${csvPath}`);
   const csv = fs.readFileSync(csvPath, 'utf8');
   const rows = csv.trim().split(/\r?\n/);
   const header = rows.shift();
   if (!header?.startsWith('supplement_name,medication_name')) {
-    throw new Error('CSV header invalid for interactions_sample.csv');
+    throw new Error('CSV header invalid');
   }
 
   await supabase.rpc('exec_sql', { query: 'truncate table public.interactions_stage;' });
 
-  const batchSize = 50;
+  const batchSize = 500;
   for (let i = 0; i < rows.length; i += batchSize) {
     const slice = rows.slice(i, i + batchSize).filter(Boolean).map(r => {
       const cols = r.match(/(?:[^,"]|"(?:[^"]|"")*")+/g) || [];
@@ -95,18 +99,37 @@ async function main() {
   const { error: e6 } = await supabase.rpc('exec_sql', { query: read('06_seed_interactions_template.sql') });
   if (e6) throw new Error(`Failed to seed interactions: ${e6.message}`);
 
-  console.log('Step 7: Verifying counts...');
+  console.log('Step 7: Verifying counts and checking for missing maps...');
   const { count: supCount } = await supabase.from('supplements').select('*', { count: 'exact', head: true });
   const { count: medCount } = await supabase.from('medications').select('*', { count: 'exact', head: true });
   const { count: intCount } = await supabase.from('interactions').select('*', { count: 'exact', head: true });
 
-  const verify = {
-    supplements: supCount || 0,
-    medications: medCount || 0,
-    interactions: intCount || 0
-  };
+  const missingCheck = await supabase.rpc('exec_sql', {
+    query: `
+      select
+        count(*) filter (where s.id is null) as stage_missing_supplements,
+        count(*) filter (where m.id is null) as stage_missing_medications
+      from public.interactions_stage si
+      left join public.supplements s on lower(s.name)=lower(trim(si.supplement_name))
+      left join public.medications m on lower(m.name)=lower(trim(si.medication_name));
+    `
+  });
 
-  console.log(JSON.stringify({ ok: true, verify }, null, 2));
+  const missing = missingCheck.data?.[0] || { stage_missing_supplements: 0, stage_missing_medications: 0 };
+
+  console.log(JSON.stringify({
+    ok: true,
+    csv_rows: rows.length,
+    db_counts: {
+      supplements: supCount || 0,
+      medications: medCount || 0,
+      interactions: intCount || 0
+    },
+    missing_maps: {
+      supplements: parseInt(missing.stage_missing_supplements) || 0,
+      medications: parseInt(missing.stage_missing_medications) || 0
+    }
+  }, null, 2));
 }
 
 main().catch(e => {
