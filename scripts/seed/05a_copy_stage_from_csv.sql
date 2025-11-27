@@ -1,0 +1,2 @@
+-- Placeholder: CSV data is streamed by importer
+-- This file exists for documentation/workflow consistency
