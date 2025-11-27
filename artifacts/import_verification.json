@@ -1,0 +1,13 @@
+{
+  "import_status": "partial",
+  "rows": {
+    "supplements": 1010,
+    "medications": 160,
+    "interactions": 10
+  },
+  "foreign_keys": {
+    "supplement_fk_broken": 0,
+    "medication_fk_broken": 0
+  },
+  "message": "Base data loaded. Interactions import requires direct database access with proper service_role credentials. The artifacts/all_interactions_import.sql file (652KB) requires temp tables (temp_supplement_map, temp_medication_map) and exceeds API size limits for remote execution."
+}
