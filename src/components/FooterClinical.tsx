@@ -1,36 +1,57 @@
-export default function FooterClinical(){
+import { Link, NavLink } from "react-router-dom";
+
+export default function NavClinical() {
   return (
-    <footer className="border-t mt-24">
-      <div className="max-w-7xl mx-auto px-4 py-12 grid gap-8 md:grid-cols-4 text-sm">
-        <div>
-          <div className="h-8 w-8 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 mb-3" />
-          <p className="text-slate-600">Practical, clinically-oriented guidance to avoid risky supplement–medication combinations.</p>
-        </div>
-        <div>
-          <p className="font-medium mb-2">Product</p>
-          <ul className="space-y-2 text-slate-600">
-            <li><a href="/pricing" className="hover:text-indigo-700">Pricing</a></li>
-            <li><a href="#features" className="hover:text-indigo-700">Features</a></li>
-            <li><a href="#faq" className="hover:text-indigo-700">FAQ</a></li>
-          </ul>
-        </div>
-        <div>
-          <p className="font-medium mb-2">Company</p>
-          <ul className="space-y-2 text-slate-600">
-            <li><a href="/about" className="hover:text-indigo-700">About</a></li>
-            <li><a href="/contact" className="hover:text-indigo-700">Contact</a></li>
-          </ul>
-        </div>
-        <div>
-          <p className="font-medium mb-2">Legal</p>
-          <ul className="space-y-2 text-slate-600">
-            <li><a href="/terms" className="hover:text-indigo-700">Terms</a></li>
-            <li><a href="/privacy" className="hover:text-indigo-700">Privacy</a></li>
-            <li><a href="/disclaimer" className="hover:text-indigo-700">Medical Disclaimer</a></li>
-          </ul>
+    <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600" />
+          <span className="font-semibold tracking-tight">
+            Supplement Safety Bible
+          </span>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-6 text-sm">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive
+                ? "text-indigo-700 font-medium"
+                : "text-slate-700 hover:text-indigo-700"
+            }
+          >
+            Home
+          </NavLink>
+
+          <NavLink
+            to="/pricing"
+            className={({ isActive }) =>
+              isActive
+                ? "text-indigo-700 font-medium"
+                : "text-slate-700 hover:text-indigo-700"
+            }
+          >
+            Pricing
+          </NavLink>
+
+          <a href="#features" className="text-slate-700 hover:text-indigo-700">
+            Features
+          </a>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link to="/login" className="text-sm">
+            Sign in
+          </Link>
+
+          <Link
+            to="/pricing"
+            className="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700 shadow-sm"
+          >
+            Get Premium
+          </Link>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 pb-10 text-xs text-slate-500">© {new Date().getFullYear()} Supplement Safety Bible</div>
-    </footer>
+    </header>
   );
 }
