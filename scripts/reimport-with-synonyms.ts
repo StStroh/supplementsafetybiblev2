@@ -38,15 +38,33 @@ async function run() {
   // Load supplements and medications with synonym resolution
   console.log('Loading supplement/medication mappings with synonyms...');
 
-  // Get all supplements (including via synonyms)
-  const { data: suppData } = await supabase.from('supplements').select('id, name');
-  const { data: medData } = await supabase.from('medications').select('id, name');
+  // Get all supplements (paginated)
+  let allSupps: any[] = [];
+  let page = 0;
+  while (true) {
+    const { data } = await supabase.from('supplements').select('id, name').range(page * 1000, (page + 1) * 1000 - 1);
+    if (!data || data.length === 0) break;
+    allSupps = allSupps.concat(data);
+    if (data.length < 1000) break;
+    page++;
+  }
 
-  if (!suppData || !medData) throw new Error('Failed to load supplements/medications');
+  // Get all medications (paginated)
+  let allMeds: any[] = [];
+  page = 0;
+  while (true) {
+    const { data } = await supabase.from('medications').select('id, name').range(page * 1000, (page + 1) * 1000 - 1);
+    if (!data || data.length === 0) break;
+    allMeds = allMeds.concat(data);
+    if (data.length < 1000) break;
+    page++;
+  }
+
+  if (!allSupps.length || !allMeds.length) throw new Error('Failed to load supplements/medications');
 
   // Build maps: lowercase name → ID
-  const suppMap = new Map(suppData.map(s => [s.name.toLowerCase().trim(), s.id]));
-  const medMap = new Map(medData.map(m => [m.name.toLowerCase().trim(), m.id]));
+  const suppMap = new Map(allSupps.map(s => [s.name.toLowerCase().trim(), s.id]));
+  const medMap = new Map(allMeds.map(m => [m.name.toLowerCase().trim(), m.id]));
 
   // Also load synonym mappings and add to maps
   const { data: suppSynonyms } = await supabase.from('supplement_synonyms').select('synonym_key, canonical_key');
