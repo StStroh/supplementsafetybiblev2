@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search as SearchIcon, Filter, Shield, ChevronLeft } from 'lucide-react';
-import InteractionCard from '../components/InteractionCard';
+import { Filter, Shield, ChevronLeft, Search as SearchIcon } from 'lucide-react';
 import Autocomplete from '../components/Autocomplete';
+import ResultCard from '../components/ResultCard';
+import Loading from '../components/Loading';
+import EmptyState from '../components/EmptyState';
 
 interface Interaction {
   id: string;
@@ -78,7 +80,7 @@ export default function Search() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/')}
-                className="flex items-center text-gray-600 hover:text-gray-900"
+                className="flex items-center text-gray-600 hover:text-gray-900 transition"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span className="ml-1">Back</span>
@@ -94,7 +96,7 @@ export default function Search() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <form onSubmit={handleSearch} className="mb-4">
+          <form onSubmit={handleSearch} className="mb-6">
             <Autocomplete
               value={searchQuery}
               onChange={setSearchQuery}
@@ -106,12 +108,12 @@ export default function Search() {
             />
           </form>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 flex-wrap">
             <div className="flex items-center space-x-2">
               <Filter className="w-5 h-5 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Filter by severity:</span>
+              <span className="text-sm font-medium text-gray-700">Severity:</span>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 flex-wrap">
               {['all', 'low', 'moderate', 'high', 'severe'].map((level) => (
                 <button
                   key={level}
@@ -119,7 +121,7 @@ export default function Search() {
                   className={`px-4 py-2 rounded-full text-sm font-medium transition ${
                     severityFilter === level
                       ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
                   {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -129,12 +131,7 @@ export default function Search() {
           </div>
         </div>
 
-        {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-            <p className="mt-4 text-gray-600">Searching...</p>
-          </div>
-        )}
+        {loading && <Loading message="Searching interactions..." />}
 
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
@@ -145,25 +142,25 @@ export default function Search() {
         {!loading && !error && (
           <>
             <div className="mb-4 text-sm text-gray-600">
-              Found {interactions.length} interaction{interactions.length !== 1 ? 's' : ''}
+              {interactions.length} interaction{interactions.length !== 1 ? 's' : ''} found
             </div>
 
-            <div className="grid gap-4">
-              {interactions.map((interaction) => (
-                <InteractionCard
-                  key={interaction.id}
-                  interaction={interaction}
-                  onClick={() => navigate(`/interaction/${interaction.id}`)}
-                />
-              ))}
-            </div>
-
-            {interactions.length === 0 && (
-              <div className="text-center py-12">
-                <SearchIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-600 text-lg">No interactions found</p>
-                <p className="text-gray-500 text-sm mt-2">Try adjusting your search or filters</p>
+            {interactions.length > 0 ? (
+              <div className="grid gap-4">
+                {interactions.map((interaction) => (
+                  <ResultCard
+                    key={interaction.id}
+                    interaction={interaction}
+                    onClick={() => navigate(`/interaction/${interaction.id}`)}
+                  />
+                ))}
               </div>
+            ) : (
+              <EmptyState
+                icon={SearchIcon}
+                title="No interactions found"
+                description="Try adjusting your search or filters"
+              />
             )}
           </>
         )}
