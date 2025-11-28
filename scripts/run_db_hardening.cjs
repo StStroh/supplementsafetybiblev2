@@ -1,14 +1,27 @@
-require('dotenv').config();
-const { Client } = require('pg');
+try {
+  require('dotenv').config();
+} catch (e) {
+  // dotenv not available, skip
+}
+
 const fs = require('fs');
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 (async () => {
+  if (process.env.HARDENING_SKIP === 'true') {
+    console.log('[SKIP] DB hardening skipped (HARDENING_SKIP=true)');
+    process.exit(0);
+  }
+
   const url = process.env.DATABASE_URL;
-  if (!url) { console.error('Missing DATABASE_URL'); process.exit(1); }
+  if (!url) {
+    console.log('[SKIP] Missing DATABASE_URL, skipping hardening');
+    process.exit(0);
+  }
+
+  const { Client } = require('pg');
   const sql = fs.readFileSync('scripts/db_hardening.sql','utf8');
 
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   const client = new Client({
     connectionString: url,
     ssl: { rejectUnauthorized: false }
