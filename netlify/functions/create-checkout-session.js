@@ -39,7 +39,25 @@ exports.handler = async (event) => {
     }
 
     const body = JSON.parse(event.body || "{}");
-    const priceId = body.priceId;
+
+    let priceId = body.priceId;
+
+    if (body.plan && body.billing_interval) {
+      const plan = body.plan.toLowerCase();
+      const interval = body.billing_interval === "year" ? "annual" : "monthly";
+
+      const priceMap = {
+        "premium_monthly": process.env.VITE_STRIPE_PRICE_PREMIUM,
+        "premium_annual": process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
+        "pro_monthly": process.env.VITE_STRIPE_PRICE_PRO,
+        "pro_annual": process.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
+      };
+
+      const key = `${plan}_${interval}`;
+      priceId = priceMap[key];
+
+      console.log("Mapped plan to priceId:", { plan, interval, key, priceId });
+    }
 
     console.log("Received checkout request:", { priceId, body });
 
@@ -48,13 +66,12 @@ exports.handler = async (event) => {
         statusCode: 400,
         headers,
         body: JSON.stringify({
-          error: "Missing priceId",
+          error: "Missing priceId or plan/billing_interval",
           support: SUPPORT_EMAIL
         }),
       };
     }
 
-    // Validate price ID format
     if (!priceId.startsWith('price_')) {
       console.error("Invalid price ID format:", priceId);
       return {
