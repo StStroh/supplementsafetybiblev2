@@ -6,6 +6,8 @@ import Success from './pages/Success';
 import Account from './pages/Account';
 import Auth from './pages/Auth';
 import PremiumThanks from './pages/PremiumThanks';
+import Premium from './pages/Premium';
+import PremiumDashboard from './pages/PremiumDashboard';
 
 function App() {
   const path = window.location.pathname;
@@ -36,6 +38,14 @@ function App() {
 
   if (path === '/premium/thanks') {
     return <PremiumThanks />;
+  }
+
+  if (path === '/premium/dashboard') {
+    return <PremiumDashboard />;
+  }
+
+  if (path === '/premium') {
+    return <Premium />;
   }
 
   return <Home />;

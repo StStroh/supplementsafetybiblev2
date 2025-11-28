@@ -14,7 +14,7 @@ exports.handler = async (event) => {
 
   const { data, error: qErr } = await supabaseAdmin
     .from('users_entitlement')
-    .select('email, is_premium, subscription_status, current_period_end')
+    .select('email, is_premium, subscription_status, current_period_end, stripe_customer_id')
     .eq('email', email)
     .maybeSingle();
 
@@ -27,6 +27,7 @@ exports.handler = async (event) => {
       isPremium: Boolean(data?.is_premium),
       subscription_status: data?.subscription_status || null,
       current_period_end: data?.current_period_end || null,
+      stripe_customer_id: data?.stripe_customer_id || null,
     }),
   };
 };
