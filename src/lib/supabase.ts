@@ -1,37 +1,140 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
-const rawUrl = import.meta.env.VITE_SUPABASE_URL;
-const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Make sure the URL is valid and avoid "Invalid supabaseUrl" crashes
-function normalizeSupabaseUrl(url: unknown): string | null {
-  if (typeof url !== 'string') return null;
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables. Please check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+}
 
-  const trimmed = url.trim();
-  if (!trimmed) return null;
-
-  // must start with http or https
-  if (!/^https?:\/\//i.test(trimmed)) {
-    console.warn('[Supabase] Invalid VITE_SUPABASE_URL:', trimmed);
-    return null;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
   }
+});
 
-  return trimmed;
-}
-
-const supabaseUrl = normalizeSupabaseUrl(rawUrl);
-const supabaseAnonKey =
-  typeof rawKey === 'string' ? rawKey.trim() : '';
-
-let supabase: SupabaseClient | null = null;
-
-if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
-} else {
-  console.warn(
-    '[Supabase] Supabase client NOT initialized. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify.'
-  );
-}
-
-// Always export something so the rest of the app can import safely
-export { supabase };
+export type Database = {
+  public: {
+    Tables: {
+      supplements: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          created_at?: string;
+        };
+      };
+      medications: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          created_at?: string;
+        };
+      };
+      interactions: {
+        Row: {
+          id: string;
+          supplement_id: string;
+          medication_id: string;
+          severity: string;
+          description: string;
+          recommendation: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          supplement_id: string;
+          medication_id: string;
+          severity: string;
+          description: string;
+          recommendation: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          supplement_id?: string;
+          medication_id?: string;
+          severity?: string;
+          description?: string;
+          recommendation?: string;
+          created_at?: string;
+        };
+      };
+      supplement_synonyms: {
+        Row: {
+          synonym_key: string;
+          canonical_key: string;
+          created_at: string;
+        };
+        Insert: {
+          synonym_key: string;
+          canonical_key: string;
+          created_at?: string;
+        };
+        Update: {
+          synonym_key?: string;
+          canonical_key?: string;
+          created_at?: string;
+        };
+      };
+      medication_synonyms: {
+        Row: {
+          synonym_key: string;
+          canonical_key: string;
+          created_at: string;
+        };
+        Insert: {
+          synonym_key: string;
+          canonical_key: string;
+          created_at?: string;
+        };
+        Update: {
+          synonym_key?: string;
+          canonical_key?: string;
+          created_at?: string;
+        };
+      };
+    };
+    Views: {
+      v_supp_keys: {
+        Row: {
+          key: string;
+          canonical: string;
+        };
+      };
+      v_med_keys: {
+        Row: {
+          key: string;
+          canonical: string;
+        };
+      };
+    };
+  };
+};
