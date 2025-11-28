@@ -43,3 +43,7 @@
     "vite": "^5.4.21"
   }
 }
+"scripts": {
+  "db:harden": "node scripts/run_db_hardening.cjs",
+  "db:harden:skip": "HARDENING_SKIP=true node scripts/run_db_hardening.cjs"
+}
