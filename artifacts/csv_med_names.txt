@@ -1,0 +1,48 @@
+albuterol
+alprazolam
+amiodarone
+amlodipine
+amoxicillin
+aspirin
+atorvastatin
+atorvastatin (lipitor)
+azithromycin
+celecoxib
+ciprofloxacin
+clonazepam
+clopidogrel
+clopidogrel (plavix)
+diazepam
+diclofenac
+digoxin
+diltiazem
+doxycycline
+duloxetine
+escitalopram
+fluoxetine
+furosemide
+gabapentin
+hydrochlorothiazide
+ibuprofen
+insulin
+levofloxacin
+levothyroxine
+lisinopril
+lorazepam
+losartan
+meloxicam
+metformin
+metoprolol
+naproxen
+omeprazole
+omeprazole (prilosec)
+pravastatin
+rosuvastatin
+sertraline
+sertraline (zoloft)
+simvastatin
+spironolactone
+venlafaxine
+verapamil
+warfarin
+zolpidem
