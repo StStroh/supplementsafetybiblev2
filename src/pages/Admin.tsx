@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, Trash2, Save } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, Shield } from 'lucide-react';
+import Loading from '../components/Loading';
+import EmptyState from '../components/EmptyState';
 
 interface Synonym {
   synonym_key: string;
@@ -13,7 +15,11 @@ export default function Admin() {
   const [synonyms, setSynonyms] = useState<Synonym[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [newSynonym, setNewSynonym] = useState({ synonym: '', canonical: '', type: 'supplement' as 'supplement' | 'medication' });
+  const [newSynonym, setNewSynonym] = useState({
+    synonym: '',
+    canonical: '',
+    type: 'supplement' as 'supplement' | 'medication'
+  });
 
   useEffect(() => {
     loadSynonyms();
@@ -89,22 +95,35 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center text-gray-600 hover:text-gray-900"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span className="ml-1">Back to Home</span>
-          </button>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center text-gray-600 hover:text-gray-900 transition"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                <span className="ml-1">Back</span>
+              </button>
+              <div className="flex items-center space-x-2">
+                <Shield className="w-6 h-6 text-blue-600" />
+                <span className="text-xl font-bold text-gray-900">SafetyBible Admin</span>
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Synonym Management</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Synonym Management</h1>
+          <p className="text-gray-600">
+            Manage alternative names for supplements and medications to improve search accuracy.
+          </p>
+        </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Add New Synonym</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
@@ -112,19 +131,19 @@ export default function Admin() {
               value={newSynonym.synonym}
               onChange={(e) => setNewSynonym({ ...newSynonym, synonym: e.target.value })}
               placeholder="Synonym (e.g., 'coq10')"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <input
               type="text"
               value={newSynonym.canonical}
               onChange={(e) => setNewSynonym({ ...newSynonym, canonical: e.target.value })}
-              placeholder="Canonical name"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Canonical name (e.g., 'coenzyme q10')"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <select
               value={newSynonym.type}
               onChange={(e) => setNewSynonym({ ...newSynonym, type: e.target.value as 'supplement' | 'medication' })}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="supplement">Supplement</option>
               <option value="medication">Medication</option>
@@ -132,72 +151,76 @@ export default function Admin() {
             <button
               onClick={addSynonym}
               disabled={saving}
-              className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+              className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition shadow-sm hover:shadow-md"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
               <span>{saving ? 'Adding...' : 'Add Synonym'}</span>
             </button>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-            <p className="mt-4 text-gray-600">Loading synonyms...</p>
-          </div>
+          <Loading message="Loading synonyms..." />
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Synonym
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Canonical Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {synonyms.map((synonym, index) => (
-                  <tr key={`${synonym.type}-${synonym.synonym_key}-${index}`}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {synonym.synonym_key}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {synonym.canonical_key}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        synonym.type === 'supplement' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                      }`}>
-                        {synonym.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <button
-                        onClick={() => deleteSynonym(synonym.synonym_key, synonym.type)}
-                        disabled={saving}
-                        className="text-red-600 hover:text-red-700 disabled:text-gray-400"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {synonyms.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No synonyms found. Add one above to get started.
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {synonyms.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Synonym
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Canonical Name
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {synonyms.map((synonym, index) => (
+                      <tr key={`${synonym.type}-${synonym.synonym_key}-${index}`} className="hover:bg-gray-50 transition">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {synonym.synonym_key}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {synonym.canonical_key}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            synonym.type === 'supplement'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-green-100 text-green-800'
+                          }`}>
+                            {synonym.type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                          <button
+                            onClick={() => deleteSynonym(synonym.synonym_key, synonym.type)}
+                            disabled={saving}
+                            className="text-red-600 hover:text-red-700 disabled:text-gray-400 transition"
+                            title="Delete synonym"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+            ) : (
+              <EmptyState
+                icon={Shield}
+                title="No synonyms found"
+                description="Add a synonym above to get started."
+              />
             )}
           </div>
         )}
