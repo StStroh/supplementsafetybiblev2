@@ -1,0 +1,13 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "db:harden": "node scripts/run_db_hardening.cjs",
+    "db:harden:skip": "HARDENING_SKIP=true node scripts/run_db_hardening.cjs"
+  },
+  "dependencies": {
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {}
+}
