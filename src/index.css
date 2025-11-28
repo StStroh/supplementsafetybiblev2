@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./styles/overrides.css";
+
 @keyframes slide-in {
   from {
     transform: translateX(100%);
