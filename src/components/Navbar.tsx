@@ -23,34 +23,34 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-white border-b border-blue-100 sticky top-0 z-50">
+    <nav className="bg-white border-b border-[#DCE3ED] sticky top-0 z-50" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <a href="/" className="flex items-center gap-2">
-            <img src="/logosafetybible.jpg" alt="Supplement Safety Bible" className="w-10 h-10 rounded-lg" />
-            <span className="text-xl font-bold text-gray-900">Supplement Safety Bible</span>
+            <img src="/logosafetybible.jpg" alt="Don't Mix Blind" className="w-10 h-10 rounded-lg" />
+            <span className="text-xl font-bold text-[#000000]">Don't Mix Blind</span>
           </a>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="/" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <a href="/" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
               Home
             </a>
-            <a href="/faq" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <a href="/faq" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
               FAQ
             </a>
             {isLoggedIn ? (
-              <a href="/account" className="text-gray-700 hover:text-blue-600 transition-colors">
+              <a href="/account" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
                 Account
               </a>
             ) : (
-              <a href="/auth" className="text-gray-700 hover:text-blue-600 transition-colors">
+              <a href="/auth" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
                 Sign in
               </a>
             )}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-gray-700 hover:text-blue-600 transition-colors">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
               Contact
             </a>
-            <a href="/#pricing" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <a href="/#pricing" className="bg-[#1A73E8] text-white px-6 py-2 rounded-lg hover:bg-[#1557B0] transition-colors font-medium">
               Get Started
             </a>
           </div>
@@ -64,18 +64,18 @@ export default function Navbar() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-blue-100">
+          <div className="md:hidden py-4 border-t border-[#DCE3ED] bg-white">
             <div className="flex flex-col gap-4">
               <a
                 href="/"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </a>
               <a
                 href="/faq"
-                className="text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
@@ -83,7 +83,7 @@ export default function Navbar() {
               {isLoggedIn ? (
                 <a
                   href="/account"
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Account
@@ -91,7 +91,7 @@ export default function Navbar() {
               ) : (
                 <a
                   href="/auth"
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Sign in
@@ -99,14 +99,14 @@ export default function Navbar() {
               )}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Contact
               </a>
               <a
                 href="/#pricing"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
+                className="bg-[#1A73E8] text-white px-6 py-2 rounded-lg hover:bg-[#1557B0] transition-colors font-medium text-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Get Started

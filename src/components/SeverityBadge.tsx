@@ -4,27 +4,27 @@ interface SeverityBadgeProps {
 
 const severityConfig = {
   low: {
-    bg: 'bg-green-100',
-    text: 'text-green-800',
-    border: 'border-green-200',
+    bg: 'bg-[#E8F5E9]',
+    text: 'text-[#1B5E20]',
+    border: 'border-[#1B5E20]/20',
     icon: '✓'
   },
   moderate: {
-    bg: 'bg-yellow-100',
-    text: 'text-yellow-800',
-    border: 'border-yellow-200',
+    bg: 'bg-[#E8EAF6]',
+    text: 'text-[#5C6BC0]',
+    border: 'border-[#5C6BC0]/20',
     icon: '⚠'
   },
   high: {
-    bg: 'bg-orange-100',
-    text: 'text-orange-800',
-    border: 'border-orange-200',
+    bg: 'bg-[#FBE9E7]',
+    text: 'text-[#D35400]',
+    border: 'border-[#D35400]/20',
     icon: '⚠'
   },
   severe: {
-    bg: 'bg-red-100',
-    text: 'text-red-800',
-    border: 'border-red-200',
+    bg: 'bg-[#FFEBEE]',
+    text: 'text-[#B00020]',
+    border: 'border-[#B00020]/20',
     icon: '⛔'
   }
 };
