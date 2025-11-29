@@ -6,19 +6,28 @@ const upsertEntitlement = async ({ supabaseAdmin, email, stripe_customer_id, sub
     subscription_status === 'trialing' ||
     subscription_status === 'past_due';
 
+  const role = is_premium ? 'premium' : 'free';
+
+  const current_period_end_bigint = current_period_end
+    ? (typeof current_period_end === 'string'
+        ? Math.floor(new Date(current_period_end).getTime() / 1000)
+        : current_period_end)
+    : null;
+
   const payload = {
     email: email || null,
     stripe_customer_id: stripe_customer_id || null,
     subscription_id: subscription_id || null,
     subscription_status: subscription_status || null,
     is_premium,
-    current_period_end: current_period_end ? new Date(current_period_end).toISOString() : null,
+    role,
+    current_period_end: current_period_end_bigint,
     updated_at: new Date().toISOString(),
   };
 
-  const { data, error } = await supabaseAdmin
-    .from('users_entitlement')
-    .upsert(payload, { onConflict: 'email,stripe_customer_id' })
+  const { data, error } = await supabaseAdmin()
+    .from('profiles')
+    .upsert(payload, { onConflict: 'email' })
     .select()
     .single();
 

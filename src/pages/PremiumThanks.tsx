@@ -69,8 +69,8 @@ export default function PremiumThanks() {
       <h1 className="text-3xl font-bold">Welcome to Premium 🎉</h1>
       {email && <p className="mt-2 text-gray-700">Activated for: <strong>{email}</strong></p>}
       <p className="mt-4">Your access is active now. Don't Mix Blind™.</p>
-      <a className="mt-4 inline-block rounded-lg px-5 py-3 bg-black text-white" href="/premium">
-        Go to Premium
+      <a className="mt-4 inline-block rounded-lg px-5 py-3 bg-black text-white" href="/premium/dashboard">
+        Go to Dashboard
       </a>
     </main>
   );

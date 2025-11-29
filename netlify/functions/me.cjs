@@ -12,8 +12,8 @@ exports.handler = async (event) => {
 
   const email = user.email;
 
-  const { data, error: qErr } = await supabaseAdmin
-    .from('users_entitlement')
+  const { data, error: qErr } = await supabaseAdmin()
+    .from('profiles')
     .select('email, is_premium, subscription_status, current_period_end, stripe_customer_id')
     .eq('email', email)
     .maybeSingle();

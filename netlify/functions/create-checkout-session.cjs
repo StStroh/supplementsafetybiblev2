@@ -106,7 +106,7 @@ exports.handler = async (event) => {
           quantity: 1,
         },
       ],
-      success_url: `${event.headers.origin || "https://supplementsafetybible.com"}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${event.headers.origin || "https://supplementsafetybible.com"}/premium/thanks?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${event.headers.origin || "https://supplementsafetybible.com"}/premium`,
     });
 
