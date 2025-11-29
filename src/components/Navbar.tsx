@@ -1,4 +1,4 @@
-import { ShieldCheck, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { SUPPORT_EMAIL } from '../lib/support';
@@ -13,7 +13,7 @@ export default function Navbar() {
       setIsLoggedIn(!!data?.user);
     })();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session?.user);
     });
 

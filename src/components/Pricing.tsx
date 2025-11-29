@@ -81,7 +81,7 @@ const Pricing: React.FC = () => {
   const [showResendModal, setShowResendModal] = useState(false);
   const [resendEmail, setResendEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const [_resendCooldown, setResendCooldown] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Auto-scroll to pricing if locked=interactions in URL
@@ -191,10 +191,6 @@ const Pricing: React.FC = () => {
     window.location.href = `/auth?redirect=/account&email=${encodeURIComponent(email)}`;
   };
 
-  const handleResendClick = () => {
-    console.info('[Pricing] Resend confirmation clicked');
-    setShowResendModal(true);
-  };
 
   const handleResendConfirmation = async () => {
     if (!resendEmail || !resendEmail.includes('@')) {
@@ -481,7 +477,12 @@ const Pricing: React.FC = () => {
         />
       )}
 
-      <StickyFreeCTA onStart={() => document.querySelector("input[type=email]")?.focus()} />
+      <StickyFreeCTA onStart={() => {
+        const input = document.querySelector("input[type=email]");
+        if (input && 'focus' in input && typeof (input as HTMLElement).focus === 'function') {
+          (input as HTMLElement).focus();
+        }
+      }} />
     </section>
   );
 };

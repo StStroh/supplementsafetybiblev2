@@ -12,7 +12,7 @@ export default function Header() {
       setIsLoggedIn(!!data?.user);
     })();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session?.user);
     });
 
