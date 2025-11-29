@@ -4,6 +4,7 @@ const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST,OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
+  "Cache-Control": "public, max-age=60",
 };
 
 exports.handler = async (event) => {
@@ -17,42 +18,93 @@ exports.handler = async (event) => {
   try {
     const { supplement, medication } = JSON.parse(event.body || "{}");
     if (!supplement || !medication) {
-      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Missing supplement/medication" }) };
+      return {
+        statusCode: 400,
+        headers: CORS,
+        body: JSON.stringify({ ok: false, reason: "missing_params" }),
+      };
     }
-    const sp = supabaseAdmin();
 
-    // Normalize on client side of query to match our "normalized" columns
-    const norm = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const sp = supabaseAdmin();
+    const suppNorm = normalize(supplement);
+    const medNorm = normalize(medication);
 
     const { data: s } = await sp
       .from("supplements")
-      .select("id,name,normalized")
-      .eq("normalized", norm(supplement))
+      .select("id,name")
+      .eq("name_norm", suppNorm)
       .maybeSingle();
 
     const { data: m } = await sp
       .from("medications")
-      .select("id,name,normalized")
-      .eq("normalized", norm(medication))
+      .select("id,name")
+      .eq("name_norm", medNorm)
       .maybeSingle();
 
     if (!s || !m) {
-      return { statusCode: 200, headers: CORS, body: JSON.stringify({ found: false }) };
+      return {
+        statusCode: 404,
+        headers: CORS,
+        body: JSON.stringify({
+          ok: false,
+          reason: "not_found",
+          pair: { supplement: s?.name || supplement, medication: m?.name || medication },
+        }),
+      };
     }
 
     const { data: inter } = await sp
-      .from("interactions_view")
+      .from("interactions")
       .select("*")
-      .eq("supplement_name", s.name)
-      .eq("medication_name", m.name)
+      .eq("supplement_id", s.id)
+      .eq("medication_id", m.id)
+      .eq("is_active", true)
       .maybeSingle();
 
     if (!inter) {
-      return { statusCode: 200, headers: CORS, body: JSON.stringify({ found: false, supplement: s?.name, medication: m?.name }) };
+      return {
+        statusCode: 404,
+        headers: CORS,
+        body: JSON.stringify({
+          ok: false,
+          reason: "not_found",
+          pair: { supplement: s.name, medication: m.name },
+        }),
+      };
     }
 
-    return { statusCode: 200, headers: CORS, body: JSON.stringify({ found: true, interaction: inter }) };
+    const sources = typeof inter.sources === 'string' ? JSON.parse(inter.sources) : inter.sources || [];
+    const recommendations = inter.recommendation.split(/\n|•/).filter(Boolean).map(r => r.trim());
+
+    return {
+      statusCode: 200,
+      headers: CORS,
+      body: JSON.stringify({
+        ok: true,
+        pair: { supplement: s.name, medication: m.name },
+        severity: inter.severity,
+        summary: inter.description,
+        recommendations,
+        mechanism: inter.mechanism || null,
+        sources: sources.slice(0, sources.length),
+        last_reviewed: inter.last_reviewed || null,
+      }),
+    };
   } catch (err) {
-    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
+    console.error("[Check] Error:", err);
+    return {
+      statusCode: 500,
+      headers: CORS,
+      body: JSON.stringify({ ok: false, error: err.message }),
+    };
   }
 };
+
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}

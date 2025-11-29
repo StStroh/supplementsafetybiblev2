@@ -4,6 +4,7 @@ const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
+  "Cache-Control": "public, max-age=300, stale-while-revalidate=86400",
 };
 
 exports.handler = async (event) => {
@@ -17,30 +18,59 @@ exports.handler = async (event) => {
   try {
     const sp = supabaseAdmin();
     const url = new URL(event.rawUrl);
-    const q = (url.searchParams.get("q") || "").trim();
-    const type = (url.searchParams.get("type") || "any").toLowerCase();
-    if (!q) {
-      return { statusCode: 200, headers: CORS, body: JSON.stringify({ supplements: [], medications: [] }) };
-    }
-    const like = `%${q}%`;
+    const query = (url.searchParams.get("query") || url.searchParams.get("q") || "").trim();
 
-    const fetchSupps = () =>
-      sp.from("supplements").select("id,name").ilike("name", like).order("name").limit(10);
-    const fetchMeds = () =>
-      sp.from("medications").select("id,name").ilike("name", like).order("name").limit(10);
-
-    let supplements = [], medications = [];
-    if (type === "supplement" || type === "any") {
-      const { data } = await fetchSupps();
-      supplements = data || [];
-    }
-    if (type === "medication" || type === "any") {
-      const { data } = await fetchMeds();
-      medications = data || [];
+    if (!query) {
+      return {
+        statusCode: 200,
+        headers: CORS,
+        body: JSON.stringify({ ok: true, matches: [] }),
+      };
     }
 
-    return { statusCode: 200, headers: CORS, body: JSON.stringify({ supplements, medications }) };
+    const normalized = normalize(query);
+    const like = `%${query}%`;
+
+    const [suppsResult, medsResult] = await Promise.all([
+      sp
+        .from("supplements")
+        .select("id,name,name_norm")
+        .or(`name.ilike.${like},name_norm.ilike.%${normalized}%`)
+        .order("name")
+        .limit(15),
+      sp
+        .from("medications")
+        .select("id,name,name_norm")
+        .or(`name.ilike.${like},name_norm.ilike.%${normalized}%`)
+        .order("name")
+        .limit(15),
+    ]);
+
+    const supplements = (suppsResult.data || []).map(s => ({ type: "supplement", name: s.name, id: s.id }));
+    const medications = (medsResult.data || []).map(m => ({ type: "medication", name: m.name, id: m.id }));
+
+    const matches = [...supplements, ...medications].slice(0, 25);
+
+    return {
+      statusCode: 200,
+      headers: CORS,
+      body: JSON.stringify({ ok: true, matches }),
+    };
   } catch (err) {
-    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
+    console.error("[Search] Error:", err);
+    return {
+      statusCode: 500,
+      headers: CORS,
+      body: JSON.stringify({ ok: false, error: err.message }),
+    };
   }
 };
+
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}

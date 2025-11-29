@@ -12,26 +12,31 @@ import ResultCard from "../components/check/ResultCard";
 import UpgradeBand from "../components/check/UpgradeBand";
 import SourcesAccordion from "../components/check/SourcesAccordion";
 
-type Match = { type: "supplement" | "medication"; name: string; id: string };
-type SearchResp = { ok: boolean; matches: Match[] };
+type Item = { id: number; name: string };
+type SearchResp = { supplements?: Item[]; medications?: Item[] };
 type CheckResp =
-  | { ok: false; reason: string; pair?: { supplement: string; medication: string } }
+  | { found: false; supplement?: string; medication?: string }
   | {
-      ok: true;
-      pair: { supplement: string; medication: string };
-      severity: "low" | "moderate" | "high" | "severe";
-      summary: string;
-      recommendations: string[];
-      mechanism?: string | null;
-      sources: Array<{ title: string; link?: string; year?: string }>;
-      last_reviewed?: string | null;
+      found: true;
+      interaction: {
+        supplement_name: string;
+        medication_name: string;
+        severity: "low" | "moderate" | "high" | "severe";
+        description: string;
+        recommendation: string;
+        mechanism?: string;
+        monitoring?: string;
+        alternatives?: string[];
+        sources?: Array<{ title: string; url?: string; year?: string; authors?: string }>;
+        last_reviewed?: string;
+      };
     };
 
 export default function Check() {
   const [supQ, setSupQ] = useState("");
   const [medQ, setMedQ] = useState("");
-  const [sugsSup, setSugsSup] = useState<Match[]>([]);
-  const [sugsMed, setSugsMed] = useState<Match[]>([]);
+  const [sugsSup, setSugsSup] = useState<Item[]>([]);
+  const [sugsMed, setSugsMed] = useState<Item[]>([]);
   const [selSup, setSelSup] = useState<string>("");
   const [selMed, setSelMed] = useState<string>("");
   const [result, setResult] = useState<CheckResp | null>(null);
@@ -43,10 +48,10 @@ export default function Check() {
     const h = setTimeout(async () => {
       if (!supQ.trim()) return setSugsSup([]);
       const r = await fetch(
-        `${API_BASE}/interactions-search?query=${encodeURIComponent(supQ)}`
+        `${API_BASE}/interactions-search?q=${encodeURIComponent(supQ)}&type=supplement`
       );
       const j: SearchResp = await r.json();
-      setSugsSup(j.matches.filter(m => m.type === "supplement"));
+      setSugsSup(j.supplements || []);
     }, 220);
     return () => clearTimeout(h);
   }, [supQ]);
@@ -55,10 +60,10 @@ export default function Check() {
     const h = setTimeout(async () => {
       if (!medQ.trim()) return setSugsMed([]);
       const r = await fetch(
-        `${API_BASE}/interactions-search?query=${encodeURIComponent(medQ)}`
+        `${API_BASE}/interactions-search?q=${encodeURIComponent(medQ)}&type=medication`
       );
       const j: SearchResp = await r.json();
-      setSugsMed(j.matches.filter(m => m.type === "medication"));
+      setSugsMed(j.medications || []);
     }, 220);
     return () => clearTimeout(h);
   }, [medQ]);
@@ -78,7 +83,7 @@ export default function Check() {
     setResult(j);
     setLoading(false);
 
-    if (j && j.ok) {
+    if (j && "found" in j && j.found) {
       setShowStickyFooter(true);
     }
   }
@@ -86,24 +91,24 @@ export default function Check() {
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
+    "mainEntity": [
       {
         "@type": "Question",
-        name: "How accurate is the interaction checker?",
-        acceptedAnswer: {
+        "name": "How accurate is the interaction checker?",
+        "acceptedAnswer": {
           "@type": "Answer",
-          text: "Our database is curated from peer-reviewed clinical studies and updated regularly by healthcare professionals.",
-        },
+          "text": "Our database is curated from peer-reviewed clinical studies and updated regularly by healthcare professionals."
+        }
       },
       {
         "@type": "Question",
-        name: "Is this free to use?",
-        acceptedAnswer: {
+        "name": "Is this free to use?",
+        "acceptedAnswer": {
           "@type": "Answer",
-          text: "Basic checks showing severity and top recommendations are free. Premium plans unlock detailed mechanisms, monitoring guidelines, and personalized alerts.",
-        },
-      },
-    ],
+          "text": "Basic checks showing severity and top recommendations are free. Premium plans unlock detailed mechanisms, monitoring guidelines, and personalized alerts."
+        }
+      }
+    ]
   };
 
   return (
@@ -208,7 +213,7 @@ export default function Check() {
 
         {result && (
           <div className="space-y-6 animate-fade-in">
-            {!result.ok ? (
+            {"found" in result && !result.found ? (
               <Card>
                 <div className="flex items-start gap-4">
                   <CheckCircle2 size={24} className="text-green-600 flex-shrink-0 mt-1" />
@@ -218,8 +223,8 @@ export default function Check() {
                     </h2>
                     <p className="text-slate-600 leading-relaxed">
                       We haven't found any documented interactions between{" "}
-                      <strong>{result.pair?.supplement || "this supplement"}</strong> and{" "}
-                      <strong>{result.pair?.medication || "this medication"}</strong> in our database.
+                      <strong>{result.supplement || "this supplement"}</strong> and{" "}
+                      <strong>{result.medication || "this medication"}</strong> in our database.
                     </p>
                     <p className="text-slate-500 text-sm mt-3">
                       Always consult your healthcare provider before starting any new supplement,
@@ -228,18 +233,18 @@ export default function Check() {
                   </div>
                 </div>
               </Card>
-            ) : (
+            ) : "found" in result && result.found ? (
               <>
                 <div className="rounded-2xl overflow-hidden border-2 border-slate-200">
                   <div
                     className="px-6 py-4"
                     style={{
                       background:
-                        result.severity === "severe"
+                        result.interaction.severity === "severe"
                           ? "linear-gradient(135deg, #fca5a5 0%, #ef4444 100%)"
-                          : result.severity === "high"
+                          : result.interaction.severity === "high"
                           ? "linear-gradient(135deg, #fdba74 0%, #f97316 100%)"
-                          : result.severity === "moderate"
+                          : result.interaction.severity === "moderate"
                           ? "linear-gradient(135deg, #fde68a 0%, #fbbf24 100%)"
                           : "linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%)",
                     }}
@@ -247,11 +252,12 @@ export default function Check() {
                     <div className="flex flex-wrap items-center justify-between gap-4">
                       <div>
                         <div className="text-sm font-medium opacity-90 mb-1">
-                          {result.pair.supplement} + {result.pair.medication}
+                          {result.interaction.supplement_name} +{" "}
+                          {result.interaction.medication_name}
                         </div>
-                        <SeverityBadge severity={result.severity} />
+                        <SeverityBadge severity={result.interaction.severity} />
                       </div>
-                      {result.severity === "severe" && (
+                      {result.interaction.severity === "severe" && (
                         <AlertTriangle size={32} className="text-red-900" />
                       )}
                     </div>
@@ -259,42 +265,69 @@ export default function Check() {
                 </div>
 
                 <ResultCard title="What It Means" icon={<Info size={20} className="text-blue-600" />}>
-                  <p className="leading-relaxed max-w-prose">{result.summary}</p>
+                  <p className="leading-relaxed max-w-prose">
+                    {result.interaction.description}
+                  </p>
                 </ResultCard>
 
                 <ResultCard title="What To Do" icon={<Shield size={20} className="text-green-600" />}>
                   <div className="space-y-2">
-                    {result.recommendations.map((rec, idx) => (
+                    {result.interaction.recommendation.split(/\n|•/).filter(Boolean).map((line, idx) => (
                       <div key={idx} className="flex items-start gap-2">
                         <span className="text-green-600 font-bold">•</span>
-                        <span className="leading-relaxed">{rec}</span>
+                        <span className="leading-relaxed">{line.trim()}</span>
                       </div>
                     ))}
                   </div>
                 </ResultCard>
 
-                {result.mechanism && (
+                {result.interaction.mechanism && (
                   <Card>
                     <h3 className="font-semibold text-lg text-slate-900 mb-2">Mechanism</h3>
                     <p className="text-slate-700 leading-relaxed max-w-prose">
-                      {result.mechanism}
+                      {result.interaction.mechanism}
                     </p>
                   </Card>
                 )}
 
-                {result.sources && result.sources.length > 0 && (
-                  <SourcesAccordion sources={result.sources} freeSources={1} />
+                {result.interaction.sources && result.interaction.sources.length > 0 && (
+                  <SourcesAccordion sources={result.interaction.sources} freeSources={1} />
                 )}
 
-                {result.last_reviewed && (
+                {result.interaction.last_reviewed && (
                   <div className="text-sm text-slate-500 text-center">
-                    Last reviewed: {new Date(result.last_reviewed).toLocaleDateString()}
+                    Last reviewed: {new Date(result.interaction.last_reviewed).toLocaleDateString()}
                   </div>
                 )}
 
                 <UpgradeBand className="mt-8" />
+
+                {result.interaction.alternatives && result.interaction.alternatives.length > 0 && (
+                  <Card className="bg-green-50 border-green-200">
+                    <h3 className="font-semibold text-lg text-slate-900 mb-3">
+                      Safer Alternatives
+                    </h3>
+                    <div className="space-y-2">
+                      {result.interaction.alternatives.map((alt, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-slate-700">
+                          <CheckCircle2 size={16} className="text-green-600 mt-1 flex-shrink-0" />
+                          <span>{alt}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+
+                {result.interaction.monitoring && (
+                  <Card className="bg-amber-50 border-amber-200">
+                    <h3 className="font-semibold text-lg text-slate-900 mb-2">
+                      Monitoring Guidance
+                    </h3>
+                    <p className="text-slate-700 leading-relaxed">{result.interaction.monitoring}</p>
+                  </Card>
+                )}
               </>
-            )}
+            ) : null}
           </div>
         )}
       </main>
