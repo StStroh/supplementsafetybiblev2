@@ -1,0 +1,2 @@
+  (1000, 'Supplement 1000', 'Adaptogen');
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, category = EXCLUDED.category;
