@@ -86,7 +86,7 @@ function Table({ rows }:{ rows: Array<{when:string, pair:string, severity:string
 }
 
 async function openBilling(customerId: string) {
-  const res = await fetch('/.netlify/functions/create-portal-session.cjs', {
+  const res = await fetch('/.netlify/functions/create-portal-session', {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ customerId })
   });
