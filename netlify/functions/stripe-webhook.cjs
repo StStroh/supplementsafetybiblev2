@@ -69,6 +69,7 @@ async function handleCheckoutCompleted(session) {
 
   const customerId = session.customer;
   const subscriptionId = session.subscription;
+  const customerEmail = session.customer_details?.email || session.customer_email;
 
   if (!subscriptionId) {
     console.log("[Checkout] No subscription ID, skipping");
@@ -91,12 +92,13 @@ async function handleCheckoutCompleted(session) {
 
   console.log(`[Checkout] Mapped: ${priceId} → ${planInfo.plan} (${planInfo.interval})`);
 
-  await upsertProfile(customerId, {
+  await upsertProfile(customerId, customerEmail, {
     subscription_id: subscriptionId,
     subscription_status: subscription.status,
     is_premium: planInfo.plan === "premium",
     plan_name: planInfo.plan,
     billing_interval: planInfo.interval,
+    role: planInfo.plan === "premium" ? "premium" : "pro",
   });
 }
 
@@ -113,7 +115,7 @@ async function handleInvoicePaymentSucceeded(invoice) {
   const planInfo = getPlanInfo(priceId);
 
   if (planInfo) {
-    await upsertProfile(customerId, {
+    await upsertProfile(customerId, null, {
       subscription_status: subscription.status,
       is_premium: planInfo.plan === "premium",
     });
@@ -128,7 +130,7 @@ async function handleSubscriptionUpdated(subscription) {
   const planInfo = getPlanInfo(priceId);
 
   if (planInfo) {
-    await upsertProfile(customerId, {
+    await upsertProfile(customerId, null, {
       subscription_status: subscription.status,
       is_premium: planInfo.plan === "premium",
     });
@@ -138,21 +140,60 @@ async function handleSubscriptionUpdated(subscription) {
 async function handleSubscriptionDeleted(subscription) {
   console.log(`[Subscription] Deleted: ${subscription.id}`);
 
-  await upsertProfile(subscription.customer, {
+  await upsertProfile(subscription.customer, null, {
     subscription_status: "canceled",
     is_premium: false,
   });
 }
 
-async function upsertProfile(customerId, updates) {
-  const { error } = await supabase
-    .from("profiles")
-    .update(updates)
-    .eq("stripe_customer_id", customerId);
+async function upsertProfile(customerId, customerEmail, updates) {
+  try {
+    // First try to update existing profile by stripe_customer_id
+    const { data: existingProfile, error: fetchError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("stripe_customer_id", customerId)
+      .maybeSingle();
 
-  if (error) {
-    console.error(`[Profile] Update failed:`, error);
-  } else {
-    console.log(`[Profile] Updated customer ${customerId}:`, updates);
+    if (existingProfile) {
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ ...updates, stripe_customer_id: customerId })
+        .eq("id", existingProfile.id);
+
+      if (updateError) {
+        console.error(`[Profile] Update failed:`, updateError);
+      } else {
+        console.log(`[Profile] Updated customer ${customerId}:`, updates);
+      }
+      return;
+    }
+
+    // If no profile exists and we have email, try to find by email
+    if (customerEmail) {
+      const { data: profileByEmail } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", customerEmail)
+        .maybeSingle();
+
+      if (profileByEmail) {
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ ...updates, stripe_customer_id: customerId })
+          .eq("id", profileByEmail.id);
+
+        if (updateError) {
+          console.error(`[Profile] Update by email failed:`, updateError);
+        } else {
+          console.log(`[Profile] Updated by email ${customerEmail}:`, updates);
+        }
+        return;
+      }
+    }
+
+    console.log(`[Profile] No existing profile found for ${customerId}, updates stored for next login`);
+  } catch (err) {
+    console.error(`[Profile] Upsert error:`, err);
   }
 }

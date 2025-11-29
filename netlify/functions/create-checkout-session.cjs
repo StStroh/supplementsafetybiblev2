@@ -32,8 +32,18 @@ exports.handler = async (event) => {
 
     let priceId = body.priceId;
 
+    // Support interval parameter: 'month' | 'year' → defaults to premium
+    if (body.interval && !priceId) {
+      const intervalMap = {
+        month: process.env.PRICE_PREMIUM_MONTHLY || process.env.VITE_STRIPE_PRICE_PREMIUM,
+        year: process.env.PRICE_PREMIUM_ANNUAL || process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
+      };
+      priceId = intervalMap[body.interval];
+      console.log("Mapped interval to priceId:", { interval: body.interval, priceId });
+    }
+
     // Support new format: { tier: "pro|premium", cadence: "monthly|annual" }
-    if (body.tier && body.cadence) {
+    if (body.tier && body.cadence && !priceId) {
       const tier = body.tier.toLowerCase();
       const cadence = body.cadence.toLowerCase();
 
@@ -129,7 +139,10 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ url: session.url }),
+      body: JSON.stringify({
+        sessionId: session.id,
+        url: session.url
+      }),
     };
   } catch (error) {
     console.error("Stripe error:", error);
