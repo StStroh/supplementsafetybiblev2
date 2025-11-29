@@ -8,6 +8,7 @@ import Auth from './pages/Auth';
 import PremiumThanks from './pages/PremiumThanks';
 import Premium from './pages/Premium';
 import PremiumDashboard from './pages/PremiumDashboard';
+import Search from './pages/Search';
 import EnvWarning from './components/EnvWarning';
 
 function App() {
@@ -26,9 +27,10 @@ function App() {
       {path === '/premium/dashboard' && <PremiumDashboard />}
       {path === '/premium' && <Premium />}
       {path === '/pricing' && <Premium />}
+      {path === '/search' && <Search />}
       {path === '/checkout/cancel' && <div style={{padding: 16}}>Checkout canceled.</div>}
       {path === '/' && <Home />}
-      {!['/auth', '/faq', '/privacy', '/terms', '/success', '/account', '/premium/thanks', '/premium/dashboard', '/premium', '/pricing', '/checkout/cancel', '/'].includes(path) && <div style={{padding: 16}}>Page not found.</div>}
+      {!['/auth', '/faq', '/privacy', '/terms', '/success', '/account', '/premium/thanks', '/premium/dashboard', '/premium', '/pricing', '/search', '/checkout/cancel', '/'].includes(path) && <div style={{padding: 16}}>Page not found.</div>}
     </>
   );
 }
