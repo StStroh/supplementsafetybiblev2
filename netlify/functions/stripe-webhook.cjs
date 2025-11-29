@@ -1,5 +1,12 @@
 const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
+const { createClient } = require("@supabase/supabase-js");
+const { getPlanInfo } = require("../../src/lib/stripe/plan-map.cjs");
+
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 exports.handler = async (event) => {
   try {
@@ -7,16 +14,47 @@ exports.handler = async (event) => {
     const whSecret = process.env.STRIPE_WEBHOOK_SECRET;
     const evt = stripe.webhooks.constructEvent(event.body, sig, whSecret);
 
+    console.log(`[Webhook] Event: ${evt.type}, ID: ${evt.id}`);
+
+    // Idempotency check
+    const { data: existing } = await supabase
+      .from("events_log")
+      .select("id")
+      .eq("event_id", evt.id)
+      .maybeSingle();
+
+    if (existing) {
+      console.log(`[Webhook] Already processed: ${evt.id}`);
+      return { statusCode: 200, body: JSON.stringify({ received: true, duplicate: true }) };
+    }
+
+    // Log event
+    await supabase.from("events_log").insert({
+      event_id: evt.id,
+      event_type: evt.type,
+      payload: evt.data.object,
+      processed_at: new Date().toISOString(),
+    });
+
     switch (evt.type) {
       case "checkout.session.completed":
-        console.log("Paid session:", evt.data.object.id);
+        await handleCheckoutCompleted(evt.data.object);
         break;
+
       case "invoice.payment_succeeded":
-        console.log("Invoice paid:", evt.data.object.id);
+        await handleInvoicePaymentSucceeded(evt.data.object);
         break;
+
       case "customer.subscription.updated":
-        console.log("Subscription updated:", evt.data.object.id);
+        await handleSubscriptionUpdated(evt.data.object);
         break;
+
+      case "customer.subscription.deleted":
+        await handleSubscriptionDeleted(evt.data.object);
+        break;
+
+      default:
+        console.log(`[Webhook] Unhandled event: ${evt.type}`);
     }
 
     return { statusCode: 200, body: JSON.stringify({ received: true }) };
@@ -25,3 +63,96 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
   }
 };
+
+async function handleCheckoutCompleted(session) {
+  console.log(`[Checkout] Session: ${session.id}`);
+
+  const customerId = session.customer;
+  const subscriptionId = session.subscription;
+
+  if (!subscriptionId) {
+    console.log("[Checkout] No subscription ID, skipping");
+    return;
+  }
+
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const priceId = subscription.items.data[0]?.price?.id;
+
+  if (!priceId) {
+    console.error("[Checkout] No price ID found");
+    return;
+  }
+
+  const planInfo = getPlanInfo(priceId);
+  if (!planInfo) {
+    console.error(`[Checkout] Unknown price ID: ${priceId}`);
+    return;
+  }
+
+  console.log(`[Checkout] Mapped: ${priceId} → ${planInfo.plan} (${planInfo.interval})`);
+
+  await upsertProfile(customerId, {
+    subscription_id: subscriptionId,
+    subscription_status: subscription.status,
+    is_premium: planInfo.plan === "premium",
+    plan_name: planInfo.plan,
+    billing_interval: planInfo.interval,
+  });
+}
+
+async function handleInvoicePaymentSucceeded(invoice) {
+  console.log(`[Invoice] ID: ${invoice.id}`);
+
+  const customerId = invoice.customer;
+  const subscriptionId = invoice.subscription;
+
+  if (!subscriptionId) return;
+
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const priceId = subscription.items.data[0]?.price?.id;
+  const planInfo = getPlanInfo(priceId);
+
+  if (planInfo) {
+    await upsertProfile(customerId, {
+      subscription_status: subscription.status,
+      is_premium: planInfo.plan === "premium",
+    });
+  }
+}
+
+async function handleSubscriptionUpdated(subscription) {
+  console.log(`[Subscription] Updated: ${subscription.id}`);
+
+  const customerId = subscription.customer;
+  const priceId = subscription.items.data[0]?.price?.id;
+  const planInfo = getPlanInfo(priceId);
+
+  if (planInfo) {
+    await upsertProfile(customerId, {
+      subscription_status: subscription.status,
+      is_premium: planInfo.plan === "premium",
+    });
+  }
+}
+
+async function handleSubscriptionDeleted(subscription) {
+  console.log(`[Subscription] Deleted: ${subscription.id}`);
+
+  await upsertProfile(subscription.customer, {
+    subscription_status: "canceled",
+    is_premium: false,
+  });
+}
+
+async function upsertProfile(customerId, updates) {
+  const { error } = await supabase
+    .from("profiles")
+    .update(updates)
+    .eq("stripe_customer_id", customerId);
+
+  if (error) {
+    console.error(`[Profile] Update failed:`, error);
+  } else {
+    console.log(`[Profile] Updated customer ${customerId}:`, updates);
+  }
+}

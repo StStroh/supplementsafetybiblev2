@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "prebuild": "node scripts/prebuild-guard.cjs",
+    "build": "npm run prebuild && tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "netlify:dev": "netlify dev",

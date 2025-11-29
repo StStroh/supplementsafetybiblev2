@@ -1,4 +1,5 @@
 const getStripe = require('./stripe.cjs');
+const { isValidPriceId } = require('../../src/lib/stripe/plan-map.cjs');
 
 const SUPPORT_EMAIL = "support@supplementsafetybible.com";
 
@@ -96,6 +97,21 @@ exports.handler = async (event) => {
         }),
       };
     }
+
+    // LIVE ENFORCEMENT: Only allow price IDs from plan-map.cjs
+    if (!isValidPriceId(priceId)) {
+      console.error("BLOCKED: Unauthorized price ID:", priceId);
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: "Invalid or unauthorized price ID. Only LIVE prices are allowed.",
+          support: SUPPORT_EMAIL
+        }),
+      };
+    }
+
+    console.log("✅ Validated LIVE price ID:", priceId);
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
