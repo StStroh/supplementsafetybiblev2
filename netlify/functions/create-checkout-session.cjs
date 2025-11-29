@@ -27,26 +27,43 @@ exports.handler = async (event) => {
     }
 
     const stripe = getStripe();
-
     const body = JSON.parse(event.body || "{}");
 
     let priceId = body.priceId;
 
-    if (body.plan && body.billing_interval) {
+    // Support new format: { tier: "pro|premium", cadence: "monthly|annual" }
+    if (body.tier && body.cadence) {
+      const tier = body.tier.toLowerCase();
+      const cadence = body.cadence.toLowerCase();
+
+      const priceMap = {
+        "pro_monthly": process.env.PRICE_PRO_MONTHLY || process.env.VITE_STRIPE_PRICE_PRO,
+        "pro_annual": process.env.PRICE_PRO_ANNUAL || process.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
+        "premium_monthly": process.env.PRICE_PREMIUM_MONTHLY || process.env.VITE_STRIPE_PRICE_PREMIUM,
+        "premium_annual": process.env.PRICE_PREMIUM_ANNUAL || process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
+      };
+
+      const key = `${tier}_${cadence}`;
+      priceId = priceMap[key];
+
+      console.log("Mapped tier+cadence to priceId:", { tier, cadence, key, priceId });
+    }
+    // Support legacy format: { plan: "pro|premium", billing_interval: "month|year" }
+    else if (body.plan && body.billing_interval) {
       const plan = body.plan.toLowerCase();
       const interval = body.billing_interval === "year" ? "annual" : "monthly";
 
       const priceMap = {
-        "premium_monthly": process.env.VITE_STRIPE_PRICE_PREMIUM,
-        "premium_annual": process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
-        "pro_monthly": process.env.VITE_STRIPE_PRICE_PRO,
-        "pro_annual": process.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
+        "premium_monthly": process.env.PRICE_PREMIUM_MONTHLY || process.env.VITE_STRIPE_PRICE_PREMIUM,
+        "premium_annual": process.env.PRICE_PREMIUM_ANNUAL || process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL,
+        "pro_monthly": process.env.PRICE_PRO_MONTHLY || process.env.VITE_STRIPE_PRICE_PRO,
+        "pro_annual": process.env.PRICE_PRO_ANNUAL || process.env.VITE_STRIPE_PRICE_PRO_ANNUAL,
       };
 
       const key = `${plan}_${interval}`;
       priceId = priceMap[key];
 
-      console.log("Mapped plan to priceId:", { plan, interval, key, priceId });
+      console.log("Mapped plan+billing_interval to priceId:", { plan, interval, key, priceId });
     }
 
     console.log("Received checkout request:", { priceId, body });
@@ -56,7 +73,7 @@ exports.handler = async (event) => {
         statusCode: 400,
         headers,
         body: JSON.stringify({
-          error: "Missing priceId or plan/billing_interval",
+          error: "Missing priceId, tier+cadence, or plan+billing_interval",
           support: SUPPORT_EMAIL
         }),
       };
@@ -68,8 +85,14 @@ exports.handler = async (event) => {
         statusCode: 400,
         headers,
         body: JSON.stringify({
-          error: `Invalid price ID format: ${priceId}. Price IDs should start with 'price_'. Check that VITE_STRIPE_PRICE_* environment variables are set in Netlify.`,
-          support: SUPPORT_EMAIL
+          error: `Invalid price ID format: ${priceId}. Price IDs should start with 'price_'. Check that PRICE_* or VITE_STRIPE_PRICE_* environment variables are set in Netlify.`,
+          support: SUPPORT_EMAIL,
+          envCheck: {
+            PRICE_PRO_MONTHLY: !!(process.env.PRICE_PRO_MONTHLY || process.env.VITE_STRIPE_PRICE_PRO),
+            PRICE_PRO_ANNUAL: !!(process.env.PRICE_PRO_ANNUAL || process.env.VITE_STRIPE_PRICE_PRO_ANNUAL),
+            PRICE_PREMIUM_MONTHLY: !!(process.env.PRICE_PREMIUM_MONTHLY || process.env.VITE_STRIPE_PRICE_PREMIUM),
+            PRICE_PREMIUM_ANNUAL: !!(process.env.PRICE_PREMIUM_ANNUAL || process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL),
+          }
         }),
       };
     }
@@ -84,7 +107,7 @@ exports.handler = async (event) => {
         },
       ],
       success_url: `${event.headers.origin || "https://supplementsafetybible.com"}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${event.headers.origin || "https://supplementsafetybible.com"}/pricing`,
+      cancel_url: `${event.headers.origin || "https://supplementsafetybible.com"}/premium`,
     });
 
     return {
