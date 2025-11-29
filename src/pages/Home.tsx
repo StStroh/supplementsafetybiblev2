@@ -1,5 +1,5 @@
 import Navbar from '../components/Navbar';
-import Hero from '../components/Hero';
+import DontMixBlindHero from '../components/DontMixBlindHero';
 import HowItWorks from '../components/HowItWorks';
 import WhyItMatters from '../components/WhyItMatters';
 import InteractionChecker from '../components/InteractionChecker';
@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <Hero />
+      <DontMixBlindHero />
       <HowItWorks />
       <WhyItMatters />
       <section id="interaction-checker">
