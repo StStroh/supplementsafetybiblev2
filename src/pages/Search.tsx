@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Filter, Shield, ChevronLeft, Search as SearchIcon } from 'lucide-react';
+import { Filter, Shield, ChevronLeft, Search as SearchIcon, Lock } from 'lucide-react';
 import Autocomplete from '../components/Autocomplete';
 import ResultCard from '../components/ResultCard';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import SeverityBadge from '../components/check/SeverityBadge';
+import { useIsPremium } from '../lib/useAuth';
 
 interface Interaction {
-  id: string;
+  id: number;
   supplement_name: string;
   medication_name: string;
   severity: string;
   description: string;
+  recommendation: string;
 }
 
 export default function Search() {
@@ -24,42 +27,51 @@ export default function Search() {
   const [interactions, setInteractions] = useState<Interaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchCount, setSearchCount] = useState(0);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const isPremium = useIsPremium();
+
+  const FREE_SEARCH_LIMIT = 3;
+  const FREE_RESULTS_PREVIEW = 3;
 
   useEffect(() => {
-    if (searchQuery || severityFilter !== 'all') {
-      performSearch();
-    } else {
-      loadAllInteractions();
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
     }
-  }, [searchQuery, severityFilter]);
 
-  const loadAllInteractions = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('/.netlify/functions/search');
-      if (!response.ok) throw new Error('Failed to load interactions');
-      const data = await response.json();
-      setInteractions(data.interactions || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load interactions');
-    } finally {
-      setLoading(false);
+    if (searchQuery.trim()) {
+      debounceTimer.current = setTimeout(() => {
+        performSearch();
+      }, 500);
+    } else {
+      setInteractions([]);
     }
-  };
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [searchQuery]);
+
 
   const performSearch = async () => {
+    if (!searchQuery.trim()) {
+      setInteractions([]);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (searchQuery) params.set('q', searchQuery);
-      if (severityFilter !== 'all') params.set('severity', severityFilter);
-
-      const response = await fetch(`/.netlify/functions/search?${params}`);
+      const response = await fetch(`/.netlify/functions/search-interactions?q=${encodeURIComponent(searchQuery)}`);
       if (!response.ok) throw new Error('Search failed');
       const data = await response.json();
-      setInteractions(data.interactions || []);
+      setInteractions(data || []);
+
+      if (!isPremium) {
+        setSearchCount(prev => prev + 1);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
     } finally {
@@ -69,8 +81,20 @@ export default function Search() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
     performSearch();
   };
+
+  const filteredInteractions = severityFilter === 'all'
+    ? interactions
+    : interactions.filter(i => i.severity === severityFilter);
+
+  const isLimitReached = !isPremium && searchCount >= FREE_SEARCH_LIMIT;
+  const displayedInteractions = isLimitReached
+    ? filteredInteractions.slice(0, FREE_RESULTS_PREVIEW)
+    : filteredInteractions;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,26 +165,68 @@ export default function Search() {
 
         {!loading && !error && (
           <>
+            {!isPremium && searchCount > 0 && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                Free searches used: {Math.min(searchCount, FREE_SEARCH_LIMIT)} / {FREE_SEARCH_LIMIT}
+                {isLimitReached && (
+                  <span className="ml-2 font-semibold">Showing preview only.</span>
+                )}
+              </div>
+            )}
+
             <div className="mb-4 text-sm text-gray-600">
-              {interactions.length} interaction{interactions.length !== 1 ? 's' : ''} found
+              {filteredInteractions.length} interaction{filteredInteractions.length !== 1 ? 's' : ''} found
             </div>
 
-            {interactions.length > 0 ? (
-              <div className="grid gap-4">
-                {interactions.map((interaction) => (
-                  <ResultCard
-                    key={interaction.id}
-                    interaction={interaction}
-                    onClick={() => navigate(`/interaction/${interaction.id}`)}
-                  />
-                ))}
-              </div>
-            ) : (
+            {displayedInteractions.length > 0 ? (
+              <>
+                <div className="grid gap-4">
+                  {displayedInteractions.map((interaction) => (
+                    <div key={interaction.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            {interaction.supplement_name} + {interaction.medication_name}
+                          </h3>
+                          <SeverityBadge severity={interaction.severity} />
+                        </div>
+                      </div>
+                      <p className="text-gray-700 mb-3">{interaction.description}</p>
+                      <p className="text-sm text-gray-600 italic">{interaction.recommendation}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {isLimitReached && filteredInteractions.length > FREE_RESULTS_PREVIEW && (
+                  <div className="mt-8 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 text-center border-2 border-blue-200">
+                    <Lock className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                      Unlock Full Results
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      You've reached your free search limit. Upgrade to Premium to see all {filteredInteractions.length} interactions and get unlimited searches.
+                    </p>
+                    <button
+                      onClick={() => navigate('/pricing')}
+                      className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                    >
+                      Start Premium
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : searchQuery.trim() ? (
               <EmptyState
                 icon={SearchIcon}
                 title="No interactions found"
                 description="Try adjusting your search or filters"
               />
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                <SearchIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                <p className="text-lg">Enter a search query to find interactions</p>
+                <p className="text-sm mt-2">Example: "warfarin + ginkgo" or "ibuprofen"</p>
+              </div>
             )}
           </>
         )}

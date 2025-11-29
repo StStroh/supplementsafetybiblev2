@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, Trash2, Shield } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, Shield, Upload, Database, RefreshCw } from 'lucide-react';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 
@@ -10,11 +10,31 @@ interface Synonym {
   type: 'supplement' | 'medication';
 }
 
+interface Stats {
+  supplements: number;
+  medications: number;
+  interactions: number;
+  lastImportAt: string | null;
+}
+
+interface ImportResult {
+  ok: boolean;
+  counts: {
+    supplements: number;
+    medications: number;
+    interactions: number;
+  };
+  imported?: number;
+}
+
 export default function Admin() {
   const navigate = useNavigate();
   const [synonyms, setSynonyms] = useState<Synonym[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [importing, setImporting] = useState(false);
   const [newSynonym, setNewSynonym] = useState({
     synonym: '',
     canonical: '',
@@ -23,6 +43,7 @@ export default function Admin() {
 
   useEffect(() => {
     loadSynonyms();
+    loadStats();
   }, []);
 
   const loadSynonyms = async () => {
@@ -93,6 +114,61 @@ export default function Admin() {
     }
   };
 
+  const loadStats = async () => {
+    try {
+      const adminKey = prompt('Enter admin key:');
+      if (!adminKey) return;
+
+      const response = await fetch('/.netlify/functions/admin-stats', {
+        headers: { 'x-admin-key': adminKey }
+      });
+      if (!response.ok) {
+        throw new Error('Unauthorized or stats unavailable');
+      }
+      const data = await response.json();
+      setStats(data);
+      localStorage.setItem('admin_key', adminKey);
+    } catch (err) {
+      console.error('Failed to load stats:', err);
+      alert('Failed to load stats. Check admin key.');
+    }
+  };
+
+  const runImport = async (truncate: boolean = false) => {
+    const confirmMsg = truncate
+      ? 'This will DELETE all existing data and re-import. Continue?'
+      : 'Import interactions from CSV. Continue?';
+
+    if (!confirm(confirmMsg)) return;
+
+    setImporting(true);
+    setImportResult(null);
+
+    try {
+      const response = await fetch('/.netlify/functions/import-interactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'artifacts/interactions_full.csv',
+          truncate,
+          dryRun: false
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Import failed: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      setImportResult(result);
+      await loadStats();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Import failed');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm border-b border-gray-200">
@@ -117,7 +193,80 @@ export default function Admin() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Synonym Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600">
+            Manage data imports, view statistics, and configure synonyms.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-2">
+              <Database className="w-8 h-8 text-blue-600" />
+              {stats && <button onClick={loadStats} className="text-gray-400 hover:text-gray-600"><RefreshCw className="w-4 h-4" /></button>}
+            </div>
+            <div className="text-3xl font-bold text-gray-900">{stats?.supplements ?? '—'}</div>
+            <div className="text-sm text-gray-600">Supplements</div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <Database className="w-8 h-8 text-green-600 mb-2" />
+            <div className="text-3xl font-bold text-gray-900">{stats?.medications ?? '—'}</div>
+            <div className="text-sm text-gray-600">Medications</div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <Shield className="w-8 h-8 text-purple-600 mb-2" />
+            <div className="text-3xl font-bold text-gray-900">{stats?.interactions ?? '—'}</div>
+            <div className="text-sm text-gray-600">Interactions</div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <Upload className="w-8 h-8 text-orange-600 mb-2" />
+            <div className="text-sm font-semibold text-gray-900 mb-2">Last Import</div>
+            <div className="text-xs text-gray-600">{stats?.lastImportAt ? new Date(stats.lastImportAt).toLocaleString() : 'Never'}</div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <Upload className="w-5 h-5 mr-2" />
+            Data Import
+          </h2>
+          <div className="flex items-center space-x-4 mb-4">
+            <button
+              onClick={() => runImport(false)}
+              disabled={importing}
+              className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition shadow-sm"
+            >
+              <Upload className="w-5 h-5" />
+              <span>{importing ? 'Importing...' : 'Import CSV'}</span>
+            </button>
+            <button
+              onClick={() => runImport(true)}
+              disabled={importing}
+              className="flex items-center space-x-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 disabled:bg-gray-400 transition shadow-sm"
+            >
+              <Trash2 className="w-5 h-5" />
+              <span>Truncate & Re-import</span>
+            </button>
+          </div>
+
+          {importResult && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h3 className="font-semibold text-green-900 mb-2">Import Successful!</h3>
+              <div className="text-sm text-green-800">
+                <p>Supplements: {importResult.counts.supplements}</p>
+                <p>Medications: {importResult.counts.medications}</p>
+                <p>Interactions: {importResult.counts.interactions}</p>
+                {importResult.imported && <p className="font-semibold mt-2">Imported {importResult.imported} rows</p>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Synonym Management</h2>
           <p className="text-gray-600">
             Manage alternative names for supplements and medications to improve search accuracy.
           </p>
