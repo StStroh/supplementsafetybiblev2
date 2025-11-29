@@ -11,15 +11,16 @@ export default function Premium() {
     {
       id: 'starter',
       name: 'Starter',
-      description: 'Perfect for individuals',
-      monthlyPrice: 9,
-      annualPrice: 90,
+      description: 'Free forever',
+      monthlyPrice: 0,
+      annualPrice: 0,
+      isFree: true,
       features: [
         'Search 2,400+ interactions',
-        'Severity ratings',
-        'Basic interaction details',
-        'Mobile access',
-        'Email support'
+        'Basic severity ratings',
+        'Limited searches per day',
+        'Community support',
+        'Mobile access'
       ]
     },
     {
@@ -27,38 +28,43 @@ export default function Premium() {
       name: 'Pro',
       description: 'Most popular for clinicians',
       monthlyPrice: 29,
-      annualPrice: 290,
+      annualPrice: 24,
       popular: true,
       features: [
         'Everything in Starter',
+        'Unlimited searches',
         'PDF report exports',
         'Advanced filtering',
-        'Priority support',
+        'Priority email support',
         'Clinical references',
-        'Batch checking',
-        'API access'
+        'Batch checking'
       ]
     },
     {
       id: 'premium',
       name: 'Premium',
-      description: 'For teams and institutions',
-      monthlyPrice: 99,
-      annualPrice: 990,
+      description: 'Full power for teams',
+      monthlyPrice: 79,
+      annualPrice: 66,
       features: [
         'Everything in Pro',
-        'Unlimited team members',
-        'Custom branding',
+        'Team features',
+        'Admin dashboard',
+        'Audit trail & compliance',
+        'Early-access features',
         'Dedicated support',
-        'SLA guarantee',
-        'Advanced analytics',
-        'White-label options',
-        'Training sessions'
+        'Custom branding',
+        'SLA guarantee'
       ]
     }
   ];
 
   const handleCheckout = async (tier: string) => {
+    if (tier === 'starter') {
+      navigate('/search');
+      return;
+    }
+
     setLoading(tier);
     try {
       const response = await fetch('/.netlify/functions/create-checkout-session', {
@@ -87,13 +93,12 @@ export default function Premium() {
     return cadence === 'monthly' ? tier.monthlyPrice : tier.annualPrice;
   };
 
-  const getSavings = (tier: typeof tiers[0]) => {
-    if (cadence === 'annual') {
-      const monthlyCost = tier.monthlyPrice * 12;
-      const savings = monthlyCost - tier.annualPrice;
-      return `Save $${savings}/year`;
-    }
-    return null;
+  const getAnnualSavings = (tier: typeof tiers[0]) => {
+    if (tier.isFree) return null;
+    const monthlyAnnualCost = tier.monthlyPrice * 12;
+    const annualCost = tier.annualPrice * 12;
+    const monthsSaved = Math.round((monthlyAnnualCost - annualCost) / tier.annualPrice);
+    return monthsSaved;
   };
 
   return (
@@ -146,8 +151,8 @@ export default function Premium() {
               }`}
             >
               Annual
-              <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                Save 17%
+              <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                2 months free
               </span>
             </button>
           </div>
@@ -184,32 +189,44 @@ export default function Premium() {
                   <span className="text-5xl font-bold text-slate-900">
                     ${getPrice(tier)}
                   </span>
-                  <span className="text-slate-600 ml-2">
-                    /{cadence === 'monthly' ? 'mo' : 'yr'}
-                  </span>
+                  {!tier.isFree && (
+                    <span className="text-slate-600 ml-2">
+                      /month
+                    </span>
+                  )}
                 </div>
 
-                {getSavings(tier) && (
-                  <div className="text-sm font-semibold text-green-600">
-                    {getSavings(tier)}
+                {tier.isFree && (
+                  <div className="text-sm font-semibold text-slate-600">
+                    No credit card required
+                  </div>
+                )}
+
+                {!tier.isFree && cadence === 'annual' && (
+                  <div className="text-sm text-slate-600">
+                    Billed ${getPrice(tier) * 12}/year
                   </div>
                 )}
               </div>
 
               <button
                 onClick={() => handleCheckout(tier.id)}
-                disabled={loading !== null}
+                disabled={loading !== null && loading !== tier.id}
                 className={`w-full py-4 rounded-xl font-semibold transition mb-8 flex items-center justify-center space-x-2 ${
                   tier.popular
                     ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
-                    : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+                    : tier.isFree
+                    ? 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+                    : 'bg-slate-800 text-white hover:bg-slate-900'
                 }`}
               >
                 {loading === tier.id ? (
                   <span>Processing...</span>
                 ) : (
                   <>
-                    <span>Get Started</span>
+                    <span>
+                      {tier.isFree ? 'Start Free' : tier.id === 'pro' ? 'Get Pro' : 'Get Premium'}
+                    </span>
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
