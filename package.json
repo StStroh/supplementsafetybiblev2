@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "netlify:dev": "netlify dev",
     "db:harden": "node scripts/run_db_hardening.cjs",
     "db:harden:skip": "HARDENING_SKIP=true node scripts/run_db_hardening.cjs"
   },

@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
   HARDENING_SKIP = "true"
 
@@ -11,6 +11,19 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   external_node_modules = ["@supabase/supabase-js"]
+
+[[scheduled.functions]]
+  path = "monitor.cjs"
+  schedule = "*/10 * * * *"
+
+[context.production]
+  # Production environment overrides
+
+[context.deploy-preview]
+  # Deploy previews from pull requests
+
+[context.branch-deploy]
+  # Branch-specific deploys
 
 [dev]
   command = "npm run dev"

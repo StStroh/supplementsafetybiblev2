@@ -1,19 +1,31 @@
-import { createClient } from '@supabase/supabase-js';
+/// <reference types="vite/client" />
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { getEnv } from './env';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+type Client = SupabaseClient<any, "public", any>;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+let supabase: Client;
+
+const { url, anon, ok } = getEnv();
+
+if (ok) {
+  supabase = createClient(url, anon, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    }
+  }) as Client;
+} else {
+  const fail = new Proxy({} as Client, {
+    get() {
+      throw new Error("Supabase configuration missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
+    },
+  }) as Client;
+  supabase = fail;
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
+export { supabase };
 
 export type Database = {
   public: {
