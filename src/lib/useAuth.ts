@@ -2,14 +2,6 @@ import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 import type { User } from '@supabase/supabase-js';
 
-interface Profile {
-  id: string;
-  email?: string;
-  role?: string;
-  plan?: string;
-  is_premium?: boolean;
-  subscription_status?: string;
-}
 
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
@@ -47,12 +39,14 @@ export function useIsPremium() {
       return;
     }
 
-    supabase
-      .from('profiles')
-      .select('role, plan, is_premium, subscription_status')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('role, plan, is_premium, subscription_status')
+          .eq('id', user.id)
+          .maybeSingle();
+
         if (data) {
           const premium =
             data.role === 'premium' ||
@@ -64,12 +58,12 @@ export function useIsPremium() {
           setIsPremium(false);
         }
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err: unknown) {
         console.error('Error checking premium status:', err);
         setIsPremium(false);
         setLoading(false);
-      });
+      }
+    })();
   }, [user, userLoading]);
 
   return { isPremium, loading: loading || userLoading, user };

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Filter, Shield, ChevronLeft, Search as SearchIcon, Lock } from 'lucide-react';
 import Autocomplete from '../components/Autocomplete';
-import ResultCard from '../components/ResultCard';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import SeverityBadge from '../components/check/SeverityBadge';
@@ -188,7 +187,7 @@ export default function Search() {
                           <h3 className="text-lg font-semibold text-gray-900 mb-2">
                             {interaction.supplement_name} + {interaction.medication_name}
                           </h3>
-                          <SeverityBadge severity={interaction.severity} />
+                          <SeverityBadge severity={interaction.severity as 'low' | 'moderate' | 'high' | 'severe'} />
                         </div>
                       </div>
                       <p className="text-gray-700 mb-3">{interaction.description}</p>

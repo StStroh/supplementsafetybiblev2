@@ -113,8 +113,8 @@ export default function PremiumDashboard(){
 
   const recentRows = [
     { when:'Today 14:22', pair:'Niacin × Metformin', severity:'Moderate', action:'Monitor glucose; consider spacing doses.' },
-    { when:'Today 10:05', pair:'St. John's Wort × Sertraline', severity:'Severe', action:'Avoid concomitant use; consult prescriber.' },
-    { when:'Yesterday', pair:'Magnesium × Doxycycline', severity:'High', action:'Separate by 2–6 hours to reduce chelation.' },
+    { when:'Today 10:05', pair:'St. John\'s Wort × Sertraline', severity:'Severe', action:'Avoid concomitant use; consult prescriber.' },
+    { when:'Yesterday', pair:'Magnesium × Doxycycline', severity:'High', action:'Separate by 2-6 hours to reduce chelation.' },
     { when:'2 days ago', pair:'Creatine × Caffeine', severity:'Low', action:'Generally compatible; watch GI tolerance.' },
   ];
 
