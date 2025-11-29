@@ -1,4 +1,4 @@
-const { supabaseAdmin } = require('./_lib/supabaseAdmin');
+const { supabaseAdmin } = require('./_lib/supabaseAdmin.cjs');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') return { statusCode: 405, body: 'Method Not Allowed' };

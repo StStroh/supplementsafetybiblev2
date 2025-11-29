@@ -1,6 +1,6 @@
 const Stripe = require('stripe');
-const { supabaseAdmin } = require('./_lib/supabaseAdmin');
-const { upsertEntitlement } = require('./_lib/upsertEntitlement');
+const { supabaseAdmin } = require('./_lib/supabaseAdmin.cjs');
+const { upsertEntitlement } = require('./_lib/upsertEntitlement.cjs');
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
 
