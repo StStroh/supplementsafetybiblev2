@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router-dom';
-import Landing from './pages/Landing';
 import Search from './pages/Search';
 import InteractionDetails from './pages/InteractionDetails';
 import Admin from './pages/Admin';
@@ -9,10 +8,6 @@ import Home from './pages/Home';
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Landing />
-  },
-  {
-    path: '/home',
     element: <Home />
   },
   {
