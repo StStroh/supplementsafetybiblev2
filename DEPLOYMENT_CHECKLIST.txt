@@ -1,0 +1,132 @@
+================================================================================
+DEPLOYMENT CHECKLIST - Stripe Checkout Integration
+================================================================================
+
+STEP 1: VERIFY ENVIRONMENT VARIABLES IN NETLIFY
+------------------------------------------------
+Navigate to: Netlify Dashboard → Site Settings → Environment Variables
+
+Required Variables (check these exist and are non-empty):
+
+  □ PRICE_PRO_MONTHLY         → Should start with "price_"
+  □ PRICE_PRO_ANNUAL          → Should start with "price_"  
+  □ PRICE_PREMIUM_MONTHLY     → Should start with "price_"
+  □ PRICE_PREMIUM_ANNUAL      → Should start with "price_"
+
+OR (fallback naming):
+
+  □ VITE_STRIPE_PRICE_PRO              → Should start with "price_"
+  □ VITE_STRIPE_PRICE_PRO_ANNUAL       → Should start with "price_"
+  □ VITE_STRIPE_PRICE_PREMIUM          → Should start with "price_"
+  □ VITE_STRIPE_PRICE_PREMIUM_ANNUAL   → Should start with "price_"
+
+Also verify:
+  □ STRIPE_SECRET_KEY         → Should start with "sk_live_" or "sk_test_"
+
+================================================================================
+STEP 2: DEPLOY TO NETLIFY
+------------------------------------------------
+Option A: Git Push (automatic deploy)
+  $ git add .
+  $ git commit -m "Update pricing tiers and checkout integration"
+  $ git push origin main
+
+Option B: Manual Deploy
+  $ npm run build
+  Then drag /dist folder to Netlify web interface
+
+================================================================================
+STEP 3: VERIFICATION TESTS
+------------------------------------------------
+
+TEST 1: Function Reachable
+  URL: POST https://supplementsafetybible.com/.netlify/functions/create-checkout-session
+  Payload: {"tier":"pro","cadence":"monthly"}
+  Expected: Status 200 or 400 (not 404)
+  
+  □ PASS  □ FAIL
+
+TEST 2: Session URL Present  
+  Expected: Response contains {"url": "https://checkout.stripe.com/..."}
+  
+  □ PASS  □ FAIL
+
+TEST 3: Premium Page Loads
+  URL: GET https://supplementsafetybible.com/premium
+  Expected: Status 200, page displays pricing
+  
+  □ PASS  □ FAIL
+
+TEST 4: Free Tier Button
+  Click "Start Free" on Starter tier
+  Expected: Redirects to /search (no checkout)
+  
+  □ PASS  □ FAIL
+
+TEST 5: Pro Checkout (Monthly)
+  Toggle: Monthly, Click "Get Pro"
+  Expected: Redirects to Stripe with $29/month
+  
+  □ PASS  □ FAIL
+
+TEST 6: Pro Checkout (Annual)  
+  Toggle: Annual, Click "Get Pro"
+  Expected: Redirects to Stripe with $24/month ($288/year)
+  
+  □ PASS  □ FAIL
+
+TEST 7: Premium Checkout (Monthly)
+  Toggle: Monthly, Click "Get Premium"
+  Expected: Redirects to Stripe with $79/month
+  
+  □ PASS  □ FAIL
+
+TEST 8: Premium Checkout (Annual)
+  Toggle: Annual, Click "Get Premium"  
+  Expected: Redirects to Stripe with $66/month ($792/year)
+  
+  □ PASS  □ FAIL
+
+================================================================================
+STEP 4: ROLLBACK (if needed)
+------------------------------------------------
+
+If checkout is broken:
+  1. Go to Netlify Dashboard → Deploys
+  2. Find deploy from before today
+  3. Click "..." → "Publish deploy"
+  4. Verify checkout works on rolled-back version
+
+================================================================================
+QUICK CURL TEST
+------------------------------------------------
+
+curl -X POST https://supplementsafetybible.com/.netlify/functions/create-checkout-session \
+  -H "Content-Type: application/json" \
+  -d '{"tier":"pro","cadence":"monthly"}'
+
+Should return:
+  {"url":"https://checkout.stripe.com/c/pay/cs_..."}
+
+================================================================================
+SUMMARY TABLE FORMAT
+================================================================================
+
+┌─────────────────────────────┬──────────┬────────────────────────┐
+│ Test                        │ Status   │ Details                │
+├─────────────────────────────┼──────────┼────────────────────────┤
+│ Function Reachable          │          │                        │
+│ Session URL Present         │          │                        │
+│ Premium Page Loads          │          │                        │
+└─────────────────────────────┴──────────┴────────────────────────┘
+
+┌──────────────────────────────┬────────┐
+│ Environment Variable         │ Status │
+├──────────────────────────────┼────────┤
+│ PRICE_PRO_MONTHLY            │        │
+│ PRICE_PRO_ANNUAL             │        │
+│ PRICE_PREMIUM_MONTHLY        │        │
+│ PRICE_PREMIUM_ANNUAL         │        │
+└──────────────────────────────┴────────┘
+
+================================================================================
