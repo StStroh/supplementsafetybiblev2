@@ -1,8 +1,7 @@
 import Navbar from '../components/Navbar';
-import DontMixBlindHero from '../components/DontMixBlindHero';
+import PrimaryInteractionChecker from '../components/PrimaryInteractionChecker';
 import HowItWorks from '../components/HowItWorks';
 import WhyItMatters from '../components/WhyItMatters';
-import InteractionChecker from '../components/InteractionChecker';
 import Pricing from '../components/Pricing';
 import Trust from '../components/Trust';
 import FAQ from '../components/FAQ';
@@ -10,16 +9,13 @@ import Footer from '../components/Footer';
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <DontMixBlindHero />
+      <PrimaryInteractionChecker />
       <HowItWorks />
       <WhyItMatters />
-      <section id="interaction-checker">
-        <InteractionChecker />
-      </section>
-      <Pricing />
       <Trust />
+      <Pricing />
       <FAQ />
       <Footer />
     </div>
