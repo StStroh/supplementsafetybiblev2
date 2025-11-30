@@ -1,9 +1,15 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { SEO } from '../lib/seo';
 
 export default function Terms() {
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO
+        title="Terms of Service | Supplement Safety Bible"
+        description="Terms and conditions for using Supplement Safety Bible interaction checker service."
+        canonical="/terms"
+      />
       <Navbar />
 
       <main className="flex-grow py-16 px-4 bg-white">

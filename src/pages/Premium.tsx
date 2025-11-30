@@ -1,6 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Star } from 'lucide-react';
+import { SEO, StructuredData } from '../lib/seo';
+
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Supplement Safety Bible Premium",
+  "description": "Premium interaction checker and safety guidance for healthcare professionals.",
+  "brand": {
+    "@type": "Brand",
+    "name": "Supplement Safety Bible"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://supplementsafetybible.com/pricing",
+    "priceCurrency": "USD",
+    "price": "29.00",
+    "availability": "https://schema.org/InStock"
+  }
+};
 
 export default function Premium() {
   const navigate = useNavigate();
@@ -95,6 +114,12 @@ export default function Premium() {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title="Pricing | Supplement Safety Bible"
+        description="Unlock premium interaction safety tools with simple pricing. Pro and Premium plans for healthcare professionals and teams."
+        canonical="/pricing"
+      />
+      <StructuredData data={productSchema} />
       <nav className="border-b border-gray-100 sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">

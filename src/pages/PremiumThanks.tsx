@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SEO } from '../lib/seo';
 
 type SessionShape = {
   id: string;
@@ -66,6 +67,12 @@ export default function PremiumThanks() {
 
   return (
     <main className="mx-auto max-w-3xl p-6">
+      <SEO
+        title="Welcome to Premium | Supplement Safety Bible"
+        description="Thank you for upgrading to Premium. Your account is now active."
+        canonical="/premium/thanks"
+        noindex={true}
+      />
       <h1 className="text-3xl font-bold">Welcome to Premium 🎉</h1>
       {email && <p className="mt-2 text-gray-700">Activated for: <strong>{email}</strong></p>}
       <p className="mt-4">Your access is active now. Don't Mix Blind™.</p>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { SEO } from '../lib/seo';
 
 interface FAQItem {
   question: string;
@@ -56,6 +57,11 @@ export default function FAQ() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO
+        title="FAQ | Supplement Safety Bible"
+        description="Frequently asked questions about supplement-medication interactions, pricing plans, and how to use Supplement Safety Bible."
+        canonical="/faq"
+      />
       <Navbar />
 
       <main className="flex-grow py-20 px-4 bg-gradient-to-b from-blue-50 to-white">

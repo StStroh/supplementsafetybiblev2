@@ -3,6 +3,7 @@ import { CreditCard, Loader2, AlertCircle, Calendar, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ensureFreeProfile } from '../lib/profile';
 import { SUPPORT_EMAIL } from '../lib/support';
+import { SEO } from '../lib/seo';
 
 interface Profile {
   email: string;
@@ -157,6 +158,12 @@ const Account: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4">
+      <SEO
+        title="Account | Supplement Safety Bible"
+        description="Manage your Supplement Safety Bible subscription and account settings."
+        canonical="/account"
+        noindex={true}
+      />
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white">

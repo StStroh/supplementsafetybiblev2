@@ -6,6 +6,7 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import SeverityBadge from '../components/check/SeverityBadge';
 import { useIsPremium } from '../lib/useAuth';
+import { SEO } from '../lib/seo';
 
 interface Interaction {
   id: number;
@@ -97,6 +98,11 @@ export default function Search() {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title="Search Interactions | Supplement Safety Bible"
+        description="Search our database of 2,500+ supplement-medication interactions. Get instant safety information and recommendations."
+        canonical="/search"
+      />
       <nav className="bg-white border-b border-[#DCE3ED] sticky top-0 z-10" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">

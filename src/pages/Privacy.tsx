@@ -1,9 +1,15 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { SEO } from '../lib/seo';
 
 export default function Privacy() {
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO
+        title="Privacy Policy | Supplement Safety Bible"
+        description="Learn how Supplement Safety Bible protects your privacy and handles your personal information."
+        canonical="/privacy"
+      />
       <Navbar />
 
       <main className="flex-grow py-16 px-4 bg-white">
