@@ -52,33 +52,61 @@ exports.handler = async (event) => {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth:{persistSession:false} });
 
-  const record = { name: name||null, email, plan:'free', status:'active', activated_at: new Date().toISOString() };
-
+  // Use raw SQL to bypass schema cache issues
   let resp;
   if (email) {
-    resp = await supabase.from('profiles')
-      .upsert({ email, ...record }, { onConflict:'email' })
-      .select('id,email,name,plan,status,activated_at')
-      .single();
+    // Upsert with conflict handling
+    resp = await supabase.rpc('upsert_free_profile', {
+      p_name: name || null,
+      p_email: email,
+      p_plan: 'free',
+      p_status: 'active'
+    });
   } else {
-    resp = await supabase.from('profiles')
-      .insert(record)
-      .select('id,email,name,plan,status,activated_at')
-      .single();
+    // Insert without email (only name)
+    resp = await supabase.rpc('insert_free_profile', {
+      p_name: name || null,
+      p_email: null,
+      p_plan: 'free',
+      p_status: 'active'
+    });
   }
 
   if (resp.error) {
     console.error('grant-free error:', resp.error);
-    return {
-      statusCode:500,
-      headers,
-      body: JSON.stringify({
-        error:'Database error',
-        detail: resp.error.message,
-        code: resp.error.code,
-        hint: resp.error.hint || null
-      })
-    };
+    // Fallback to direct insert/upsert if RPC doesn't exist
+    try {
+      const record = { name: name||null, email, plan:'free', status:'active' };
+      let fallbackResp;
+      if (email) {
+        fallbackResp = await supabase.from('profiles')
+          .upsert({ email, ...record }, { onConflict:'email' })
+          .select('id,email,name,plan,status')
+          .single();
+      } else {
+        fallbackResp = await supabase.from('profiles')
+          .insert(record)
+          .select('id,email,name,plan,status')
+          .single();
+      }
+
+      if (fallbackResp.error) {
+        throw fallbackResp.error;
+      }
+
+      return { statusCode:200, headers, body:JSON.stringify({ ok:true, user:fallbackResp.data }) };
+    } catch (fallbackError) {
+      return {
+        statusCode:500,
+        headers,
+        body: JSON.stringify({
+          error:'Database error',
+          detail: fallbackError.message || resp.error.message,
+          code: fallbackError.code || resp.error.code,
+          hint: fallbackError.hint || resp.error.hint || null
+        })
+      };
+    }
   }
 
   return { statusCode:200, headers, body:JSON.stringify({ ok:true, user:resp.data }) };
