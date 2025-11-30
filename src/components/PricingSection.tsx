@@ -32,12 +32,22 @@ export default function PricingSection({
           billing_interval: interval
         }),
       });
-      if (!res.ok) throw new Error(`Checkout failed (${res.status})`);
+
       const data = await res.json();
-      if (!data?.url) throw new Error("No checkout URL returned");
+
+      if (!res.ok) {
+        const errorMsg = data?.error || `Checkout failed (${res.status})`;
+        throw new Error(errorMsg);
+      }
+
+      if (!data?.url) {
+        throw new Error("No checkout URL returned. Please contact support.");
+      }
+
       window.location.assign(data.url);
     } catch (e: any) {
-      setErr(e?.message || "Could not start checkout");
+      console.error("Checkout error:", e);
+      setErr(e?.message || "Could not start checkout. Please try again.");
       setLoading(false);
     }
   }

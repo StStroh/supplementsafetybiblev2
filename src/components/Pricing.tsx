@@ -166,22 +166,24 @@ const Pricing: React.FC = () => {
 
       if (!res.ok) {
         console.error("Checkout error:", data);
-        alert(data.error || "Checkout error. Please try again.");
+        const errorMessage = data?.error || `Checkout failed with status ${res.status}`;
+        alert(errorMessage);
         setLoadingPriceId(null);
         return;
       }
 
       if (!data.url) {
         console.error("No URL returned from checkout session", data);
-        alert("Unexpected response from payment server.");
+        alert("No checkout URL received. Please contact support.");
         setLoadingPriceId(null);
         return;
       }
 
       window.location.href = data.url;
-    } catch (err) {
+    } catch (err: any) {
       console.error("Network error during checkout:", err);
-      alert("Network error. Please try again.");
+      const errorMessage = err?.message || "Network error. Please check your connection and try again.";
+      alert(errorMessage);
       setLoadingPriceId(null);
     }
   };
