@@ -50,7 +50,7 @@ exports.handler = async (event) => {
   const { id, email } = userData.user;
   const { error } = await supabase
     .from('profiles')
-    .upsert({ id, email, plan: 'free', status: 'active', activated_at: new Date().toISOString() });
+    .upsert({ id, email, role: 'free', plan: 'free', status: 'active', activated_at: new Date().toISOString() });
 
   if (error) {
     await supabase.from('events').insert({ route: 'grant-free', status: 500, user_id: id });
