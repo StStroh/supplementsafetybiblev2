@@ -162,28 +162,28 @@ const Pricing: React.FC = () => {
         body: JSON.stringify({ priceId }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        console.error("Checkout error:", data);
-        const errorMessage = data?.error || `Checkout failed with status ${res.status}`;
-        alert(errorMessage);
+        const errorMessage = data?.error?.message || data?.error || `HTTP ${res.status}`;
+        console.error("Checkout error:", errorMessage);
+        alert(String(errorMessage));
         setLoadingPriceId(null);
         return;
       }
 
-      if (!data.url) {
-        console.error("No URL returned from checkout session", data);
-        alert("No checkout URL received. Please contact support.");
+      if (!data.sessionId) {
+        console.error("No sessionId returned from checkout", data);
+        alert("No checkout session received. Please contact support.");
         setLoadingPriceId(null);
         return;
       }
 
-      window.location.href = data.url;
+      window.location.href = `https://checkout.stripe.com/c/pay/${data.sessionId}`;
     } catch (err: any) {
       console.error("Network error during checkout:", err);
-      const errorMessage = err?.message || "Network error. Please check your connection and try again.";
-      alert(errorMessage);
+      const errorMessage = err?.message || "Network error. Please try again.";
+      alert(String(errorMessage));
       setLoadingPriceId(null);
     }
   };

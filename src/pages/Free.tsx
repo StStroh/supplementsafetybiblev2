@@ -20,14 +20,20 @@ export default function Free() {
       const res = await fetch('/.netlify/functions/grant-free', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmed, email: '' })
+        body: JSON.stringify({ name: trimmed })
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data?.ok) {
-        setError(data?.error?.message || data?.error || data?.detail || 'Failed to create user');
+
+      let data: any = {};
+      try { data = await res.json(); } catch {}
+
+      if (!res.ok || data?.error) {
+        const msg = data?.error?.message || data?.error || `HTTP ${res.status}`;
+        setError(String(msg));
         setLoading(false);
         return;
       }
+
+      setError(null);
       navigate('/free/thanks');
     } catch (err) {
       setError('Network error. Please try again.');
@@ -59,7 +65,7 @@ export default function Free() {
           />
 
           {error && (
-            <div className="mt-3 text-sm text-red-600">{error}</div>
+            <div className="mt-3 text-sm text-red-600">{String(error)}</div>
           )}
 
           <button

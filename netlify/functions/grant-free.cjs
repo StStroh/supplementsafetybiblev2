@@ -1,117 +1,48 @@
 const { createClient } = require('@supabase/supabase-js');
-const crypto = require('crypto');
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST,OPTIONS,GET',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-};
+const reply = (code, payload, origin='*') => ({
+  statusCode: code,
+  headers: {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+  },
+  body: JSON.stringify(payload),
+});
 
 exports.handler = async (event) => {
+  const origin = event.headers.origin || event.headers.Origin || '*';
   try {
-    if (event.httpMethod === 'OPTIONS') {
-      return { statusCode: 200, headers: CORS, body: '' };
-    }
+    if (event.httpMethod === 'OPTIONS') return reply(200, { ok: true }, origin);
+    if (event.httpMethod !== 'POST') return reply(405, { error: 'Method not allowed' }, origin);
 
-    if (event.httpMethod === 'GET') {
-      const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-      const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    let body = {};
+    try { body = JSON.parse(event.body || '{}'); }
+    catch { return reply(400, { error: 'Invalid JSON body' }, origin); }
 
-      if (event.queryStringParameters?.diag === '1') {
-        if (!SUPABASE_URL || !SERVICE_ROLE) {
-          return {
-            statusCode: 500,
-            headers: CORS,
-            body: JSON.stringify({ ok: false, error: 'Missing Supabase env vars' })
-          };
-        }
-        const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
-        const ping = await supabase.from('profiles').select('id').limit(1);
-        return {
-          statusCode: 200,
-          headers: CORS,
-          body: JSON.stringify({ ok: !ping.error, error: ping.error || null })
-        };
-      }
+    const name = (body.name ?? '').toString().trim();
 
-      return {
-        statusCode: 200,
-        headers: CORS,
-        body: JSON.stringify({
-          ok: true,
-          env: {
-            url: !!SUPABASE_URL ? 'present' : 'missing',
-            service_role_key: !!SERVICE_ROLE ? 'present' : 'missing'
-          }
-        })
-      };
-    }
+    const url  = process.env.VITE_SUPABASE_URL;
+    const key  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) return reply(500, { error: 'Missing Supabase env vars' }, origin);
 
-    if (event.httpMethod !== 'POST') {
-      return {
-        statusCode: 405,
-        headers: CORS,
-        body: JSON.stringify({ error: 'Method Not Allowed' })
-      };
-    }
+    const admin = createClient(url, key);
 
-    const payload = JSON.parse(event.body || '{}');
-    const name = typeof payload.name === 'string' ? payload.name.trim() : '';
-
-    if (!name) {
-      return {
-        statusCode: 400,
-        headers: CORS,
-        body: JSON.stringify({ error: 'Name is required' })
-      };
-    }
-
-    const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-    const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!SUPABASE_URL || !SERVICE_ROLE) {
-      return {
-        statusCode: 500,
-        headers: CORS,
-        body: JSON.stringify({ error: 'Missing Supabase env vars' })
-      };
-    }
-
-    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
-
-    // Create auth user with random email
-    const { data: user, error: userError } = await supabase.auth.admin.createUser({
-      email: `${crypto.randomUUID()}@free-plan.local`,
-      email_confirm: true
-    });
-    if (userError) throw userError;
-
-    // Create profile with matching user id
-    const { data, error } = await supabase
+    // Upsert minimal free profile (extend as needed)
+    const { data, error } = await admin
       .from('profiles')
-      .insert({
-        id: user.user.id,
-        name,
-        plan: 'free',
-        status: 'active',
-        activated_at: new Date().toISOString()
-      })
+      .upsert(
+        { name, plan: 'free', status: 'active', activated_at: new Date().toISOString() },
+        { onConflict: 'id' }
+      )
       .select()
-      .single();
-    if (error) throw error;
+      .limit(1)
+      .maybeSingle();
 
-    return {
-      statusCode: 200,
-      headers: CORS,
-      body: JSON.stringify({ ok: true, profile: data })
-    };
-
-  } catch (err) {
-    console.error('grant-free exception:', err);
-    return {
-      statusCode: 500,
-      headers: CORS,
-      body: JSON.stringify({ error: String(err) })
-    };
+    if (error) return reply(500, { error: error.message }, origin);
+    return reply(200, { ok: true, profile: data }, origin);
+  } catch (e) {
+    return reply(500, { error: e?.message || 'Unknown server error' }, origin);
   }
 };

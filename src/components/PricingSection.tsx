@@ -28,26 +28,25 @@ export default function PricingSection({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          plan: "premium",
-          billing_interval: interval
+          tier: interval === "month" ? "premium_monthly" : "premium_annual"
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        const errorMsg = data?.error || `Checkout failed (${res.status})`;
-        throw new Error(errorMsg);
+        const errorMsg = data?.error?.message || data?.error || `HTTP ${res.status}`;
+        throw new Error(String(errorMsg));
       }
 
-      if (!data?.url) {
-        throw new Error("No checkout URL returned. Please contact support.");
+      if (!data?.sessionId) {
+        throw new Error("No checkout session returned. Please contact support.");
       }
 
-      window.location.assign(data.url);
+      window.location.assign(`https://checkout.stripe.com/c/pay/${data.sessionId}`);
     } catch (e: any) {
       console.error("Checkout error:", e);
-      setErr(e?.message || "Could not start checkout. Please try again.");
+      setErr(String(e?.message) || "Could not start checkout. Please try again.");
       setLoading(false);
     }
   }
