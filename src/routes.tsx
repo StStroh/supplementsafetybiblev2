@@ -16,6 +16,7 @@ import Account from './pages/Account';
 import Auth from './pages/Auth';
 import AuthCallback from './pages/AuthCallback';
 import Free from './pages/Free';
+import FreeThanks from './pages/FreeThanks';
 import Landing from './pages/Landing';
 
 function NotFound() {
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
   {
     path: '/free',
     element: <Free />
+  },
+  {
+    path: '/free/thanks',
+    element: <FreeThanks />
   },
   {
     path: '/landing',
