@@ -6,19 +6,41 @@ import { SEO, StructuredData } from '../lib/seo';
 const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "Supplement Safety Bible Premium",
-  "description": "Premium interaction checker and safety guidance for healthcare professionals.",
-  "brand": {
-    "@type": "Brand",
-    "name": "Supplement Safety Bible"
-  },
+  "name": "Supplement Safety Bible — Premium Plan",
+  "description": "Premium supplement–medication interaction checker with unlimited searches, advanced filtering, PDF reports, and clinical references.",
+  "brand": { "@type": "Brand", "name": "Supplement Safety Bible" },
+  "url": "https://supplementsafetybible.com/premium",
+  "image": "https://supplementsafetybible.com/og-image.png",
   "offers": {
     "@type": "Offer",
-    "url": "https://supplementsafetybible.com/pricing",
     "priceCurrency": "USD",
     "price": "29.00",
-    "availability": "https://schema.org/InStock"
+    "availability": "https://schema.org/InStock",
+    "url": "https://supplementsafetybible.com/premium"
   }
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What do I get with Premium?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Unlimited interaction searches, advanced filtering, PDF reports, clinical references, and priority support."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I cancel anytime?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. You can cancel your Premium subscription at any time from your account."
+      }
+    }
+  ]
 };
 
 export default function Premium() {
@@ -97,9 +119,7 @@ export default function Premium() {
       }
 
       const { url } = await response.json();
-      if (url) {
-        window.location.href = url;
-      }
+      if (url) window.location.href = url;
     } catch (error) {
       console.error('Checkout error:', error);
       alert('Failed to start checkout. Please try again.');
@@ -108,18 +128,21 @@ export default function Premium() {
     }
   };
 
-  const getPrice = (tier: typeof tiers[0]) => {
-    return cadence === 'monthly' ? tier.monthlyPrice : tier.annualPrice;
-  };
+  const getPrice = (tier: typeof tiers[0]) =>
+    cadence === 'monthly' ? tier.monthlyPrice : tier.annualPrice;
 
   return (
     <div className="min-h-screen bg-white">
+      {/* SEO + Structured Data (Google can index this page cleanly) */}
       <SEO
-        title="Pricing | Supplement Safety Bible"
-        description="Unlock premium interaction safety tools with simple pricing. Pro and Premium plans for healthcare professionals and teams."
-        canonical="/pricing"
+        title="Premium | Supplement Safety Bible"
+        description="Unlock full supplement–medication interaction safety with Premium: unlimited checks, PDF exports, clinical references, and pro tools."
+        canonical="/premium"
+        robots="index,follow"
       />
       <StructuredData data={productSchema} />
+      <StructuredData data={faqSchema} />
+
       <nav className="border-b border-gray-100 sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -185,9 +208,7 @@ export default function Premium() {
             <div
               key={tier.id}
               className={`bg-white rounded-2xl p-8 border-2 transition-all hover:shadow-lg ${
-                tier.popular
-                  ? 'border-blue-600 shadow-lg relative'
-                  : 'border-gray-200'
+                tier.popular ? 'border-blue-600 shadow-lg relative' : 'border-gray-200'
               }`}
             >
               {tier.popular && (
@@ -203,19 +224,13 @@ export default function Premium() {
                 <h3 className="text-2xl font-bold text-black mb-2" style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}>
                   {tier.name}
                 </h3>
-                <p className="text-gray-600 mb-6">
-                  {tier.description}
-                </p>
+                <p className="text-gray-600 mb-6">{tier.description}</p>
 
                 <div className="mb-2">
                   <span className="text-5xl font-bold text-black">
                     ${getPrice(tier)}
                   </span>
-                  {!tier.isFree && (
-                    <span className="text-gray-600 ml-2">
-                      /month
-                    </span>
-                  )}
+                  {!tier.isFree && <span className="text-gray-600 ml-2">/month</span>}
                 </div>
 
                 {tier.isFree && (
@@ -245,9 +260,7 @@ export default function Premium() {
                 {loading === tier.id ? (
                   <span>Processing...</span>
                 ) : (
-                  <span>
-                    {tier.isFree ? 'Start Free' : tier.id === 'pro' ? 'Get Pro' : 'Get Premium'}
-                  </span>
+                  <span>{tier.isFree ? 'Start Free' : tier.id === 'pro' ? 'Get Pro' : 'Get Premium'}</span>
                 )}
               </button>
 
@@ -308,7 +321,7 @@ export default function Premium() {
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
               </div>
-              <span className="text-sm font-medium text-gray-600">© 2025 Supplement Safety Bible</span>
+              <span className="text-sm font-medium text-gray-600">©️ 2025 Supplement Safety Bible</span>
             </div>
 
             <div className="flex items-center space-x-6 text-sm text-gray-600">
