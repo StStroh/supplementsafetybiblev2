@@ -1,33 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://supplement-safety-bible.netlify.app/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://supplementsafetybible.com/</loc>
   </url>
   <url>
-    <loc>https://supplement-safety-bible.netlify.app/search</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <loc>https://supplementsafetybible.com/search</loc>
   </url>
   <url>
-    <loc>https://supplement-safety-bible.netlify.app/pricing</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://supplementsafetybible.com/pricing</loc>
   </url>
   <url>
-    <loc>https://supplement-safety-bible.netlify.app/faq</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://supplementsafetybible.com/premium</loc>
   </url>
   <url>
-    <loc>https://supplement-safety-bible.netlify.app/terms</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://supplementsafetybible.com/premium/thanks</loc>
   </url>
   <url>
-    <loc>https://supplement-safety-bible.netlify.app/privacy</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://supplementsafetybible.com/account</loc>
+  </url>
+  <url>
+    <loc>https://supplementsafetybible.com/faq</loc>
+  </url>
+  <url>
+    <loc>https://supplementsafetybible.com/privacy</loc>
+  </url>
+  <url>
+    <loc>https://supplementsafetybible.com/terms</loc>
   </url>
 </urlset>
