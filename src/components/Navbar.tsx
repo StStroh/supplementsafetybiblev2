@@ -6,11 +6,20 @@ import { SUPPORT_EMAIL } from '../lib/support';
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [plan, setPlan] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getUser();
       setIsLoggedIn(!!data?.user);
+      if (data?.user?.email) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('plan')
+          .eq('email', data.user.email)
+          .maybeSingle();
+        setPlan(profile?.plan || null);
+      }
     })();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -39,9 +48,16 @@ export default function Navbar() {
               FAQ
             </a>
             {isLoggedIn ? (
-              <a href="/account" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
-                Account
-              </a>
+              <div className="flex items-center gap-2">
+                <a href="/account" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
+                  Account
+                </a>
+                {plan === 'free' && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                    Free — Active
+                  </span>
+                )}
+              </div>
             ) : (
               <a href="/auth" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium">
                 Sign in
@@ -81,13 +97,20 @@ export default function Navbar() {
                 FAQ
               </a>
               {isLoggedIn ? (
-                <a
-                  href="/account"
-                  className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Account
-                </a>
+                <div>
+                  <a
+                    href="/account"
+                    className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Account
+                  </a>
+                  {plan === 'free' && (
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium ml-2">
+                      Free — Active
+                    </span>
+                  )}
+                </div>
               ) : (
                 <a
                   href="/auth"

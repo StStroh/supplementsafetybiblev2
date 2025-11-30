@@ -186,6 +186,7 @@ const Account: React.FC = () => {
                       <span className="text-slate-600 font-medium">Current Plan</span>
                       <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
                         {getPlanDisplayName(profile.role)}
+                        {profile.role === 'free' && ' — Active'}
                       </span>
                     </div>
 

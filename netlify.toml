@@ -16,6 +16,10 @@
   path = "monitor.cjs"
   schedule = "*/10 * * * *"
 
+[[scheduled.functions]]
+  path = "monitor-health.cjs"
+  schedule = "*/15 * * * *"
+
 [context.production]
   # Production environment overrides
 
