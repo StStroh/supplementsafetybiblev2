@@ -1,157 +1,73 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const ORIGINS = ['https://supplementsafetybible.com','http://localhost:5173'];
+const cors = (o) => ({
+  'Access-Control-Allow-Origin': ORIGINS.includes(o) ? o : ORIGINS[0],
+  'Vary':'Origin',
+  'Access-Control-Allow-Methods':'POST,OPTIONS,GET',
+  'Access-Control-Allow-Headers':'Content-Type,Authorization'
+});
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
-};
+exports.handler = async (event) => {
+  const origin = event.headers?.origin || '';
+  const headers = { 'Content-Type':'application/json', ...cors(origin) };
 
-exports.handler = async (event, context) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: corsHeaders,
-      body: '',
-    };
-  }
-
+  if (event.httpMethod === 'OPTIONS') return { statusCode:200, headers, body:'' };
   if (event.httpMethod === 'GET') {
-    const serviceKeyPresent = SUPABASE_SERVICE_ROLE_KEY && SUPABASE_SERVICE_ROLE_KEY.length > 10;
     return {
-      statusCode: 200,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json',
-      },
+      statusCode:200, headers,
       body: JSON.stringify({
-        ok: true,
-        env: {
-          service_role_key: serviceKeyPresent ? 'present' : 'missing',
-        },
-      }),
-    };
-  }
-
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ error: 'Method Not Allowed' }),
-    };
-  }
-
-  try {
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      console.error('grant-free: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
-      return {
-        statusCode: 500,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ok: false,
-          error: 'Server configuration error',
-        }),
-      };
-    }
-
-    const body = JSON.parse(event.body || '{}');
-    const { name, email } = body;
-
-    if (!name && !email) {
-      return {
-        statusCode: 400,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ok: false,
-          error: 'Name or email is required',
-        }),
-      };
-    }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    let userId;
-
-    if (email) {
-      const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email.toLowerCase())
-        .maybeSingle();
-
-      if (existingUser) {
-        userId = existingUser.id;
-      } else {
-        const { data: anonUser, error: authError } = await supabase.auth.signInAnonymously();
-        if (authError) {
-          console.error('grant-free: Auth error:', authError);
-          throw new Error('Failed to create user');
+        ok:true,
+        env:{
+          url: !!process.env.SUPABASE_URL ? 'present':'missing',
+          service_role_key: !!process.env.SUPABASE_SERVICE_ROLE_KEY ? 'present':'missing'
         }
-        userId = anonUser.user.id;
-      }
-    } else {
-      const { data: anonUser, error: authError } = await supabase.auth.signInAnonymously();
-      if (authError) {
-        console.error('grant-free: Auth error:', authError);
-        throw new Error('Failed to create user');
-      }
-      userId = anonUser.user.id;
-    }
-
-    const now = new Date().toISOString();
-    const profileData = {
-      id: userId,
-      plan: 'free',
-      subscription_status: 'active',
-      activated_at: now,
-    };
-
-    if (name) profileData.name = name;
-    if (email) profileData.email = email.toLowerCase();
-
-    const { error: upsertError } = await supabase
-      .from('profiles')
-      .upsert(profileData, { onConflict: 'id' });
-
-    if (upsertError) {
-      console.error('grant-free: Upsert error:', upsertError);
-      throw new Error('Failed to activate free plan');
-    }
-
-    return {
-      statusCode: 200,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ok: true,
-        user_id: userId,
-      }),
-    };
-  } catch (error) {
-    console.error('grant-free: Error:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ok: false,
-        error: error.message || 'Internal server error',
-      }),
+      })
     };
   }
+  if (event.httpMethod !== 'POST') return { statusCode:405, headers, body:JSON.stringify({error:'Method not allowed'}) };
+
+  const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
+  if (!SUPABASE_URL) return { statusCode:500, headers, body:JSON.stringify({error:'Missing SUPABASE_URL'}) };
+  if (!SUPABASE_SERVICE_ROLE_KEY) return { statusCode:500, headers, body:JSON.stringify({error:'Missing SUPABASE_SERVICE_ROLE_KEY'}) };
+
+  let body;
+  try { body = JSON.parse(event.body||'{}'); } catch { return { statusCode:400, headers, body:JSON.stringify({error:'Invalid JSON'}) }; }
+
+  const name = (body.name||'').trim().slice(0,120);
+  const email = (body.email||'').trim().toLowerCase() || null;
+  if (!name && !email) return { statusCode:400, headers, body:JSON.stringify({error:'Provide name or email'}) };
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth:{persistSession:false} });
+
+  const record = { name: name||null, email, plan:'free', status:'active', activated_at: new Date().toISOString() };
+
+  let resp;
+  if (email) {
+    resp = await supabase.from('profiles')
+      .upsert({ email, ...record }, { onConflict:'email' })
+      .select('id,email,name,plan,status,activated_at')
+      .single();
+  } else {
+    resp = await supabase.from('profiles')
+      .insert(record)
+      .select('id,email,name,plan,status,activated_at')
+      .single();
+  }
+
+  if (resp.error) {
+    console.error('grant-free error:', resp.error);
+    return {
+      statusCode:500,
+      headers,
+      body: JSON.stringify({
+        error:'Database error',
+        detail: resp.error.message,
+        code: resp.error.code,
+        hint: resp.error.hint || null
+      })
+    };
+  }
+
+  return { statusCode:200, headers, body:JSON.stringify({ ok:true, user:resp.data }) };
 };

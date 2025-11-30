@@ -20,11 +20,11 @@ export default function Free() {
       const res = await fetch('/.netlify/functions/grant-free', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmed })
+        body: JSON.stringify({ name: trimmed, email: '' })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data?.ok) {
-        setError(data?.error || 'Something went wrong. Please try again.');
+        setError(data?.detail || data?.error || 'Failed to create user');
         setLoading(false);
         return;
       }
