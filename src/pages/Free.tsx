@@ -24,7 +24,7 @@ export default function Free() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data?.ok) {
-        setError(data?.detail || data?.error || 'Failed to create user');
+        setError(data?.error?.message || data?.error || data?.detail || 'Failed to create user');
         setLoading(false);
         return;
       }
