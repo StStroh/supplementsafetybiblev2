@@ -1,34 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Free() {
-  const [status, setStatus] = useState('loading');
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'loading'|'ok'|'error'>('loading');
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch('/api/grant-free', { method: 'POST' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.ok) {
-          setStatus('success');
-          setMessage('Free tier activated!');
-          setTimeout(() => window.location.href = '/account', 2000);
-        } else {
-          setStatus('error');
-          setMessage('Failed to activate');
-        }
-      })
-      .catch(() => {
-        setStatus('error');
-        setMessage('Network error');
-      });
-  }, []);
+  async function activate() {
+    try {
+      const res = await fetch('/api/grant-free', { method: 'POST' });
+      if (!res.ok) throw new Error();
+      setStatus('ok');
+      setTimeout(() => navigate('/account'), 2000);
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  useEffect(() => { activate(); }, []);
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1>Free Tier Activation</h1>
-      {status === 'loading' && <p>Loading...</p>}
-      {status === 'success' && <p style={{ color: 'green' }}>{message}</p>}
-      {status === 'error' && <p style={{ color: 'red' }}>{message}</p>}
-    </div>
+    <main style={{ padding: 40, fontFamily: 'sans-serif' }}>
+      {status === 'loading' && <p>Loading…</p>}
+      {status === 'ok' && <p style={{ color: 'green' }}>Free tier activated! Redirecting…</p>}
+      {status === 'error' && <p style={{ color: 'red' }}>Failed to activate.</p>}
+    </main>
   );
 }
