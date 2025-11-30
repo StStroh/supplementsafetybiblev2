@@ -35,19 +35,7 @@
   targetPort = 5173
   framework = "#custom"
 
-# API proxy (optional convenience)
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# Keep direct access to functions (no rewrite)
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# SPA fallback — must be last
+# SPA Fallback (only redirect needed)
 [[redirects]]
   from = "/*"
   to = "/index.html"
