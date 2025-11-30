@@ -4,52 +4,51 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Free() {
   const [name, setName] = useState('');
-  const [state, setState] = useState<'idle'|'loading'|'ok'|'error'>('idle');
+  const [state, setState] = useState<'idle'|'loading'|'done'|'err'>('idle');
   const nav = useNavigate();
 
-  async function enterFree(e) {
+  async function go(e) {
     e.preventDefault();
     setState('loading');
     try {
-      // 1) Anonymous session
-      const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously();
-      if (anonErr) throw anonErr;
+      const { data: anon, error: aerr } = await supabase.auth.signInAnonymously();
+      if (aerr) throw aerr;
 
-      const id = anon.user.id;
+      const userId = anon.user.id;
 
-      // 2) Store name + free plan
-      const { error: upErr } = await supabase
+      const { error: perr } = await supabase
         .from('profiles')
-        .upsert({ id, name, plan: 'free' });
-      if (upErr) throw upErr;
+        .upsert({ id: userId, name, plan: 'free' });
 
-      setState('ok');
+      if (perr) throw perr;
+
+      setState('done');
       setTimeout(() => nav('/search'), 800);
     } catch {
-      setState('error');
+      setState('err');
     }
   }
 
   return (
-    <main style={{padding:40, maxWidth:520, margin:'0 auto'}}>
+    <main style={{padding:40, maxWidth:480, margin:'0 auto'}}>
       <h1>Free Access</h1>
-      <p>Enter your name to explore the Interaction Checker.</p>
+      <p>Enter your name to explore.</p>
 
-      <form onSubmit={enterFree}>
+      <form onSubmit={go}>
         <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Your name"
           required
-          style={{width:'100%', padding:12, marginTop:12}}
+          value={name}
+          onChange={e=>setName(e.target.value)}
+          placeholder="Your name"
+          style={{width:'100%', padding:12}}
         />
-        <button disabled={state==='loading'} style={{padding:12, marginTop:12}}>
-          {state==='loading' ? 'Starting…' : 'Enter Free Access'}
+        <button disabled={state==='loading'} style={{marginTop:12, padding:12}}>
+          {state==='loading' ? 'Starting…' : 'Enter'}
         </button>
       </form>
 
-      {state==='ok' && <p style={{color:'green'}}>Welcome! Redirecting…</p>}
-      {state==='error' && <p style={{color:'red'}}>Something went wrong. Try again.</p>}
+      {state==='done' && <p style={{color:'green'}}>Welcome! Redirecting…</p>}
+      {state==='err' && <p style={{color:'red'}}>Something went wrong.</p>}
     </main>
   );
 }
