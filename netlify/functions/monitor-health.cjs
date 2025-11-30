@@ -76,11 +76,16 @@ exports.handler = async () => {
   if (failures.length > 0) {
     console.error('[monitor-health] Anomalies detected:', JSON.stringify(failures, null, 2));
 
-    const apiKey = process.env.EMAIL_API_KEY;
-    if (apiKey && apiKey !== 'placeholder_set_in_netlify') {
-      console.info('[monitor-health] Would send alert email for:', failures.length, 'failures');
+    const API = process.env.EMAIL_API_KEY;
+    const PROVIDER = API?.startsWith('SG.') ? 'sendgrid' :
+                     API?.startsWith('key-') || API?.startsWith('mg_') ? 'mailgun' : 'disabled';
+
+    if (PROVIDER === 'disabled') {
+      console.warn('[monitor-health] EMAIL_API_KEY disabled, alert email skipped');
     } else {
-      console.warn('[monitor-health] EMAIL_API_KEY not configured, alert email skipped');
+      console.info('[monitor-health] Would send alert email for:', failures.length, 'failures');
+      // Alert email sending logic would go here (same pattern as send-welcome.cjs)
+      // For now, we log and continue
     }
 
     return {
