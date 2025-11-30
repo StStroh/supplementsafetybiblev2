@@ -16,7 +16,16 @@
     <loc>https://supplementsafetybible.com/premium/thanks</loc>
   </url>
   <url>
+    <loc>https://supplementsafetybible.com/premium/dashboard</loc>
+  </url>
+  <url>
     <loc>https://supplementsafetybible.com/account</loc>
+  </url>
+  <url>
+    <loc>https://supplementsafetybible.com/check</loc>
+  </url>
+  <url>
+    <loc>https://supplementsafetybible.com/auth</loc>
   </url>
   <url>
     <loc>https://supplementsafetybible.com/faq</loc>
