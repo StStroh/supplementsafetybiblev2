@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { AlertTriangle, CheckCircle2, Info, Shield } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Shield, FileText } from "lucide-react";
 import { API_BASE } from "../lib/apiBase";
 import NavClinical from "../components/NavClinical";
 import FooterClinical from "../components/FooterClinical";
@@ -11,6 +11,8 @@ import SeverityBadge from "../components/check/SeverityBadge";
 import ResultCard from "../components/check/ResultCard";
 import UpgradeBand from "../components/check/UpgradeBand";
 import SourcesAccordion from "../components/check/SourcesAccordion";
+import { supabase } from "../lib/supabase";
+import { downloadBlob } from "../lib/download";
 
 type Match = { type: "supplement" | "medication"; name: string; id: string };
 type SearchResp = { ok: boolean; matches: Match[] };
@@ -38,6 +40,7 @@ export default function Check() {
   const [loading, setLoading] = useState(false);
   const [showStickyFooter, setShowStickyFooter] = useState(false);
   const [stickyDismissed, setStickyDismissed] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   useEffect(() => {
     const h = setTimeout(async () => {
@@ -80,6 +83,57 @@ export default function Check() {
 
     if (j && j.ok) {
       setShowStickyFooter(true);
+    }
+  }
+
+  async function handleGeneratePDF() {
+    if (!result || !result.ok) return;
+
+    setPdfLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      if (!token) {
+        alert('Please sign in to generate PDF reports');
+        setPdfLoading(false);
+        return;
+      }
+
+      const pdfData = {
+        supplements: [{ name: result.pair.supplement }],
+        medications: [{ name: result.pair.medication }],
+        interactions: [{
+          supplement_name: result.pair.supplement,
+          medication_name: result.pair.medication,
+          severity: result.severity,
+          clinical_explanation: result.summary,
+          recommendations: result.recommendations.join('\n'),
+          mechanism: result.mechanism || '',
+        }],
+      };
+
+      const res = await fetch('/.netlify/functions/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ data: pdfData }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to generate PDF');
+      }
+
+      const blob = await res.blob();
+      downloadBlob(blob, 'interaction_report.pdf');
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setPdfLoading(false);
     }
   }
 
@@ -257,6 +311,21 @@ export default function Check() {
                     </div>
                   </div>
                 </div>
+
+                <Card>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <FileText className="text-blue-600" size={20} />
+                      <div>
+                        <h3 className="font-semibold text-slate-900">Export Report</h3>
+                        <p className="text-sm text-slate-600">Download a professional PDF report</p>
+                      </div>
+                    </div>
+                    <Button onClick={handleGeneratePDF} disabled={pdfLoading} variant="outline">
+                      {pdfLoading ? "Generating..." : "Generate PDF"}
+                    </Button>
+                  </div>
+                </Card>
 
                 <ResultCard title="What It Means" icon={<Info size={20} className="text-blue-600" />}>
                   <p className="leading-relaxed max-w-prose">{result.summary}</p>
