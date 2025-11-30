@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const crypto = require('crypto');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -78,9 +79,18 @@ exports.handler = async (event) => {
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
 
+    // Create auth user with random email
+    const { data: user, error: userError } = await supabase.auth.admin.createUser({
+      email: `${crypto.randomUUID()}@free-plan.local`,
+      email_confirm: true
+    });
+    if (userError) throw userError;
+
+    // Create profile with matching user id
     const { data, error } = await supabase
       .from('profiles')
       .insert({
+        id: user.user.id,
         name,
         plan: 'free',
         status: 'active',
@@ -88,20 +98,7 @@ exports.handler = async (event) => {
       })
       .select()
       .single();
-
-    if (error) {
-      console.error('grant-free insert error:', error);
-      return {
-        statusCode: 500,
-        headers: CORS,
-        body: JSON.stringify({
-          error: 'Database error',
-          detail: error.message,
-          code: error.code,
-          hint: error.hint || null
-        })
-      };
-    }
+    if (error) throw error;
 
     return {
       statusCode: 200,
