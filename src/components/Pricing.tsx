@@ -130,36 +130,15 @@ const Pricing: React.FC = () => {
     console.log('=================================');
   }, []);
 
-  const handleCheckout = async (priceId?: string) => {
-    if (!priceId) {
-      alert('Error: Price ID is not configured. Please contact support.');
-      console.error('Price ID is undefined. Check environment variables.');
-      return;
-    }
-
-    // Validate that priceId is a real Stripe price ID
-    if (!priceId.startsWith('price_')) {
-      alert('Error: Invalid price ID. Please contact support.');
-      console.error('Invalid price ID format:', priceId);
-      console.error('Price IDs must start with "price_"');
-      console.error('Environment check:', {
-        PRICE_PRO_MONTHLY,
-        PRICE_PRO_ANNUAL,
-        PRICE_PREMIUM_MONTHLY,
-        PRICE_PREMIUM_ANNUAL,
-      });
-      return;
-    }
-
+  const handleCheckout = async (tier: 'pro_monthly' | 'pro_annual' | 'premium_monthly' | 'premium_annual') => {
+    setLoadingPriceId(tier);
     try {
-      setLoadingPriceId(priceId);
-
       const res = await fetch("/.netlify/functions/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ tier }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -167,23 +146,40 @@ const Pricing: React.FC = () => {
       if (!res.ok) {
         const errorMessage = data?.error?.message || data?.error || `HTTP ${res.status}`;
         console.error("Checkout error:", errorMessage);
-        alert(String(errorMessage));
+        setToast({ message: String(errorMessage), type: 'error' });
         setLoadingPriceId(null);
         return;
       }
 
       if (!data.sessionId) {
         console.error("No sessionId returned from checkout", data);
-        alert("No checkout session received. Please contact support.");
+        setToast({ message: "No checkout session received. Please contact support.", type: 'error' });
         setLoadingPriceId(null);
         return;
       }
 
-      window.location.href = `https://checkout.stripe.com/c/pay/${data.sessionId}`;
+      const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+      if (!stripeKey) {
+        setToast({ message: "Stripe not configured. Please contact support.", type: 'error' });
+        setLoadingPriceId(null);
+        return;
+      }
+
+      const stripe = (window as any).Stripe?.(stripeKey);
+      if (!stripe) {
+        setToast({ message: "Stripe.js not loaded. Please refresh and try again.", type: 'error' });
+        setLoadingPriceId(null);
+        return;
+      }
+
+      const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      if (error) {
+        setToast({ message: error.message || "Redirect to checkout failed", type: 'error' });
+        setLoadingPriceId(null);
+      }
     } catch (err: any) {
       console.error("Network error during checkout:", err);
-      const errorMessage = err?.message || "Network error. Please try again.";
-      alert(String(errorMessage));
+      setToast({ message: err?.message || "Network error. Please try again.", type: 'error' });
       setLoadingPriceId(null);
     }
   };
@@ -329,10 +325,7 @@ const Pricing: React.FC = () => {
               billingPeriod === "monthly"
                 ? tier.monthlyPriceLabel
                 : tier.annualPriceLabel;
-            const activePriceId =
-              billingPeriod === "monthly"
-                ? tier.stripeMonthlyPriceId
-                : tier.stripeAnnualPriceId;
+            const tierKey = `${tier.id}_${billingPeriod === "monthly" ? "monthly" : "annual"}` as 'pro_monthly' | 'pro_annual' | 'premium_monthly' | 'premium_annual';
 
             return (
               <div
@@ -377,15 +370,15 @@ const Pricing: React.FC = () => {
                 <div className="mt-6">
                   <button
                     type="button"
-                    onClick={() => handleCheckout(activePriceId)}
-                    disabled={loadingPriceId === activePriceId}
+                    onClick={() => handleCheckout(tierKey)}
+                    disabled={loadingPriceId === tierKey}
                     className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${
-                      loadingPriceId === activePriceId
+                      loadingPriceId === tierKey
                         ? "bg-slate-400 cursor-wait"
                         : "bg-green-600 hover:bg-green-700"
                     }`}
                   >
-                    {loadingPriceId === activePriceId ? (
+                    {loadingPriceId === tierKey ? (
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Processing…
