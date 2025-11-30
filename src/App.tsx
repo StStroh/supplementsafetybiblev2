@@ -11,6 +11,7 @@ import Premium from './pages/Premium';
 import PremiumDashboard from './pages/PremiumDashboard';
 import Search from './pages/Search';
 import Check from './pages/Check';
+import Free from './pages/Free';
 import EnvWarning from './components/EnvWarning';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
       <EnvWarning />
       {path === '/auth' && <Auth />}
       {path === '/auth/callback' && <AuthCallback />}
+      {path === '/free' && <Free />}
       {path === '/faq' && <FAQ />}
       {path === '/privacy' && <Privacy />}
       {path === '/terms' && <Terms />}
@@ -34,7 +36,7 @@ function App() {
       {path === '/check' && <Check />}
       {path === '/checkout/cancel' && <div style={{padding: 16}}>Checkout canceled.</div>}
       {path === '/' && <Home />}
-      {!['/auth', '/auth/callback', '/faq', '/privacy', '/terms', '/success', '/account', '/premium/thanks', '/premium/dashboard', '/premium', '/pricing', '/search', '/check', '/checkout/cancel', '/'].includes(path) && <div style={{padding: 16}}>Page not found.</div>}
+      {!['/auth', '/auth/callback', '/free', '/faq', '/privacy', '/terms', '/success', '/account', '/premium/thanks', '/premium/dashboard', '/premium', '/pricing', '/search', '/check', '/checkout/cancel', '/'].includes(path) && <div style={{padding: 16}}>Page not found.</div>}
     </>
   );
 }
