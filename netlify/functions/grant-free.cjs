@@ -23,22 +23,24 @@ exports.handler = async (event) => {
 
     const name = (body.name ?? '').toString().trim();
 
-    const url  = process.env.VITE_SUPABASE_URL;
-    const key  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const url = process.env.VITE_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key) return reply(500, { error: 'Missing Supabase env vars' }, origin);
 
     const admin = createClient(url, key);
 
-    // Upsert minimal free profile (extend as needed)
+    const payload = {
+      name,
+      plan: 'free',
+      status: 'active',
+      activated_at: new Date().toISOString(),
+    };
+
     const { data, error } = await admin
       .from('profiles')
-      .upsert(
-        { name, plan: 'free', status: 'active', activated_at: new Date().toISOString() },
-        { onConflict: 'id' }
-      )
+      .insert(payload)
       .select()
-      .limit(1)
-      .maybeSingle();
+      .single();
 
     if (error) return reply(500, { error: error.message }, origin);
     return reply(200, { ok: true, profile: data }, origin);
