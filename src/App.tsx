@@ -5,6 +5,7 @@ import Terms from './pages/Terms';
 import Success from './pages/Success';
 import Account from './pages/Account';
 import Auth from './pages/Auth';
+import AuthCallback from './pages/AuthCallback';
 import PremiumThanks from './pages/PremiumThanks';
 import Premium from './pages/Premium';
 import PremiumDashboard from './pages/PremiumDashboard';
@@ -19,6 +20,7 @@ function App() {
     <>
       <EnvWarning />
       {path === '/auth' && <Auth />}
+      {path === '/auth/callback' && <AuthCallback />}
       {path === '/faq' && <FAQ />}
       {path === '/privacy' && <Privacy />}
       {path === '/terms' && <Terms />}
@@ -32,7 +34,7 @@ function App() {
       {path === '/check' && <Check />}
       {path === '/checkout/cancel' && <div style={{padding: 16}}>Checkout canceled.</div>}
       {path === '/' && <Home />}
-      {!['/auth', '/faq', '/privacy', '/terms', '/success', '/account', '/premium/thanks', '/premium/dashboard', '/premium', '/pricing', '/search', '/check', '/checkout/cancel', '/'].includes(path) && <div style={{padding: 16}}>Page not found.</div>}
+      {!['/auth', '/auth/callback', '/faq', '/privacy', '/terms', '/success', '/account', '/premium/thanks', '/premium/dashboard', '/premium', '/pricing', '/search', '/check', '/checkout/cancel', '/'].includes(path) && <div style={{padding: 16}}>Page not found.</div>}
     </>
   );
 }
