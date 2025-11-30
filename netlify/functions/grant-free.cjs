@@ -78,17 +78,15 @@ exports.handler = async (event) => {
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
 
-    const record = {
-      name: name,
-      plan: 'free',
-      status: 'active',
-      activated_at: new Date().toISOString()
-    };
-
     const { data, error } = await supabase
       .from('profiles')
-      .insert(record)
-      .select('id,name,plan,status,activated_at')
+      .insert({
+        name,
+        plan: 'free',
+        status: 'active',
+        activated_at: new Date().toISOString()
+      })
+      .select()
       .single();
 
     if (error) {
