@@ -9,11 +9,6 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
   },
-  base: '/',
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true,
-  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
