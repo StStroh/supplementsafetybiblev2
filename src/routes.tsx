@@ -22,6 +22,10 @@ function NotFound() {
   return <div style={{padding: 40}}>Page not found</div>;
 }
 
+function CheckoutCancel() {
+  return <div style={{padding: 40}}>Checkout canceled.</div>;
+}
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -94,6 +98,10 @@ export const router = createBrowserRouter([
   {
     path: '/landing',
     element: <Landing />
+  },
+  {
+    path: '/checkout/cancel',
+    element: <CheckoutCancel />
   },
   {
     path: '*',
