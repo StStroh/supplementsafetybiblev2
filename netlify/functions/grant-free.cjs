@@ -13,6 +13,18 @@ exports.handler = async (event) => {
   const headers = { 'Content-Type':'application/json', ...cors(origin) };
 
   if (event.httpMethod === 'OPTIONS') return { statusCode:200, headers, body:'' };
+
+  if (event.httpMethod === 'GET' && (event.queryStringParameters?.diag === '1')) {
+    const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
+    const supabase = createClient(SUPABASE_URL || '', SUPABASE_SERVICE_ROLE_KEY || '', { auth:{persistSession:false} });
+    const ping = await supabase.from('profiles').select('id').limit(1);
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type':'application/json', 'Access-Control-Allow-Origin':'https://supplementsafetybible.com' },
+      body: JSON.stringify({ ok: !ping.error, error: ping.error ? { code: ping.error.code, message: ping.error.message } : null })
+    };
+  }
+
   if (event.httpMethod === 'GET') {
     return {
       statusCode:200, headers,
