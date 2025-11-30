@@ -1,6 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const reply = (code, payload, origin='*') => ({
+const json = (code, payload, origin='*') => ({
   statusCode: code,
   headers: {
     'Content-Type': 'application/json',
@@ -14,18 +14,17 @@ const reply = (code, payload, origin='*') => ({
 exports.handler = async (event) => {
   const origin = event.headers.origin || event.headers.Origin || '*';
   try {
-    if (event.httpMethod === 'OPTIONS') return reply(200, { ok: true }, origin);
-    if (event.httpMethod !== 'POST') return reply(405, { error: 'Method not allowed' }, origin);
+    if (event.httpMethod === 'OPTIONS') return json(200, { ok: true }, origin);
+    if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' }, origin);
 
     let body = {};
-    try { body = JSON.parse(event.body || '{}'); }
-    catch { return reply(400, { error: 'Invalid JSON body' }, origin); }
+    try { body = JSON.parse(event.body || '{}'); } catch { return json(400, { error: 'Invalid JSON body' }, origin); }
 
     const name = (body.name ?? '').toString().trim();
 
     const url = process.env.VITE_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) return reply(500, { error: 'Missing Supabase env vars' }, origin);
+    if (!url || !key) return json(500, { error: 'Missing Supabase env vars' }, origin);
 
     const admin = createClient(url, key);
 
@@ -42,9 +41,10 @@ exports.handler = async (event) => {
       .select()
       .single();
 
-    if (error) return reply(500, { error: error.message }, origin);
-    return reply(200, { ok: true, profile: data }, origin);
+    if (error) return json(500, { error: error.message }, origin);
+
+    return json(200, { ok: true, profile: data }, origin);
   } catch (e) {
-    return reply(500, { error: e?.message || 'Unknown server error' }, origin);
+    return json(500, { error: e?.message || 'Unknown server error' }, origin);
   }
 };
