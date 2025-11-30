@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /premium/
 
-Sitemap: https://supplement-safety-bible.netlify.app/sitemap.xml
+Sitemap: https://supplementsafetybible.com/sitemap.xml
