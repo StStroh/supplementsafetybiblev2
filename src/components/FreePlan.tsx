@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 
-export default function FreePlan({ onStart }: { onStart: (email: string) => void }) {
-  const [email, setEmail] = useState("");
-
+export default function FreePlan() {
   return (
     <section className="w-full max-w-2xl mx-auto rounded-2xl border border-slate-200 bg-white shadow-sm p-6 sm:p-8">
       <div className="flex items-center gap-3">
@@ -19,29 +17,17 @@ export default function FreePlan({ onStart }: { onStart: (email: string) => void
         <li className="flex items-start gap-2"><span className="mt-1">✔</span> Email support</li>
       </ul>
 
-      <form
-        className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto]"
-        onSubmit={(e) => { e.preventDefault(); if (email.trim()) onStart(email.trim()); }}
-      >
-        <input
-          type="email"
-          inputMode="email"
-          required
-          placeholder="your@email.com"
-          className="h-12 w-full rounded-xl border border-slate-300 px-4 focus:outline-none focus:ring-2 focus:ring-black/80"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          aria-label="Email address"
-        />
-        <button
-          type="submit"
-          className="h-12 rounded-xl bg-black text-white px-6 font-medium hover:bg-black/90 active:translate-y-px"
+      <div className="mt-6">
+        <Link
+          to="/free"
+          className="block h-12 rounded-xl bg-black text-white px-6 font-medium hover:bg-black/90 active:translate-y-px text-center leading-[3rem]"
+          role="button"
         >
           Start Free
-        </button>
-      </form>
+        </Link>
+      </div>
 
-      <p className="mt-2 text-xs text-slate-500">No credit card. Cancel anytime.</p>
+      <p className="mt-2 text-xs text-slate-500">No email required. No credit card.</p>
 
       <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <p className="text-xs text-slate-500">Secure auth via Supabase. Payments handled by Stripe.</p>

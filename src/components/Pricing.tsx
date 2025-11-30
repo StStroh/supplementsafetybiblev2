@@ -186,10 +186,6 @@ const Pricing: React.FC = () => {
     }
   };
 
-  const startFree = async (email: string) => {
-    console.info('[Pricing] Start Free clicked with email:', email);
-    window.location.href = `/auth?redirect=/account&email=${encodeURIComponent(email)}`;
-  };
 
 
   const handleResendConfirmation = async () => {
@@ -288,7 +284,7 @@ const Pricing: React.FC = () => {
             </div>
           </div>
         )}
-        <FreePlan onStart={(email) => startFree(email)} />
+        <FreePlan />
 
         <div className="text-center mb-10 mt-16">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -477,12 +473,7 @@ const Pricing: React.FC = () => {
         />
       )}
 
-      <StickyFreeCTA onStart={() => {
-        const input = document.querySelector("input[type=email]");
-        if (input && 'focus' in input && typeof (input as HTMLElement).focus === 'function') {
-          (input as HTMLElement).focus();
-        }
-      }} />
+      <StickyFreeCTA />
     </section>
   );
 };

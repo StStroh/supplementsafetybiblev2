@@ -1,12 +1,15 @@
-export default function StickyFreeCTA({ onStart }: { onStart: () => void }) {
+import { Link } from "react-router-dom";
+
+export default function StickyFreeCTA() {
   return (
     <div className="fixed bottom-4 inset-x-4 sm:hidden z-40">
-      <button
-        onClick={onStart}
-        className="w-full h-12 rounded-full bg-black text-white font-medium shadow-lg"
+      <Link
+        to="/free"
+        className="block w-full h-12 rounded-full bg-black text-white font-medium shadow-lg text-center leading-[3rem]"
+        role="button"
       >
         Start Free
-      </button>
+      </Link>
     </div>
   );
 }
