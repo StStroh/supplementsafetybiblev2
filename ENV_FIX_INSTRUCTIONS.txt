@@ -1,0 +1,92 @@
+═══════════════════════════════════════════════════════════════
+          PRICING DISPLAY FIX - ENV VARIABLE CORRECTION
+═══════════════════════════════════════════════════════════════
+
+ISSUE FOUND:
+─────────────────────────────────────────────────────────────
+The annual price environment variables were set to the SAME
+values as monthly prices, causing confusion.
+
+WRONG (local .env):
+  VITE_STRIPE_PRICE_PRO_ANNUAL=price_1SSERBLSpIuKqlsUsWSDz8n6
+    ↑ This is the MONTHLY price! ($14.99)
+  
+  VITE_STRIPE_PRICE_PREMIUM_ANNUAL=price_1SSb9jLSpIuKqlsUMRo6AxHg
+    ↑ This is the MONTHLY price! ($24.99)
+
+CORRECTED (local .env):
+  ✅ VITE_STRIPE_PRICE_PRO_ANNUAL=price_1SSEW2LSpIuKqlsUKw2UAglX
+  ✅ VITE_STRIPE_PRICE_PREMIUM_ANNUAL=price_1SSbB0LSpIuKqlsUCJP8sL8q
+
+═══════════════════════════════════════════════════════════════
+          NETLIFY PRODUCTION ENV - MUST UPDATE
+═══════════════════════════════════════════════════════════════
+
+CRITICAL: You must update these in Netlify Dashboard:
+
+1. Go to: https://app.netlify.com
+2. Select: supplementsafetybible.com
+3. Go to: Site configuration → Environment variables
+4. Update these values:
+
+   VITE_STRIPE_PRICE_PRO_ANNUAL
+   OLD: price_1SSERBLSpIuKqlsUsWSDz8n6
+   NEW: price_1SSEW2LSpIuKqlsUKw2UAglX
+
+   VITE_STRIPE_PRICE_PREMIUM_ANNUAL
+   OLD: price_1SSb9jLSpIuKqlsUMRo6AxHg
+   NEW: price_1SSbB0LSpIuKqlsUCJP8sL8q
+
+5. Click: Save
+6. Go to: Deploys → Clear cache and deploy site
+
+═══════════════════════════════════════════════════════════════
+          CORRECT PRICE MAPPING
+═══════════════════════════════════════════════════════════════
+
+Pro Monthly ($14.99):
+  VITE_STRIPE_PRICE_PRO = price_1SSERBLSpIuKqlsUsWSDz8n6
+
+Pro Annual ($149):
+  VITE_STRIPE_PRICE_PRO_ANNUAL = price_1SSEW2LSpIuKqlsUKw2UAglX
+
+Premium Monthly ($24.99):
+  VITE_STRIPE_PRICE_PREMIUM = price_1SSb9jLSpIuKqlsUMRo6AxHg
+
+Premium Annual ($249):
+  VITE_STRIPE_PRICE_PREMIUM_ANNUAL = price_1SSbB0LSpIuKqlsUCJP8sL8q
+
+═══════════════════════════════════════════════════════════════
+          WHY "LOAD FAILED" APPEARS
+═══════════════════════════════════════════════════════════════
+
+The "Load failed" error in your screenshot suggests:
+
+1. Network issue loading the pricing component
+2. JavaScript error breaking the render
+3. Missing or undefined environment variables
+4. Stripe.js library not loaded
+
+Most likely: The production build has wrong env vars, causing
+the checkout to fail or the component to error.
+
+After updating Netlify env vars and redeploying, the pricing
+cards should display correctly.
+
+═══════════════════════════════════════════════════════════════
+          BUILD AND TEST
+═══════════════════════════════════════════════════════════════
+
+Local build test:
+  npm run build
+
+Should complete without errors.
+
+After Netlify redeploy:
+1. Visit: https://supplementsafetybible.com/#pricing
+2. Should see both Pro and Premium cards
+3. Pro should show: $14.99/mo or $149/yr
+4. Premium should show: $24.99/mo or $249/yr
+5. No "Load failed" errors
+
+═══════════════════════════════════════════════════════════════
