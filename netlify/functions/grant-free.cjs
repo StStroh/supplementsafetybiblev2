@@ -24,7 +24,8 @@ exports.handler = async (event) => {
 
     const url = process.env.VITE_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) return json(500, { error: 'Missing Supabase env vars' }, origin);
+    if (!url) return json(500, { error: 'Missing VITE_SUPABASE_URL' }, origin);
+    if (!key) return json(500, { error: 'Missing SUPABASE_SERVICE_ROLE_KEY' }, origin);
 
     const admin = createClient(url, key);
 
@@ -41,7 +42,7 @@ exports.handler = async (event) => {
       .select()
       .single();
 
-    if (error) return json(500, { error: error.message }, origin);
+    if (error) return json(500, { error: `DB: ${error.message}` }, origin);
 
     return json(200, { ok: true, profile: data }, origin);
   } catch (e) {
