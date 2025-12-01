@@ -8,38 +8,25 @@ export default function Pricing() {
   const [interval, setInterval] = useState<'month' | 'year'>('year');
   const [loading, setLoading] = useState(false);
 
+  async function startCheckout(tier: string) {
+    const res = await fetch('/.netlify/functions/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.error?.message || `HTTP ${res.status}`);
+
+    const stripe = (window as any).Stripe?.(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+    if (!stripe) throw new Error('Stripe.js not loaded');
+    await stripe.redirectToCheckout({ sessionId: data.sessionId });
+  }
+
   const handleStartPremium = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/.netlify/functions/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tier: interval === 'year' ? 'premium_annual' : 'premium_monthly' }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        const msg = data?.error?.message || data?.error || `HTTP ${res.status}`;
-        alert(`Error: ${msg}`);
-        setLoading(false);
-        return;
-      }
-
-      if (data.sessionId) {
-        const stripe = (window as any).Stripe?.(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-        if (stripe) {
-          await stripe.redirectToCheckout({ sessionId: data.sessionId });
-        } else {
-          alert('Stripe not loaded. Please refresh the page.');
-          setLoading(false);
-        }
-      } else if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Failed to create checkout session');
-        setLoading(false);
-      }
+      const tier = interval === 'year' ? 'premium_annual' : 'premium_monthly';
+      await startCheckout(tier);
     } catch (err: any) {
       console.error('Checkout error:', err);
       alert(err?.message || 'An error occurred. Please try again.');

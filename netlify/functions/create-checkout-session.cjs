@@ -31,10 +31,11 @@ exports.handler = async (event) => {
     const key = process.env.STRIPE_SECRET_KEY;
     if (!key) return fail(500, 'Missing STRIPE_SECRET_KEY', origin);
 
-    const stripe = new Stripe(key);
+    const stripe = new Stripe(key, { apiVersion: '2024-06-20' });
 
     let body = {};
-    try { body = JSON.parse(event.body || '{}'); } catch { return fail(400, 'Invalid JSON body', origin); }
+    try { body = JSON.parse(event.body || '{}'); }
+    catch { return fail(400, 'Invalid JSON body', origin); }
 
     const tier = body.tier || 'pro_monthly';
     const prices = {
@@ -44,18 +45,21 @@ exports.handler = async (event) => {
       premium_annual: process.env.STRIPE_PRICE_PREMIUM_ANNUAL,
     };
     const price = prices[tier];
-    if (!price) return fail(400, `Unknown tier "${tier}" or missing price env`, origin);
+    if (!price) return fail(400, `Unknown tier "${tier}" or missing price env`, origin, { prices: Object.keys(prices) });
 
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      line_items: [{ price, quantity: 1 }],
-      allow_promotion_codes: true,
-      success_url: `${origin}/premium/thanks?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/pricing?cancelled=1`,
-    });
-
-    return ok({ sessionId: session.id }, origin);
+    try {
+      const session = await stripe.checkout.sessions.create({
+        mode: 'subscription',
+        line_items: [{ price, quantity: 1 }],
+        allow_promotion_codes: true,
+        success_url: `${origin}/premium/thanks?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/pricing?cancelled=1`,
+      });
+      return ok({ sessionId: session.id }, origin);
+    } catch (err) {
+      return fail(500, 'Stripe error', origin, { details: err.message });
+    }
   } catch (err) {
-    return fail(500, 'Stripe error', origin, { details: err.message });
+    return fail(500, 'Server error', origin, { details: err.message });
   }
 };
