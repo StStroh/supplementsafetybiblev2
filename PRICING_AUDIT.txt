@@ -1,0 +1,84 @@
+═══════════════════════════════════════════════════════════════
+                    PRICING AUDIT RESULTS
+═══════════════════════════════════════════════════════════════
+
+STEP 1: PRODUCTION ENVIRONMENT VARIABLES
+─────────────────────────────────────────────────────────────
+STRIPE_SECRET_KEY: sk_live_*** (LIVE MODE ✓)
+STRIPE_PRICE_PRO_MONTHLY: price_1SSERBLSpIuKqlsUsWSDz8n6
+STRIPE_PRICE_PRO_ANNUAL: price_1SSEW2LSpIuKqlsUKw2UAglX
+STRIPE_PRICE_PREMIUM_MONTHLY: price_1SSb9jLSpIuKqlsUMRo6AxHg
+STRIPE_PRICE_PREMIUM_ANNUAL: price_1SSbB0LSpIuKqlsUCJP8sL8q
+VITE_STRIPE_PUBLISHABLE_KEY: pk_live_*** (LIVE MODE ✓)
+
+✓ All IDs are LIVE mode (price_1...)
+✓ Mode consistency check: PASSED
+
+STEP 2: FRONTEND MAPPING (src/components/Pricing.tsx)
+─────────────────────────────────────────────────────────────
+$14.99 / mo Button:
+  - Tier: "pro"
+  - Calls: handleCheckout('pro_monthly')
+  - Line 46: monthlyPriceLabel: "$14.99 / mo"
+  - Line 328: tierKey = 'pro_monthly'
+
+$149 / yr Button:
+  - Tier: "pro"
+  - Calls: handleCheckout('pro_annual')
+  - Line 47: annualPriceLabel: "$149 / yr"
+
+$24.99 / mo Button:
+  - Tier: "premium"
+  - Calls: handleCheckout('premium_monthly')
+  - Line 63: monthlyPriceLabel: "$24.99 / mo"
+
+$249 / yr Button:
+  - Tier: "premium"
+  - Calls: handleCheckout('premium_annual')
+  - Line 64: annualPriceLabel: "$249 / yr"
+
+STEP 3: BACKEND MAPPING (netlify/functions/create-checkout-session.cjs)
+─────────────────────────────────────────────────────────────
+CURRENT CODE (BROKEN):
+  - Expects: { interval: 'month' | 'year' }
+  - Only handles PREMIUM tier
+  - Line 41-48: Only maps to PREMIUM_MONTHLY or PREMIUM_YEARLY
+  - DOES NOT HANDLE 'tier' parameter!
+
+ISSUE FOUND:
+  ❌ Frontend sends: { tier: 'pro_monthly' }
+  ❌ Backend expects: { interval: 'month' }
+  ❌ Backend ignores tier, always creates PREMIUM checkout
+  ❌ $14.99 button opens $24.99 checkout!
+
+STEP 4: PLAN-MAP.CJS PRICES
+─────────────────────────────────────────────────────────────
+PRO_MONTHLY:     price_1SSERBLSpIuKqlsUsWSDz8n6
+PRO_YEARLY:      price_1SSEW2LSpIuKqlsUKw2UAglX
+PREMIUM_MONTHLY: price_1SSb9jLSpIuKqlsUMRo6AxHg
+PREMIUM_YEARLY:  price_1SSbB0LSpIuKqlsUCJP8sL8q
+
+EXPECTED AMOUNTS (need to verify with Stripe API):
+  - pro_monthly: $14.99 = 1499 cents
+  - pro_annual: $149 = 14900 cents
+  - premium_monthly: $24.99 = 2499 cents
+  - premium_annual: $249 = 24900 cents
+
+═══════════════════════════════════════════════════════════════
+                    REQUIRED FIXES
+═══════════════════════════════════════════════════════════════
+
+FIX #1: Update create-checkout-session.cjs
+  - Accept { tier } parameter (not interval)
+  - Map tier to correct price ID:
+    - 'pro_monthly' → PRO_MONTHLY
+    - 'pro_annual' → PRO_YEARLY
+    - 'premium_monthly' → PREMIUM_MONTHLY
+    - 'premium_annual' → PREMIUM_YEARLY
+
+FIX #2: Add sanity guard
+  - Fetch price from Stripe
+  - Verify unit_amount matches expected
+  - Fail with clear error if mismatch
+
+═══════════════════════════════════════════════════════════════

@@ -38,13 +38,38 @@ exports.handler = async (event) => {
     try { body = JSON.parse(event.body || '{}'); }
     catch { return fail(400, 'Invalid JSON body', origin); }
 
-    const interval = body.interval || 'month';
+    const tier = body.tier;
+    if (!tier) {
+      return fail(400, 'Missing required parameter: tier', origin);
+    }
 
-    let priceId;
-    if (interval === 'year') {
-      priceId = PLAN_PRICE_MAP.PREMIUM_YEARLY;
-    } else {
-      priceId = PLAN_PRICE_MAP.PREMIUM_MONTHLY;
+    const tierMap = {
+      'pro_monthly': PLAN_PRICE_MAP.PRO_MONTHLY,
+      'pro_annual': PLAN_PRICE_MAP.PRO_YEARLY,
+      'premium_monthly': PLAN_PRICE_MAP.PREMIUM_MONTHLY,
+      'premium_annual': PLAN_PRICE_MAP.PREMIUM_YEARLY,
+    };
+
+    const priceId = tierMap[tier];
+    if (!priceId) {
+      return fail(400, `Invalid tier: "${tier}". Valid options: pro_monthly, pro_annual, premium_monthly, premium_annual`, origin, { tier });
+    }
+
+    const EXPECTED = {
+      pro_monthly: 1499,
+      pro_annual: 14900,
+      premium_monthly: 2499,
+      premium_annual: 24900,
+    };
+
+    try {
+      const stripePrice = await stripe.prices.retrieve(priceId);
+      const amount = stripePrice.unit_amount;
+      if (EXPECTED[tier] && amount !== EXPECTED[tier]) {
+        return fail(400, `Price mismatch for "${tier}": expected ${EXPECTED[tier]} cents but price ID ${priceId} is ${amount} cents`, origin, { tier, priceId, amount });
+      }
+    } catch (err) {
+      return fail(500, 'Failed to verify price with Stripe', origin, { details: err.message });
     }
 
     try {
