@@ -1,4 +1,5 @@
 const Stripe = require('stripe');
+const { PLAN_PRICE_MAP } = require('../../src/lib/stripe/plan-map.cjs');
 
 const ok = (data, origin) => ({
   statusCode: 200,
@@ -37,25 +38,24 @@ exports.handler = async (event) => {
     try { body = JSON.parse(event.body || '{}'); }
     catch { return fail(400, 'Invalid JSON body', origin); }
 
-    const tier = body.tier || 'pro_monthly';
-    const prices = {
-      pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
-      pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL,
-      premium_monthly: process.env.STRIPE_PRICE_PREMIUM_MONTHLY,
-      premium_annual: process.env.STRIPE_PRICE_PREMIUM_ANNUAL,
-    };
-    const price = prices[tier];
-    if (!price) return fail(400, `Unknown tier "${tier}" or missing price env`, origin, { prices: Object.keys(prices) });
+    const interval = body.interval || 'month';
+
+    let priceId;
+    if (interval === 'year') {
+      priceId = PLAN_PRICE_MAP.PREMIUM_YEARLY;
+    } else {
+      priceId = PLAN_PRICE_MAP.PREMIUM_MONTHLY;
+    }
 
     try {
       const session = await stripe.checkout.sessions.create({
         mode: 'subscription',
-        line_items: [{ price, quantity: 1 }],
+        line_items: [{ price: priceId, quantity: 1 }],
         allow_promotion_codes: true,
         success_url: `${origin}/premium/thanks?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/pricing?cancelled=1`,
       });
-      return ok({ sessionId: session.id }, origin);
+      return ok({ sessionId: session.id, url: session.url }, origin);
     } catch (err) {
       return fail(500, 'Stripe error', origin, { details: err.message });
     }
