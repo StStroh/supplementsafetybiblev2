@@ -17,7 +17,7 @@ export default function Free() {
     }
     setLoading(true);
     try {
-      const res = await fetch('/.netlify/functions/grant-free', {
+      const res = await fetch('/.netlify/functions/free-ok', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: trimmed })
@@ -33,6 +33,7 @@ export default function Free() {
         return;
       }
 
+      localStorage.setItem('free_active', 'true');
       setError(null);
       navigate('/free/thanks');
     } catch (err) {
