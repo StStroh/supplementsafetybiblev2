@@ -14,6 +14,44 @@ import SourcesAccordion from "../components/check/SourcesAccordion";
 import { supabase } from "../lib/supabase";
 import { downloadBlob } from "../lib/download";
 
+function isFreeActive(): boolean {
+  try { return localStorage.getItem('free_active') === 'true'; } catch { return false; }
+}
+
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+function canUseFreeToday(maxPerDay = 5) {
+  try {
+    const today = getTodayKey();
+    const storeKey = 'free_checks';
+    const raw = localStorage.getItem(storeKey);
+    const obj = raw ? JSON.parse(raw) : {};
+    const used = Number(obj[today] || 0);
+
+    if (used >= maxPerDay) {
+      return { ok: false, remaining: 0, message: `Daily limit reached on Free. You've used ${maxPerDay}/${maxPerDay} checks today.` };
+    }
+    return { ok: true, remaining: maxPerDay - used, message: '' };
+  } catch {
+    return { ok: true, remaining: 1e9, message: '' };
+  }
+}
+
+function incrementFreeUsage() {
+  try {
+    const today = getTodayKey();
+    const storeKey = 'free_checks';
+    const raw = localStorage.getItem(storeKey);
+    const obj = raw ? JSON.parse(raw) : {};
+    const used = Number(obj[today] || 0);
+    obj[today] = used + 1;
+    localStorage.setItem(storeKey, JSON.stringify(obj));
+  } catch {}
+}
+
 type Match = { type: "supplement" | "medication"; name: string; id: string };
 type SearchResp = { ok: boolean; matches: Match[] };
 type CheckResp =
@@ -41,6 +79,7 @@ export default function Check() {
   const [showStickyFooter, setShowStickyFooter] = useState(false);
   const [stickyDismissed, setStickyDismissed] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const h = setTimeout(async () => {
@@ -67,6 +106,17 @@ export default function Check() {
   }, [medQ]);
 
   async function check() {
+    setError(null);
+
+    if (isFreeActive()) {
+      const gate = canUseFreeToday(5);
+      if (!gate.ok) {
+        const msg = gate.message + ' Upgrade for unlimited checks.';
+        setError(msg);
+        return;
+      }
+    }
+
     setLoading(true);
     setResult(null);
     const r = await fetch(`${API_BASE}/interactions-check`, {
@@ -83,6 +133,9 @@ export default function Check() {
 
     if (j && j.ok) {
       setShowStickyFooter(true);
+      if (isFreeActive()) {
+        incrementFreeUsage();
+      }
     }
   }
 
@@ -175,9 +228,16 @@ export default function Check() {
 
       <main className="max-w-3xl mx-auto px-4 py-10 sm:py-16">
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 leading-tight mb-2">
-            Check Supplement–Drug Interactions
-          </h1>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 leading-tight">
+              Check Supplement–Drug Interactions
+            </h1>
+            {isFreeActive() && (
+              <span className="rounded bg-green-100 text-green-700 px-2 py-0.5 text-xs font-medium">
+                Free — Active
+              </span>
+            )}
+          </div>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
             Understand risks instantly with clinical-grade explanations.
           </p>
@@ -260,6 +320,12 @@ export default function Check() {
                 + Add another medication
               </button>
             </div>
+
+            {error && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-600 text-sm">{String(error)}</p>
+              </div>
+            )}
 
             <button
               onClick={check}
