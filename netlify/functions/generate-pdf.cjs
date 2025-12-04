@@ -51,6 +51,36 @@ exports.handler = async (event, context) => {
       };
     }
 
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error('Profile fetch error:', profileError);
+      return {
+        statusCode: 500,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: 'Failed to fetch user profile' }),
+      };
+    }
+
+    const userPlan = profile?.plan || 'free';
+
+    if (userPlan === 'free') {
+      return {
+        statusCode: 403,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          error: 'PDF download is available for paid plans only',
+          message: 'Upgrade to Pro or Premium to download PDF reports',
+          requiresUpgrade: true,
+          userPlan: 'free'
+        }),
+      };
+    }
+
     const body = JSON.parse(event.body || '{}');
     if (!body.data) {
       return {
@@ -110,7 +140,7 @@ async function generatePDF(data, user) {
   const margin = 50;
   const lineHeight = 20;
 
-  page.drawText('Supplement Safety Bible', {
+  page.drawText('Supplement Safety Bible™', {
     x: margin,
     y: yPosition,
     size: 24,
@@ -119,7 +149,7 @@ async function generatePDF(data, user) {
   });
 
   yPosition -= 30;
-  page.drawText('Clinical Interaction Report', {
+  page.drawText('Interaction Checker Report', {
     x: margin,
     y: yPosition,
     size: 16,
@@ -275,7 +305,7 @@ async function generatePDF(data, user) {
     yPosition -= lineHeight;
   }
 
-  yPosition = 120;
+  yPosition = 140;
   page.drawLine({
     start: { x: margin, y: yPosition },
     end: { x: width - margin, y: yPosition },
@@ -284,7 +314,7 @@ async function generatePDF(data, user) {
   });
 
   yPosition -= 20;
-  page.drawText('DISCLAIMER', {
+  page.drawText('PROFESSIONAL DISCLAIMER', {
     x: margin,
     y: yPosition,
     size: 10,
@@ -309,6 +339,23 @@ async function generatePDF(data, user) {
       color: rgb(0.4, 0.4, 0.4),
     });
     yPosition -= 12;
+  });
+
+  yPosition -= 10;
+  page.drawLine({
+    start: { x: margin, y: yPosition },
+    end: { x: width - margin, y: yPosition },
+    thickness: 0.5,
+    color: rgb(0.9, 0.9, 0.9),
+  });
+
+  yPosition -= 15;
+  page.drawText('© Supplement Safety Bible — Do Not Mix Blind™', {
+    x: margin,
+    y: yPosition,
+    size: 9,
+    font: helvetica,
+    color: rgb(0.3, 0.3, 0.3),
   });
 
   const pdfBytes = await pdfDoc.save();

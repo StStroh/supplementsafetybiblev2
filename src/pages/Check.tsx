@@ -80,6 +80,29 @@ export default function Check() {
   const [stickyDismissed, setStickyDismissed] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userPlan, setUserPlan] = useState<string>('free');
+
+  useEffect(() => {
+    async function fetchUserPlan() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('plan')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (profile) {
+            setUserPlan(profile.plan || 'free');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user plan:', error);
+      }
+    }
+    fetchUserPlan();
+  }, []);
 
   useEffect(() => {
     const h = setTimeout(async () => {
@@ -142,6 +165,13 @@ export default function Check() {
   async function handleGeneratePDF() {
     if (!result || !result.ok) return;
 
+    if (userPlan === 'free') {
+      if (confirm('PDF download is available for paid plans only. Would you like to upgrade to Pro or Premium?')) {
+        window.location.href = '/#pricing';
+      }
+      return;
+    }
+
     setPdfLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -177,11 +207,19 @@ export default function Check() {
 
       if (!res.ok) {
         const errorData = await res.json();
+        if (errorData.requiresUpgrade) {
+          if (confirm(errorData.message + ' Would you like to upgrade now?')) {
+            window.location.href = '/#pricing';
+          }
+          setPdfLoading(false);
+          return;
+        }
         throw new Error(errorData.error || 'Failed to generate PDF');
       }
 
       const blob = await res.blob();
-      downloadBlob(blob, 'interaction_report.pdf');
+      const date = new Date().toISOString().split('T')[0];
+      downloadBlob(blob, `SSB-Report-${date}.pdf`);
     } catch (error) {
       console.error('PDF generation error:', error);
       alert('Failed to generate PDF. Please try again.');
@@ -404,21 +442,40 @@ export default function Check() {
 
                 <div className="bg-white shadow-md rounded-2xl p-6 sm:p-8 border border-gray-200">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-1">
                       <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                         <FileText className="text-blue-600" size={22} />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 text-base">Export Report</h3>
-                        <p className="text-sm text-gray-600">Download a professional PDF report</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-gray-900 text-base">Export Report</h3>
+                          {userPlan !== 'free' ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                              PDF Included
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+                              Pro Feature
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          {userPlan !== 'free'
+                            ? 'Download a professional PDF report'
+                            : 'Upgrade to Pro or Premium to download PDF reports'}
+                        </p>
                       </div>
                     </div>
                     <button
                       onClick={handleGeneratePDF}
                       disabled={pdfLoading}
-                      className="px-5 py-2.5 rounded-xl border-2 border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className={`px-5 py-2.5 rounded-xl font-semibold transition-colors ${
+                        userPlan !== 'free'
+                          ? 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                          : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
+                      }`}
                     >
-                      {pdfLoading ? "Generating..." : "Generate PDF"}
+                      {pdfLoading ? "Generating..." : userPlan !== 'free' ? "Download PDF" : "Upgrade to Download"}
                     </button>
                   </div>
                 </div>
