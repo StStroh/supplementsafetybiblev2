@@ -1,55 +1,49 @@
-import { Pill } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white py-20 md:py-32 px-4">
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#DCE3ED] bg-[#F4F8FF] px-4 py-2 text-sm text-[#1A73E8] font-medium mb-6">
-              <span className="inline-block h-2 w-2 rounded-full bg-[#3CB371]" />
-              Evidence-based medical guidance
-            </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-[#000000]">
-              The Supplement Safety Bible
-            </h1>
-            <p className="text-xl md:text-2xl mb-6 text-[#4A4A4A] leading-relaxed">
-              Your Complete Guide to Safe Supplement—Medication Combinations
-            </p>
-            <p className="text-lg md:text-xl mb-8 text-[#4A4A4A] leading-relaxed">
-              Make safe, confident choices with evidence-based guidance from our library of 2,500+ verified interactions.
-            </p>
-            <a
-              href="/#pricing"
-              className="inline-block bg-[#3CB371] hover:bg-[#2D8E57] text-white px-10 py-5 rounded-lg text-xl font-semibold transition-colors"
-              style={{boxShadow: '0 4px 12px rgba(60,179,113,0.2)'}}
-            >
-              Get Instant Access
-            </a>
-          </div>
-
-          <div className="relative">
-            <div className="relative mx-auto max-w-md">
-              <div className="relative bg-[#F4F8FF] rounded-3xl p-8 md:p-12 border-2 border-[#DCE3ED]" style={{boxShadow: '0 8px 24px rgba(0,0,0,0.08)'}}>
-                <div className="text-center mb-8">
-                  <p className="text-[#1A73E8] text-sm uppercase tracking-wider mb-4 font-semibold">Certified Medical Resource</p>
-                  <h2 className="text-4xl md:text-5xl font-bold text-[#000000] mb-6 leading-tight">
-                    The Supplement Safety Bible
-                  </h2>
-                  <p className="text-[#4A4A4A] text-lg leading-relaxed">
-                    Your Complete Guide to Supplement—Medication Combinations
-                  </p>
-                </div>
-
-                <div className="flex justify-center">
-                  <div className="bg-white rounded-full p-6 border-2 border-[#DCE3ED]" style={{boxShadow: '0 4px 12px rgba(0,0,0,0.06)'}}>
-                    <Pill className="w-16 h-16 md:w-20 md:h-20 text-[#1A73E8] transform -rotate-45" strokeWidth={1.5} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <section className="relative w-full bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white">
+      <div className="mx-auto max-w-5xl px-6 py-16 text-center">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium ring-1 ring-white/20" data-testid="hero-badge" aria-label="PDF download included on paid plans">
+          <span>PDF Download Included</span>
+          <span className="opacity-70">on paid plans</span>
         </div>
+
+        <h1 className="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl" data-testid="hero-headline">
+          Don't Mix Blind™
+        </h1>
+        <p className="mt-4 text-lg text-white/90 md:text-xl" data-testid="hero-subheadline">
+          Your mix, your safety, your report.
+        </p>
+
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            to="/check"
+            id="cta-try-checker"
+            data-testid="hero-cta-primary"
+            data-analytics="try_checker"
+            role="button"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-full px-6 py-3 text-base font-semibold bg-white text-slate-900 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+          >
+            Probar el Checker
+          </Link>
+          <Link
+            to="/pricing#pdf"
+            id="cta-pdf-upsell"
+            data-testid="hero-cta-secondary"
+            data-analytics="pdf_upsell"
+            role="button"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-full px-6 py-3 text-base font-semibold border border-white/50 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+          >
+            Descargar PDF Premium
+          </Link>
+        </div>
+
+        <p className="mt-4 text-sm text-white/70" data-testid="hero-trustline">
+          Preferred by clinicians to summarize supplement–drug interactions clearly. No diagnoses—just practical information.
+        </p>
+
+        <p className="mt-10 text-xs text-white/50">© Supplement Safety Bible™ — Do Not Mix Blind™</p>
       </div>
     </section>
   );

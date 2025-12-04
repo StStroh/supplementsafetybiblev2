@@ -1,5 +1,5 @@
 import Navbar from '../components/Navbar';
-import PrimaryInteractionChecker from '../components/PrimaryInteractionChecker';
+import Hero from '../components/Hero';
 import HowItWorks from '../components/HowItWorks';
 import WhyItMatters from '../components/WhyItMatters';
 import Pricing from '../components/Pricing';
@@ -29,17 +29,36 @@ const organizationSchema = {
   "sameAs": []
 };
 
+const appSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Supplement Safety Bible",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Web",
+  "description": "Check supplement–drug interactions, see color-coded risks, and download a professional PDF on paid plans.",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "USD",
+    "price": "0",
+    "category": "FreeTrial"
+  },
+  "brand": {
+    "@type": "Brand",
+    "name": "Supplement Safety Bible"
+  }
+};
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <SEO
-        title="Supplement Safety Bible | Check Supplement-Medication Interactions"
-        description="Instantly check 2,500+ supplement-medication interactions. Safer stacks, fewer risks. Evidence-based interaction checker for healthcare professionals and supplement users."
+        title="Don't Mix Blind™ | Supplement Safety Bible"
+        description="Check supplement–drug interactions in minutes and get a professional PDF report on paid plans."
         canonical="/"
       />
-      <StructuredData data={[websiteSchema, organizationSchema]} />
+      <StructuredData data={[websiteSchema, organizationSchema, appSchema]} />
       <Navbar />
-      <PrimaryInteractionChecker />
+      <Hero />
       <HowItWorks />
       <WhyItMatters />
       <Trust />
