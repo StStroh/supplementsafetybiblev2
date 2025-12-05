@@ -1,3 +1,12 @@
+/**
+ * WARNING: Source of truth for "How it works" section.
+ * Do not replace or remove.
+ * Tests will fail if altered or removed.
+ *
+ * Required testids:
+ * - how-title: Main "How it works" heading
+ * - how-step-1, how-step-2, how-step-3: Three step cards
+ */
 export default function HowItWorks() {
   return (
     <section className="w-full bg-white">

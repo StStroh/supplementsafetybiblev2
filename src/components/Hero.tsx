@@ -1,3 +1,13 @@
+/**
+ * WARNING: Source of truth for landing hero & upsell.
+ * Do not replace with legacy hero or inline markup.
+ * Tests will fail if altered or removed.
+ *
+ * Required testids:
+ * - hero-headline: Main "Don't Mix Blind™" headline
+ * - hero-cta-primary: Primary CTA to /check
+ * - hero-cta-secondary: Secondary CTA to /pricing#pdf
+ */
 import { Link } from "react-router-dom";
 
 export default function Hero() {

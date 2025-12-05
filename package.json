@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/gen-sitemap.cjs && node scripts/prebuild-guard.cjs",
+    "prebuild": "node scripts/gen-sitemap.cjs && node scripts/prebuild-guard.cjs && node scripts/assert-hero.mjs",
     "build": "npm run prebuild && tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

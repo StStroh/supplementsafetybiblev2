@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Zap, AlertCircle } from 'lucide-react';
+import { Check, Zap, AlertCircle, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
@@ -9,6 +9,31 @@ export default function Pricing() {
   const [interval, setInterval] = useState<'month' | 'year'>('year');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [healthCheck, setHealthCheck] = useState<{status: string, message?: string} | null>(null);
+
+  useEffect(() => {
+    async function checkHealth() {
+      try {
+        const res = await fetch('/.netlify/functions/stripe-health', {
+          method: 'GET',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'healthy') {
+            setHealthCheck({ status: 'ok' });
+          } else {
+            setHealthCheck({ status: 'warning', message: 'Stripe configuration issue detected' });
+          }
+        } else {
+          setHealthCheck({ status: 'error', message: 'Cannot connect to payment service' });
+        }
+      } catch (err) {
+        console.error('Health check failed:', err);
+        setHealthCheck({ status: 'error', message: 'Network error' });
+      }
+    }
+    checkHealth();
+  }, []);
 
   const handleStartPremium = async () => {
     setLoading(true);
@@ -22,22 +47,40 @@ export default function Pricing() {
         user: user ? { id: user.id, email: user.email } : null,
       };
 
+      console.log('Initiating checkout with payload:', { interval, hasUser: !!user });
+
       const res = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: JSON.stringify(payload),
+      }).catch(fetchError => {
+        console.error('Fetch failed:', fetchError);
+        throw new Error(`Network error: ${fetchError.message}. Check your internet connection or try again.`);
       });
 
+      console.log('Checkout response status:', res.status);
+
       if (!res.ok) {
-        const errorData = await res.json();
-        const errorMessage = errorData?.error?.message || 'Failed to create checkout session';
-        console.error('Checkout error response:', errorData);
+        let errorMessage = `Server error (${res.status})`;
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData?.error?.message || errorMessage;
+          console.error('Checkout error response:', errorData);
+        } catch (parseError) {
+          const text = await res.text();
+          console.error('Could not parse error response:', text);
+          errorMessage = `${errorMessage}: ${text.substring(0, 100)}`;
+        }
         setError(errorMessage);
         setLoading(false);
         return;
       }
 
       const data = await res.json();
+      console.log('Checkout session created:', data.sessionId);
 
       if (!data.url) {
         setError('No checkout URL received from server');
@@ -45,6 +88,7 @@ export default function Pricing() {
         return;
       }
 
+      console.log('Redirecting to Stripe:', data.url);
       window.location.href = data.url;
     } catch (err: any) {
       console.error('Checkout error:', err);
@@ -175,6 +219,16 @@ export default function Pricing() {
               <span className="text-gray-700">Early access to new features</span>
             </div>
           </div>
+
+          {healthCheck && healthCheck.status === 'error' && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+              <Activity className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-800">Connection Issue</p>
+                <p className="text-sm text-amber-700 mt-1">{healthCheck.message || 'Payment service unavailable'}</p>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
