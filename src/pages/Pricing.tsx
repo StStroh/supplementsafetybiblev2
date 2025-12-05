@@ -1,33 +1,55 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Zap } from 'lucide-react';
+import { Check, Zap, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 
 export default function Pricing() {
   const navigate = useNavigate();
   const [interval, setInterval] = useState<'month' | 'year'>('year');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleStartPremium = async () => {
     setLoading(true);
+    setError(null);
+
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const payload = {
+        interval,
+        user: user ? { id: user.id, email: user.email } : null,
+      };
+
       const res = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ interval }),
+        body: JSON.stringify(payload),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        const errorMessage = errorData?.error?.message || 'Failed to create checkout session';
+        console.error('Checkout error response:', errorData);
+        setError(errorMessage);
+        setLoading(false);
+        return;
+      }
 
       const data = await res.json();
 
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Failed to create checkout session');
+      if (!data.url) {
+        setError('No checkout URL received from server');
         setLoading(false);
+        return;
       }
-    } catch (err) {
+
+      window.location.href = data.url;
+    } catch (err: any) {
       console.error('Checkout error:', err);
-      alert('An error occurred. Please try again.');
+      const errorMessage = err?.message || 'An error occurred. Please try again.';
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -153,6 +175,16 @@ export default function Pricing() {
               <span className="text-gray-700">Early access to new features</span>
             </div>
           </div>
+
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-800">Checkout Error</p>
+                <p className="text-sm text-red-700 mt-1">{error}</p>
+              </div>
+            </div>
+          )}
 
           <button
             onClick={handleStartPremium}
