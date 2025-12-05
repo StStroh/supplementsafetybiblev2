@@ -1,5 +1,5 @@
 import Navbar from '../components/Navbar';
-import Hero from '../components/Hero';
+import LandingCheckerHero from '../components/LandingCheckerHero';
 import HowItWorks from '../components/HowItWorks';
 import WhyItMatters from '../components/WhyItMatters';
 import Pricing from '../components/Pricing';
@@ -58,7 +58,7 @@ export default function Home() {
       />
       <StructuredData data={[websiteSchema, organizationSchema, appSchema]} />
       <Navbar />
-      <Hero />
+      <LandingCheckerHero />
       <HowItWorks />
       <WhyItMatters />
       <Trust />

@@ -16,13 +16,13 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
 const REQUIRED_COMPONENTS = {
-  'src/components/Hero.tsx': [
-    'data-testid="hero-headline"',
-    'data-testid="hero-cta-primary"',
-    'data-testid="hero-cta-secondary"',
+  'src/components/LandingCheckerHero.tsx': [
+    'data-testid="landing-hero-headline"',
+    'data-testid="landing-hero-checker"',
+    'data-testid="landing-hero-check-btn"',
+    'data-testid="landing-hero-pdf-btn"',
     'Don\'t Mix Blind',
-    'to="/check"',
-    'to="/pricing#pdf"',
+    'Check interactions in seconds',
   ],
   'src/components/HowItWorks.tsx': [
     'data-testid="how-title"',
@@ -32,9 +32,9 @@ const REQUIRED_COMPONENTS = {
     'How it works',
   ],
   'src/pages/Home.tsx': [
-    '<Hero />',
+    '<LandingCheckerHero />',
     '<HowItWorks />',
-    'import Hero from',
+    'import LandingCheckerHero from',
     'import HowItWorks from',
   ],
 };
@@ -42,11 +42,15 @@ const REQUIRED_COMPONENTS = {
 const FORBIDDEN_PATTERNS = [
   {
     file: 'src/components/DontMixBlindHero.tsx',
-    reason: 'Legacy hero component should be archived, not in components/',
+    reason: 'Legacy DontMixBlindHero component should be archived, not in components/',
   },
   {
     pattern: /id="old-hero"|class.*old[-_]hero/i,
     reason: 'Legacy hero markup detected',
+  },
+  {
+    pattern: /<Hero\s+\/>/,
+    reason: 'Old Hero component should not be used on landing - use LandingCheckerHero',
   },
 ];
 
