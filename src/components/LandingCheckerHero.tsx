@@ -13,6 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Download, ArrowRight, Lock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { isPaid } from '../lib/roles';
+import TypeaheadInput from './TypeaheadInput';
 
 interface Interaction {
   supplement_name: string;
@@ -26,30 +27,23 @@ export default function LandingCheckerHero() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<string>('free');
-  const [supplements, setSupplements] = useState<any[]>([]);
-  const [medications, setMedications] = useState<any[]>([]);
-  const [supplementId, setSupplementId] = useState('');
-  const [medicationId, setMedicationId] = useState('');
+  const [supplementName, setSupplementName] = useState('');
+  const [medicationName, setMedicationName] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Interaction[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isUserPaid = isPaid(role);
-  const canCheck = supplementId && medicationId;
-
-  const exampleSupplements = ['St. John\'s Wort', 'Ginkgo Biloba', 'Fish Oil', 'Magnesium', 'Vitamin D'];
-  const exampleMedications = ['Warfarin', 'Levothyroxine', 'Metformin', 'Sertraline', 'Lisinopril'];
+  const canCheck = supplementName && medicationName;
 
   useEffect(() => {
     loadData();
   }, []);
 
   async function loadData() {
-    // Get user
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     setUser(currentUser);
 
-    // Get role
     if (currentUser) {
       const { data: profile } = await supabase
         .from('profiles')
@@ -58,23 +52,6 @@ export default function LandingCheckerHero() {
         .maybeSingle();
       setRole(profile?.role || 'free');
     }
-
-    // Load supplements and medications (public access for landing page)
-    const [supRes, medRes] = await Promise.all([
-      supabase
-        .from('supplements')
-        .select('id,name')
-        .order('name')
-        .limit(100),
-      supabase
-        .from('medications')
-        .select('id,name')
-        .order('name')
-        .limit(100),
-    ]);
-
-    if (supRes.data) setSupplements(supRes.data);
-    if (medRes.data) setMedications(medRes.data);
   }
 
   async function handleCheck() {
@@ -85,25 +62,40 @@ export default function LandingCheckerHero() {
     setResults(null);
 
     try {
-      // If not logged in, redirect to auth
       if (!user) {
         navigate('/auth?redirect=/check');
         return;
       }
 
-      // If not paid, redirect to pricing
       if (!isUserPaid) {
         navigate('/pricing?from=landing-checker');
         return;
       }
 
-      // Make the check
+      const supRes = await supabase
+        .from('supplements')
+        .select('id')
+        .ilike('name', supplementName)
+        .maybeSingle();
+
+      const medRes = await supabase
+        .from('medications')
+        .select('id')
+        .ilike('name', medicationName)
+        .maybeSingle();
+
+      if (!supRes.data || !medRes.data) {
+        setError('Supplement or medication not found in database');
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch('/.netlify/functions/get-interactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          supplementId,
-          medicationId,
+          supplementId: supRes.data.id,
+          medicationId: medRes.data.id,
           userEmail: user.email,
         }),
       });
@@ -116,10 +108,9 @@ export default function LandingCheckerHero() {
       const data = await res.json();
 
       if (data.ok && data.data) {
-        // Format the result as an array
         setResults([{
-          supplement_name: supplements.find(s => s.id === supplementId)?.name || 'Supplement',
-          medication_name: medications.find(m => m.id === medicationId)?.name || 'Medication',
+          supplement_name: supplementName,
+          medication_name: medicationName,
           severity: data.data.severity || 'Medium',
           description: data.data.description || 'Interaction details available.',
           recommendation: data.data.recommendation || 'Consult your healthcare provider.',
@@ -168,11 +159,9 @@ export default function LandingCheckerHero() {
     }
   }
 
-  function fillExample(supplementName: string, medicationName: string) {
-    const sup = supplements.find(s => s.name === supplementName);
-    const med = medications.find(m => m.name === medicationName);
-    if (sup) setSupplementId(sup.id);
-    if (med) setMedicationId(med.id);
+  function fillExample(supplement: string, medication: string) {
+    setSupplementName(supplement);
+    setMedicationName(medication);
   }
 
   return (
@@ -215,43 +204,23 @@ export default function LandingCheckerHero() {
         >
           {/* Selection inputs */}
           <div className="grid gap-4 sm:grid-cols-2 mb-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Select Supplement
-              </label>
-              <select
-                value={supplementId}
-                onChange={(e) => setSupplementId(e.target.value)}
-                className="w-full border-2 border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                data-testid="supplement-select"
-              >
-                <option value="">Choose a supplement...</option>
-                {supplements.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <TypeaheadInput
+              label="Select Supplement"
+              placeholder="Type a supplement..."
+              type="supplement"
+              onChoose={(name) => setSupplementName(name)}
+              className="w-full border-2 border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              data-testid="supplement-select"
+            />
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Select Medication
-              </label>
-              <select
-                value={medicationId}
-                onChange={(e) => setMedicationId(e.target.value)}
-                className="w-full border-2 border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                data-testid="medication-select"
-              >
-                <option value="">Choose a medication...</option>
-                {medications.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <TypeaheadInput
+              label="Select Medication"
+              placeholder="Type a medication..."
+              type="medication"
+              onChoose={(name) => setMedicationName(name)}
+              className="w-full border-2 border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              data-testid="medication-select"
+            />
           </div>
 
           {/* Example chips */}
