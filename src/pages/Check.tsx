@@ -13,6 +13,7 @@ import UpgradeBand from "../components/check/UpgradeBand";
 import SourcesAccordion from "../components/check/SourcesAccordion";
 import { supabase } from "../lib/supabase";
 import { downloadBlob } from "../lib/download";
+import TypeaheadInput from "../components/TypeaheadInput";
 
 function isFreeActive(): boolean {
   try { return localStorage.getItem('free_active') === 'true'; } catch { return false; }
@@ -52,8 +53,6 @@ function incrementFreeUsage() {
   } catch {}
 }
 
-type Match = { type: "supplement" | "medication"; name: string; id: string };
-type SearchResp = { ok: boolean; matches: Match[] };
 type CheckResp =
   | { ok: false; reason: string; pair?: { supplement: string; medication: string } }
   | {
@@ -68,10 +67,6 @@ type CheckResp =
     };
 
 export default function Check() {
-  const [supQ, setSupQ] = useState("");
-  const [medQ, setMedQ] = useState("");
-  const [sugsSup, setSugsSup] = useState<Match[]>([]);
-  const [sugsMed, setSugsMed] = useState<Match[]>([]);
   const [selSup, setSelSup] = useState<string>("");
   const [selMed, setSelMed] = useState<string>("");
   const [result, setResult] = useState<CheckResp | null>(null);
@@ -104,30 +99,6 @@ export default function Check() {
     fetchUserPlan();
   }, []);
 
-  useEffect(() => {
-    const h = setTimeout(async () => {
-      if (!supQ.trim()) return setSugsSup([]);
-      const r = await fetch(
-        `${API_BASE}/interactions-search?query=${encodeURIComponent(supQ)}`
-      );
-      const j: SearchResp = await r.json();
-      setSugsSup(j.matches.filter(m => m.type === "supplement"));
-    }, 220);
-    return () => clearTimeout(h);
-  }, [supQ]);
-
-  useEffect(() => {
-    const h = setTimeout(async () => {
-      if (!medQ.trim()) return setSugsMed([]);
-      const r = await fetch(
-        `${API_BASE}/interactions-search?query=${encodeURIComponent(medQ)}`
-      );
-      const j: SearchResp = await r.json();
-      setSugsMed(j.matches.filter(m => m.type === "medication"));
-    }, 220);
-    return () => clearTimeout(h);
-  }, [medQ]);
-
   async function check() {
     setError(null);
 
@@ -146,8 +117,8 @@ export default function Check() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        supplement: selSup || supQ,
-        medication: selMed || medQ,
+        supplement: selSup,
+        medication: selMed,
       }),
     });
     const j: CheckResp = await r.json();
@@ -284,76 +255,54 @@ export default function Check() {
         <div className="bg-white shadow-md rounded-2xl p-6 sm:p-8 border border-gray-200 mb-8">
           <div className="space-y-6">
             <div>
-              <label className="block font-medium text-gray-800 mb-2">
-                Supplements
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
-                  value={selSup || supQ}
-                  onChange={(e) => {
-                    setSelSup("");
-                    setSupQ(e.target.value);
-                  }}
-                  placeholder="Type a supplement..."
-                />
-                {sugsSup.length > 0 && (
-                  <div className="absolute z-10 w-full mt-2 border border-gray-300 rounded-xl p-2 bg-white shadow-lg">
-                    {sugsSup.map((s) => (
-                      <div
-                        key={s.id}
-                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer rounded-lg transition-colors text-gray-800"
-                        onClick={() => {
-                          setSelSup(s.name);
-                          setSupQ("");
-                          setSugsSup([]);
-                        }}
-                      >
-                        {s.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <TypeaheadInput
+                label="Supplements"
+                placeholder="Type a supplement..."
+                type="supplement"
+                onChoose={(name) => setSelSup(name)}
+                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
+              />
+              {selSup && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
+                    {selSup}
+                    <button
+                      onClick={() => setSelSup("")}
+                      className="ml-2 text-blue-600 hover:text-blue-800"
+                      aria-label="Remove"
+                    >
+                      ×
+                    </button>
+                  </span>
+                </div>
+              )}
               <button className="text-blue-600 mt-2 mb-2 text-sm font-medium hover:text-blue-700 transition-colors">
                 + Add another supplement
               </button>
             </div>
 
             <div>
-              <label className="block font-medium text-gray-800 mb-2">
-                Medications
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
-                  value={selMed || medQ}
-                  onChange={(e) => {
-                    setSelMed("");
-                    setMedQ(e.target.value);
-                  }}
-                  placeholder="Type a medication..."
-                />
-                {sugsMed.length > 0 && (
-                  <div className="absolute z-10 w-full mt-2 border border-gray-300 rounded-xl p-2 bg-white shadow-lg">
-                    {sugsMed.map((m) => (
-                      <div
-                        key={m.id}
-                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer rounded-lg transition-colors text-gray-800"
-                        onClick={() => {
-                          setSelMed(m.name);
-                          setMedQ("");
-                          setSugsMed([]);
-                        }}
-                      >
-                        {m.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <TypeaheadInput
+                label="Medications"
+                placeholder="Type a medication..."
+                type="medication"
+                onChoose={(name) => setSelMed(name)}
+                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
+              />
+              {selMed && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
+                    {selMed}
+                    <button
+                      onClick={() => setSelMed("")}
+                      className="ml-2 text-blue-600 hover:text-blue-800"
+                      aria-label="Remove"
+                    >
+                      ×
+                    </button>
+                  </span>
+                </div>
+              )}
               <button className="text-blue-600 mt-2 mb-2 text-sm font-medium hover:text-blue-700 transition-colors">
                 + Add another medication
               </button>
@@ -367,7 +316,7 @@ export default function Check() {
 
             <button
               onClick={check}
-              disabled={loading}
+              disabled={loading || !selSup || !selMed}
               className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? "Checking..." : "Search Interactions"}
