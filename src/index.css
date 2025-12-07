@@ -6,9 +6,16 @@
 
 @layer base {
   :root {
-    --medical-blue: #0066CC;
-    --medical-blue-dark: #004C99;
-    --medical-blue-light: #E6F2FF;
+    /* Brand Primary: Deep Scientific Purple */
+    --medical-blue: #582C83;
+    --medical-blue-dark: #462366;
+    --medical-blue-light: #F5F0FA;
+    /* Brand Secondary: Medical Teal */
+    --brand-teal: #1DB5C9;
+    --brand-teal-light: #E8F9FC;
+    /* Brand Accent: Warm Gold */
+    --brand-gold: #FFC845;
+    /* Risk Colors (unchanged) */
     --medical-red: #DC2626;
     --medical-amber: #F59E0B;
     --medical-gray: #6B7280;
