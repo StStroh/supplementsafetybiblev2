@@ -10,7 +10,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Download, ArrowRight, Lock } from 'lucide-react';
+import { Download, ArrowRight, Lock, Shield, FlaskConical, FileText, Pill } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { isPaid } from '../lib/roles';
 import TypeaheadInput from './TypeaheadInput';
@@ -166,35 +166,95 @@ export default function LandingCheckerHero() {
 
   return (
     <section
-      className="relative w-full bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white"
+      className="relative w-full bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50"
       data-testid="landing-hero"
     >
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12">
-        {/* Tiny header strip */}
-        <div className="flex flex-col items-center text-center mb-6">
-          <div
-            className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium ring-1 ring-white/20 mb-3"
-            data-testid="pdf-badge"
-            aria-label="PDF download included on paid plans"
-          >
-            <Download className="w-3 h-3" />
-            <span>PDF Download Included</span>
-            <span className="opacity-70">on paid plans</span>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(88,44,131,0.05),transparent_50%),radial-gradient(circle_at_70%_60%,rgba(29,181,201,0.03),transparent_50%)]"></div>
+
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-16">
+        {/* New Hero Section */}
+        <div className="flex flex-col items-center text-center mb-12 sm:mb-16">
+          {/* Logo */}
+          <div className="mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg">
+              <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" strokeWidth={2.5} />
+            </div>
           </div>
 
+          {/* Headline */}
           <h1
-            className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 mb-4 sm:mb-6 max-w-4xl leading-tight"
             data-testid="landing-hero-headline"
           >
-            Don't Mix Blind™
+            Don't Mix Blind™ — Know Every Supplement Interaction Before You Take It.
           </h1>
 
+          {/* Subheadline */}
           <p
-            className="mt-2 text-base sm:text-lg text-white/90"
+            className="text-base sm:text-lg md:text-xl text-slate-700 max-w-3xl mb-8 sm:mb-10 leading-relaxed"
             data-testid="landing-hero-sub"
           >
-            Check interactions in seconds.
+            A clinical-grade interaction engine analyzing 2,500+ supplements and medications. Instant results. Evidence-based guidance. Safer decisions.
           </p>
+
+          {/* Trust Markers */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full max-w-4xl mb-8 sm:mb-10">
+            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
+              </div>
+              <p className="text-sm sm:text-base font-semibold text-slate-900">Evidence-Based</p>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">Reports</p>
+            </div>
+
+            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+                <FlaskConical className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
+              </div>
+              <p className="text-sm sm:text-base font-semibold text-slate-900">Clinician-Inspired</p>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">Guidance</p>
+            </div>
+
+            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
+              </div>
+              <p className="text-sm sm:text-base font-semibold text-slate-900">PDF Summaries</p>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">(Paid Plans)</p>
+            </div>
+
+            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+                <Pill className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
+              </div>
+              <p className="text-sm sm:text-base font-semibold text-slate-900">2,500+ Ingredient</p>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">Interactions</p>
+            </div>
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
+            <button
+              onClick={() => {
+                const checkerSection = document.querySelector('[data-testid="landing-hero-checker"]');
+                checkerSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="inline-flex items-center justify-center px-8 py-4 text-base sm:text-lg font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 min-w-[200px]"
+            >
+              Check Interactions
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => {
+                const howItWorksSection = document.querySelector('[data-testid="how-title"]')?.closest('section');
+                howItWorksSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="inline-flex items-center justify-center px-8 py-4 text-base sm:text-lg font-semibold text-blue-700 bg-white border-2 border-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200 min-w-[200px]"
+            >
+              How It Works
+            </button>
+          </div>
         </div>
 
         {/* Main checker card */}
