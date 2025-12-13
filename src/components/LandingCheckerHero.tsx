@@ -14,6 +14,8 @@ import { Download, ArrowRight, Lock, Shield, FlaskConical, FileText, Pill } from
 import { supabase } from '../lib/supabase';
 import { isPaid } from '../lib/roles';
 import TypeaheadInput from './TypeaheadInput';
+import '../styles/logo.css';
+import Logo from './Logo';
 
 interface Interaction {
   supplement_name: string;
@@ -175,13 +177,7 @@ export default function LandingCheckerHero() {
         <div className="flex flex-col items-center text-center mb-10">
           {/* Logo */}
           <div className="mb-6">
-            <img
-              src="/brand/logo.jpg"
-              alt="Supplement Safety Bible logo"
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg"
-              width="80"
-              height="80"
-            />
+            <Logo variant="dark" className="logo--hero" />
           </div>
 
           {/* H1: Don't Mix Blind™ */}

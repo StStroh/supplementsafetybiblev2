@@ -1,4 +1,6 @@
 import { SUPPORT_EMAIL } from '../lib/support';
+import '../styles/logo.css';
+import Logo from './Logo';
 
 export default function Footer() {
   return (
@@ -6,15 +8,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <img
-                src="/brand/logo.jpg"
-                alt="Don't Mix Blind logo"
-                className="w-10 h-10 rounded-lg"
-                width="40"
-                height="40"
-              />
-              <span className="text-xl font-bold text-[#000000]">Don't Mix Blind</span>
+            <div className="mb-4">
+              <Logo variant="dark" className="logo--footer" />
             </div>
             <p className="text-sm text-[#4A4A4A] leading-relaxed">
               Your trusted, evidence-based resource for checking interactions between supplements and prescription medications.

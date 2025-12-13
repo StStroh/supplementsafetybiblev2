@@ -1,14 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
+import '../styles/logo.css';
+import Logo from './Logo';
 
 export default function NavClinical() {
   return (
     <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600" />
-          <span className="font-semibold tracking-tight">
-            Supplement Safety Bible
-          </span>
+          <Logo variant="dark" className="logo--nav" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm">

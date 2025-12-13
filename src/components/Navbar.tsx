@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { SUPPORT_EMAIL } from '../lib/support';
 import '../styles/header.css';
+import '../styles/logo.css';
+import Logo from './Logo';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -66,18 +68,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <a href="/" className="brand flex items-center gap-3" aria-label="Go to Supplement Safety Bible home">
-            <img
-              src="/brand/logo.jpg"
-              alt="Supplement Safety Bible"
-              className="brand__img rounded-lg object-contain"
-              style={{
-                width: 'clamp(136px, 18vw, 208px)',
-                height: 'auto',
-                maxWidth: '100%'
-              }}
-              width={208}
-              height={56}
-            />
+            <Logo variant="dark" className="logo--nav" />
           </a>
 
           <div className="hidden md:flex items-center gap-8">

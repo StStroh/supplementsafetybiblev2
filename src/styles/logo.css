@@ -1,0 +1,55 @@
+.logo-auto {
+  position: relative;
+  display: inline-block;
+}
+
+.logo-auto .logo-dark,
+.logo-auto .logo-light {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.logo-auto .logo-light {
+  display: none;
+}
+
+.on-dark .logo-auto .logo-dark {
+  display: none;
+}
+
+.on-dark .logo-auto .logo-light {
+  display: block;
+}
+
+.logo--nav {
+  width: clamp(136px, 18vw, 208px);
+  height: auto;
+  max-width: 100%;
+}
+
+.logo--hero {
+  width: clamp(160px, 25vw, 240px);
+  height: auto;
+  max-width: 100%;
+}
+
+.logo--footer {
+  width: clamp(120px, 15vw, 180px);
+  height: auto;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .logo--nav {
+    width: clamp(110px, 20vw, 166px);
+  }
+
+  .logo--hero {
+    width: clamp(128px, 28vw, 192px);
+  }
+
+  .logo--footer {
+    width: clamp(96px, 18vw, 144px);
+  }
+}
