@@ -29,8 +29,19 @@ export default function Navbar() {
       setIsLoggedIn(!!session?.user);
     });
 
+    const handleScroll = () => {
+      const header = document.querySelector('[data-header]');
+      if (header) {
+        header.classList.toggle('is-scrolled', window.scrollY > 4);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     return () => {
       authListener.subscription.unsubscribe();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
