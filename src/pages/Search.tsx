@@ -109,13 +109,13 @@ export default function Search() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/')}
-                className="flex items-center text-[#4A4A4A] hover:text-[#1A73E8] transition"
+                className="flex items-center text-[#4A4A4A] hover:text-[#5B2D8B] transition"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span className="ml-1">Back</span>
               </button>
               <div className="flex items-center space-x-2">
-                <Shield className="w-6 h-6 text-[#1A73E8]" />
+                <Shield className="w-6 h-6 text-blue-600" />
                 <span className="text-xl font-bold text-[#000000]">Don't Mix Blind</span>
               </div>
             </div>
@@ -149,7 +149,7 @@ export default function Search() {
                   onClick={() => setSeverityFilter(level)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition ${
                     severityFilter === level
-                      ? 'bg-[#1A73E8] text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-white text-[#4A4A4A] hover:bg-[#F4F8FF] border border-[#DCE3ED]'
                   }`}
                 >
@@ -204,7 +204,7 @@ export default function Search() {
 
                 {isLimitReached && filteredInteractions.length > FREE_RESULTS_PREVIEW && (
                   <div className="mt-8 bg-[#F4F8FF] rounded-xl p-8 text-center border-2 border-[#DCE3ED]">
-                    <Lock className="w-12 h-12 text-[#1A73E8] mx-auto mb-4" />
+                    <Lock className="w-12 h-12 text-blue-600 mx-auto mb-4" />
                     <h3 className="text-2xl font-bold text-[#000000] mb-2">
                       Unlock Full Results
                     </h3>
@@ -213,7 +213,7 @@ export default function Search() {
                     </p>
                     <button
                       onClick={() => navigate('/pricing')}
-                      className="bg-[#1A73E8] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#1557B0] transition"
+                      className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
                     >
                       Start Premium
                     </button>

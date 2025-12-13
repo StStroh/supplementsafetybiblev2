@@ -23,33 +23,33 @@
 }
 
 .logo--nav {
-  width: clamp(136px, 18vw, 208px);
-  height: auto;
+  height: 40px;
+  width: auto;
   max-width: 100%;
 }
 
 .logo--hero {
-  width: clamp(160px, 25vw, 240px);
-  height: auto;
+  height: 60px;
+  width: auto;
   max-width: 100%;
 }
 
 .logo--footer {
-  width: clamp(120px, 15vw, 180px);
-  height: auto;
+  height: 36px;
+  width: auto;
   max-width: 100%;
 }
 
 @media (max-width: 640px) {
   .logo--nav {
-    width: clamp(110px, 20vw, 166px);
+    height: 32px;
   }
 
   .logo--hero {
-    width: clamp(128px, 28vw, 192px);
+    height: 48px;
   }
 
   .logo--footer {
-    width: clamp(96px, 18vw, 144px);
+    height: 28px;
   }
 }

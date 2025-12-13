@@ -7,7 +7,7 @@ interface UpgradeBandProps {
 
 export default function UpgradeBand({ className = '' }: UpgradeBandProps) {
   return (
-    <Card className={`bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 ${className}`}>
+    <Card className={`bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 ${className}`}>
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex-1">
           <h3 className="font-semibold text-lg text-slate-900 mb-2 flex items-center gap-2">

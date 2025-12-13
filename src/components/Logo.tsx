@@ -7,7 +7,7 @@ export default function Logo({ variant = 'auto', className = '' }: LogoProps) {
   if (variant === 'dark') {
     return (
       <img
-        src="/logo-dark.svg"
+        src="/brand/logo.svg"
         alt="Supplement Safety Bible logo"
         className={className}
       />
@@ -27,7 +27,7 @@ export default function Logo({ variant = 'auto', className = '' }: LogoProps) {
   return (
     <div className={`logo-auto ${className}`}>
       <img
-        src="/logo-dark.svg"
+        src="/brand/logo.svg"
         alt="Supplement Safety Bible logo"
         className="logo-dark"
       />

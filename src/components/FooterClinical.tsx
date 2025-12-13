@@ -16,8 +16,8 @@ export default function NavClinical() {
             to="/"
             className={({ isActive }) =>
               isActive
-                ? "text-indigo-700 font-medium"
-                : "text-slate-700 hover:text-indigo-700"
+                ? "text-blue-700 font-medium"
+                : "text-slate-700 hover:text-blue-700"
             }
           >
             Home
@@ -27,14 +27,14 @@ export default function NavClinical() {
             to="/pricing"
             className={({ isActive }) =>
               isActive
-                ? "text-indigo-700 font-medium"
-                : "text-slate-700 hover:text-indigo-700"
+                ? "text-blue-700 font-medium"
+                : "text-slate-700 hover:text-blue-700"
             }
           >
             Pricing
           </NavLink>
 
-          <a href="#features" className="text-slate-700 hover:text-indigo-700">
+          <a href="#features" className="text-slate-700 hover:text-blue-700">
             Features
           </a>
         </nav>
@@ -46,7 +46,7 @@ export default function NavClinical() {
 
           <Link
             to="/pricing"
-            className="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700 shadow-sm"
+            className="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm hover:bg-blue-700 shadow-sm"
           >
             Get Premium
           </Link>

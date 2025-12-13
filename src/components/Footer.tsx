@@ -20,27 +20,27 @@ export default function Footer() {
             <h4 className="text-[#000000] font-semibold mb-4">Explore</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/check" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/check" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Interactions
                 </a>
               </li>
               <li>
-                <a href="/supplements" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/supplements" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Supplements A–Z
                 </a>
               </li>
               <li>
-                <a href="/medications" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/medications" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Medications A–Z
                 </a>
               </li>
               <li>
-                <a href="/conditions" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/conditions" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Conditions A–Z
                 </a>
               </li>
               <li>
-                <a href="/preview/guides" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/preview/guides" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Guides
                 </a>
               </li>
@@ -51,17 +51,17 @@ export default function Footer() {
             <h4 className="text-[#000000] font-semibold mb-4">Get Started</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/pricing" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/pricing" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Pricing
                 </a>
               </li>
               <li>
-                <a href="/pricing?plan=pro" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/pricing?plan=pro" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Try Pro (14-day)
                 </a>
               </li>
               <li>
-                <a href="/pricing?plan=premium" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <a href="/pricing?plan=premium" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors">
                   Try Clinical (14-day)
                 </a>
               </li>
@@ -98,7 +98,7 @@ export default function Footer() {
             Disclaimer: This tool is for educational purposes only and is not a substitute for professional medical advice.
           </p>
           <p className="text-[#4A4A4A] mt-3">
-            Support: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#1A73E8] hover:underline">{SUPPORT_EMAIL}</a>
+            Support: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#5B2D8B] hover:underline">{SUPPORT_EMAIL}</a>
           </p>
         </div>
       </div>
