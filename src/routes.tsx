@@ -20,6 +20,12 @@ import FreeThanks from './pages/FreeThanks';
 import Landing from './pages/Landing';
 import Metrics from './pages/Metrics';
 import RefundPolicy from './pages/RefundPolicy';
+import Supplements from './pages/Supplements';
+import Medications from './pages/Medications';
+import Conditions from './pages/Conditions';
+import PreviewChecker from './pages/PreviewChecker';
+import PreviewGuides from './pages/PreviewGuides';
+import PreviewFeed from './pages/PreviewFeed';
 
 function NotFound() {
   return <div style={{padding: 40}}>Page not found</div>;
@@ -113,6 +119,30 @@ export const router = createBrowserRouter([
   {
     path: '/refund-policy',
     element: <RefundPolicy />
+  },
+  {
+    path: '/supplements',
+    element: <Supplements />
+  },
+  {
+    path: '/medications',
+    element: <Medications />
+  },
+  {
+    path: '/conditions',
+    element: <Conditions />
+  },
+  {
+    path: '/preview/checker',
+    element: <PreviewChecker />
+  },
+  {
+    path: '/preview/guides',
+    element: <PreviewGuides />
+  },
+  {
+    path: '/preview/feed',
+    element: <PreviewFeed />
   },
   {
     path: '/checkout/cancel',
