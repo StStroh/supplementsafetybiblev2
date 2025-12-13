@@ -72,15 +72,15 @@ export default function Navbar() {
           </a>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="/" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium">
+            <a href="/" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
               Home
             </a>
-            <a href="/faq" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium">
+            <a href="/faq" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
               FAQ
             </a>
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
-                <a href="/account" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium">
+                <a href="/account" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
                   Account
                 </a>
                 {plan === 'free' && (
@@ -90,11 +90,11 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <a href="/auth" className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium">
+              <a href="/auth" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
                 Sign in
               </a>
             )}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
               Contact
             </a>
 
@@ -190,14 +190,14 @@ export default function Navbar() {
             <div className="flex flex-col gap-4">
               <a
                 href="/"
-                className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium"
+                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </a>
               <a
                 href="/faq"
-                className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium"
+                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
@@ -206,7 +206,7 @@ export default function Navbar() {
                 <div>
                   <a
                     href="/account"
-                    className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium"
+                    className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Account
@@ -220,7 +220,7 @@ export default function Navbar() {
               ) : (
                 <a
                   href="/auth"
-                  className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium"
+                  className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Sign in
@@ -228,7 +228,7 @@ export default function Navbar() {
               )}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-[#4A4A4A] hover:text-[#5B2D8B] transition-colors font-medium"
+                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Contact

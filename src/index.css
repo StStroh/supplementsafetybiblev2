@@ -6,9 +6,9 @@
 
 @layer base {
   :root {
-    /* Brand Primary: Deep Scientific Purple */
-    --medical-blue: #582C83;
-    --medical-blue-dark: #462366;
+    /* Brand Primary: Locked at #5E3B76 */
+    --medical-blue: #5E3B76;
+    --medical-blue-dark: #4A2E5E;
     --medical-blue-light: #F5F0FA;
     /* Brand Secondary: Medical Teal */
     --brand-teal: #1DB5C9;
