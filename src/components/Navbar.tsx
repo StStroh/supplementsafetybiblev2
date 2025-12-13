@@ -137,7 +137,7 @@ export default function Navbar() {
                   </div>
 
                   <a
-                    href="/check"
+                    href="/preview/checker"
                     className="block px-4 py-2.5 hover:bg-slate-50 transition-colors text-sm text-slate-700"
                     onClick={() => setTryFreeOpen(false)}
                   >
@@ -145,7 +145,7 @@ export default function Navbar() {
                   </a>
 
                   <a
-                    href="/search"
+                    href="/preview/guides"
                     className="block px-4 py-2.5 hover:bg-slate-50 transition-colors text-sm text-slate-700"
                     onClick={() => setTryFreeOpen(false)}
                   >
@@ -153,7 +153,7 @@ export default function Navbar() {
                   </a>
 
                   <a
-                    href="/#research"
+                    href="/preview/feed"
                     className="block px-4 py-2.5 hover:bg-slate-50 transition-colors text-sm text-slate-700"
                     onClick={() => setTryFreeOpen(false)}
                   >
@@ -263,7 +263,7 @@ export default function Navbar() {
                 </p>
 
                 <a
-                  href="/check"
+                  href="/preview/checker"
                   className="block px-2 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -271,7 +271,7 @@ export default function Navbar() {
                 </a>
 
                 <a
-                  href="/search"
+                  href="/preview/guides"
                   className="block px-2 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -279,7 +279,7 @@ export default function Navbar() {
                 </a>
 
                 <a
-                  href="/#research"
+                  href="/preview/feed"
                   className="block px-2 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
