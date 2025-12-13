@@ -4,17 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand Primary: Deep Scientific Purple
+        // Brand Primary: Locked at #5E3B76
         blue: {
           50: '#F5F0FA',   // Very light purple tint
           100: '#E8DFF4',  // Light purple
           200: '#D4C4E8',  // Lighter purple border
-          400: '#905BB0',  // Medium purple
-          500: '#714596',  // Focus ring
-          600: '#582C83',  // PRIMARY BRAND
-          700: '#462366',  // Darker hover state
-          800: '#361B4F',  // Dark text
-          900: '#281339',  // Darkest text
+          400: '#8B5FA8',  // Medium purple
+          500: '#7450A0',  // Focus ring
+          600: '#5E3B76',  // PRIMARY BRAND (LOCKED)
+          700: '#4A2E5E',  // Darker hover state
+          800: '#3A2449',  // Dark text
+          900: '#2A1A35',  // Darkest text
         },
         // Brand gradient complement (deeper purple tones)
         indigo: {

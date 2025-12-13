@@ -109,7 +109,7 @@ export default function Search() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/')}
-                className="flex items-center text-[#4A4A4A] hover:text-[#5B2D8B] transition"
+                className="flex items-center text-[#4A4A4A] hover:text-[#5E3B76] transition"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span className="ml-1">Back</span>
