@@ -26,6 +26,7 @@ import Conditions from './pages/Conditions';
 import PreviewChecker from './pages/PreviewChecker';
 import PreviewGuides from './pages/PreviewGuides';
 import PreviewFeed from './pages/PreviewFeed';
+import PregnancyLactation from './pages/PregnancyLactation';
 
 function NotFound() {
   return <div style={{padding: 40}}>Page not found</div>;
@@ -143,6 +144,10 @@ export const router = createBrowserRouter([
   {
     path: '/preview/feed',
     element: <PreviewFeed />
+  },
+  {
+    path: '/pregnancy-lactation-safety',
+    element: <PregnancyLactation />
   },
   {
     path: '/checkout/cancel',
