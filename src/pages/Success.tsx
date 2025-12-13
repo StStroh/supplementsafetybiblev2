@@ -124,6 +124,17 @@ const Success: React.FC = () => {
               <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{getPlanName()}</span>
             </div>
 
+            {getPlanName().includes('Pro') && (
+              <div className="py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <h3 className="font-medium mb-1" style={{ color: 'var(--color-text)' }}>
+                  Work smarter and help your patients thrive
+                </h3>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
+                  Supplement Safety Bible Pro can save you hours every week and keep your patient resources automatically updated with the latest evidence.
+                </p>
+              </div>
+            )}
+
             <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
               <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Status</span>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" style={{ background: '#E8F5E9', color: '#2E7D32' }}>

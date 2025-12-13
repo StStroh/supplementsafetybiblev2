@@ -94,6 +94,15 @@ export default function PreviewChecker() {
         </div>
 
         <div className="card p-8 text-center">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
+              Work smarter and help your patients thrive
+            </h3>
+            <p className="text-sm max-w-2xl mx-auto" style={{ color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
+              Supplement Safety Bible Pro can save you hours every week and keep your patient resources automatically updated with the latest evidence.
+            </p>
+          </div>
+
           <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text)' }}>
             Ready for Full Access?
           </h2>

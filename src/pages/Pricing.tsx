@@ -227,6 +227,15 @@ export default function Pricing() {
               )}
             </div>
 
+            <div className="mb-6" style={{paddingLeft: '32px', paddingRight: '32px'}}>
+              <h3 className="font-semibold text-base mb-2" style={{color: 'var(--color-text)'}}>
+                Work smarter and help your patients thrive
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
+                Supplement Safety Bible Pro can save you hours every week and keep your patient resources automatically updated with the latest evidence.
+              </p>
+            </div>
+
             <ul className="space-y-3 mb-8 flex-1" style={{paddingLeft: '32px', paddingRight: '32px'}}>
               <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
                 <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
