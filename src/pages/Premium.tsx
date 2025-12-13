@@ -249,7 +249,7 @@ export default function Premium() {
               <button
                 onClick={() => handleCheckout(tier.id)}
                 disabled={loading !== null && loading !== tier.id}
-                className={`w-full py-4 rounded-xl font-semibold transition mb-8 ${
+                className={`w-full py-4 rounded-xl font-semibold transition mb-2 ${
                   tier.popular
                     ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl'
                     : tier.isFree
@@ -263,6 +263,17 @@ export default function Premium() {
                   <span>{tier.isFree ? 'Start Free' : tier.id === 'pro' ? 'Get Pro' : 'Get Premium'}</span>
                 )}
               </button>
+
+              {!tier.isFree && (
+                <p className="text-center mb-6">
+                  <a
+                    href="/refund-policy"
+                    className="text-xs text-gray-600 hover:text-black hover:underline"
+                  >
+                    Refund Policy (60-day guarantee)
+                  </a>
+                </p>
+              )}
 
               <ul className="space-y-3">
                 {tier.features.map((feature, i) => (
@@ -286,6 +297,14 @@ export default function Premium() {
           >
             See full feature comparison in FAQ →
           </button>
+          <p className="mt-6">
+            <a
+              href="/refund-policy"
+              className="text-sm text-gray-600 hover:text-black hover:underline"
+            >
+              Refund Policy (60-day guarantee)
+            </a>
+          </p>
         </div>
 
         <div className="mt-20 bg-gray-50 rounded-3xl p-12 text-center border border-gray-200">

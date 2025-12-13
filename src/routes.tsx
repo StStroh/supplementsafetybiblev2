@@ -18,6 +18,8 @@ import AuthCallback from './pages/AuthCallback';
 import Free from './pages/Free';
 import FreeThanks from './pages/FreeThanks';
 import Landing from './pages/Landing';
+import Metrics from './pages/Metrics';
+import RefundPolicy from './pages/RefundPolicy';
 
 function NotFound() {
   return <div style={{padding: 40}}>Page not found</div>;
@@ -103,6 +105,14 @@ export const router = createBrowserRouter([
   {
     path: '/landing',
     element: <Landing />
+  },
+  {
+    path: '/metrics',
+    element: <Metrics />
+  },
+  {
+    path: '/refund-policy',
+    element: <RefundPolicy />
   },
   {
     path: '/checkout/cancel',

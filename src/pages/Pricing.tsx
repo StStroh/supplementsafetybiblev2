@@ -277,6 +277,15 @@ export default function Pricing() {
               <p className="guarantee-note text-center mt-3">
                 60-day money-back guarantee. Change or cancel anytime.
               </p>
+              <p className="text-center mt-2">
+                <a
+                  href="/refund-policy"
+                  className="text-xs hover:underline"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
+                  Refund Policy (60-day guarantee)
+                </a>
+              </p>
             </div>
           </div>
 
@@ -350,6 +359,15 @@ export default function Pricing() {
               <p className="guarantee-note text-center mt-3">
                 60-day money-back guarantee. Change or cancel anytime.
               </p>
+              <p className="text-center mt-2">
+                <a
+                  href="/refund-policy"
+                  className="text-xs hover:underline"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
+                  Refund Policy (60-day guarantee)
+                </a>
+              </p>
             </div>
           </div>
         </div>
@@ -357,6 +375,15 @@ export default function Pricing() {
         <div className="text-center py-6" style={{borderTop: '1px solid var(--color-border)'}}>
           <p className="guarantee-note">
             60-day money-back guarantee · Change or cancel at any time
+          </p>
+          <p className="mt-2">
+            <a
+              href="/refund-policy"
+              className="text-xs hover:underline"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              Refund Policy (60-day guarantee)
+            </a>
           </p>
         </div>
 

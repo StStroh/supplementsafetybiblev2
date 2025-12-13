@@ -256,13 +256,24 @@ const Account: React.FC = () => {
             )}
 
             <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--color-border)' }}>
-              <a
-                href="/"
-                className="font-medium flex items-center hover:underline"
-                style={{ color: 'var(--color-trial)' }}
-              >
-                ← Back to Home
-              </a>
+              <div className="flex items-center justify-between mb-4">
+                <a
+                  href="/"
+                  className="font-medium flex items-center hover:underline"
+                  style={{ color: 'var(--color-trial)' }}
+                >
+                  ← Back to Home
+                </a>
+                {profile?.role === 'premium' && (
+                  <a
+                    href="/metrics"
+                    className="font-medium text-sm hover:underline"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    View Metrics →
+                  </a>
+                )}
+              </div>
               <p className="mt-4 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Need help?{' '}
                 <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline" style={{ color: 'var(--color-trial)' }}>
