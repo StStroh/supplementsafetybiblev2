@@ -25,7 +25,7 @@ const organizationSchema = {
   "@type": "Organization",
   "name": "Supplement Safety Bible",
   "url": "https://supplementsafetybible.com",
-  "logo": "https://supplementsafetybible.com/logosafetybible.jpg",
+  "logo": "https://supplementsafetybible.com/brand/logo.jpg",
   "sameAs": []
 };
 

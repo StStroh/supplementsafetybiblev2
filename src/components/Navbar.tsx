@@ -2,6 +2,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { SUPPORT_EMAIL } from '../lib/support';
+import '../styles/header.css';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -50,12 +51,22 @@ export default function Navbar() {
   }, [tryFreeOpen]);
 
   return (
-    <nav className="bg-white border-b border-[#DCE3ED] sticky top-0 z-50" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}}>
+    <nav className="site-header bg-white border-b border-[#DCE3ED] sticky top-0 z-50" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}} role="banner" data-header>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <a href="/" className="flex items-center gap-2">
-            <img src="/logosafetybible.jpg" alt="Don't Mix Blind" className="w-10 h-10 rounded-lg" />
-            <span className="text-xl font-bold text-[#000000]">Don't Mix Blind</span>
+          <a href="/" className="brand flex items-center gap-3" aria-label="Go to Supplement Safety Bible home">
+            <img
+              src="/brand/logo.jpg"
+              alt="Supplement Safety Bible"
+              className="brand__img rounded-lg object-contain"
+              style={{
+                width: 'clamp(136px, 18vw, 208px)',
+                height: 'auto',
+                maxWidth: '100%'
+              }}
+              width={208}
+              height={56}
+            />
           </a>
 
           <div className="hidden md:flex items-center gap-8">

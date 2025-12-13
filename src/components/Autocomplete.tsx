@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
 import { Search } from 'lucide-react';
+import '../styles/autocomplete.css';
 
 interface AutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   onSelect: (value: string) => void;
   placeholder?: string;
+  label?: string;
 }
 
 interface Suggestion {
@@ -13,11 +15,13 @@ interface Suggestion {
   type: 'supplement' | 'medication';
 }
 
-export default function Autocomplete({ value, onChange, onSelect, placeholder }: AutocompleteProps) {
+export default function Autocomplete({ value, onChange, onSelect, placeholder, label }: AutocompleteProps) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listboxId = useId();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -39,35 +43,52 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder }:
     }
   }, [value]);
 
+  useEffect(() => {
+    if (value) {
+      setShowSuggestions(suggestions.length > 0);
+      setActiveSuggestion(suggestions.length > 0 ? 0 : -1);
+    } else {
+      setShowSuggestions(false);
+      setActiveSuggestion(-1);
+    }
+  }, [suggestions, value]);
+
   const fetchSuggestions = async () => {
     try {
       const response = await fetch(`/.netlify/functions/autocomplete?q=${encodeURIComponent(value)}`);
       if (!response.ok) return;
       const data = await response.json();
       setSuggestions(data.suggestions || []);
-      setShowSuggestions(true);
-      setActiveSuggestion(-1);
     } catch (err) {
       console.error('Autocomplete failed:', err);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      setShowSuggestions(true);
+      return;
+    }
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveSuggestion((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
+      setActiveSuggestion((prev) =>
+        suggestions.length > 0 ? (prev + 1) % suggestions.length : -1
+      );
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveSuggestion((prev) => (prev > 0 ? prev - 1 : -1));
+      setActiveSuggestion((prev) =>
+        suggestions.length > 0 ? (prev - 1 + suggestions.length) % suggestions.length : -1
+      );
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
+      if (showSuggestions && activeSuggestion >= 0 && suggestions[activeSuggestion]) {
         selectSuggestion(suggestions[activeSuggestion].name);
       } else if (value) {
         onSelect(value);
         setShowSuggestions(false);
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === 'Escape' || e.key === 'Tab') {
       setShowSuggestions(false);
     }
   };
@@ -76,36 +97,70 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder }:
     onChange(name);
     onSelect(name);
     setShowSuggestions(false);
+    setActiveSuggestion(-1);
+    // Return focus to input after selection
+    requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} className="autocomplete relative">
+      {label && (
+        <label className="ac__label block mb-2 font-semibold text-sm" style={{color: 'var(--color-text)'}}>
+          {label}
+        </label>
+      )}
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => value.length >= 2 && suggestions.length > 0 && setShowSuggestions(true)}
+          onBlur={() => {
+            // Delay to allow click to register
+            setTimeout(() => setShowSuggestions(false), 200);
+          }}
           placeholder={placeholder || 'Search...'}
-          className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-full focus:border-blue-500 focus:outline-none pl-14"
+          className="ac__input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-full focus:border-blue-500 focus:outline-none pl-14"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={showSuggestions}
+          aria-controls={listboxId}
+          aria-activedescendant={
+            showSuggestions && activeSuggestion >= 0
+              ? `${listboxId}-opt-${activeSuggestion}`
+              : undefined
+          }
+          autoComplete="off"
+          spellCheck={false}
         />
-        <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
+        <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none" />
       </div>
 
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+        <ul
+          id={listboxId}
+          role="listbox"
+          className="ac__list absolute z-[9999] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+        >
           {suggestions.map((suggestion, index) => (
-            <div
+            <li
               key={`${suggestion.type}-${suggestion.name}-${index}`}
+              id={`${listboxId}-opt-${index}`}
+              role="option"
+              aria-selected={index === activeSuggestion}
+              tabIndex={-1}
+              onPointerDown={(e) => e.preventDefault()} // Prevent blur on iOS
+              onMouseDown={(e) => e.preventDefault()} // Prevent blur on desktop
               onClick={() => selectSuggestion(suggestion.name)}
-              className={`px-4 py-3 cursor-pointer flex items-center justify-between ${
-                index === activeSuggestion ? 'bg-blue-50' : 'hover:bg-gray-50'
+              className={`ac__item px-4 py-3 cursor-pointer flex items-center justify-between min-h-[44px] ${
+                index === activeSuggestion ? 'bg-blue-50 is-active' : 'hover:bg-gray-50'
               }`}
             >
-              <span className="text-gray-900">{suggestion.name}</span>
+              <span className="ac__labelText text-gray-900 font-medium">{suggestion.name}</span>
               <span
-                className={`text-xs px-2 py-1 rounded-full ${
+                className={`ac__meta text-xs px-2 py-1 rounded-full ${
                   suggestion.type === 'supplement'
                     ? 'bg-blue-100 text-blue-800'
                     : 'bg-green-100 text-green-800'
@@ -113,9 +168,9 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder }:
               >
                 {suggestion.type}
               </span>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

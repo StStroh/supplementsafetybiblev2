@@ -1,0 +1,90 @@
+/* Header global styles */
+:root {
+  --header-height-d: 64px;
+  --header-height-t: 56px;
+  --header-height-m: 48px;
+  --space-inline: clamp(16px, 4vw, 32px);
+  --gap-header: clamp(12px, 3vw, 24px);
+  --color-focus: #3b82f6;
+}
+
+.site-header {
+  display: block;
+  min-height: var(--header-height-d);
+}
+
+@media (max-width: 1024px) {
+  .site-header {
+    min-height: var(--header-height-t);
+  }
+}
+
+@media (max-width: 420px) {
+  .site-header {
+    min-height: var(--header-height-m);
+  }
+}
+
+/* Brand / Logo */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.brand:hover {
+  opacity: 0.85;
+}
+
+.brand:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.brand__img {
+  display: block;
+  width: clamp(136px, 18vw, 208px);
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* Responsive logo sizing */
+@media (max-width: 1024px) {
+  .brand__img {
+    width: clamp(136px, 24vw, 176px);
+  }
+}
+
+@media (max-width: 420px) {
+  .brand__img {
+    width: 136px;
+  }
+}
+
+/* Navigation links focus states */
+.site-header a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .site-header *,
+  .brand,
+  .brand__img {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .site-header {
+    background: var(--color-surface-950, #0b0b0b);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
