@@ -2,6 +2,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { SUPPORT_EMAIL } from '../lib/support';
+import { BRAND_NAME } from '../lib/brand';
 import '../styles/header.css';
 import '../styles/logo.css';
 import Logo from './Logo';
@@ -67,7 +68,7 @@ export default function Navbar() {
     <nav className="site-header bg-white border-b border-[#DCE3ED] sticky top-0 z-50" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}} role="banner" data-header>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <a href="/" className="brand flex items-center gap-3" aria-label="Go to Supplement Safety Bible home">
+          <a href="/" className="brand flex items-center gap-3" aria-label={`Go to ${BRAND_NAME} home`}>
             <Logo variant="dark" className="logo--nav" />
           </a>
 

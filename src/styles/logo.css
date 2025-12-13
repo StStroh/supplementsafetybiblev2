@@ -1,6 +1,7 @@
 .logo-auto {
   position: relative;
   display: inline-block;
+  min-width: 0;
 }
 
 .logo-auto .logo-dark,
@@ -25,31 +26,34 @@
 .logo--nav {
   height: 40px;
   width: auto;
-  max-width: 100%;
+  max-width: none;
+  overflow: visible;
 }
 
 .logo--hero {
   height: 60px;
   width: auto;
-  max-width: 100%;
+  max-width: none;
+  overflow: visible;
 }
 
 .logo--footer {
   height: 36px;
   width: auto;
-  max-width: 100%;
+  max-width: none;
+  overflow: visible;
 }
 
 @media (max-width: 640px) {
   .logo--nav {
-    height: 32px;
+    height: 36px;
   }
 
   .logo--hero {
-    height: 48px;
+    height: 52px;
   }
 
   .logo--footer {
-    height: 28px;
+    height: 32px;
   }
 }
