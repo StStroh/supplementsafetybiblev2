@@ -173,6 +173,15 @@ export default function LandingCheckerHero() {
       <div className="relative mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-20">
         {/* Hero Header */}
         <div className="flex flex-col items-center text-center mb-10">
+          {/* Logo */}
+          <div className="mb-6">
+            <img
+              src="/logosafetybible.jpg"
+              alt="Supplement Safety Bible logo"
+              className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-lg"
+            />
+          </div>
+
           {/* H1: Don't Mix Blind™ */}
           <h1
             className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 max-w-4xl leading-tight"
