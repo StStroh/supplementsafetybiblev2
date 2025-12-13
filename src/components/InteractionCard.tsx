@@ -22,19 +22,19 @@ export default function InteractionCard({ interaction, onClick }: InteractionCar
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition cursor-pointer"
+      className="card p-6 hover:shadow-md transition cursor-pointer"
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center space-x-3 mb-2">
             <div className="flex items-center space-x-2">
-              <Beaker className="w-5 h-5 text-blue-600" />
-              <span className="font-semibold text-gray-900">{interaction.supplement_name}</span>
+              <Beaker className="w-5 h-5" style={{ color: 'var(--color-trial)' }} />
+              <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{interaction.supplement_name}</span>
             </div>
-            <span className="text-gray-400">+</span>
+            <span style={{ color: 'var(--color-text-muted)' }}>+</span>
             <div className="flex items-center space-x-2">
-              <Pill className="w-5 h-5 text-green-600" />
-              <span className="font-semibold text-gray-900">{interaction.medication_name}</span>
+              <Pill className="w-5 h-5" style={{ color: 'var(--color-success)' }} />
+              <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{interaction.medication_name}</span>
             </div>
           </div>
         </div>
@@ -46,7 +46,7 @@ export default function InteractionCard({ interaction, onClick }: InteractionCar
           {interaction.severity.toUpperCase()}
         </span>
       </div>
-      <p className="text-gray-600 text-sm line-clamp-2">{interaction.description}</p>
+      <p className="text-sm line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>{interaction.description}</p>
     </div>
   );
 }

@@ -121,10 +121,10 @@ const Account: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-slate-600">Loading your account...</p>
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: 'var(--color-trial)' }} />
+          <p style={{ color: 'var(--color-text-muted)' }}>Loading your account...</p>
         </div>
       </div>
     );
@@ -132,22 +132,16 @@ const Account: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-slate-900 mb-2 text-center">Error</h1>
-          <p className="text-slate-600 text-center mb-6">{error}</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
+        <div className="card p-8 max-w-md w-full mx-4">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--color-error)' }} />
+          <h1 className="text-2xl font-bold mb-2 text-center" style={{ color: 'var(--color-text)' }}>Error</h1>
+          <p className="text-center mb-6" style={{ color: 'var(--color-text-muted)' }}>{error}</p>
           <div className="space-y-3">
-            <a
-              href="/#pricing"
-              className="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
+            <a href="/#pricing" className="btn-cta block w-full text-center">
               View Plans
             </a>
-            <a
-              href="/"
-              className="block w-full bg-slate-100 text-slate-900 text-center py-3 rounded-lg hover:bg-slate-200 transition-colors"
-            >
+            <a href="/" className="btn-outline block w-full text-center">
               Return Home
             </a>
           </div>
@@ -157,7 +151,7 @@ const Account: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4">
+    <div className="min-h-screen py-12 px-4" style={{ background: 'var(--color-bg)' }}>
       <SEO
         title="Account | Supplement Safety Bible"
         description="Manage your Supplement Safety Bible subscription and account settings."
@@ -165,26 +159,26 @@ const Account: React.FC = () => {
         noindex={true}
       />
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white">
+        <div className="card overflow-hidden" style={{ padding: 0 }}>
+          <div className="panel-brand p-8">
             <h1 className="text-3xl font-bold mb-2">Account</h1>
-            <p className="text-blue-100">Manage your subscription and billing</p>
+            <p style={{ opacity: 0.9 }}>Manage your subscription and billing</p>
           </div>
 
           <div className="p-8">
             {profile && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-slate-900 mb-4">Account Information</h2>
-                  <div className="bg-slate-50 rounded-lg p-6 space-y-4">
-                    <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-                      <span className="text-slate-600 font-medium">Email</span>
-                      <span className="text-slate-900 font-semibold">{profile.email}</span>
+                  <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--color-text)' }}>Account Information</h2>
+                  <div className="rounded-lg p-6 space-y-4" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+                    <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Email</span>
+                      <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{profile.email}</span>
                     </div>
 
-                    <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-                      <span className="text-slate-600 font-medium">Current Plan</span>
-                      <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
+                    <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Current Plan</span>
+                      <span className="badge-trial">
                         {getPlanDisplayName(profile.role)}
                         {profile.role === 'free' && ' — Active'}
                       </span>
@@ -192,11 +186,11 @@ const Account: React.FC = () => {
 
                     {profile.current_period_end && (
                       <div className="flex justify-between items-center">
-                        <span className="text-slate-600 font-medium flex items-center">
+                        <span className="font-medium flex items-center" style={{ color: 'var(--color-text-muted)' }}>
                           <Calendar className="w-4 h-4 mr-2" />
                           Next Billing Date
                         </span>
-                        <span className="text-slate-900 font-semibold">
+                        <span className="font-semibold" style={{ color: 'var(--color-text)' }}>
                           {formatDate(profile.current_period_end)}
                         </span>
                       </div>
@@ -206,32 +200,27 @@ const Account: React.FC = () => {
 
                 {profile.role === 'free' && (
                   <div>
-                    <h2 className="text-xl font-semibold text-slate-900 mb-4">Free Plan Active</h2>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--color-text)' }}>Free Plan Active</h2>
+                    <div className="rounded-lg p-6" style={{ background: '#F0F9FA', border: '1px solid var(--color-trial)' }}>
                       <div className="flex items-center gap-2 mb-4">
-                        <Zap className="w-5 h-5 text-blue-600" />
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
-                          Free Plan
-                        </span>
+                        <Zap className="w-5 h-5" style={{ color: 'var(--color-trial)' }} />
+                        <span className="badge-trial">Free Plan</span>
                       </div>
-                      <ul className="space-y-2 text-slate-700 mb-4">
+                      <ul className="space-y-2 mb-4" style={{ color: 'var(--color-text)' }}>
                         <li className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span style={{ color: 'var(--color-success)' }} className="mt-0.5">✓</span>
                           <span>Read supplement & medication lists</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span style={{ color: 'var(--color-success)' }} className="mt-0.5">✓</span>
                           <span>1 interaction check per day</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-blue-600 mt-0.5">→</span>
+                          <span style={{ color: 'var(--color-trial)' }} className="mt-0.5">→</span>
                           <span className="font-semibold">Upgrade for unlimited checks + evidence details</span>
                         </li>
                       </ul>
-                      <a
-                        href="/#pricing"
-                        className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                      >
+                      <a href="/#pricing" className="btn-cta inline-block">
                         View Upgrade Options
                       </a>
                     </div>
@@ -240,11 +229,11 @@ const Account: React.FC = () => {
 
                 {profile.stripe_customer_id && profile.role !== 'free' && (
                   <div>
-                    <h2 className="text-xl font-semibold text-slate-900 mb-4">Billing Management</h2>
+                    <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--color-text)' }}>Billing Management</h2>
                     <button
                       onClick={handleManageBilling}
                       disabled={portalLoading}
-                      className="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="btn-cta w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {portalLoading ? (
                         <>
@@ -258,7 +247,7 @@ const Account: React.FC = () => {
                         </>
                       )}
                     </button>
-                    <p className="text-sm text-slate-600 mt-3 text-center">
+                    <p className="guarantee-note mt-3 text-center">
                       Update payment method, view invoices, or cancel subscription
                     </p>
                   </div>
@@ -266,16 +255,17 @@ const Account: React.FC = () => {
               </div>
             )}
 
-            <div className="mt-8 pt-6 border-t border-slate-200">
+            <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--color-border)' }}>
               <a
                 href="/"
-                className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
+                className="font-medium flex items-center hover:underline"
+                style={{ color: 'var(--color-trial)' }}
               >
                 ← Back to Home
               </a>
-              <p className="mt-4 text-center text-sm text-slate-600">
+              <p className="mt-4 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Need help?{' '}
-                <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline" style={{ color: 'var(--color-trial)' }}>
                   {SUPPORT_EMAIL}
                 </a>
               </p>

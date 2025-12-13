@@ -170,21 +170,22 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <nav style={{ background: 'var(--color-surface)', boxShadow: 'var(--shadow-card)', borderBottom: '1px solid var(--color-border)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/')}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition"
+                className="flex items-center transition hover:underline"
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span className="ml-1">Back</span>
               </button>
               <div className="flex items-center space-x-2">
-                <Shield className="w-6 h-6 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">SafetyBible Admin</span>
+                <Shield className="w-6 h-6" style={{ color: 'var(--color-trial)' }} />
+                <span className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>SafetyBible Admin</span>
               </div>
             </div>
           </div>
@@ -193,43 +194,43 @@ export default function Admin() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Admin Dashboard</h1>
+          <p style={{ color: 'var(--color-text-muted)' }}>
             Manage data imports, view statistics, and configure synonyms.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="card p-6">
             <div className="flex items-center justify-between mb-2">
-              <Database className="w-8 h-8 text-blue-600" />
-              {stats && <button onClick={loadStats} className="text-gray-400 hover:text-gray-600"><RefreshCw className="w-4 h-4" /></button>}
+              <Database className="w-8 h-8" style={{ color: 'var(--color-trial)' }} />
+              {stats && <button onClick={loadStats} style={{ color: 'var(--color-text-muted)' }}><RefreshCw className="w-4 h-4" /></button>}
             </div>
-            <div className="text-3xl font-bold text-gray-900">{stats?.supplements ?? '—'}</div>
-            <div className="text-sm text-gray-600">Supplements</div>
+            <div className="text-3xl font-bold" style={{ color: 'var(--color-text)' }}>{stats?.supplements ?? '—'}</div>
+            <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Supplements</div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <Database className="w-8 h-8 text-green-600 mb-2" />
-            <div className="text-3xl font-bold text-gray-900">{stats?.medications ?? '—'}</div>
-            <div className="text-sm text-gray-600">Medications</div>
+          <div className="card p-6">
+            <Database className="w-8 h-8 mb-2" style={{ color: 'var(--color-success)' }} />
+            <div className="text-3xl font-bold" style={{ color: 'var(--color-text)' }}>{stats?.medications ?? '—'}</div>
+            <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Medications</div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <Shield className="w-8 h-8 text-purple-600 mb-2" />
-            <div className="text-3xl font-bold text-gray-900">{stats?.interactions ?? '—'}</div>
-            <div className="text-sm text-gray-600">Interactions</div>
+          <div className="card p-6">
+            <Shield className="w-8 h-8 mb-2" style={{ color: 'var(--color-brand)' }} />
+            <div className="text-3xl font-bold" style={{ color: 'var(--color-text)' }}>{stats?.interactions ?? '—'}</div>
+            <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Interactions</div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <Upload className="w-8 h-8 text-orange-600 mb-2" />
-            <div className="text-sm font-semibold text-gray-900 mb-2">Last Import</div>
-            <div className="text-xs text-gray-600">{stats?.lastImportAt ? new Date(stats.lastImportAt).toLocaleString() : 'Never'}</div>
+          <div className="card p-6">
+            <Upload className="w-8 h-8 mb-2" style={{ color: 'var(--color-warning)' }} />
+            <div className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text)' }}>Last Import</div>
+            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{stats?.lastImportAt ? new Date(stats.lastImportAt).toLocaleString() : 'Never'}</div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+        <div className="card p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center" style={{ color: 'var(--color-text)' }}>
             <Upload className="w-5 h-5 mr-2" />
             Data Import
           </h2>
@@ -237,7 +238,7 @@ export default function Admin() {
             <button
               onClick={() => runImport(false)}
               disabled={importing}
-              className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition shadow-sm"
+              className="btn-cta flex items-center space-x-2 disabled:opacity-50"
             >
               <Upload className="w-5 h-5" />
               <span>{importing ? 'Importing...' : 'Import CSV'}</span>
@@ -245,7 +246,8 @@ export default function Admin() {
             <button
               onClick={() => runImport(true)}
               disabled={importing}
-              className="flex items-center space-x-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 disabled:bg-gray-400 transition shadow-sm"
+              className="flex items-center space-x-2 px-6 py-3 rounded-lg transition disabled:opacity-50"
+              style={{ background: 'var(--color-error)', color: '#ffffff' }}
             >
               <Trash2 className="w-5 h-5" />
               <span>Truncate & Re-import</span>
@@ -253,9 +255,9 @@ export default function Admin() {
           </div>
 
           {importResult && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <h3 className="font-semibold text-green-900 mb-2">Import Successful!</h3>
-              <div className="text-sm text-green-800">
+            <div className="rounded-lg p-4" style={{ background: '#E8F5E9', border: '1px solid #81C784' }}>
+              <h3 className="font-semibold mb-2" style={{ color: 'var(--color-success)' }}>Import Successful!</h3>
+              <div className="text-sm" style={{ color: '#2E7D32' }}>
                 <p>Supplements: {importResult.counts.supplements}</p>
                 <p>Medications: {importResult.counts.medications}</p>
                 <p>Interactions: {importResult.counts.interactions}</p>
@@ -266,33 +268,36 @@ export default function Admin() {
         </div>
 
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Synonym Management</h2>
-          <p className="text-gray-600">
+          <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Synonym Management</h2>
+          <p style={{ color: 'var(--color-text-muted)' }}>
             Manage alternative names for supplements and medications to improve search accuracy.
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Add New Synonym</h2>
+        <div className="card p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--color-text)' }}>Add New Synonym</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="text"
               value={newSynonym.synonym}
               onChange={(e) => setNewSynonym({ ...newSynonym, synonym: e.target.value })}
               placeholder="Synonym (e.g., 'coq10')"
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 rounded-lg focus:ring-2 focus:border-transparent"
+              style={{ border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
             />
             <input
               type="text"
               value={newSynonym.canonical}
               onChange={(e) => setNewSynonym({ ...newSynonym, canonical: e.target.value })}
               placeholder="Canonical name (e.g., 'coenzyme q10')"
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 rounded-lg focus:ring-2 focus:border-transparent"
+              style={{ border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
             />
             <select
               value={newSynonym.type}
               onChange={(e) => setNewSynonym({ ...newSynonym, type: e.target.value as 'supplement' | 'medication' })}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-3 rounded-lg focus:ring-2 focus:border-transparent"
+              style={{ border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
             >
               <option value="supplement">Supplement</option>
               <option value="medication">Medication</option>
@@ -300,7 +305,7 @@ export default function Admin() {
             <button
               onClick={addSynonym}
               disabled={saving}
-              className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition shadow-sm hover:shadow-md"
+              className="btn-cta flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               <Plus className="w-5 h-5" />
               <span>{saving ? 'Adding...' : 'Add Synonym'}</span>
@@ -311,41 +316,41 @@ export default function Admin() {
         {loading ? (
           <Loading message="Loading synonyms..." />
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="card overflow-hidden" style={{ padding: 0 }}>
             {synonyms.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full">
+                  <thead style={{ background: 'var(--color-bg)' }}>
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                         Synonym
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                         Canonical Name
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                         Type
                       </th>
-                      <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody style={{ background: 'var(--color-surface)' }}>
                     {synonyms.map((synonym, index) => (
-                      <tr key={`${synonym.type}-${synonym.synonym_key}-${index}`} className="hover:bg-gray-50 transition">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={`${synonym.type}-${synonym.synonym_key}-${index}`} className="transition" style={{ borderTop: '1px solid var(--color-border)' }}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" style={{ color: 'var(--color-text)' }}>
                           {synonym.synonym_key}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--color-text-muted)' }}>
                           {synonym.canonical_key}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                             synonym.type === 'supplement'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}>
+                              ? 'badge-trial'
+                              : ''
+                          }`} style={synonym.type === 'medication' ? { background: '#E8F5E9', color: '#2E7D32' } : {}}>
                             {synonym.type}
                           </span>
                         </td>
@@ -353,7 +358,8 @@ export default function Admin() {
                           <button
                             onClick={() => deleteSynonym(synonym.synonym_key, synonym.type)}
                             disabled={saving}
-                            className="text-red-600 hover:text-red-700 disabled:text-gray-400 transition"
+                            className="transition disabled:opacity-50"
+                            style={{ color: 'var(--color-error)' }}
                             title="Delete synonym"
                           >
                             <Trash2 className="w-5 h-5" />

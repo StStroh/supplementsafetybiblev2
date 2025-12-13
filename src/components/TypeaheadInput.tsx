@@ -64,7 +64,7 @@ export default function TypeaheadInput({
 
   return (
     <div className="relative" ref={boxRef}>
-      <label className="block text-sm font-semibold text-slate-900 mb-2">{label}</label>
+      <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--color-text)' }}>{label}</label>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -81,17 +81,19 @@ export default function TypeaheadInput({
         <div
           className={
             dropdownClassName ||
-            "absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-lg border-2 border-slate-200 bg-white shadow-lg"
+            "absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-lg shadow-lg"
           }
+          style={{ border: '2px solid var(--color-border)', background: 'var(--color-surface)' }}
           role="listbox"
         >
-          {loading && <div className="px-3 py-2 text-sm text-slate-500">Loading…</div>}
+          {loading && <div className="px-3 py-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>Loading…</div>}
           {!loading && list.length === 0 && q && (
             <>
-              <div className="px-3 py-2 text-sm text-slate-500">No matches</div>
+              <div className="px-3 py-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>No matches</div>
               <button
                 type="button"
-                className="block w-full px-3 py-2 text-left text-slate-700 hover:bg-slate-100"
+                className="block w-full px-3 py-2 text-left transition"
+                style={{ color: 'var(--color-text)' }}
                 onClick={() => {
                   onChoose(q);
                   setQ("");
@@ -107,8 +109,8 @@ export default function TypeaheadInput({
               <button
                 key={`${it.name}-${i}`}
                 type="button"
-                className="block w-full px-3 py-2 text-left hover:bg-slate-100 text-sm"
-                role="option"
+                className="block w-full px-3 py-2 text-left transition text-sm"
+                style={{ color: 'var(--color-text)' }}
                 onClick={() => {
                   onChoose(it.name);
                   setQ("");
@@ -116,7 +118,7 @@ export default function TypeaheadInput({
                 }}
               >
                 {it.name}{" "}
-                <span className="text-xs text-slate-500">({it.type})</span>
+                <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>({it.type})</span>
               </button>
             ))}
         </div>

@@ -16,12 +16,14 @@ export default function SearchBar({ value, onChange, onSubmit, placeholder = 'Se
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none pl-14 transition"
+          className="w-full px-6 py-4 text-lg rounded-xl focus:outline-none pl-14 transition"
+          style={{ border: '2px solid var(--color-border)', color: 'var(--color-text)' }}
         />
-        <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--color-text-muted)' }} />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="btn-cta absolute right-2 top-1/2 transform -translate-y-1/2"
+          style={{ padding: '8px 24px' }}
         >
           Search
         </button>

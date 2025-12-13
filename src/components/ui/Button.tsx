@@ -16,9 +16,9 @@ export default function Button({
   const baseStyles = 'font-medium rounded-xl transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantStyles = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200',
-    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
+    primary: 'btn-cta',
+    secondary: 'btn-outline',
+    outline: 'btn-outline',
   };
 
   const sizeStyles = {

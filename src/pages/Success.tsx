@@ -77,10 +77,10 @@ const Success: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-slate-600">Loading your subscription details...</p>
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: 'var(--color-trial)' }} />
+          <p style={{ color: 'var(--color-text-muted)' }}>Loading your subscription details...</p>
         </div>
       </div>
     );
@@ -88,15 +88,12 @@ const Success: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-slate-900 mb-2 text-center">Error</h1>
-          <p className="text-slate-600 text-center mb-6">{error}</p>
-          <a
-            href="/"
-            className="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
+        <div className="card p-8 max-w-md w-full mx-4">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--color-error)' }} />
+          <h1 className="text-2xl font-bold mb-2 text-center" style={{ color: 'var(--color-text)' }}>Error</h1>
+          <p className="text-center mb-6" style={{ color: 'var(--color-text-muted)' }}>{error}</p>
+          <a href="/" className="btn-cta block w-full text-center">
             Return Home
           </a>
         </div>
@@ -105,38 +102,38 @@ const Success: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ background: 'var(--color-bg)' }}>
+      <div className="card p-8 max-w-2xl w-full">
         <div className="text-center mb-8">
-          <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Access Activated!</h1>
-          <p className="text-lg text-slate-600">
+          <CheckCircle className="w-20 h-20 mx-auto mb-4" style={{ color: 'var(--color-success)' }} />
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Access Activated!</h1>
+          <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>
             Your subscription has been successfully activated.
           </p>
         </div>
 
         {sessionData && (
-          <div className="bg-slate-50 rounded-lg p-6 mb-6 space-y-4">
-            <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-              <span className="text-slate-600 font-medium">Email</span>
-              <span className="text-slate-900 font-semibold">{sessionData.customer_email}</span>
+          <div className="rounded-lg p-6 mb-6 space-y-4" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Email</span>
+              <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{sessionData.customer_email}</span>
             </div>
 
-            <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-              <span className="text-slate-600 font-medium">Plan</span>
-              <span className="text-slate-900 font-semibold">{getPlanName()}</span>
+            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Plan</span>
+              <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{getPlanName()}</span>
             </div>
 
-            <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-              <span className="text-slate-600 font-medium">Status</span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Status</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" style={{ background: '#E8F5E9', color: '#2E7D32' }}>
                 {sessionData.subscription_status}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-slate-600 font-medium">Next Billing Date</span>
-              <span className="text-slate-900 font-semibold">
+              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Next Billing Date</span>
+              <span className="font-semibold" style={{ color: 'var(--color-text)' }}>
                 {formatDate(sessionData.current_period_end)}
               </span>
             </div>
@@ -144,23 +141,17 @@ const Success: React.FC = () => {
         )}
 
         <div className="space-y-3">
-          <a
-            href="/#checker"
-            className="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-          >
+          <a href="/#checker" className="btn-cta block w-full text-center">
             Start Checking Interactions
           </a>
-          <a
-            href="/account"
-            className="block w-full bg-slate-100 text-slate-900 text-center py-3 rounded-lg hover:bg-slate-200 transition-colors font-medium"
-          >
+          <a href="/account" className="btn-outline block w-full text-center">
             Manage Account
           </a>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
           If you have any issues with your subscription, contact us at{' '}
-          <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline" style={{ color: 'var(--color-trial)' }}>
             {SUPPORT_EMAIL}
           </a>
         </p>
