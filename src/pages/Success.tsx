@@ -135,6 +135,14 @@ const Success: React.FC = () => {
               </div>
             )}
 
+            {getPlanName().includes('Annual') && (
+              <div className="py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
+                  Annual plan selected — fewer renewals, uninterrupted access, best value.
+                </p>
+              </div>
+            )}
+
             <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
               <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Status</span>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" style={{ background: '#E8F5E9', color: '#2E7D32' }}>
@@ -160,12 +168,17 @@ const Success: React.FC = () => {
           </a>
         </div>
 
-        <p className="mt-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          If you have any issues with your subscription, contact us at{' '}
-          <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline" style={{ color: 'var(--color-trial)' }}>
-            {SUPPORT_EMAIL}
-          </a>
-        </p>
+        <div className="mt-6 text-center space-y-2">
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Prefer monthly? You can switch plans anytime.
+          </p>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            If you have any issues with your subscription, contact us at{' '}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline" style={{ color: 'var(--color-trial)' }}>
+              {SUPPORT_EMAIL}
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

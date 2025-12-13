@@ -149,6 +149,15 @@ export default function Pricing() {
               )}
             </button>
           </div>
+
+          <div className="mt-6 text-center max-w-md mx-auto">
+            <p className="text-sm font-medium mb-1" style={{color: 'var(--color-text-muted)'}}>
+              Most professionals choose annual to save time and money.
+            </p>
+            <p className="text-xs" style={{color: 'var(--color-text-muted)', lineHeight: '1.5'}}>
+              Save up to 17% compared to monthly. Lock in uninterrupted access for the year.
+            </p>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-8">
@@ -225,6 +234,9 @@ export default function Pricing() {
                   ${proPrice} billed annually
                 </p>
               )}
+              <p className="text-xs mt-2" style={{color: 'var(--color-text-muted)'}}>
+                Best value when billed annually.
+              </p>
             </div>
 
             <div className="mb-6" style={{paddingLeft: '32px', paddingRight: '32px'}}>
@@ -322,6 +334,9 @@ export default function Pricing() {
                   ${premiumPrice} billed annually
                 </p>
               )}
+              <p className="text-xs mt-2" style={{color: 'var(--color-text-muted)'}}>
+                Best value when billed annually.
+              </p>
             </div>
 
             <ul className="space-y-3 mb-8 flex-1" style={{paddingLeft: '32px', paddingRight: '32px'}}>
