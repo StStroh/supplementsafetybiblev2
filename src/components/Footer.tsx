@@ -7,7 +7,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/logosafetybible.jpg" alt="Don't Mix Blind" className="w-10 h-10 rounded-lg" />
+              <img
+                src="/brand/logo.jpg"
+                alt="Don't Mix Blind logo"
+                className="w-10 h-10 rounded-lg"
+                width="40"
+                height="40"
+              />
               <span className="text-xl font-bold text-[#000000]">Don't Mix Blind</span>
             </div>
             <p className="text-sm text-[#4A4A4A] leading-relaxed">

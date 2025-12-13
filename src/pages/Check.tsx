@@ -276,9 +276,24 @@ export default function Check() {
                   </span>
                 </div>
               )}
-              <button className="text-blue-600 mt-2 mb-2 text-sm font-medium hover:text-blue-700 transition-colors">
-                + Add another supplement
-              </button>
+              {!selSup && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-gray-600 mb-2">Select common:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {['Magnesium', 'Omega-3', 'Vitamin D', 'Turmeric', 'Ashwagandha', 'Probiotics'].map((name) => (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() => setSelSup(name)}
+                        className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors font-medium"
+                        style={{ touchAction: 'manipulation' }}
+                      >
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
@@ -303,9 +318,24 @@ export default function Check() {
                   </span>
                 </div>
               )}
-              <button className="text-blue-600 mt-2 mb-2 text-sm font-medium hover:text-blue-700 transition-colors">
-                + Add another medication
-              </button>
+              {!selMed && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-gray-600 mb-2">Select common:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {['Warfarin', 'Metformin', 'Lisinopril', 'Levothyroxine', 'Atorvastatin', 'Omeprazole'].map((name) => (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() => setSelMed(name)}
+                        className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors font-medium"
+                        style={{ touchAction: 'manipulation' }}
+                      >
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {error && (

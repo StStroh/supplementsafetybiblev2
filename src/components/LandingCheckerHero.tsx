@@ -176,9 +176,11 @@ export default function LandingCheckerHero() {
           {/* Logo */}
           <div className="mb-6">
             <img
-              src="/logosafetybible.jpg"
+              src="/brand/logo.jpg"
               alt="Supplement Safety Bible logo"
-              className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-lg"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg"
+              width="80"
+              height="80"
             />
           </div>
 

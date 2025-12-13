@@ -64,9 +64,9 @@ export default function TypeaheadInput({
   }, []);
 
   const handleSelect = (value: string) => {
-    onChoose(value);
     setQ("");
     setOpen(false);
+    onChoose(value);
   };
 
   return (
@@ -77,8 +77,7 @@ export default function TypeaheadInput({
         onChange={(e) => setQ(e.target.value)}
         onFocus={() => setOpen(true)}
         onBlur={() => {
-          // Delay to allow click to register on mobile
-          setTimeout(() => setOpen(false), 200);
+          setTimeout(() => setOpen(false), 250);
         }}
         inputMode="search"
         autoCorrect="off"
@@ -123,9 +122,13 @@ export default function TypeaheadInput({
                 key={`${it.name}-${i}`}
                 type="button"
                 className="ac__item block w-full px-3 py-2 text-left transition text-sm min-h-[44px] hover:bg-gray-50"
-                style={{ color: 'var(--color-text)' }}
-                onPointerDown={(e) => e.preventDefault()} // Prevent blur on iOS
-                onMouseDown={(e) => e.preventDefault()} // Prevent blur on desktop
+                style={{ color: 'var(--color-text)', touchAction: 'manipulation' }}
+                onPointerDown={(e) => e.preventDefault()}
+                onMouseDown={(e) => e.preventDefault()}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  handleSelect(it.name);
+                }}
                 onClick={() => handleSelect(it.name)}
                 role="option"
                 tabIndex={-1}
