@@ -166,192 +166,150 @@ export default function LandingCheckerHero() {
 
   return (
     <section
-      className="relative w-full bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50"
+      className="relative w-full"
+      style={{ background: 'var(--color-bg)' }}
       data-testid="landing-hero"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(88,44,131,0.05),transparent_50%),radial-gradient(circle_at_70%_60%,rgba(29,181,201,0.03),transparent_50%)]"></div>
-
-      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-16">
-        {/* New Hero Section */}
-        <div className="flex flex-col items-center text-center mb-12 sm:mb-16">
-          {/* Logo */}
-          <div className="mb-6 sm:mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg">
-              <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" strokeWidth={2.5} />
-            </div>
-          </div>
-
-          {/* Headline */}
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-20">
+        {/* Hero Header */}
+        <div className="flex flex-col items-center text-center mb-10">
+          {/* H1: Don't Mix Blind™ */}
           <h1
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 mb-4 sm:mb-6 max-w-4xl leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 max-w-4xl leading-tight"
+            style={{ color: 'var(--color-text)' }}
             data-testid="landing-hero-headline"
           >
-            Don't Mix Blind™ — Know Every Supplement Interaction Before You Take It.
+            Don't Mix Blind™
           </h1>
 
-          {/* Subheadline */}
+          {/* Subhead */}
           <p
-            className="text-base sm:text-lg md:text-xl text-slate-700 max-w-3xl mb-8 sm:mb-10 leading-relaxed"
+            className="text-lg sm:text-xl md:text-2xl max-w-3xl mb-8 leading-relaxed"
+            style={{ color: 'var(--color-text-muted)' }}
             data-testid="landing-hero-sub"
           >
-            A clinical-grade interaction engine analyzing 2,500+ supplements and medications. Instant results. Evidence-based guidance. Safer decisions.
+            Instant, evidence-based supplement–medication interaction guidance. A clinical-grade interaction engine for safer decisions.
           </p>
 
-          {/* Trust Markers */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full max-w-4xl mb-8 sm:mb-10">
-            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
-                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
-              </div>
-              <p className="text-sm sm:text-base font-semibold text-slate-900">Evidence-Based</p>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1">Reports</p>
-            </div>
+          {/* Primary action: Large search/selector input */}
+          <div className="w-full max-w-2xl mb-6">
+            <div className="card p-6">
+              <div className="grid gap-4 sm:grid-cols-2 mb-4">
+                <TypeaheadInput
+                  label="Supplement"
+                  placeholder="Type a drug..."
+                  type="supplement"
+                  onChoose={(name) => setSupplementName(name)}
+                  className="w-full border-2 rounded-lg p-3 text-base focus:ring-2 focus:border-transparent transition"
+                  style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+                  data-testid="supplement-select"
+                />
 
-            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
-                <FlaskConical className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
+                <TypeaheadInput
+                  label="Medication"
+                  placeholder="...and a supplement"
+                  type="medication"
+                  onChoose={(name) => setMedicationName(name)}
+                  className="w-full border-2 rounded-lg p-3 text-base focus:ring-2 focus:border-transparent transition"
+                  style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+                  data-testid="medication-select"
+                />
               </div>
-              <p className="text-sm sm:text-base font-semibold text-slate-900">Clinician-Inspired</p>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1">Guidance</p>
-            </div>
 
-            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
-                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
-              </div>
-              <p className="text-sm sm:text-base font-semibold text-slate-900">PDF Summaries</p>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1">(Paid Plans)</p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
-                <Pill className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" strokeWidth={2} />
-              </div>
-              <p className="text-sm sm:text-base font-semibold text-slate-900">2,500+ Ingredient</p>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1">Interactions</p>
+              <button
+                onClick={handleCheck}
+                disabled={!canCheck || loading}
+                data-testid="landing-hero-check-btn"
+                className="btn-cta w-full inline-flex items-center justify-center gap-2 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ padding: '16px 32px' }}
+              >
+                {loading ? 'Checking...' : 'Check Interactions Now'}
+                {!loading && <ArrowRight className="w-5 h-5" />}
+              </button>
             </div>
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
-            <button
-              onClick={() => {
-                const checkerSection = document.querySelector('[data-testid="landing-hero-checker"]');
-                checkerSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="btn-cta inline-flex items-center justify-center text-base sm:text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-200 min-w-[200px]"
-              style={{padding: '16px 32px'}}
+          {/* Secondary action: See pricing */}
+          <div className="mb-6">
+            <Link
+              to="/pricing"
+              className="btn-outline inline-flex items-center justify-center gap-2 text-base font-semibold min-w-[180px]"
+              style={{ padding: '12px 24px' }}
             >
-              Check Interactions
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </button>
+              See Pricing
+            </Link>
+          </div>
 
-            <button
-              onClick={() => {
-                const howItWorksSection = document.querySelector('[data-testid="how-title"]')?.closest('section');
-                howItWorksSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="inline-flex items-center justify-center px-8 py-4 text-base sm:text-lg font-semibold text-blue-700 bg-white border-2 border-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200 min-w-[200px]"
-            >
-              How It Works
-            </button>
+          {/* Trust strip */}
+          <div className="guarantee-note text-center max-w-xl">
+            60-day money-back guarantee · Change or cancel anytime
           </div>
         </div>
 
-        {/* Main checker card */}
+        {/* Feature Trio (directly under hero) */}
         <div
-          className="rounded-2xl bg-white text-slate-900 shadow-2xl ring-1 ring-slate-200 p-4 sm:p-6"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto"
           data-testid="landing-hero-checker"
         >
-          {/* Selection inputs */}
-          <div className="grid gap-4 sm:grid-cols-2 mb-4">
-            <TypeaheadInput
-              label="Select Supplement"
-              placeholder="Type a supplement..."
-              type="supplement"
-              onChoose={(name) => setSupplementName(name)}
-              className="w-full border-2 border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              data-testid="supplement-select"
-            />
-
-            <TypeaheadInput
-              label="Select Medication"
-              placeholder="Type a medication..."
-              type="medication"
-              onChoose={(name) => setMedicationName(name)}
-              className="w-full border-2 border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              data-testid="medication-select"
-            />
-          </div>
-
-          {/* Example chips */}
-          <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-slate-600 font-medium">Try:</span>
-            <button
-              onClick={() => fillExample('St. John\'s Wort', 'Warfarin')}
-              className="rounded-full border-2 border-slate-300 bg-slate-50 px-3 py-1.5 hover:bg-slate-100 hover:border-slate-400 transition font-medium"
-            >
-              St. John's Wort + Warfarin
-            </button>
-            <button
-              onClick={() => fillExample('Ginkgo Biloba', 'Warfarin')}
-              className="rounded-full border-2 border-slate-300 bg-slate-50 px-3 py-1.5 hover:bg-slate-100 hover:border-slate-400 transition font-medium"
-            >
-              Ginkgo + Warfarin
-            </button>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
-            <button
-              onClick={handleCheck}
-              disabled={!canCheck || loading}
-              data-testid="landing-hero-check-btn"
-              className="flex-1 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-bold bg-slate-900 text-white hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed transition shadow-lg"
-            >
-              {loading ? 'Checking...' : 'Check Interactions'}
-              {!loading && <ArrowRight className="w-5 h-5" />}
-            </button>
-
-            {isUserPaid ? (
-              <button
-                onClick={handleDownloadPDF}
-                disabled={!results || results.length === 0}
-                data-testid="landing-hero-pdf-btn"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-semibold border-2 border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-              >
-                <Download className="w-5 h-5" />
-                Download PDF
-              </button>
-            ) : (
-              <Link
-                to="/pricing#pdf"
-                data-testid="landing-hero-pdf-upsell"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-semibold border-2 border-slate-300 hover:bg-slate-50 transition"
-              >
-                <Lock className="w-4 h-4" />
-                PDF (paid plans)
-              </Link>
-            )}
-          </div>
-
-          {/* Error display */}
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
-              <p className="text-red-800 font-medium">{error}</p>
+          {/* Card 1: Drug-Supplement Interaction Checker */}
+          <div className="card p-6 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4" style={{ background: 'var(--color-trial)', opacity: 0.1 }}>
+              <Shield className="w-6 h-6 absolute" style={{ color: 'var(--color-trial)' }} strokeWidth={2.5} />
             </div>
-          )}
+            <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text)' }}>
+              Drug–Supplement Interaction Checker
+            </h3>
+            <p className="text-sm mb-3" style={{ color: 'var(--color-text-muted)' }}>
+              Full results on Pro & Clinical
+            </p>
+          </div>
 
-          {/* Results */}
-          {results && results.length > 0 && (
-            <div className="mt-4 border-2 border-slate-200 rounded-xl p-4 bg-slate-50" data-testid="results">
-              <h3 className="font-bold text-lg text-slate-900 mb-3">Interaction Results</h3>
-              <div className="space-y-3">
+          {/* Card 2: PDF Reports */}
+          <div className="card p-6 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4" style={{ background: 'var(--color-trial)', opacity: 0.1 }}>
+              <FileText className="w-6 h-6 absolute" style={{ color: 'var(--color-trial)' }} strokeWidth={2.5} />
+            </div>
+            <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text)' }}>
+              PDF Reports
+            </h3>
+            <p className="text-sm mb-3" style={{ color: 'var(--color-text-muted)' }}>
+              Patient/client-ready exports
+            </p>
+          </div>
+
+          {/* Card 3: Weekly Evidence Updates */}
+          <div className="card p-6 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4" style={{ background: 'var(--color-trial)', opacity: 0.1 }}>
+              <FlaskConical className="w-6 h-6 absolute" style={{ color: 'var(--color-trial)' }} strokeWidth={2.5} />
+            </div>
+            <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-text)' }}>
+              Weekly Evidence Updates
+            </h3>
+            <p className="text-sm mb-3" style={{ color: 'var(--color-text-muted)' }}>
+              New interactions and revisions
+            </p>
+          </div>
+        </div>
+
+        {/* Results section (if active) */}
+        {error && (
+          <div className="mt-8 max-w-2xl mx-auto">
+            <div className="rounded-lg p-4" style={{ background: '#FFEBEE', border: '1px solid #E57373' }}>
+              <p className="font-medium" style={{ color: 'var(--color-error)' }}>{error}</p>
+            </div>
+          </div>
+        )}
+
+        {results && results.length > 0 && (
+          <div className="mt-8 max-w-4xl mx-auto" data-testid="results">
+            <div className="card p-6">
+              <h3 className="font-bold text-xl mb-4" style={{ color: 'var(--color-text)' }}>Interaction Results</h3>
+              <div className="space-y-4">
                 {results.map((result, idx) => (
-                  <div key={idx} className="bg-white rounded-lg border-2 border-slate-200 p-4">
+                  <div key={idx} className="rounded-lg p-4" style={{ border: '1px solid var(--color-border)', background: 'var(--color-bg)' }}>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
                           {result.supplement_name} + {result.medication_name}
                         </p>
                       </div>
@@ -367,30 +325,38 @@ export default function LandingCheckerHero() {
                         {result.severity} Risk
                       </span>
                     </div>
-                    <p className="text-sm text-slate-700 mb-2">{result.description}</p>
-                    <div className="bg-blue-50 border border-blue-200 rounded p-3 mt-2">
-                      <p className="text-sm font-semibold text-blue-900 mb-1">Recommendation:</p>
-                      <p className="text-sm text-blue-800">{result.recommendation}</p>
+                    <p className="text-sm mb-2" style={{ color: 'var(--color-text-muted)' }}>{result.description}</p>
+                    <div className="rounded p-3 mt-2" style={{ background: '#F0F9FA', border: '1px solid var(--color-trial)' }}>
+                      <p className="text-sm font-semibold mb-1" style={{ color: 'var(--color-trial)' }}>Recommendation:</p>
+                      <p className="text-sm" style={{ color: 'var(--color-text)' }}>{result.recommendation}</p>
                     </div>
                   </div>
                 ))}
               </div>
+
+              {isUserPaid ? (
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={!results || results.length === 0}
+                  data-testid="landing-hero-pdf-btn"
+                  className="btn-outline mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Download className="w-5 h-5" />
+                  Download PDF
+                </button>
+              ) : (
+                <Link
+                  to="/pricing#pdf"
+                  data-testid="landing-hero-pdf-upsell"
+                  className="btn-outline mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  PDF (paid plans)
+                </Link>
+              )}
             </div>
-          )}
-
-          {/* Helper text */}
-          <div className="mt-4 pt-4 border-t border-slate-200">
-            <p className="text-xs text-slate-600 text-center">
-              <strong>Color-coded risks:</strong> Low / Medium / High. Timing tips included.
-              <span className="block mt-1">Not medical advice. Consult your healthcare provider.</span>
-            </p>
           </div>
-        </div>
-
-        {/* Trust line */}
-        <p className="mt-6 text-center text-xs text-white/70">
-          Trusted by clinicians to identify supplement–drug interactions clearly. Educational use only.
-        </p>
+        )}
       </div>
     </section>
   );
