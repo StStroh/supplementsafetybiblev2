@@ -1,268 +1,416 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Zap, AlertCircle, Activity } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Check, X, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { PLAN_PRICE_MAP } from '../lib/stripe/plan-map';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { SEO } from '../lib/seo';
+
+type BillingInterval = 'monthly' | 'annual';
+
+interface FeatureRow {
+  category?: string;
+  name: string;
+  starter: boolean | string;
+  pro: boolean | string;
+  premium: boolean | string;
+}
+
+const features: FeatureRow[] = [
+  { category: 'Safety Features', name: 'Interaction preview (risk level only)', starter: true, pro: false, premium: false },
+  { name: 'Full Interaction Checker', starter: false, pro: true, premium: true },
+  { name: 'Safety warnings & precautions', starter: false, pro: true, premium: true },
+  { name: 'Side-effect summaries', starter: false, pro: true, premium: true },
+
+  { category: 'Handouts & Protocols', name: 'Saved items', starter: '10', pro: 'Unlimited', premium: 'Unlimited' },
+  { name: 'PDF export', starter: false, pro: true, premium: true },
+  { name: 'Drag-and-drop builder', starter: false, pro: true, premium: true },
+  { name: 'Premade tables & infographics', starter: false, pro: true, premium: true },
+
+  { category: 'Branding & Customization', name: 'Shareable live link', starter: false, pro: true, premium: true },
+  { name: 'Add business logo/info', starter: false, pro: true, premium: true },
+  { name: 'Remove SSB branding', starter: false, pro: false, premium: true },
+  { name: 'Customize fonts/colors', starter: false, pro: false, premium: true },
+
+  { category: 'Additional Tools', name: 'Supplement Navigator', starter: 'Limited', pro: 'Full', premium: 'Full' },
+  { name: 'Calculators (risk/dosage)', starter: false, pro: 'Coming soon', premium: 'Coming soon' },
+  { name: 'Vote on page updates', starter: false, pro: false, premium: 'Coming soon' },
+
+  { category: 'Database Access', name: 'Supplements A–Z', starter: 'Preview', pro: 'Full', premium: 'Full' },
+  { name: 'Medications A–Z', starter: 'Preview', pro: 'Full', premium: 'Full' },
+  { name: 'Conditions A–Z', starter: 'Preview', pro: 'Full', premium: 'Full' },
+  { name: 'Research feed/alerts', starter: false, pro: true, premium: true },
+];
 
 export default function Pricing() {
   const navigate = useNavigate();
-  const [interval, setInterval] = useState<'month' | 'year'>('year');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [healthCheck, setHealthCheck] = useState<{status: string, message?: string} | null>(null);
+  const [interval, setInterval] = useState<BillingInterval>('annual');
+  const [loading, setLoading] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    async function checkHealth() {
-      try {
-        const res = await fetch('/.netlify/functions/stripe-health', {
-          method: 'GET',
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.status === 'healthy') {
-            setHealthCheck({ status: 'ok' });
-          } else {
-            setHealthCheck({ status: 'warning', message: 'Stripe configuration issue detected' });
-          }
-        } else {
-          setHealthCheck({ status: 'error', message: 'Cannot connect to payment service' });
-        }
-      } catch (err) {
-        console.error('Health check failed:', err);
-        setHealthCheck({ status: 'error', message: 'Network error' });
-      }
-    }
-    checkHealth();
+    loadUser();
   }, []);
 
-  const handleStartPremium = async () => {
-    setLoading(true);
-    setError(null);
+  async function loadUser() {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    setUser(currentUser);
+  }
+
+  async function handleSelectPlan(plan: 'starter' | 'pro' | 'premium') {
+    if (plan === 'starter') {
+      if (!user) {
+        navigate('/auth?redirect=/free');
+      } else {
+        navigate('/free');
+      }
+      return;
+    }
+
+    setLoading(plan);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      const payload = {
-        interval,
-        user: user ? { id: user.id, email: user.email } : null,
-      };
-
-      console.log('Initiating checkout with payload:', { interval, hasUser: !!user });
+      const priceId = plan === 'pro'
+        ? (interval === 'annual' ? PLAN_PRICE_MAP.PRO_YEARLY : PLAN_PRICE_MAP.PRO_MONTHLY)
+        : (interval === 'annual' ? PLAN_PRICE_MAP.PREMIUM_YEARLY : PLAN_PRICE_MAP.PREMIUM_MONTHLY);
 
       const res = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }).catch(fetchError => {
-        console.error('Fetch failed:', fetchError);
-        throw new Error(`Network error: ${fetchError.message}. Check your internet connection or try again.`);
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          userId: user?.id,
+          userEmail: user?.email,
+        }),
       });
 
-      console.log('Checkout response status:', res.status);
-
       if (!res.ok) {
-        let errorMessage = `Server error (${res.status})`;
-        try {
-          const errorData = await res.json();
-          errorMessage = errorData?.error?.message || errorMessage;
-          console.error('Checkout error response:', errorData);
-        } catch (parseError) {
-          const text = await res.text();
-          console.error('Could not parse error response:', text);
-          errorMessage = `${errorMessage}: ${text.substring(0, 100)}`;
-        }
-        setError(errorMessage);
-        setLoading(false);
-        return;
+        throw new Error('Failed to create checkout session');
       }
 
       const data = await res.json();
-      console.log('Checkout session created:', data.sessionId);
 
-      if (!data.url) {
-        setError('No checkout URL received from server');
-        setLoading(false);
-        return;
+      if (data.url) {
+        window.location.href = data.url;
       }
-
-      console.log('Redirecting to Stripe:', data.url);
-      window.location.href = data.url;
-    } catch (err: any) {
+    } catch (err) {
       console.error('Checkout error:', err);
-      const errorMessage = err?.message || 'An error occurred. Please try again.';
-      setError(errorMessage);
-      setLoading(false);
+      setLoading(null);
     }
-  };
+  }
 
-  const priceMonthly = 49;
-  const priceAnnual = 490;
-  const savings = Math.round(((priceMonthly * 12 - priceAnnual) / (priceMonthly * 12)) * 100);
+  const proPrice = interval === 'annual' ? 149 : 14.99;
+  const premiumPrice = interval === 'annual' ? 249 : 24.99;
+  const annualSavings = Math.round(((14.99 * 12 - 149) / (14.99 * 12)) * 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-slate-50">
-      <nav className="border-b border-gray-100 bg-white/95 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => navigate('/')}
-              className="text-lg font-semibold text-black hover:opacity-80 transition"
-            >
-              ← Supplement Safety Bible
-            </button>
-            <button
-              onClick={() => navigate('/auth')}
-              className="text-sm font-medium text-gray-700 hover:text-black transition"
-            >
-              Login
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-white">
+      <SEO
+        title="Pricing Plans — Supplement Safety Bible"
+        description="Choose the plan that's right for you. Start with a 14-day free trial on paid plans. 60-day money-back guarantee."
+        canonical="/pricing"
+      />
+      <Navbar />
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-5xl font-bold text-black mb-4" style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}>
-            Premium Access
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
+            Plans for safe, evidence-based decisions
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Unlock unlimited interaction checks and professional features
+          <p className="text-lg text-slate-600">
+            Start a 14-day free trial on paid plans. 60-day money-back guarantee.
           </p>
 
-          <div className="inline-flex items-center bg-white rounded-2xl p-2 shadow-md border border-gray-200 mb-12">
+          <div className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-slate-300 bg-white p-1">
             <button
-              onClick={() => setInterval('month')}
-              className={`px-6 py-3 rounded-xl font-medium transition ${
-                interval === 'month'
-                  ? 'bg-black text-white'
-                  : 'text-gray-600 hover:text-black'
+              onClick={() => setInterval('monthly')}
+              className={`px-6 py-2 rounded-full font-semibold transition ${
+                interval === 'monthly'
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-700 hover:text-slate-900'
               }`}
             >
               Monthly
             </button>
             <button
-              onClick={() => setInterval('year')}
-              className={`px-6 py-3 rounded-xl font-medium transition relative ${
-                interval === 'year'
-                  ? 'bg-black text-white'
-                  : 'text-gray-600 hover:text-black'
+              onClick={() => setInterval('annual')}
+              className={`px-6 py-2 rounded-full font-semibold transition relative ${
+                interval === 'annual'
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-700 hover:text-slate-900'
               }`}
             >
               Annual
-              {interval === 'year' && (
-                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  Save {savings}%
+              {interval === 'annual' && (
+                <span className="absolute -top-3 -right-3 bg-green-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                  Save {annualSavings}%
                 </span>
               )}
             </button>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white rounded-3xl shadow-2xl border-2 border-blue-200 p-10"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-6 h-6 text-blue-600" />
-                <h2 className="text-3xl font-bold text-black" style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}>
-                  Premium
-                </h2>
+        <div className="grid md:grid-cols-3 gap-8 mb-8">
+          {/* Starter Card */}
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-8 flex flex-col">
+            <div className="mb-6">
+              <div className="inline-block px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full mb-3">
+                Free forever
               </div>
-              <p className="text-gray-600">For clinicians and health professionals</p>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Starter</h2>
+              <p className="text-sm text-slate-600">For basic safety previews</p>
             </div>
-            <div className="text-right">
-              <div className="text-5xl font-bold text-black">${interval === 'year' ? priceAnnual : priceMonthly}</div>
-              <div className="text-gray-500">/{interval === 'year' ? 'year' : 'month'}</div>
-              {interval === 'year' && (
-                <div className="text-sm text-green-600 font-semibold mt-1">
-                  ${(priceAnnual / 12).toFixed(0)}/month billed annually
-                </div>
+
+            <div className="mb-6">
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-slate-900">$0</span>
+                <span className="text-slate-600">/month</span>
+              </div>
+            </div>
+
+            <ul className="space-y-3 mb-8 flex-1">
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <span>Interaction preview (risk level only)</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <span>Basic supplement/medication search</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <span>Save up to 10 handouts/protocols</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-500">
+                <X className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />
+                <span>PDF export not included</span>
+              </li>
+            </ul>
+
+            <button
+              onClick={() => handleSelectPlan('starter')}
+              disabled={loading !== null}
+              className="w-full py-3 px-6 rounded-full border-2 border-slate-900 text-slate-900 font-semibold hover:bg-slate-50 transition disabled:opacity-50"
+            >
+              Choose Starter
+            </button>
+
+            <p className="text-xs text-slate-500 text-center mt-3">Upgrade anytime.</p>
+          </div>
+
+          {/* Pro Card - Most Popular */}
+          <div className="rounded-2xl border-2 border-blue-600 bg-white p-8 flex flex-col relative shadow-lg">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
+              Most popular
+            </div>
+
+            <div className="mb-6">
+              <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full mb-3">
+                Try free for 14 days
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Pro</h2>
+              <p className="text-sm text-slate-600">For full insights and reports</p>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-slate-900">
+                  ${interval === 'annual' ? Math.round(proPrice / 12) : proPrice}
+                </span>
+                <span className="text-slate-600">/month</span>
+              </div>
+              {interval === 'annual' && (
+                <p className="text-sm text-slate-600 mt-1">
+                  ${proPrice} billed annually
+                </p>
               )}
             </div>
+
+            <ul className="space-y-3 mb-8 flex-1">
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span className="font-semibold">Everything in Starter, plus:</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span>Drug–Supplement Interaction Checker (full results)</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span>Mechanism explanations (PK/PD, CYP pathways)</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span>Unlimited handouts & protocols</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span>PDF exports</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span>Shareable links for clients/patients</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span>Light branding (logo/header)</span>
+              </li>
+            </ul>
+
+            <button
+              onClick={() => handleSelectPlan('pro')}
+              disabled={loading !== null}
+              className="w-full py-3 px-6 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center"
+            >
+              {loading === 'pro' ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Loading...
+                </>
+              ) : (
+                'Choose Pro'
+              )}
+            </button>
+
+            <p className="text-xs text-slate-500 text-center mt-3">
+              60-day money-back guarantee. Change or cancel anytime.
+            </p>
           </div>
 
-          <div className="space-y-4 mb-8">
-            <div className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700">Physician-inspired clinical guidance</span>
+          {/* Premium Card */}
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-8 flex flex-col">
+            <div className="mb-6">
+              <div className="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full mb-3">
+                Try free for 14 days
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Premium</h2>
+              <p className="text-sm text-slate-600">For clinics and professionals</p>
             </div>
-            <div className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700">Unlimited interaction checker access</span>
+
+            <div className="mb-6">
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-slate-900">
+                  ${interval === 'annual' ? Math.round(premiumPrice / 12) : premiumPrice}
+                </span>
+                <span className="text-slate-600">/month</span>
+              </div>
+              {interval === 'annual' && (
+                <p className="text-sm text-slate-600 mt-1">
+                  ${premiumPrice} billed annually
+                </p>
+              )}
             </div>
-            <div className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700">Premium dashboards and analytics</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700">PDF report generation</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700">Priority email support</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700">Early access to new features</span>
-            </div>
+
+            <ul className="space-y-3 mb-8 flex-1">
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <span className="font-semibold">Everything in Pro, plus:</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <span>+1 read-only user</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <span>Full white-label (remove SSB branding)</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <span>Customize fonts & colors</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <span>Advanced patient-ready reports</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <span>Priority support</span>
+              </li>
+            </ul>
+
+            <button
+              onClick={() => handleSelectPlan('premium')}
+              disabled={loading !== null}
+              className="w-full py-3 px-6 rounded-full border-2 border-slate-900 text-slate-900 font-semibold hover:bg-slate-50 transition disabled:opacity-50 flex items-center justify-center"
+            >
+              {loading === 'premium' ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Loading...
+                </>
+              ) : (
+                'Choose Premium'
+              )}
+            </button>
+
+            <p className="text-xs text-slate-500 text-center mt-3">
+              60-day money-back guarantee. Change or cancel anytime.
+            </p>
           </div>
+        </div>
 
-          {healthCheck && healthCheck.status === 'error' && (
-            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
-              <Activity className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-amber-800">Connection Issue</p>
-                <p className="text-sm text-amber-700 mt-1">{healthCheck.message || 'Payment service unavailable'}</p>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-red-800">Checkout Error</p>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
-              </div>
-            </div>
-          )}
-
-          <button
-            onClick={handleStartPremium}
-            disabled={loading}
-            className="w-full py-4 bg-blue-600 text-white rounded-2xl font-semibold text-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-          >
-            {loading ? 'Loading...' : 'Start Premium'}
-          </button>
-
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Cancel anytime. No questions asked.
+        <div className="text-center py-6 border-t border-slate-200">
+          <p className="text-sm text-slate-500">
+            60-day money-back guarantee · Change or cancel at any time
           </p>
-        </motion.div>
+        </div>
 
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">Need a different plan?</p>
-          <button
-            onClick={() => navigate('/')}
-            className="text-blue-600 hover:text-blue-700 font-medium"
-          >
-            View all options →
-          </button>
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
+            Compare plans
+          </h2>
+
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b-2 border-slate-200">
+                  <th className="text-left py-4 px-4 font-semibold text-slate-900"></th>
+                  <th className="text-center py-4 px-4 font-semibold text-slate-900">Starter</th>
+                  <th className="text-center py-4 px-4 font-semibold text-slate-900 bg-blue-50 relative">
+                    Pro
+                    <span className="absolute top-1 right-1 text-xs text-blue-600 font-normal">Popular</span>
+                  </th>
+                  <th className="text-center py-4 px-4 font-semibold text-slate-900">Premium</th>
+                </tr>
+              </thead>
+              <tbody>
+                {features.map((feature, idx) => (
+                  <tr
+                    key={idx}
+                    className={`border-b border-slate-100 ${feature.category ? 'bg-slate-50' : ''}`}
+                  >
+                    <td className={`py-3 px-4 text-sm ${feature.category ? 'font-semibold text-slate-900' : 'text-slate-700 pl-8'}`}>
+                      {feature.category || feature.name}
+                    </td>
+                    <td className="py-3 px-4 text-center text-sm">
+                      {feature.category ? '' : renderFeatureValue(feature.starter)}
+                    </td>
+                    <td className="py-3 px-4 text-center text-sm bg-blue-50">
+                      {feature.category ? '' : renderFeatureValue(feature.pro)}
+                    </td>
+                    <td className="py-3 px-4 text-center text-sm">
+                      {feature.category ? '' : renderFeatureValue(feature.premium)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
+}
+
+function renderFeatureValue(value: boolean | string): JSX.Element {
+  if (value === true) {
+    return <Check className="w-5 h-5 text-green-600 inline-block" />;
+  }
+  if (value === false) {
+    return <span className="text-slate-400">—</span>;
+  }
+  return <span className="text-slate-700 text-xs">{value}</span>;
 }
