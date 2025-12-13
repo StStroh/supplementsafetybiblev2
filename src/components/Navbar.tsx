@@ -88,7 +88,7 @@ export default function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setTryFreeOpen(!tryFreeOpen)}
-                className="bg-[#1A73E8] text-white px-6 py-2 rounded-lg hover:bg-[#1557B0] transition-colors font-medium flex items-center gap-2"
+                className="btn-cta flex items-center gap-2"
               >
                 Try free
                 <ChevronDown className={`w-4 h-4 transition-transform ${tryFreeOpen ? 'rotate-180' : ''}`} />
@@ -107,10 +107,10 @@ export default function Navbar() {
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-semibold text-slate-900">Try Pro</p>
-                        <p className="text-xs text-slate-600 mt-0.5">Full interaction reports & PDFs</p>
+                        <p className="font-semibold" style={{color: 'var(--color-text)'}}>Try Pro</p>
+                        <p className="text-xs mt-0.5" style={{color: 'var(--color-text-muted)'}}>Full interaction reports & PDFs</p>
                       </div>
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium whitespace-nowrap ml-2">
+                      <span className="badge-trial whitespace-nowrap ml-2">
                         14-day trial
                       </span>
                     </div>
@@ -123,10 +123,10 @@ export default function Navbar() {
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-semibold text-slate-900">Try Clinical</p>
-                        <p className="text-xs text-slate-600 mt-0.5">For professionals & clinics</p>
+                        <p className="font-semibold" style={{color: 'var(--color-text)'}}>Try Clinical</p>
+                        <p className="text-xs mt-0.5" style={{color: 'var(--color-text-muted)'}}>For professionals & clinics</p>
                       </div>
-                      <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium whitespace-nowrap ml-2">
+                      <span className="badge-trial whitespace-nowrap ml-2">
                         14-day trial
                       </span>
                     </div>
@@ -233,10 +233,10 @@ export default function Navbar() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-semibold text-slate-900 text-sm">Try Pro</p>
-                      <p className="text-xs text-slate-600 mt-0.5">Full interaction reports & PDFs</p>
+                      <p className="font-semibold text-sm" style={{color: 'var(--color-text)'}}>Try Pro</p>
+                      <p className="text-xs mt-0.5" style={{color: 'var(--color-text-muted)'}}>Full interaction reports & PDFs</p>
                     </div>
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium whitespace-nowrap ml-2">
+                    <span className="badge-trial whitespace-nowrap ml-2">
                       14-day trial
                     </span>
                   </div>
@@ -249,10 +249,10 @@ export default function Navbar() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-semibold text-slate-900 text-sm">Try Clinical</p>
-                      <p className="text-xs text-slate-600 mt-0.5">For professionals & clinics</p>
+                      <p className="font-semibold text-sm" style={{color: 'var(--color-text)'}}>Try Clinical</p>
+                      <p className="text-xs mt-0.5" style={{color: 'var(--color-text-muted)'}}>For professionals & clinics</p>
                     </div>
-                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium whitespace-nowrap ml-2">
+                    <span className="badge-trial whitespace-nowrap ml-2">
                       14-day trial
                     </span>
                   </div>

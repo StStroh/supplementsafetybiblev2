@@ -239,7 +239,8 @@ export default function LandingCheckerHero() {
                 const checkerSection = document.querySelector('[data-testid="landing-hero-checker"]');
                 checkerSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className="inline-flex items-center justify-center px-8 py-4 text-base sm:text-lg font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 min-w-[200px]"
+              className="btn-cta inline-flex items-center justify-center text-base sm:text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-200 min-w-[200px]"
+              style={{padding: '16px 32px'}}
             >
               Check Interactions
               <ArrowRight className="ml-2 w-5 h-5" />

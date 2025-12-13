@@ -105,7 +105,7 @@ export default function Pricing() {
   const annualSavings = Math.round(((14.99 * 12 - 149) / (14.99 * 12)) * 100);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{background: 'var(--color-bg)'}}>
       <SEO
         title="Pricing Plans — Supplement Safety Bible"
         description="Choose the plan that's right for you. Start with a 14-day free trial on paid plans. 60-day money-back guarantee."
@@ -115,10 +115,10 @@ export default function Pricing() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{color: 'var(--color-text)'}}>
             Plans for safe, evidence-based decisions
           </h1>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg" style={{color: 'var(--color-text-muted)'}}>
             Start a 14-day free trial on paid plans. 60-day money-back guarantee.
           </p>
 
@@ -153,37 +153,37 @@ export default function Pricing() {
 
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Starter Card */}
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-8 flex flex-col">
+          <div className="card flex flex-col" style={{padding: '32px'}}>
             <div className="mb-6">
-              <div className="inline-block px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full mb-3">
+              <div className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3" style={{background: 'var(--color-bg)', color: 'var(--color-text-muted)'}}>
                 Free forever
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Starter</h2>
-              <p className="text-sm text-slate-600">For basic safety previews</p>
+              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Starter</h2>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For basic safety previews</p>
             </div>
 
             <div className="mb-6">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-slate-900">$0</span>
-                <span className="text-slate-600">/month</span>
+                <span className="text-4xl font-bold" style={{color: 'var(--color-text)'}}>$0</span>
+                <span style={{color: 'var(--color-text-muted)'}}>/month</span>
               </div>
             </div>
 
             <ul className="space-y-3 mb-8 flex-1">
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Interaction preview (risk level only)</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Basic supplement/medication search</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Save up to 10 handouts/protocols</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-500">
-                <X className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text-muted)'}}>
+                <X className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-text-muted)'}} />
                 <span>PDF export not included</span>
               </li>
             </ul>
@@ -191,202 +191,206 @@ export default function Pricing() {
             <button
               onClick={() => handleSelectPlan('starter')}
               disabled={loading !== null}
-              className="w-full py-3 px-6 rounded-full border-2 border-slate-900 text-slate-900 font-semibold hover:bg-slate-50 transition disabled:opacity-50"
+              className="btn-outline w-full disabled:opacity-50"
             >
               Choose Starter
             </button>
 
-            <p className="text-xs text-slate-500 text-center mt-3">Upgrade anytime.</p>
+            <p className="guarantee-note text-center mt-3">Upgrade anytime.</p>
           </div>
 
           {/* Pro Card - Most Popular */}
-          <div className="rounded-2xl border-2 border-blue-600 bg-white p-8 flex flex-col relative shadow-lg">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
+          <div className="card relative shadow-lg" style={{borderColor: 'var(--color-brand)', borderWidth: '2px'}}>
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 text-white text-sm font-bold rounded-full" style={{background: 'var(--color-brand)'}}>
               Most popular
             </div>
 
-            <div className="mb-6">
-              <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full mb-3">
+            <div className="mb-6" style={{paddingTop: '32px', paddingLeft: '32px', paddingRight: '32px'}}>
+              <div className="badge-trial mb-3">
                 Try free for 14 days
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Pro</h2>
-              <p className="text-sm text-slate-600">For full insights and reports</p>
+              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Pro</h2>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For full insights and reports</p>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-6" style={{paddingLeft: '32px', paddingRight: '32px'}}>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-slate-900">
+                <span className="text-4xl font-bold" style={{color: 'var(--color-text)'}}>
                   ${interval === 'annual' ? Math.round(proPrice / 12) : proPrice}
                 </span>
-                <span className="text-slate-600">/month</span>
+                <span style={{color: 'var(--color-text-muted)'}}>/month</span>
               </div>
               {interval === 'annual' && (
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
                   ${proPrice} billed annually
                 </p>
               )}
             </div>
 
-            <ul className="space-y-3 mb-8 flex-1">
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <ul className="space-y-3 mb-8 flex-1" style={{paddingLeft: '32px', paddingRight: '32px'}}>
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span className="font-semibold">Everything in Starter, plus:</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Drug–Supplement Interaction Checker (full results)</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Mechanism explanations (PK/PD, CYP pathways)</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Unlimited handouts & protocols</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>PDF exports</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Shareable links for clients/patients</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Light branding (logo/header)</span>
               </li>
             </ul>
 
-            <button
-              onClick={() => handleSelectPlan('pro')}
-              disabled={loading !== null}
-              className="w-full py-3 px-6 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center"
-            >
-              {loading === 'pro' ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  Loading...
-                </>
-              ) : (
-                'Choose Pro'
-              )}
-            </button>
+            <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
+              <button
+                onClick={() => handleSelectPlan('pro')}
+                disabled={loading !== null}
+                className="btn-cta w-full flex items-center justify-center disabled:opacity-50"
+              >
+                {loading === 'pro' ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                    Loading...
+                  </>
+                ) : (
+                  'Choose Pro'
+                )}
+              </button>
 
-            <p className="text-xs text-slate-500 text-center mt-3">
-              60-day money-back guarantee. Change or cancel anytime.
-            </p>
+              <p className="guarantee-note text-center mt-3">
+                60-day money-back guarantee. Change or cancel anytime.
+              </p>
+            </div>
           </div>
 
           {/* Premium Card */}
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-8 flex flex-col">
-            <div className="mb-6">
-              <div className="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full mb-3">
+          <div className="card flex flex-col">
+            <div className="mb-6" style={{paddingTop: '32px', paddingLeft: '32px', paddingRight: '32px'}}>
+              <div className="badge-trial mb-3">
                 Try free for 14 days
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Premium</h2>
-              <p className="text-sm text-slate-600">For clinics and professionals</p>
+              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Premium</h2>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and professionals</p>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-6" style={{paddingLeft: '32px', paddingRight: '32px'}}>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-slate-900">
+                <span className="text-4xl font-bold" style={{color: 'var(--color-text)'}}>
                   ${interval === 'annual' ? Math.round(premiumPrice / 12) : premiumPrice}
                 </span>
-                <span className="text-slate-600">/month</span>
+                <span style={{color: 'var(--color-text-muted)'}}>/month</span>
               </div>
               {interval === 'annual' && (
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
                   ${premiumPrice} billed annually
                 </p>
               )}
             </div>
 
-            <ul className="space-y-3 mb-8 flex-1">
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+            <ul className="space-y-3 mb-8 flex-1" style={{paddingLeft: '32px', paddingRight: '32px'}}>
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span className="font-semibold">Everything in Pro, plus:</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>+1 read-only user</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Full white-label (remove SSB branding)</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Customize fonts & colors</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Advanced patient-ready reports</span>
               </li>
-              <li className="flex items-start gap-3 text-sm text-slate-700">
-                <Check className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
                 <span>Priority support</span>
               </li>
             </ul>
 
-            <button
-              onClick={() => handleSelectPlan('premium')}
-              disabled={loading !== null}
-              className="w-full py-3 px-6 rounded-full border-2 border-slate-900 text-slate-900 font-semibold hover:bg-slate-50 transition disabled:opacity-50 flex items-center justify-center"
-            >
-              {loading === 'premium' ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  Loading...
-                </>
-              ) : (
-                'Choose Premium'
-              )}
-            </button>
+            <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
+              <button
+                onClick={() => handleSelectPlan('premium')}
+                disabled={loading !== null}
+                className="btn-outline w-full flex items-center justify-center disabled:opacity-50"
+              >
+                {loading === 'premium' ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                    Loading...
+                  </>
+                ) : (
+                  'Choose Premium'
+                )}
+              </button>
 
-            <p className="text-xs text-slate-500 text-center mt-3">
-              60-day money-back guarantee. Change or cancel anytime.
-            </p>
+              <p className="guarantee-note text-center mt-3">
+                60-day money-back guarantee. Change or cancel anytime.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="text-center py-6 border-t border-slate-200">
-          <p className="text-sm text-slate-500">
+        <div className="text-center py-6" style={{borderTop: '1px solid var(--color-border)'}}>
+          <p className="guarantee-note">
             60-day money-back guarantee · Change or cancel at any time
           </p>
         </div>
 
         <div className="mt-16">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
+          <h2 className="text-3xl font-bold text-center mb-12" style={{color: 'var(--color-text)'}}>
             Compare plans
           </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="border-b-2 border-slate-200">
-                  <th className="text-left py-4 px-4 font-semibold text-slate-900"></th>
-                  <th className="text-center py-4 px-4 font-semibold text-slate-900">Starter</th>
-                  <th className="text-center py-4 px-4 font-semibold text-slate-900 bg-blue-50 relative">
+                <tr style={{borderBottom: '2px solid var(--color-border)'}}>
+                  <th className="text-left py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}></th>
+                  <th className="text-center py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}>Starter</th>
+                  <th className="text-center py-4 px-4 font-semibold relative" style={{color: 'var(--color-text)', background: 'var(--color-bg)'}}>
                     Pro
-                    <span className="absolute top-1 right-1 text-xs text-blue-600 font-normal">Popular</span>
+                    <span className="absolute top-1 right-1 text-xs font-normal" style={{color: 'var(--color-brand)'}}>Popular</span>
                   </th>
-                  <th className="text-center py-4 px-4 font-semibold text-slate-900">Premium</th>
+                  <th className="text-center py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}>Premium</th>
                 </tr>
               </thead>
               <tbody>
                 {features.map((feature, idx) => (
                   <tr
                     key={idx}
-                    className={`border-b border-slate-100 ${feature.category ? 'bg-slate-50' : ''}`}
+                    style={{borderBottom: '1px solid var(--color-border)', background: feature.category ? 'var(--color-bg)' : 'transparent'}}
                   >
-                    <td className={`py-3 px-4 text-sm ${feature.category ? 'font-semibold text-slate-900' : 'text-slate-700 pl-8'}`}>
+                    <td className={`py-3 px-4 text-sm ${feature.category ? 'font-semibold' : 'pl-8'}`} style={{color: feature.category ? 'var(--color-text)' : 'var(--color-text-muted)'}}>
                       {feature.category || feature.name}
                     </td>
                     <td className="py-3 px-4 text-center text-sm">
                       {feature.category ? '' : renderFeatureValue(feature.starter)}
                     </td>
-                    <td className="py-3 px-4 text-center text-sm bg-blue-50">
+                    <td className="py-3 px-4 text-center text-sm" style={{background: 'var(--color-bg)'}}>
                       {feature.category ? '' : renderFeatureValue(feature.pro)}
                     </td>
                     <td className="py-3 px-4 text-center text-sm">
@@ -407,10 +411,10 @@ export default function Pricing() {
 
 function renderFeatureValue(value: boolean | string): JSX.Element {
   if (value === true) {
-    return <Check className="w-5 h-5 text-green-600 inline-block" />;
+    return <Check className="w-5 h-5 inline-block" style={{color: 'var(--color-success)'}} />;
   }
   if (value === false) {
-    return <span className="text-slate-400">—</span>;
+    return <span style={{color: 'var(--color-text-muted)'}}>—</span>;
   }
-  return <span className="text-slate-700 text-xs">{value}</span>;
+  return <span className="text-xs" style={{color: 'var(--color-text)'}}>{value}</span>;
 }

@@ -119,14 +119,14 @@ export default function PricingSection({
           <button
             onClick={startCheckout}
             disabled={loading}
-            className="mt-6 w-full rounded-xl bg-blue-600 text-white py-3 font-medium hover:bg-blue-700 disabled:opacity-60"
+            className="btn-cta mt-6 w-full disabled:opacity-60"
           >
             {loading ? "Redirecting…" : "Upgrade — Don't Mix Blind™"}
           </button>
 
-          {err && <p className="mt-3 text-sm text-red-600">{err}</p>}
+          {err && <p className="mt-3 text-sm" style={{color: 'var(--color-error)'}}>{err}</p>}
 
-          <p className="mt-4 text-xs text-slate-500 text-center">
+          <p className="guarantee-note mt-4 text-center">
             Instant access. Cancel anytime.
           </p>
         </div>
