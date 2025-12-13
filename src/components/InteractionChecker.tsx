@@ -173,6 +173,9 @@ export default function InteractionChecker() {
               View Plans
             </a>
           </div>
+          <p className="text-xs mt-4 text-gray-600">
+            60-day money-back guarantee · Change or cancel anytime · Individual use
+          </p>
         </div>
       </div>
     );
@@ -201,6 +204,9 @@ export default function InteractionChecker() {
           >
             Upgrade to Pro or Premium
           </a>
+          <p className="text-xs mt-4 text-gray-600">
+            60-day money-back guarantee · Change or cancel anytime · Individual use
+          </p>
           {errorMsg && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700 text-sm">{errorMsg}</p>

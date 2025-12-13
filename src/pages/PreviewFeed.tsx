@@ -111,6 +111,9 @@ export default function PreviewFeed() {
               See Pricing
             </a>
           </div>
+          <p className="text-xs mt-4" style={{ color: 'var(--color-text-muted)' }}>
+            60-day money-back guarantee · Change or cancel anytime · Individual use
+          </p>
         </div>
       </main>
 

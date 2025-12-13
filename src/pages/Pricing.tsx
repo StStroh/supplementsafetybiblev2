@@ -274,18 +274,20 @@ export default function Pricing() {
                 )}
               </button>
 
-              <p className="guarantee-note text-center mt-3">
-                60-day money-back guarantee. Change or cancel anytime.
-              </p>
-              <p className="text-center mt-2">
-                <a
-                  href="/refund-policy"
-                  className="text-xs hover:underline"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  Refund Policy (60-day guarantee)
-                </a>
-              </p>
+              <div className="mt-4 text-center space-y-2">
+                <p className="guarantee-note">
+                  60-day money-back guarantee
+                </p>
+                <p className="guarantee-note">
+                  Change or cancel at any time
+                </p>
+                <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
+                  Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please contact us.
+                </p>
+                <p className="text-xs" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
+                  If you have any questions or could use assistance, please do not hesitate to reach out to our <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>support team</a>.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -356,34 +358,33 @@ export default function Pricing() {
                 )}
               </button>
 
-              <p className="guarantee-note text-center mt-3">
-                60-day money-back guarantee. Change or cancel anytime.
-              </p>
-              <p className="text-center mt-2">
-                <a
-                  href="/refund-policy"
-                  className="text-xs hover:underline"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  Refund Policy (60-day guarantee)
-                </a>
-              </p>
+              <div className="mt-4 text-center space-y-2">
+                <p className="guarantee-note">
+                  60-day money-back guarantee
+                </p>
+                <p className="guarantee-note">
+                  Change or cancel at any time
+                </p>
+                <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
+                  Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please contact us.
+                </p>
+                <p className="text-xs" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
+                  If you have any questions or could use assistance, please do not hesitate to reach out to our <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>support team</a>.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="text-center py-6" style={{borderTop: '1px solid var(--color-border)'}}>
+        <div className="text-center py-6 space-y-3" style={{borderTop: '1px solid var(--color-border)'}}>
           <p className="guarantee-note">
             60-day money-back guarantee · Change or cancel at any time
           </p>
-          <p className="mt-2">
-            <a
-              href="/refund-policy"
-              className="text-xs hover:underline"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
-              Refund Policy (60-day guarantee)
-            </a>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5', maxWidth: '600px', margin: '0 auto' }}>
+            Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>contact us</a>.
+          </p>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            If you have any questions or could use assistance, please reach out to our <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>support team</a>.
           </p>
         </div>
 

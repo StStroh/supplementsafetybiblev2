@@ -247,9 +247,17 @@ const Account: React.FC = () => {
                         </>
                       )}
                     </button>
-                    <p className="guarantee-note mt-3 text-center">
-                      Update payment method, view invoices, or cancel subscription
-                    </p>
+                    <div className="mt-4 text-center space-y-2">
+                      <p className="guarantee-note">
+                        Update payment method, view invoices, or cancel subscription
+                      </p>
+                      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                        60-day money-back guarantee · Change or cancel anytime
+                      </p>
+                      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                        Individual-use subscription. <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>Contact support</a> for team access.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
