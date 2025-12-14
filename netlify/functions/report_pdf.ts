@@ -2,9 +2,9 @@ import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 export const handler: Handler = async (event) => {
   const headers = {
@@ -18,6 +18,55 @@ export const handler: Handler = async (event) => {
   }
 
   try {
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        statusCode: 401,
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Missing or invalid authorization header' })
+      };
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+    if (authError || !user) {
+      return {
+        statusCode: 401,
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Unauthorized' })
+      };
+    }
+
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('plan, role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      return {
+        statusCode: 500,
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Failed to fetch user profile' })
+      };
+    }
+
+    const userPlan = profile?.plan || profile?.role || 'free';
+
+    if (!['pro', 'premium'].includes(userPlan)) {
+      return {
+        statusCode: 403,
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: 'PDF downloads require Pro or Premium',
+          message: 'PDF reports are available on Pro and Premium plans',
+          requiresUpgrade: true,
+          userPlan
+        })
+      };
+    }
+
     const { interactionId } = JSON.parse(event.body || '{}');
 
     if (!interactionId) {
@@ -28,7 +77,7 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('interactions')
       .select(`
         id,

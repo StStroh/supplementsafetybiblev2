@@ -68,15 +68,15 @@ exports.handler = async (event, context) => {
 
     const userPlan = profile?.plan || 'free';
 
-    if (userPlan === 'free') {
+    if (!['pro', 'premium'].includes(userPlan)) {
       return {
         statusCode: 403,
         headers: corsHeaders,
         body: JSON.stringify({
-          error: 'PDF download is available for paid plans only',
-          message: 'Upgrade to Pro or Premium to download PDF reports',
+          error: 'PDF downloads require Pro or Premium',
+          message: 'PDF reports are available on Pro and Premium plans',
           requiresUpgrade: true,
-          userPlan: 'free'
+          userPlan
         }),
       };
     }

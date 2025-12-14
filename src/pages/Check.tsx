@@ -136,10 +136,8 @@ export default function Check() {
   async function handleGeneratePDF() {
     if (!result || !result.ok) return;
 
-    if (userPlan === 'free') {
-      if (confirm('PDF download is available for paid plans only. Would you like to upgrade to Pro or Premium?')) {
-        window.location.href = '/#pricing';
-      }
+    if (!['pro', 'premium'].includes(userPlan)) {
+      window.location.href = '/pricing';
       return;
     }
 
@@ -420,42 +418,34 @@ export default function Check() {
                 </div>
 
                 <div className="bg-white shadow-md rounded-2xl p-6 sm:p-8 border border-gray-200">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <FileText className="text-blue-600" size={22} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-gray-900 text-base">Export Report</h3>
-                          {userPlan !== 'free' ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                              PDF Included
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-                              Pro Feature
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600">
-                          {userPlan !== 'free'
-                            ? 'Download a professional PDF report'
-                            : 'Upgrade to Pro or Premium to download PDF reports'}
-                        </p>
-                      </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                      <FileText className="text-blue-600" size={22} />
                     </div>
-                    <button
-                      onClick={handleGeneratePDF}
-                      disabled={pdfLoading}
-                      className={`px-5 py-2.5 rounded-xl font-semibold transition-colors ${
-                        userPlan !== 'free'
-                          ? 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed'
-                          : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
-                      }`}
-                    >
-                      {pdfLoading ? "Generating..." : userPlan !== 'free' ? "Download PDF" : "Upgrade to Download"}
-                    </button>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 text-base mb-2">Export Report</h3>
+                      {['pro', 'premium'].includes(userPlan) ? (
+                        <button
+                          onClick={handleGeneratePDF}
+                          disabled={pdfLoading}
+                          className="px-5 py-2.5 rounded-xl font-semibold border-2 border-blue-600 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          {pdfLoading ? "Generating..." : "Download PDF report"}
+                        </button>
+                      ) : (
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <p className="text-sm text-gray-700 mb-2">
+                            PDF reports are available on Pro and Premium plans.
+                          </p>
+                          <a
+                            href="/pricing"
+                            className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                          >
+                            Upgrade to unlock
+                          </a>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

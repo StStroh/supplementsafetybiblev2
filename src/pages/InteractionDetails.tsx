@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Shield, AlertTriangle, Download, Pill, Beaker } from 'lucide-react';
 import SeverityBadge from '../components/SeverityBadge';
 import Loading from '../components/Loading';
+import { supabase } from '../lib/supabase';
 
 interface InteractionDetail {
   id: string;
@@ -45,13 +46,45 @@ export default function InteractionDetails() {
 
     setGenerating(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      if (!token) {
+        alert('Please sign in to download PDF reports');
+        setGenerating(false);
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan, role')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      const userPlan = profile?.plan || profile?.role || 'free';
+
+      if (!['pro', 'premium'].includes(userPlan)) {
+        window.location.href = '/pricing';
+        return;
+      }
+
       const response = await fetch('/.netlify/functions/report_pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ interactionId: id })
       });
 
-      if (!response.ok) throw new Error('Failed to generate PDF');
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.requiresUpgrade) {
+          window.location.href = '/pricing';
+          return;
+        }
+        throw new Error(errorData.error || 'Failed to generate PDF');
+      }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
