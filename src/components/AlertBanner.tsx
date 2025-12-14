@@ -49,8 +49,8 @@ export default function AlertBanner({
     <div
       ref={ref}
       role="status"
-      className={`${tone} w-full`}
-      style={{ paddingTop: "env(safe-area-inset-top)" }}
+      className={`${tone} w-full fixed top-0 left-0 right-0 z-[100]`}
+      style={{ paddingTop: "max(env(safe-area-inset-top), 0px)" }}
     >
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-start gap-3">
         <span className="flex-1 font-medium text-sm">{message}</span>

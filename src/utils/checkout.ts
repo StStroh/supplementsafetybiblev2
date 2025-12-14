@@ -3,6 +3,12 @@ import { supabase } from "../lib/supabase";
 type Plan = "pro" | "premium";
 type Interval = "monthly" | "annual";
 
+function getFunctionsBaseUrl(): string {
+  const h = window.location.hostname;
+  const isProd = h === "supplementsafetybible.com" || h.endsWith(".netlify.app");
+  return isProd ? "" : "https://supplementsafetybible.com";
+}
+
 export async function startTrialCheckout(plan: Plan, interval: Interval, showAlert?: (message: string, type?: "error" | "success") => void) {
   const bill = interval === "annual" ? "annual" : "monthly";
 
@@ -16,7 +22,8 @@ export async function startTrialCheckout(plan: Plan, interval: Interval, showAle
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
 
-    const res = await fetch("/.netlify/functions/create-checkout-session", {
+    const baseUrl = getFunctionsBaseUrl();
+    const res = await fetch(`${baseUrl}/.netlify/functions/create-checkout-session`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,6 +34,12 @@ export async function startTrialCheckout(plan: Plan, interval: Interval, showAle
 
     if (!res.ok) {
       const text = await res.text();
+      if (res.status === 404) {
+        throw new Error("Preview mode can't reach local functions; using live endpoint.");
+      }
+      if (res.status === 401) {
+        throw new Error("Please sign in to start a trial.");
+      }
       throw new Error(`Checkout failed: HTTP ${res.status} – ${text}`);
     }
 

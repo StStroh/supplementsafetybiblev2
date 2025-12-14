@@ -30,7 +30,7 @@ function AppContent() {
         />
       )}
 
-      <div className="flex-1">
+      <div className="flex-1" style={{ paddingTop: alert ? "var(--alert-banner-h, 0px)" : "0px" }}>
         <EnvWarning />
         {path === '/auth' && <Auth />}
         {path === '/auth/callback' && <AuthCallback />}
