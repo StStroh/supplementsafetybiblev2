@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Star } from 'lucide-react';
 import { SEO, StructuredData } from '../lib/seo';
+import { startTrialCheckout } from '../utils/checkout';
+import { useAlert } from '../state/AlertProvider';
 
 const productSchema = {
   "@context": "https://schema.org",
@@ -45,6 +47,7 @@ const faqSchema = {
 
 export default function Premium() {
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const [cadence, setCadence] = useState<'monthly' | 'annual'>('monthly');
   const [loading, setLoading] = useState<string | null>(null);
 
@@ -107,25 +110,20 @@ export default function Premium() {
     }
 
     setLoading(tier);
-    try {
-      const response = await fetch('/.netlify/functions/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tier, cadence })
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+    const plan = tier as 'pro' | 'premium';
+    const interval = cadence as 'monthly' | 'annual';
+
+    await startTrialCheckout(plan, interval, (message, type) => {
+      if (showAlert) {
+        showAlert(message, type);
+      } else {
+        alert(message);
       }
-
-      const { url } = await response.json();
-      if (url) window.location.href = url;
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Failed to start checkout. Please try again.');
-    } finally {
       setLoading(null);
-    }
+    });
+
+    setLoading(null);
   };
 
   const getPrice = (tier: typeof tiers[0]) =>

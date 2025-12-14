@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Check, Loader2, Mail } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { SUPPORT_EMAIL } from "../lib/support";
+import { startTrialCheckout } from "../utils/checkout";
+import { useAlert } from "../state/AlertProvider";
 import Toast from "./Toast";
 import FreePlan from "./FreePlan";
 import StickyFreeCTA from "./StickyFreeCTA";
@@ -75,6 +77,7 @@ const tiers: PricingTier[] = [
 ];
 
 const Pricing: React.FC = () => {
+  const { showAlert } = useAlert();
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [missingVars, setMissingVars] = useState<string[]>([]);
@@ -132,56 +135,16 @@ const Pricing: React.FC = () => {
 
   const handleCheckout = async (tier: 'pro_monthly' | 'pro_annual' | 'premium_monthly' | 'premium_annual') => {
     setLoadingPriceId(tier);
-    try {
-      const res = await fetch("/.netlify/functions/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tier }),
-      });
 
-      const data = await res.json().catch(() => ({}));
+    const plan = tier.startsWith('pro') ? 'pro' : 'premium';
+    const interval = tier.endsWith('monthly') ? 'monthly' : 'annual';
 
-      if (!res.ok) {
-        const errorMessage = data?.error?.message || data?.error || `HTTP ${res.status}`;
-        console.error("Checkout error:", errorMessage);
-        setToast({ message: String(errorMessage), type: 'error' });
-        setLoadingPriceId(null);
-        return;
-      }
-
-      if (!data.sessionId) {
-        console.error("No sessionId returned from checkout", data);
-        setToast({ message: "No checkout session received. Please contact support.", type: 'error' });
-        setLoadingPriceId(null);
-        return;
-      }
-
-      const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-      if (!stripeKey) {
-        setToast({ message: "Stripe not configured. Please contact support.", type: 'error' });
-        setLoadingPriceId(null);
-        return;
-      }
-
-      const stripe = (window as any).Stripe?.(stripeKey);
-      if (!stripe) {
-        setToast({ message: "Stripe.js not loaded. Please refresh and try again.", type: 'error' });
-        setLoadingPriceId(null);
-        return;
-      }
-
-      const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-      if (error) {
-        setToast({ message: error.message || "Redirect to checkout failed", type: 'error' });
-        setLoadingPriceId(null);
-      }
-    } catch (err: any) {
-      console.error("Network error during checkout:", err);
-      setToast({ message: err?.message || "Network error. Please try again.", type: 'error' });
+    await startTrialCheckout(plan, interval, (message, type) => {
+      setToast({ message, type: type || 'error' });
       setLoadingPriceId(null);
-    }
+    });
+
+    setLoadingPriceId(null);
   };
 
 

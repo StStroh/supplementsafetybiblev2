@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { startTrialCheckout } from "../utils/checkout";
 
 type Props = {
   monthlyLabel?: string;
@@ -21,34 +22,17 @@ export default function PricingSection({
   );
 
   async function startCheckout() {
-    try {
-      setLoading(true);
-      setErr(null);
-      const res = await fetch("/.netlify/functions/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tier: interval === "month" ? "premium_monthly" : "premium_annual"
-        }),
-      });
+    setLoading(true);
+    setErr(null);
 
-      const data = await res.json().catch(() => ({}));
+    const billingInterval = interval === "month" ? "monthly" : "annual";
 
-      if (!res.ok) {
-        const errorMsg = data?.error?.message || data?.error || `HTTP ${res.status}`;
-        throw new Error(String(errorMsg));
+    await startTrialCheckout("premium", billingInterval, (message, type) => {
+      if (type === "error") {
+        setErr(message);
+        setLoading(false);
       }
-
-      if (!data?.sessionId) {
-        throw new Error("No checkout session returned. Please contact support.");
-      }
-
-      window.location.assign(`https://checkout.stripe.com/c/pay/${data.sessionId}`);
-    } catch (e: any) {
-      console.error("Checkout error:", e);
-      setErr(String(e?.message) || "Could not start checkout. Please try again.");
-      setLoading(false);
-    }
+    });
   }
 
   return (
