@@ -1,245 +1,114 @@
-const Stripe = require("stripe");
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
-const { createClient } = require("@supabase/supabase-js");
-const { getPlanInfo } = require("../../src/lib/stripe/plan-map.cjs");
+'use strict';
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { auth: { persistSession: false } }
 );
 
-exports.handler = async (event) => {
-  try {
-    const sig = event.headers["stripe-signature"];
-    const whSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    const evt = stripe.webhooks.constructEvent(event.body, sig, whSecret);
-
-    console.log(`[Webhook] Event: ${evt.type}, ID: ${evt.id}`);
-
-    // Idempotency check
-    const { data: existing } = await supabase
-      .from("events_log")
-      .select("id")
-      .eq("event_id", evt.id)
-      .maybeSingle();
-
-    if (existing) {
-      console.log(`[Webhook] Already processed: ${evt.id}`);
-      return { statusCode: 200, body: JSON.stringify({ received: true, duplicate: true }) };
-    }
-
-    // Log event
-    await supabase.from("events_log").insert({
-      event_id: evt.id,
-      event_type: evt.type,
-      payload: evt.data.object,
-      processed_at: new Date().toISOString(),
-    });
-
-    switch (evt.type) {
-      case "checkout.session.completed":
-        await handleCheckoutCompleted(evt.data.object);
-        break;
-
-      case "invoice.payment_succeeded":
-        await handleInvoicePaymentSucceeded(evt.data.object);
-        break;
-
-      case "invoice.payment_failed":
-        await handlePaymentFailed(evt.data.object);
-        break;
-
-      case "customer.subscription.updated":
-        await handleSubscriptionUpdated(evt.data.object);
-        break;
-
-      case "customer.subscription.deleted":
-        await handleSubscriptionDeleted(evt.data.object);
-        break;
-
-      default:
-        console.log(`[Webhook] Unhandled event: ${evt.type}`);
-    }
-
-    return { statusCode: 200, body: JSON.stringify({ received: true }) };
-  } catch (err) {
-    console.error("Webhook error:", err.message);
-    return { statusCode: 400, body: `Webhook Error: ${err.message}` };
-  }
+const PRICE_TO_PLAN = {
+  [process.env.PRICE_PRO_MONTHLY]: 'pro',
+  [process.env.PRICE_PREMIUM_MONTHLY]: 'premium',
 };
 
-async function handleCheckoutCompleted(session) {
-  console.log(`[Checkout] Session: ${session.id}`);
-
-  const customerId = session.customer;
-  const subscriptionId = session.subscription;
-  const customerEmail = session.customer_details?.email || session.customer_email;
-
-  if (!subscriptionId) {
-    console.log("[Checkout] No subscription ID, skipping");
-    return;
-  }
-
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const priceId = subscription.items.data[0]?.price?.id;
-
-  if (!priceId) {
-    console.error("[Checkout] No price ID found");
-    return;
-  }
-
-  const planInfo = getPlanInfo(priceId);
-  if (!planInfo) {
-    console.error(`[Checkout] Unknown price ID: ${priceId}`);
-    return;
-  }
-
-  const isTrialing = subscription.status === 'trialing';
-  const trialEnd = subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null;
-  const planBase = planInfo.plan;
-  const planState = isTrialing ? `${planBase}_trial` : planBase;
-
-  console.log(`[Checkout] Mapped: ${priceId} → ${planState} (trialing: ${isTrialing})`);
-
-  await upsertProfile(customerId, customerEmail, {
-    stripe_subscription_id: subscriptionId,
-    subscription_status: subscription.status,
-    is_premium: planInfo.plan === "premium",
-    plan_name: planInfo.plan,
-    billing_interval: planInfo.interval,
-    role: planInfo.plan === "premium" ? "premium" : "pro",
-    plan: planState,
-    trial_end: trialEnd,
-    trial_used: true,
-  });
+async function logEvent(id, type) {
+  const { error } = await supabase
+    .from('events_log')
+    .insert({ id, type })
+    .select()
+    .single();
+  if (error && error.code !== '23505') throw error;
 }
 
-async function handleInvoicePaymentSucceeded(invoice) {
-  console.log(`[Invoice] ID: ${invoice.id}`);
-
-  const customerId = invoice.customer;
-  const subscriptionId = invoice.subscription;
-
-  if (!subscriptionId) return;
-
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const priceId = subscription.items.data[0]?.price?.id;
-  const planInfo = getPlanInfo(priceId);
-
-  if (planInfo) {
-    const isTrialing = subscription.status === 'trialing';
-    const planBase = planInfo.plan;
-    const planState = isTrialing ? `${planBase}_trial` : planBase;
-
-    await upsertProfile(customerId, null, {
-      subscription_status: subscription.status,
-      is_premium: planInfo.plan === "premium",
-      plan: planState,
-      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-    });
-  }
+async function getUserByCustomer(customerId) {
+  const { data } = await supabase
+    .from('users')
+    .select('*')
+    .eq('stripe_customer_id', customerId)
+    .maybeSingle();
+  return data;
 }
 
-async function handleSubscriptionUpdated(subscription) {
-  console.log(`[Subscription] Updated: ${subscription.id}`);
-
-  const customerId = subscription.customer;
-  const priceId = subscription.items.data[0]?.price?.id;
-  const planInfo = getPlanInfo(priceId);
-
-  if (planInfo) {
-    const isTrialing = subscription.status === 'trialing';
-    const isActive = subscription.status === 'active';
-    const planBase = planInfo.plan;
-    let planState = 'starter';
-
-    if (isTrialing) {
-      planState = `${planBase}_trial`;
-    } else if (isActive) {
-      planState = planBase;
-    }
-
-    console.log(`[Subscription] Status: ${subscription.status}, Plan: ${planState}`);
-
-    await upsertProfile(customerId, null, {
-      subscription_status: subscription.status,
-      is_premium: planInfo.plan === "premium",
-      plan: planState,
-      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-    });
-  }
+async function getUserByEmail(email) {
+  const { data } = await supabase
+    .from('users')
+    .select('*')
+    .eq('email', email)
+    .maybeSingle();
+  return data;
 }
 
-async function handleSubscriptionDeleted(subscription) {
-  console.log(`[Subscription] Deleted: ${subscription.id}`);
+exports.handler = async (event) => {
+  const sig = event.headers['stripe-signature'];
+  const body = event.isBase64Encoded
+    ? Buffer.from(event.body, 'base64')
+    : Buffer.from(event.body);
 
-  await upsertProfile(subscription.customer, null, {
-    subscription_status: "canceled",
-    is_premium: false,
-    plan: "starter",
-    stripe_subscription_id: null,
-    trial_end: null,
-  });
-}
-
-async function handlePaymentFailed(invoice) {
-  console.log(`[Payment Failed] Invoice: ${invoice.id}`);
-
-  const customerId = invoice.customer;
-
-  await upsertProfile(customerId, null, {
-    plan: "starter",
-  });
-}
-
-async function upsertProfile(customerId, customerEmail, updates) {
+  let stripeEvent;
   try {
-    // First try to update existing profile by stripe_customer_id
-    const { data: existingProfile, error: fetchError } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("stripe_customer_id", customerId)
-      .maybeSingle();
-
-    if (existingProfile) {
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ ...updates, stripe_customer_id: customerId })
-        .eq("id", existingProfile.id);
-
-      if (updateError) {
-        console.error(`[Profile] Update failed:`, updateError);
-      } else {
-        console.log(`[Profile] Updated customer ${customerId}:`, updates);
-      }
-      return;
-    }
-
-    // If no profile exists and we have email, try to find by email
-    if (customerEmail) {
-      const { data: profileByEmail } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", customerEmail)
-        .maybeSingle();
-
-      if (profileByEmail) {
-        const { error: updateError } = await supabase
-          .from("profiles")
-          .update({ ...updates, stripe_customer_id: customerId })
-          .eq("id", profileByEmail.id);
-
-        if (updateError) {
-          console.error(`[Profile] Update by email failed:`, updateError);
-        } else {
-          console.log(`[Profile] Updated by email ${customerEmail}:`, updates);
-        }
-        return;
-      }
-    }
-
-    console.log(`[Profile] No existing profile found for ${customerId}, updates stored for next login`);
+    stripeEvent = stripe.webhooks.constructEvent(
+      body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
   } catch (err) {
-    console.error(`[Profile] Upsert error:`, err);
+    return { statusCode: 400, body: 'Invalid signature' };
   }
-}
+
+  await logEvent(stripeEvent.id, stripeEvent.type);
+
+  const obj = stripeEvent.data.object;
+
+  if (
+    stripeEvent.type === 'checkout.session.completed' &&
+    obj.subscription
+  ) {
+    const subscription = await stripe.subscriptions.retrieve(
+      obj.subscription,
+      { expand: ['items.data.price'] }
+    );
+
+    const priceId = subscription.items.data[0].price.id;
+    const plan = PRICE_TO_PLAN[priceId];
+    const email = obj.customer_details?.email;
+
+    let user = await getUserByCustomer(obj.customer);
+    if (!user && email) user = await getUserByEmail(email);
+    if (!user) return { statusCode: 200 };
+
+    await supabase.from('users').update({
+      stripe_customer_id: obj.customer,
+      stripe_subscription_id: subscription.id,
+      plan: subscription.status === 'trialing'
+        ? `${plan}_trial`
+        : plan,
+      trial_end: subscription.trial_end
+        ? new Date(subscription.trial_end * 1000)
+        : null,
+      trial_used: true,
+    }).eq('id', user.id);
+  }
+
+  if (stripeEvent.type === 'invoice.payment_failed') {
+    const user = await getUserByCustomer(obj.customer);
+    if (user) {
+      await supabase.from('users')
+        .update({ plan: 'starter' })
+        .eq('id', user.id);
+    }
+  }
+
+  if (stripeEvent.type === 'customer.subscription.deleted') {
+    const user = await getUserByCustomer(obj.customer);
+    if (user) {
+      await supabase.from('users')
+        .update({ plan: 'starter', stripe_subscription_id: null })
+        .eq('id', user.id);
+    }
+  }
+
+  return { statusCode: 200 };
+};
