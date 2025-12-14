@@ -25,6 +25,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(({ id, valu
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const committingRef = useRef(false);
   const listboxId = useId();
 
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
@@ -78,6 +79,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(({ id, valu
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (showSuggestions && activeSuggestion >= 0 && filteredSuggestions[activeSuggestion]) {
+        committingRef.current = true;
         selectSuggestion(filteredSuggestions[activeSuggestion].name);
       }
     } else if (e.key === 'Escape' || e.key === 'Tab') {
@@ -90,7 +92,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(({ id, valu
     onSelect(name);
     setShowSuggestions(false);
     setActiveSuggestion(-1);
-    // Return focus to input after selection
+    committingRef.current = false;
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
@@ -110,8 +112,14 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(({ id, valu
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => value.length >= 2 && filteredSuggestions.length > 0 && setShowSuggestions(true)}
-          onBlur={() => {
-            setTimeout(() => setShowSuggestions(false), 200);
+          onBlur={(e) => {
+            if (committingRef.current) {
+              e.preventDefault();
+              committingRef.current = false;
+              requestAnimationFrame(() => inputRef.current?.focus());
+              return;
+            }
+            setShowSuggestions(false);
           }}
           placeholder={placeholder || 'Search...'}
           className="ac__input w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-full focus:border-blue-500 focus:outline-none pl-14"
@@ -134,7 +142,7 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(({ id, valu
         <ul
           id={listboxId}
           role="listbox"
-          className="ac__list absolute z-[9999] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+          className="ac__list absolute z-[60] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto"
         >
           {filteredSuggestions.map((suggestion, index) => (
             <li
@@ -143,8 +151,16 @@ const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(({ id, valu
               role="option"
               aria-selected={index === activeSuggestion}
               tabIndex={-1}
-              onPointerDown={(e) => e.preventDefault()} // Prevent blur on iOS
-              onMouseDown={(e) => e.preventDefault()} // Prevent blur on desktop
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                committingRef.current = true;
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                committingRef.current = true;
+              }}
               onClick={() => selectSuggestion(suggestion.name)}
               className={`ac__item px-4 py-3 cursor-pointer flex items-center justify-between min-h-[44px] ${
                 index === activeSuggestion ? 'bg-blue-50 is-active' : 'hover:bg-gray-50'
