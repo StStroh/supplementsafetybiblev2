@@ -1,27 +1,33 @@
-import { useState, useEffect, useRef, useId } from 'react';
+import { useState, useEffect, useRef, useId, forwardRef, useImperativeHandle } from 'react';
 import { Search } from 'lucide-react';
 import '../styles/autocomplete.css';
 
 interface AutocompleteProps {
+  id?: string;
   value: string;
   onChange: (value: string) => void;
   onSelect: (value: string) => void;
   placeholder?: string;
   label?: string;
+  suggestions?: Suggestion[];
+  type?: 'supplement' | 'medication';
 }
 
 interface Suggestion {
+  id?: string;
   name: string;
-  type: 'supplement' | 'medication';
+  type?: 'supplement' | 'medication';
 }
 
-export default function Autocomplete({ value, onChange, onSelect, placeholder, label }: AutocompleteProps) {
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(({ id, value, onChange, onSelect, placeholder, label, suggestions: propSuggestions, type }, ref) => {
+  const [filteredSuggestions, setFilteredSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxId = useId();
+
+  useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -35,58 +41,44 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder, l
   }, []);
 
   useEffect(() => {
-    if (value.length >= 2) {
-      fetchSuggestions();
+    if (value.length >= 2 && propSuggestions && propSuggestions.length > 0) {
+      const searchTerm = value.toLowerCase();
+      const filtered = propSuggestions
+        .filter(s => s.name.toLowerCase().includes(searchTerm))
+        .slice(0, 10)
+        .map(s => ({ ...s, type: s.type || type }));
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+      setActiveSuggestion(filtered.length > 0 ? 0 : -1);
     } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    if (value) {
-      setShowSuggestions(suggestions.length > 0);
-      setActiveSuggestion(suggestions.length > 0 ? 0 : -1);
-    } else {
+      setFilteredSuggestions([]);
       setShowSuggestions(false);
       setActiveSuggestion(-1);
     }
-  }, [suggestions, value]);
-
-  const fetchSuggestions = async () => {
-    try {
-      const response = await fetch(`/.netlify/functions/autocomplete?q=${encodeURIComponent(value)}`);
-      if (!response.ok) return;
-      const data = await response.json();
-      setSuggestions(data.suggestions || []);
-    } catch (err) {
-      console.error('Autocomplete failed:', err);
-    }
-  };
+  }, [value, propSuggestions, type]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
-      setShowSuggestions(true);
+      if (filteredSuggestions.length > 0) {
+        setShowSuggestions(true);
+      }
       return;
     }
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setActiveSuggestion((prev) =>
-        suggestions.length > 0 ? (prev + 1) % suggestions.length : -1
+        filteredSuggestions.length > 0 ? (prev + 1) % filteredSuggestions.length : -1
       );
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setActiveSuggestion((prev) =>
-        suggestions.length > 0 ? (prev - 1 + suggestions.length) % suggestions.length : -1
+        filteredSuggestions.length > 0 ? (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length : -1
       );
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (showSuggestions && activeSuggestion >= 0 && suggestions[activeSuggestion]) {
-        selectSuggestion(suggestions[activeSuggestion].name);
-      } else if (value) {
-        onSelect(value);
-        setShowSuggestions(false);
+      if (showSuggestions && activeSuggestion >= 0 && filteredSuggestions[activeSuggestion]) {
+        selectSuggestion(filteredSuggestions[activeSuggestion].name);
       }
     } else if (e.key === 'Escape' || e.key === 'Tab') {
       setShowSuggestions(false);
@@ -111,14 +103,14 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder, l
       )}
       <div className="relative">
         <input
+          id={id}
           ref={inputRef}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => value.length >= 2 && suggestions.length > 0 && setShowSuggestions(true)}
+          onFocus={() => value.length >= 2 && filteredSuggestions.length > 0 && setShowSuggestions(true)}
           onBlur={() => {
-            // Delay to allow click to register
             setTimeout(() => setShowSuggestions(false), 200);
           }}
           placeholder={placeholder || 'Search...'}
@@ -138,13 +130,13 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder, l
         <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none" />
       </div>
 
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && filteredSuggestions.length > 0 && (
         <ul
           id={listboxId}
           role="listbox"
           className="ac__list absolute z-[9999] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto"
         >
-          {suggestions.map((suggestion, index) => (
+          {filteredSuggestions.map((suggestion, index) => (
             <li
               key={`${suggestion.type}-${suggestion.name}-${index}`}
               id={`${listboxId}-opt-${index}`}
@@ -174,4 +166,8 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder, l
       )}
     </div>
   );
-}
+});
+
+Autocomplete.displayName = 'Autocomplete';
+
+export default Autocomplete;

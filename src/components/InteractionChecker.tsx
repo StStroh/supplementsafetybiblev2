@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { isPaid, roleName } from '../lib/roles';
+import Autocomplete from './Autocomplete';
 
 type State = 'loading' | 'no_user' | 'free_locked' | 'paid' | 'data_error' | 'result';
 
@@ -8,6 +9,8 @@ export default function InteractionChecker() {
   const [state, setState] = useState<State>('loading');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('free');
+  const [supplementValue, setSupplementValue] = useState('');
+  const [medicationValue, setMedicationValue] = useState('');
   const [supplementId, setSupplementId] = useState('');
   const [medicationId, setMedicationId] = useState('');
   const [supplements, setSupplements] = useState<any[]>([]);
@@ -15,6 +18,9 @@ export default function InteractionChecker() {
   const [payload, setPayload] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [dataErrorDetails, setDataErrorDetails] = useState<string>('');
+
+  const suppRef = useRef<HTMLInputElement>(null);
+  const medRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -98,6 +104,29 @@ export default function InteractionChecker() {
       setState('paid');
     })();
   }, []);
+
+  const focusField = (field: 'supplement' | 'medication') => {
+    (field === 'supplement' ? suppRef.current : medRef.current)?.focus();
+  };
+
+  const handleSupplementSelect = (name: string) => {
+    const supp = supplements.find(s => s.name.toLowerCase() === name.toLowerCase());
+    if (supp) {
+      setSupplementValue(name);
+      setSupplementId(supp.id);
+      if (!medicationValue) {
+        setTimeout(() => medRef.current?.focus(), 100);
+      }
+    }
+  };
+
+  const handleMedicationSelect = (name: string) => {
+    const med = medications.find(m => m.name.toLowerCase() === name.toLowerCase());
+    if (med) {
+      setMedicationValue(name);
+      setMedicationId(med.id);
+    }
+  };
 
   const check = async () => {
     setErrorMsg(null);
@@ -247,7 +276,7 @@ export default function InteractionChecker() {
 
   // Paid user with data - show interaction checker
   return (
-    <div className="p-6 bg-white rounded-xl shadow-lg">
+    <div className="p-6 bg-white rounded-xl shadow-lg interaction-form">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-gray-900">Check Supplement-Medication Interactions</h3>
@@ -256,42 +285,52 @@ export default function InteractionChecker() {
           </span>
         </div>
         <p className="text-gray-600 text-sm">
-          Select a supplement and medication to check for potential interactions.
+          Type to search for a supplement and medication to check for potential interactions.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 mb-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Supplement
-          </label>
-          <select
-            value={supplementId}
-            onChange={e => setSupplementId(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      <div className="grid gap-6 sm:grid-cols-2 mb-4">
+        <div className="field">
+          <button
+            type="button"
+            className="field-label"
+            onClick={() => focusField('supplement')}
+            aria-controls="supp-input"
           >
-            <option value="">Choose a supplement...</option>
-            {supplements.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+            Supplement
+          </button>
+          <Autocomplete
+            id="supp-input"
+            ref={suppRef}
+            value={supplementValue}
+            placeholder="Type a supplement..."
+            onChange={setSupplementValue}
+            onSelect={handleSupplementSelect}
+            suggestions={supplements}
+            type="supplement"
+          />
           <p className="mt-1 text-xs text-gray-500">{supplements.length} supplements available</p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Medication
-          </label>
-          <select
-            value={medicationId}
-            onChange={e => setMedicationId(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        <div className="field">
+          <button
+            type="button"
+            className="field-label"
+            onClick={() => focusField('medication')}
+            aria-controls="med-input"
           >
-            <option value="">Choose a medication...</option>
-            {medications.map(m => (
-              <option key={m.id} value={m.id}>{m.name}</option>
-            ))}
-          </select>
+            Medication
+          </button>
+          <Autocomplete
+            id="med-input"
+            ref={medRef}
+            value={medicationValue}
+            placeholder="...and a medication"
+            onChange={setMedicationValue}
+            onSelect={handleMedicationSelect}
+            suggestions={medications}
+            type="medication"
+          />
           <p className="mt-1 text-xs text-gray-500">{medications.length} medications available</p>
         </div>
       </div>
