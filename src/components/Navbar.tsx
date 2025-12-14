@@ -70,21 +70,21 @@ export default function Navbar() {
         <div className="flex justify-between items-center" style={{height: 'clamp(64px, 8vw, 80px)'}}>
           <a href="/" className="brand flex items-center" style={{gap: 'clamp(0.5rem, 2vw, 0.75rem)'}} aria-label={`Go to ${BRAND_NAME_FULL} home`}>
             <Logo variant="dark" className="logo--nav" />
-            <span className="font-bold text-[#3b1d6a] leading-tight tracking-tight" style={{fontSize: 'clamp(17px, 3.8vw, 23px)'}}>
+            <span className="font-bold text-[#8B7BA8] leading-tight tracking-tight" style={{fontSize: 'clamp(18px, 4vw, 24px)'}}>
               {BRAND_NAME_FULL}
             </span>
           </a>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="/" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
+            <a href="/" className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium">
               Home
             </a>
-            <a href="/faq" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
+            <a href="/faq" className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium">
               FAQ
             </a>
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
-                <a href="/account" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
+                <a href="/account" className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium">
                   Account
                 </a>
                 {plan === 'free' && (
@@ -94,11 +94,11 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <a href="/auth" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
+              <a href="/auth" className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium">
                 Sign in
               </a>
             )}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium">
               Contact
             </a>
 
@@ -183,7 +183,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-700"
+            className="md:hidden text-[#8B7BA8]"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -194,14 +194,14 @@ export default function Navbar() {
             <div className="flex flex-col gap-4">
               <a
                 href="/"
-                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
+                className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </a>
               <a
                 href="/faq"
-                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
+                className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
@@ -210,7 +210,7 @@ export default function Navbar() {
                 <div>
                   <a
                     href="/account"
-                    className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
+                    className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Account
@@ -224,7 +224,7 @@ export default function Navbar() {
               ) : (
                 <a
                   href="/auth"
-                  className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
+                  className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Sign in
@@ -232,7 +232,7 @@ export default function Navbar() {
               )}
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors font-medium"
+                className="text-[#8B7BA8] hover:text-[#A89FC4] transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Contact

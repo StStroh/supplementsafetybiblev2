@@ -30,30 +30,30 @@ export default function Header() {
         <div className="flex items-center justify-between" style={{height: 'clamp(64px, 8vw, 80px)'}}>
           <a href="/" className="flex items-center" style={{gap: 'clamp(0.5rem, 2vw, 0.75rem)'}}>
             <Logo variant="dark" className="logo--nav" />
-            <span className="font-bold text-[#3b1d6a] leading-tight tracking-tight" style={{fontSize: 'clamp(17px, 3.8vw, 23px)'}}>
+            <span className="font-bold text-[#8B7BA8] leading-tight tracking-tight" style={{fontSize: 'clamp(18px, 4vw, 24px)'}}>
               {BRAND_NAME_FULL}
             </span>
           </a>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/search" className="text-sm font-medium text-gray-700 hover:text-black transition">
+            <a href="/search" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
               Search
             </a>
-            <a href="/premium" className="text-sm font-medium text-gray-700 hover:text-black transition">
+            <a href="/premium" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
               Premium
             </a>
-            <a href="/faq" className="text-sm font-medium text-gray-700 hover:text-black transition">
+            <a href="/faq" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
               FAQ
             </a>
           </div>
 
           <div className="hidden md:flex items-center">
             {isLoggedIn ? (
-              <a href="/account" className="text-sm font-medium text-gray-700 hover:text-black transition">
+              <a href="/account" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
                 Account
               </a>
             ) : (
-              <a href="/auth" className="text-sm font-medium text-gray-700 hover:text-black transition">
+              <a href="/auth" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
                 Login
               </a>
             )}
@@ -61,7 +61,7 @@ export default function Header() {
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-700"
+            className="md:hidden text-[#8B7BA8]"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -72,21 +72,21 @@ export default function Header() {
             <div className="flex flex-col space-y-4">
               <a
                 href="/search"
-                className="text-sm font-medium text-gray-700 hover:text-black transition"
+                className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Search
               </a>
               <a
                 href="/premium"
-                className="text-sm font-medium text-gray-700 hover:text-black transition"
+                className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Premium
               </a>
               <a
                 href="/faq"
-                className="text-sm font-medium text-gray-700 hover:text-black transition"
+                className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
@@ -94,7 +94,7 @@ export default function Header() {
               {isLoggedIn ? (
                 <a
                   href="/account"
-                  className="text-sm font-medium text-gray-700 hover:text-black transition"
+                  className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Account
@@ -102,7 +102,7 @@ export default function Header() {
               ) : (
                 <a
                   href="/auth"
-                  className="text-sm font-medium text-gray-700 hover:text-black transition"
+                  className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Login

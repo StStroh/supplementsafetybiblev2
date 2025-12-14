@@ -24,7 +24,7 @@
 }
 
 .logo--nav {
-  height: clamp(40px, 6vw, 56px);
+  height: clamp(48px, 6.5vw, 64px);
   width: auto;
   max-width: none;
   overflow: visible;
@@ -47,13 +47,13 @@
 
 @media (max-width: 768px) {
   .logo--nav {
-    height: clamp(36px, 7vw, 48px);
+    height: clamp(44px, 7.5vw, 56px);
   }
 }
 
 @media (max-width: 640px) {
   .logo--nav {
-    height: 40px;
+    height: 44px;
   }
 
   .logo--hero {
