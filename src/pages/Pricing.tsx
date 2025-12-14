@@ -18,29 +18,16 @@ interface FeatureRow {
 }
 
 const features: FeatureRow[] = [
-  { category: 'Safety Features', name: 'Interaction preview (risk level only)', starter: true, pro: false, premium: false },
-  { name: 'Full Interaction Checker', starter: false, pro: true, premium: true },
-  { name: 'Safety warnings & precautions', starter: false, pro: true, premium: true },
-  { name: 'Side-effect summaries', starter: false, pro: true, premium: true },
-
-  { category: 'Handouts & Protocols', name: 'Saved items', starter: '10', pro: 'Unlimited', premium: 'Unlimited' },
-  { name: 'PDF export', starter: false, pro: true, premium: true },
-  { name: 'Drag-and-drop builder', starter: false, pro: true, premium: true },
-  { name: 'Premade tables & infographics', starter: false, pro: true, premium: true },
-
-  { category: 'Branding & Customization', name: 'Shareable live link', starter: false, pro: true, premium: true },
-  { name: 'Add business logo/info', starter: false, pro: true, premium: true },
-  { name: 'Remove SSB branding', starter: false, pro: false, premium: true },
-  { name: 'Customize fonts/colors', starter: false, pro: false, premium: true },
-
-  { category: 'Additional Tools', name: 'Supplement Navigator', starter: 'Limited', pro: 'Full', premium: 'Full' },
-  { name: 'Calculators (risk/dosage)', starter: false, pro: 'Coming soon', premium: 'Coming soon' },
-  { name: 'Vote on page updates', starter: false, pro: false, premium: 'Coming soon' },
-
-  { category: 'Database Access', name: 'Supplements A–Z', starter: 'Preview', pro: 'Full', premium: 'Full' },
-  { name: 'Medications A–Z', starter: 'Preview', pro: 'Full', premium: 'Full' },
-  { name: 'Conditions A–Z', starter: 'Preview', pro: 'Full', premium: 'Full' },
-  { name: 'Research feed/alerts', starter: false, pro: true, premium: true },
+  { name: 'Interaction risk preview', starter: true, pro: true, premium: true },
+  { name: 'Full interaction explanations', starter: false, pro: true, premium: true },
+  { name: 'Evidence-based rationale', starter: false, pro: true, premium: true },
+  { name: 'Clinical context & considerations', starter: false, pro: true, premium: true },
+  { name: 'PDF reports', starter: false, pro: true, premium: true },
+  { name: 'Monitoring & follow-up guidance', starter: false, pro: false, premium: true },
+  { name: 'Professional-grade language', starter: false, pro: false, premium: true },
+  { name: 'Unlimited interaction checks', starter: false, pro: true, premium: true },
+  { name: 'Early access to new tools', starter: false, pro: false, premium: true },
+  { name: 'Priority support', starter: false, pro: false, premium: true },
 ];
 
 export default function Pricing() {
@@ -100,9 +87,9 @@ export default function Pricing() {
     }
   }
 
-  const proPrice = interval === 'annual' ? 149 : 14.99;
-  const premiumPrice = interval === 'annual' ? 249 : 24.99;
-  const annualSavings = Math.round(((14.99 * 12 - 149) / (14.99 * 12)) * 100);
+  const proPrice = interval === 'annual' ? 199 : 19;
+  const premiumPrice = interval === 'annual' ? 399 : 39;
+  const annualSavings = Math.round(((19 * 12 - 199) / (19 * 12)) * 100);
 
   return (
     <div className="min-h-screen" style={{background: 'var(--color-bg)'}}>
@@ -202,10 +189,10 @@ export default function Pricing() {
               disabled={loading !== null}
               className="btn-outline w-full disabled:opacity-50"
             >
-              Choose Starter
+              Start free
             </button>
 
-            <p className="guarantee-note text-center mt-3">Upgrade anytime.</p>
+            <p className="guarantee-note text-center mt-3">No credit card required</p>
           </div>
 
           {/* Pro Card - Most Popular */}
@@ -291,16 +278,13 @@ export default function Pricing() {
                     Loading...
                   </>
                 ) : (
-                  'Choose Pro'
+                  'Try Pro free for 14 days'
                 )}
               </button>
 
               <div className="mt-4 text-center space-y-2">
                 <p className="guarantee-note">
-                  60-day money-back guarantee
-                </p>
-                <p className="guarantee-note">
-                  Change or cancel at any time
+                  Full access. Cancel anytime.
                 </p>
                 <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
                   Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please contact us.
@@ -378,16 +362,13 @@ export default function Pricing() {
                     Loading...
                   </>
                 ) : (
-                  'Choose Premium'
+                  'Try Premium free for 14 days'
                 )}
               </button>
 
               <div className="mt-4 text-center space-y-2">
                 <p className="guarantee-note">
-                  60-day money-back guarantee
-                </p>
-                <p className="guarantee-note">
-                  Change or cancel at any time
+                  Designed for clinical use.
                 </p>
                 <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
                   Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please contact us.
@@ -421,11 +402,11 @@ export default function Pricing() {
             <table className="w-full border-collapse">
               <thead>
                 <tr style={{borderBottom: '2px solid var(--color-border)'}}>
-                  <th className="text-left py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}></th>
+                  <th className="text-left py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}>Feature</th>
                   <th className="text-center py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}>Starter</th>
                   <th className="text-center py-4 px-4 font-semibold relative" style={{color: 'var(--color-text)', background: 'var(--color-bg)'}}>
                     Pro
-                    <span className="absolute top-1 right-1 text-xs font-normal" style={{color: 'var(--color-brand)'}}>Popular</span>
+                    <div className="text-xs font-normal mt-1" style={{color: 'var(--color-brand)'}}>Most Popular</div>
                   </th>
                   <th className="text-center py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}>Premium</th>
                 </tr>
@@ -434,24 +415,92 @@ export default function Pricing() {
                 {features.map((feature, idx) => (
                   <tr
                     key={idx}
-                    style={{borderBottom: '1px solid var(--color-border)', background: feature.category ? 'var(--color-bg)' : 'transparent'}}
+                    style={{borderBottom: '1px solid var(--color-border)'}}
                   >
-                    <td className={`py-3 px-4 text-sm ${feature.category ? 'font-semibold' : 'pl-8'}`} style={{color: feature.category ? 'var(--color-text)' : 'var(--color-text-muted)'}}>
-                      {feature.category || feature.name}
+                    <td className="py-3 px-4 text-sm" style={{color: 'var(--color-text-muted)'}}>
+                      {feature.name}
                     </td>
                     <td className="py-3 px-4 text-center text-sm">
-                      {feature.category ? '' : renderFeatureValue(feature.starter)}
+                      {renderFeatureValue(feature.starter)}
                     </td>
                     <td className="py-3 px-4 text-center text-sm" style={{background: 'var(--color-bg)'}}>
-                      {feature.category ? '' : renderFeatureValue(feature.pro)}
+                      {renderFeatureValue(feature.pro)}
                     </td>
                     <td className="py-3 px-4 text-center text-sm">
-                      {feature.category ? '' : renderFeatureValue(feature.premium)}
+                      {renderFeatureValue(feature.premium)}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <div className="mt-16 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12" style={{color: 'var(--color-text)'}}>
+            Pricing FAQs
+          </h2>
+
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
+                What happens during the free trial?
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+                During the Pro or Premium trial, you have full access to all features in that plan. You can cancel at any time before the trial ends and you won't be charged.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
+                Is there a money-back guarantee?
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+                Yes. All paid plans are covered by a 60-day money-back guarantee. If the platform isn't right for you, cancel within 60 days for a full refund.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
+                Can I change or cancel my plan anytime?
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+                Yes. You can upgrade, downgrade, or cancel your plan at any time from your account settings. There are no contracts or penalties.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
+                Is this for individual or team use?
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+                Pro and Premium plans are for individual practitioners. For clinics, teams, or institutional access, please contact us for a custom plan.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
+                Is Supplement Safety Bible a medical device?
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+                No. Supplement Safety Bible provides evidence-based educational guidance and does not replace professional medical judgment or prescribing information.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
+                How often is the data updated?
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+                Our interaction database is continuously reviewed and updated as new evidence and safety information becomes available.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-12 p-6 rounded-lg" style={{background: 'var(--color-bg)', border: '1px solid var(--color-border)'}}>
+            <p className="text-sm text-center" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+              Supplement Safety Bible is designed to support informed decision-making. It does not provide medical diagnoses or treatment recommendations and should be used alongside professional judgment and official prescribing information.
+            </p>
           </div>
         </div>
       </main>
