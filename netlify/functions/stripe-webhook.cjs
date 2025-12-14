@@ -1,3 +1,13 @@
+/*
+ * ⚠️ DO NOT MODIFY WITHOUT FULL BILLING FLOW REVIEW.
+ * This file is part of the Stripe → Supabase entitlement chain.
+ *
+ * CRITICAL: This webhook updates profiles table when Stripe sends subscription events.
+ * Changes here affect customer access to premium features.
+ *
+ * Verified working: 2025-12-14
+ * See: /docs/BILLING_FLOW_LOCKED.md
+ */
 'use strict';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');

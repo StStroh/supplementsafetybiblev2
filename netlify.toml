@@ -1,3 +1,11 @@
+# ⚠️ BILLING SYSTEM VERIFIED: 2025-12-14
+# Subscription system is working in production.
+# Do not change Stripe, Supabase, or CSP configuration without:
+# 1. Full staging environment testing
+# 2. Real Stripe test payments end-to-end
+# 3. Verification that webhook delivery succeeds
+# See: /docs/BILLING_FLOW_LOCKED.md
+
 [build]
   command = "npm run build"
   publish = "dist"

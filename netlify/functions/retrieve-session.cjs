@@ -1,3 +1,13 @@
+/*
+ * ⚠️ DO NOT MODIFY WITHOUT FULL BILLING FLOW REVIEW.
+ * This file is part of the Stripe → Supabase entitlement chain.
+ *
+ * CRITICAL: This function provides immediate entitlement after successful checkout.
+ * Called by success page to grant instant access. Webhook confirms asynchronously.
+ *
+ * Verified working: 2025-12-14
+ * See: /docs/BILLING_FLOW_LOCKED.md
+ */
 const Stripe = require('stripe');
 const { supabaseAdmin } = require('./_lib/supabaseAdmin.cjs');
 const { upsertEntitlement } = require('./_lib/upsertEntitlement.cjs');

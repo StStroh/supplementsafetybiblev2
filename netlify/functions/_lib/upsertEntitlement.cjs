@@ -1,3 +1,13 @@
+/*
+ * ⚠️ DO NOT MODIFY WITHOUT FULL BILLING FLOW REVIEW.
+ * This file is part of the Stripe → Supabase entitlement chain.
+ *
+ * CRITICAL: This function writes subscription data to profiles table.
+ * Sets is_premium, role, plan, subscription_status - controls dashboard access.
+ *
+ * Verified working: 2025-12-14
+ * See: /docs/BILLING_FLOW_LOCKED.md
+ */
 const { getPlanInfo } = require('../../src/lib/stripe/plan-map.cjs');
 
 const upsertEntitlement = async ({ supabaseAdmin, email, stripe_customer_id, subscription_id, subscription_status, current_period_end, price_id }) => {

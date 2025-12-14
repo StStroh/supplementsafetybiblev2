@@ -94,10 +94,21 @@ async function openBilling(customerId: string) {
   if (json?.url) window.location.href = json.url;
 }
 
+/*
+ * ⚠️ DO NOT MODIFY ENTITLEMENT LOGIC WITHOUT FULL BILLING FLOW REVIEW.
+ * This dashboard gates access based on profiles.is_premium and profiles.plan.
+ *
+ * CRITICAL: entitlement check at line ~132 controls premium access.
+ * Changes here affect what paying customers can access.
+ *
+ * Verified working: 2025-12-14
+ * See: /docs/BILLING_FLOW_LOCKED.md
+ */
 export default function PremiumDashboard(){
   const navigate = useNavigate();
   const [entitlement, setEntitlement] = useState<{isPremium:boolean, email:string|null, subscription_status:string|null, current_period_end:string|null, stripe_customer_id?:string|null} | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadStartTime] = useState(Date.now());
 
   const chartData = useMemo(()=>{
     const days = 8; const out: any[] = [];
@@ -134,6 +145,21 @@ export default function PremiumDashboard(){
     })();
     return ()=>{ mounted = false; };
   }, [navigate]);
+
+  useEffect(()=>{
+    const timeoutId = setTimeout(()=>{
+      if (loading) {
+        console.error('[BILLING DIAGNOSTIC] Dashboard still loading after 10 seconds. Check:');
+        console.error('  - profiles.is_premium is set to true');
+        console.error('  - profiles.subscription_status is "active" or "trialing"');
+        console.error('  - profiles.stripe_customer_id exists');
+        console.error('  - /me endpoint returns isPremium: true');
+        console.error('  - Webhook received and processed payment');
+        console.error('  See: /docs/BILLING_FLOW_LOCKED.md');
+      }
+    }, 10000);
+    return ()=> clearTimeout(timeoutId);
+  }, [loading]);
 
   if (loading) {
     return (
