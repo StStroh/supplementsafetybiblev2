@@ -1,42 +1,30 @@
-import { supabase } from '../lib/supabase';
-
-export async function startTrialCheckout(
-  plan: 'pro' | 'premium',
-  btn?: HTMLButtonElement
-): Promise<void> {
+export async function startTrialCheckout(plan: 'pro' | 'premium', btn?: HTMLButtonElement) {
   try {
-    if (btn) btn.disabled = true;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      window.location.href = '/auth?redirect=/pricing';
-      return;
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = 'Redirecting...';
     }
 
-    const res = await fetch('/.netlify/functions/create-checkout-session', {
+    const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({ plan })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan }),
     });
 
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({ error: { message: 'Unknown error' } }));
-      throw new Error(errorData.error?.message || 'Failed to create checkout session');
+      throw new Error(await res.text());
     }
 
     const { url } = await res.json();
-    if (url) {
-      window.location.href = url;
-    } else {
-      throw new Error('No checkout URL returned');
-    }
+    if (!url) throw new Error('No checkout URL returned');
+    window.location.href = url;
   } catch (err) {
-    console.error('Checkout error:', err);
-    alert('Could not start the free trial. Please try again or contact support.');
+    console.error(err);
+    alert('Unable to start the free trial. Please check your internet or contact support.');
   } finally {
-    if (btn) btn.disabled = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = plan === 'pro' ? 'Try Pro free for 14 days' : 'Try Premium free for 14 days';
+    }
   }
 }
