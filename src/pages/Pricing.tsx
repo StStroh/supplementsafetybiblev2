@@ -151,8 +151,7 @@ export default function Pricing() {
 
             <button
               onClick={() => handleSelectPlan('starter')}
-              disabled={loading !== null}
-              className="btn-outline w-full disabled:opacity-50"
+              className="btn-outline w-full"
             >
               Start free
             </button>
