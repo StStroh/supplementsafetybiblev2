@@ -1,12 +1,13 @@
 const Stripe = require('stripe');
 const { PLAN_PRICE_MAP } = require('../../src/lib/stripe/plan-map.cjs');
+const { supabaseAdmin } = require('./_lib/supabaseClient.cjs');
 
 const ok = (data, origin) => ({
   statusCode: 200,
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': origin || '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'POST,OPTIONS',
   },
   body: JSON.stringify(data),
@@ -17,11 +18,30 @@ const fail = (code, msg, origin, extra = {}) => ({
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': origin || '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'POST,OPTIONS',
   },
   body: JSON.stringify({ error: { message: msg, ...extra } }),
 });
+
+async function getUserFromAuth(event) {
+  const authHeader = event.headers.authorization || event.headers.Authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+  const sb = supabaseAdmin();
+
+  try {
+    const { data: { user }, error } = await sb.auth.getUser(token);
+    if (error || !user) return null;
+    return user;
+  } catch (err) {
+    console.error('Auth error:', err);
+    return null;
+  }
+}
 
 exports.handler = async (event) => {
   const origin = event.headers.origin || event.headers.Origin || 'https://supplementsafetybible.com';
@@ -48,6 +68,11 @@ exports.handler = async (event) => {
       body = JSON.parse(event.body || '{}');
     } catch {
       return fail(400, 'Invalid JSON body', origin);
+    }
+
+    const user = await getUserFromAuth(event);
+    if (!user || !user.email) {
+      return fail(401, 'Unauthorized: Please sign in to start a trial', origin);
     }
 
     let tier = body.tier;
@@ -79,13 +104,43 @@ exports.handler = async (event) => {
       return fail(400, `Invalid tier: "${tier}". Valid options: pro_monthly, pro_annual, premium_monthly, premium_annual`, origin, { tier });
     }
 
-    console.log('✅ Creating checkout session for tier:', tier, 'priceId:', priceId);
+    console.log('✅ Creating checkout session for tier:', tier, 'priceId:', priceId, 'user:', user.email);
+
+    const sb = supabaseAdmin();
+    const { data: profile } = await sb
+      .from('profiles')
+      .select('id, stripe_customer_id, trial_used')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!profile) {
+      await sb.from('profiles').insert({
+        id: user.id,
+        email: user.email,
+        plan: 'starter',
+        trial_used: false
+      });
+    }
+
+    let customerId = profile?.stripe_customer_id;
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        metadata: { supabase_user_id: user.id }
+      });
+      customerId = customer.id;
+      await sb.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id);
+      console.log('✅ Created Stripe customer:', customerId);
+    }
+
+    const trialEligible = !profile?.trial_used;
+    console.log('✅ Trial eligibility:', trialEligible ? 'Eligible' : 'Not eligible (already used)');
 
     const EXPECTED = {
       pro_monthly: 1499,
-      pro_annual: 14900,
+      pro_annual: 19900,
       premium_monthly: 2499,
-      premium_annual: 24900,
+      premium_annual: 39900,
     };
 
     try {
@@ -103,30 +158,40 @@ exports.handler = async (event) => {
       return fail(500, 'Failed to verify price with Stripe', origin, { details: err.message });
     }
 
+    const plan = tier.split('_')[0];
+    const cadence = tier.split('_')[1];
+
     const metadata = {
-      plan: tier.split('_')[0],
-      cadence: tier.split('_')[1],
-      user_id: body.user?.id || '',
-      email: body.user?.email || '',
+      plan,
+      cadence,
+      user_id: user.id,
+      email: user.email,
+      started_trial: trialEligible ? 'true' : 'false'
     };
+
+    const subscriptionData = {
+      metadata
+    };
+
+    if (trialEligible) {
+      subscriptionData.trial_period_days = 14;
+    }
 
     try {
       const session = await stripe.checkout.sessions.create({
         mode: 'subscription',
+        customer: customerId,
         line_items: [{ price: priceId, quantity: 1 }],
         allow_promotion_codes: true,
         automatic_tax: { enabled: true },
         billing_address_collection: 'auto',
-        subscription_data: {
-          trial_period_days: 14,
-          metadata: metadata,
-        },
+        subscription_data: subscriptionData,
         success_url: `${origin}/premium/thanks?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/pricing?cancelled=1`,
         metadata,
       });
 
-      console.log('✅ Checkout session created:', session.id);
+      console.log('✅ Checkout session created:', session.id, 'with trial:', trialEligible);
       return ok({ sessionId: session.id, url: session.url }, origin);
     } catch (err) {
       console.error('❌ Stripe checkout error:', err.message);
