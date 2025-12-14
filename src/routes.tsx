@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import RootLayout from './layouts/RootLayout';
 import Search from './pages/Search';
 import InteractionDetails from './pages/InteractionDetails';
 import Admin from './pages/Admin';
@@ -39,122 +40,128 @@ function CheckoutCancel() {
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />
-  },
-  {
-    path: '/search',
-    element: <Search />
-  },
-  {
-    path: '/interaction/:id',
-    element: <InteractionDetails />
-  },
-  {
-    path: '/admin',
-    element: <Admin />
-  },
-  {
-    path: '/success',
-    element: <Success />
-  },
-  {
-    path: '/pricing',
-    element: <Pricing />
-  },
-  {
-    path: '/premium',
-    element: <Premium />
-  },
-  {
-    path: '/premium/thanks',
-    element: <PremiumThanks />
-  },
-  {
-    path: '/premium/dashboard',
-    element: <PremiumDashboard />
-  },
-  {
-    path: '/faq',
-    element: <FAQ />
-  },
-  {
-    path: '/privacy',
-    element: <Privacy />
-  },
-  {
-    path: '/terms',
-    element: <Terms />
-  },
-  {
-    path: '/check',
-    element: <Check />
-  },
-  {
-    path: '/account',
-    element: <Account />
-  },
-  {
-    path: '/auth',
-    element: <Auth />
-  },
-  {
-    path: '/auth/callback',
-    element: <AuthCallback />
-  },
-  {
-    path: '/free',
-    element: <Free />
-  },
-  {
-    path: '/free/thanks',
-    element: <FreeThanks />
-  },
-  {
-    path: '/landing',
-    element: <Landing />
-  },
-  {
-    path: '/metrics',
-    element: <Metrics />
-  },
-  {
-    path: '/refund-policy',
-    element: <RefundPolicy />
-  },
-  {
-    path: '/supplements',
-    element: <Supplements />
-  },
-  {
-    path: '/medications',
-    element: <Medications />
-  },
-  {
-    path: '/conditions',
-    element: <Conditions />
-  },
-  {
-    path: '/preview/checker',
-    element: <PreviewChecker />
-  },
-  {
-    path: '/preview/guides',
-    element: <PreviewGuides />
-  },
-  {
-    path: '/preview/feed',
-    element: <PreviewFeed />
-  },
-  {
-    path: '/pregnancy-lactation-safety',
-    element: <PregnancyLactation />
-  },
-  {
-    path: '/checkout/cancel',
-    element: <CheckoutCancel />
-  },
-  {
-    path: '*',
-    element: <NotFound />
+    element: <RootLayout />,
+    children: [
+      {
+        index: true,
+        element: <Home />
+      },
+      {
+        path: 'search',
+        element: <Search />
+      },
+      {
+        path: 'interaction/:id',
+        element: <InteractionDetails />
+      },
+      {
+        path: 'admin',
+        element: <Admin />
+      },
+      {
+        path: 'success',
+        element: <Success />
+      },
+      {
+        path: 'pricing',
+        element: <Pricing />
+      },
+      {
+        path: 'premium',
+        element: <Premium />
+      },
+      {
+        path: 'premium/thanks',
+        element: <PremiumThanks />
+      },
+      {
+        path: 'premium/dashboard',
+        element: <PremiumDashboard />
+      },
+      {
+        path: 'faq',
+        element: <FAQ />
+      },
+      {
+        path: 'privacy',
+        element: <Privacy />
+      },
+      {
+        path: 'terms',
+        element: <Terms />
+      },
+      {
+        path: 'check',
+        element: <Check />
+      },
+      {
+        path: 'account',
+        element: <Account />
+      },
+      {
+        path: 'auth',
+        element: <Auth />
+      },
+      {
+        path: 'auth/callback',
+        element: <AuthCallback />
+      },
+      {
+        path: 'free',
+        element: <Free />
+      },
+      {
+        path: 'free/thanks',
+        element: <FreeThanks />
+      },
+      {
+        path: 'landing',
+        element: <Landing />
+      },
+      {
+        path: 'metrics',
+        element: <Metrics />
+      },
+      {
+        path: 'refund-policy',
+        element: <RefundPolicy />
+      },
+      {
+        path: 'supplements',
+        element: <Supplements />
+      },
+      {
+        path: 'medications',
+        element: <Medications />
+      },
+      {
+        path: 'conditions',
+        element: <Conditions />
+      },
+      {
+        path: 'preview/checker',
+        element: <PreviewChecker />
+      },
+      {
+        path: 'preview/guides',
+        element: <PreviewGuides />
+      },
+      {
+        path: 'preview/feed',
+        element: <PreviewFeed />
+      },
+      {
+        path: 'pregnancy-lactation-safety',
+        element: <PregnancyLactation />
+      },
+      {
+        path: 'checkout/cancel',
+        element: <CheckoutCancel />
+      },
+      {
+        path: '*',
+        element: <NotFound />
+      }
+    ]
   }
 ]);

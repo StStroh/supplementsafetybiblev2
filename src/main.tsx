@@ -6,13 +6,16 @@ import './index.css';
 import './styles/theme.css';
 import { router } from './routes';
 import { AuthProvider } from './state/AuthProvider';
+import { AlertProvider } from './state/AlertProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
+      <AlertProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </AlertProvider>
     </HelmetProvider>
   </StrictMode>
 );

@@ -33,10 +33,13 @@ export function AlertProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useAlert() {
+export function useAlert(): AlertContextType {
   const context = useContext(AlertContext);
-  if (!context) {
-    throw new Error("useAlert must be used within AlertProvider");
-  }
-  return context;
+  if (context) return context;
+
+  return {
+    alert: null,
+    showAlert: () => {},
+    clearAlert: () => {},
+  };
 }
