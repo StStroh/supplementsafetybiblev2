@@ -3,9 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { SUPPORT_EMAIL } from '../lib/support';
 import { BRAND_NAME_FULL } from '../lib/brand';
-import '../styles/header.css';
-import '../styles/logo.css';
-import Logo from './Logo';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +30,7 @@ export default function Navbar() {
     });
 
     const handleScroll = () => {
-      const header = document.querySelector('[data-header]');
+      const header = document.querySelector('.site-header');
       if (header) {
         header.classList.toggle('is-scrolled', window.scrollY > 4);
       }
@@ -65,14 +62,18 @@ export default function Navbar() {
   }, [tryFreeOpen]);
 
   return (
-    <header className="navbar" role="banner" data-header>
-      <div className="navbar-inner">
-        <a href="/" className="brand" aria-label={`Go to ${BRAND_NAME_FULL} home`}>
-          <Logo variant="dark" className="logo--nav" />
-          <span className="title">{BRAND_NAME_FULL}</span>
+    <header className="site-header">
+      <div className="header-inner">
+        <a href="/" className="brand">
+          <img
+            src="/brand/logo.png"
+            alt={BRAND_NAME_FULL}
+            className="brand-logo"
+          />
+          <span className="brand-title">{BRAND_NAME_FULL}</span>
         </a>
 
-        <div style={{marginLeft: 'auto'}} />
+        <div className="header-spacer" />
 
         <div className="hidden md:flex items-center gap-8">
           <a href="/" className="font-medium transition-colors" style={{color: 'var(--brand-purple)'}}>
