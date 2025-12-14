@@ -81,3 +81,36 @@ a {
     transform: none;
   }
 }
+
+/* Z-index stacking order */
+header,
+.navbar,
+.site-header {
+  z-index: 30;
+}
+
+.cta-sticky,
+.sticky-cta {
+  z-index: 20;
+}
+
+.autocomplete {
+  z-index: 40;
+}
+
+.ac__list {
+  z-index: 9999 !important;
+}
+
+/* Form spacing above sticky CTA */
+.interaction-form {
+  padding-bottom: 72px;
+}
+
+/* Prevent hero overlays from stealing clicks */
+.hero-overlay,
+.top-strip,
+.header-shadow,
+section > .absolute {
+  pointer-events: none !important;
+}

@@ -24,6 +24,8 @@ export default function PrimaryInteractionChecker() {
   const [medSuggestions, setMedSuggestions] = useState<Suggestion[]>([]);
   const [showSuppDropdown, setShowSuppDropdown] = useState(false);
   const [showMedDropdown, setShowMedDropdown] = useState(false);
+  const [suppHighlightIndex, setSuppHighlightIndex] = useState(0);
+  const [medHighlightIndex, setMedHighlightIndex] = useState(0);
 
   const suppRef = useRef<HTMLInputElement>(null);
   const medRef = useRef<HTMLInputElement>(null);
@@ -76,11 +78,13 @@ export default function PrimaryInteractionChecker() {
 
   const handleSuppChange = (value: string) => {
     setSupplement(value);
+    setSuppHighlightIndex(0);
     debouncedSuppSearch(value);
   };
 
   const handleMedChange = (value: string) => {
     setMedication(value);
+    setMedHighlightIndex(0);
     debouncedMedSearch(value);
   };
 
@@ -88,10 +92,16 @@ export default function PrimaryInteractionChecker() {
     if (field === "supplement") {
       setSupplement(value);
       setShowSuppDropdown(false);
-      setTimeout(() => medRef.current?.focus(), 0);
+      setSuppHighlightIndex(0);
+      setTimeout(() => {
+        if (!medication) {
+          medRef.current?.focus();
+        }
+      }, 0);
     } else {
       setMedication(value);
       setShowMedDropdown(false);
+      setMedHighlightIndex(0);
     }
   };
 
@@ -99,11 +109,51 @@ export default function PrimaryInteractionChecker() {
     if (field === "supplement") {
       setSupplement(value);
       setShowSuppDropdown(false);
-      suppRef.current?.focus();
+      setTimeout(() => {
+        if (!medication) {
+          medRef.current?.focus();
+        } else {
+          suppRef.current?.focus();
+        }
+      }, 0);
     } else {
       setMedication(value);
       setShowMedDropdown(false);
       medRef.current?.focus();
+    }
+  };
+
+  const handleSuppKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuppDropdown || suppSuggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSuppHighlightIndex((prev) => (prev + 1) % suppSuggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSuppHighlightIndex((prev) => (prev - 1 + suppSuggestions.length) % suppSuggestions.length);
+    } else if (e.key === "Enter" && suppSuggestions[suppHighlightIndex]) {
+      e.preventDefault();
+      selectSuggestion(suppSuggestions[suppHighlightIndex].name, "supplement");
+    } else if (e.key === "Escape") {
+      setShowSuppDropdown(false);
+    }
+  };
+
+  const handleMedKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showMedDropdown || medSuggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setMedHighlightIndex((prev) => (prev + 1) % medSuggestions.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setMedHighlightIndex((prev) => (prev - 1 + medSuggestions.length) % medSuggestions.length);
+    } else if (e.key === "Enter" && medSuggestions[medHighlightIndex]) {
+      e.preventDefault();
+      selectSuggestion(medSuggestions[medHighlightIndex].name, "medication");
+    } else if (e.key === "Escape") {
+      setShowMedDropdown(false);
     }
   };
 
@@ -216,6 +266,7 @@ export default function PrimaryInteractionChecker() {
                     style={{pointerEvents: 'auto', position: 'relative', zIndex: 2}}
                     value={supplement}
                     onChange={(e) => handleSuppChange(e.target.value)}
+                    onKeyDown={handleSuppKeyDown}
                     onFocus={() => {
                       setActiveField("supplement");
                       if (supplement.length >= 2 && suppSuggestions.length > 0) {
@@ -226,6 +277,7 @@ export default function PrimaryInteractionChecker() {
                     aria-autocomplete="list"
                     aria-expanded={showSuppDropdown}
                     aria-controls="supp-listbox"
+                    aria-activedescendant={showSuppDropdown && suppSuggestions[suppHighlightIndex] ? `supp-opt-${suppHighlightIndex}` : undefined}
                     aria-label="Supplement"
                     autoComplete="off"
                   />
@@ -241,9 +293,11 @@ export default function PrimaryInteractionChecker() {
                       {suppSuggestions.map((suggestion, index) => (
                         <button
                           key={`${suggestion.name}-${index}`}
+                          id={`supp-opt-${index}`}
                           type="button"
-                          className="ac__item"
+                          className={`ac__item ${index === suppHighlightIndex ? 'is-active' : ''}`}
                           role="option"
+                          aria-selected={index === suppHighlightIndex}
                           tabIndex={-1}
                           onPointerDown={(e) => e.preventDefault()}
                           onMouseDown={(e) => e.preventDefault()}
@@ -251,6 +305,7 @@ export default function PrimaryInteractionChecker() {
                             e.stopPropagation();
                             selectSuggestion(suggestion.name, "supplement");
                           }}
+                          onMouseEnter={() => setSuppHighlightIndex(index)}
                           style={{pointerEvents: 'auto'}}
                         >
                           <span className="ac__labelText">{suggestion.name}</span>
@@ -304,6 +359,7 @@ export default function PrimaryInteractionChecker() {
                     style={{pointerEvents: 'auto', position: 'relative', zIndex: 2}}
                     value={medication}
                     onChange={(e) => handleMedChange(e.target.value)}
+                    onKeyDown={handleMedKeyDown}
                     onFocus={() => {
                       setActiveField("medication");
                       if (medication.length >= 2 && medSuggestions.length > 0) {
@@ -314,6 +370,7 @@ export default function PrimaryInteractionChecker() {
                     aria-autocomplete="list"
                     aria-expanded={showMedDropdown}
                     aria-controls="med-listbox"
+                    aria-activedescendant={showMedDropdown && medSuggestions[medHighlightIndex] ? `med-opt-${medHighlightIndex}` : undefined}
                     aria-label="Medication"
                     autoComplete="off"
                   />
@@ -329,9 +386,11 @@ export default function PrimaryInteractionChecker() {
                       {medSuggestions.map((suggestion, index) => (
                         <button
                           key={`${suggestion.name}-${index}`}
+                          id={`med-opt-${index}`}
                           type="button"
-                          className="ac__item"
+                          className={`ac__item ${index === medHighlightIndex ? 'is-active' : ''}`}
                           role="option"
+                          aria-selected={index === medHighlightIndex}
                           tabIndex={-1}
                           onPointerDown={(e) => e.preventDefault()}
                           onMouseDown={(e) => e.preventDefault()}
@@ -339,6 +398,7 @@ export default function PrimaryInteractionChecker() {
                             e.stopPropagation();
                             selectSuggestion(suggestion.name, "medication");
                           }}
+                          onMouseEnter={() => setMedHighlightIndex(index)}
                           style={{pointerEvents: 'auto'}}
                         >
                           <span className="ac__labelText">{suggestion.name}</span>
