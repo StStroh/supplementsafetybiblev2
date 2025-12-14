@@ -1,37 +1,50 @@
 import { supabase } from "../lib/supabase";
 
-export async function startTrialCheckout(
-  plan: "pro" | "premium",
-  cadence: "monthly" | "annual" = "monthly"
-) {
-  try {
-    const btn = document.activeElement as HTMLButtonElement | null;
-    if (btn) btn.disabled = true;
+type Plan = "pro" | "premium";
+type Interval = "monthly" | "annual";
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      throw new Error("Please sign in to start a trial");
+export async function startTrialCheckout(plan: Plan, interval: Interval) {
+  const bill = interval === "annual" ? "annual" : "monthly";
+
+  const btn = document.activeElement as HTMLButtonElement | null;
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.setAttribute("aria-busy", "true");
     }
+
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
 
     const res = await fetch("/.netlify/functions/create-checkout-session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${session.access_token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify({ plan, cadence }),
+      body: JSON.stringify({ plan, cadence: bill }),
     });
 
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`HTTP ${res.status}: ${text}`);
+      throw new Error(`Checkout failed: HTTP ${res.status} – ${text}`);
     }
 
     const { url } = await res.json();
-    if (!url) throw new Error("No checkout URL from server");
+    if (!url) throw new Error("Server did not return a checkout URL");
     window.location.href = url;
   } catch (err: any) {
     console.error("startTrialCheckout error:", err);
-    alert(err?.message || "Could not start the free trial. Please try again or contact support.");
+    const msg = String(err?.message || "");
+    if (msg.includes("401") || msg.toLowerCase().includes("unauth")) {
+      alert("Please sign in to start your free trial.");
+      return;
+    }
+    alert("Could not start the free trial. Please try again or contact support.");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.removeAttribute("aria-busy");
+    }
   }
 }

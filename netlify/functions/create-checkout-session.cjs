@@ -82,13 +82,13 @@ exports.handler = async (event) => {
       tier = `${body.plan}_${cadenceSuffix}`;
     }
 
-    if (!tier && body.interval) {
-      const intervalSuffix = body.interval === 'year' ? 'annual' : 'monthly';
-      tier = `premium_${intervalSuffix}`;
+    if (!tier && body.plan && body.interval) {
+      const intervalSuffix = body.interval === 'annual' || body.interval === 'year' ? 'annual' : 'monthly';
+      tier = `${body.plan}_${intervalSuffix}`;
     }
 
     if (!tier) {
-      return fail(400, 'Missing required parameter: tier, or plan+cadence, or interval', origin);
+      return fail(400, 'Missing required parameter: tier, or plan+cadence, or plan+interval', origin);
     }
 
     const tierMap = {

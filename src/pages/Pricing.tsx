@@ -309,7 +309,7 @@ export default function Pricing() {
             <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
               <button
                 onClick={() => startTrialCheckout('premium', interval)}
-                className="btn-outline w-full flex items-center justify-center"
+                className="btn-cta w-full flex items-center justify-center"
               >
                 Try Premium free for 14 days
               </button>
