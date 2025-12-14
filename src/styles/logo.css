@@ -24,21 +24,21 @@
 }
 
 .logo--nav {
-  height: 40px;
+  height: 48px;
   width: auto;
   max-width: none;
   overflow: visible;
 }
 
 .logo--hero {
-  height: 60px;
+  height: 72px;
   width: auto;
   max-width: none;
   overflow: visible;
 }
 
 .logo--footer {
-  height: 36px;
+  height: 40px;
   width: auto;
   max-width: none;
   overflow: visible;
@@ -46,14 +46,14 @@
 
 @media (max-width: 640px) {
   .logo--nav {
-    height: 36px;
+    height: 42px;
   }
 
   .logo--hero {
-    height: 52px;
+    height: 60px;
   }
 
   .logo--footer {
-    height: 32px;
+    height: 36px;
   }
 }
