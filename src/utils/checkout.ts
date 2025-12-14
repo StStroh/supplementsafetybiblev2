@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 type Plan = "pro" | "premium";
 type Interval = "monthly" | "annual";
 
-export async function startTrialCheckout(plan: Plan, interval: Interval) {
+export async function startTrialCheckout(plan: Plan, interval: Interval, showAlert?: (message: string, type?: "error" | "success") => void) {
   const bill = interval === "annual" ? "annual" : "monthly";
 
   const btn = document.activeElement as HTMLButtonElement | null;
@@ -37,10 +37,20 @@ export async function startTrialCheckout(plan: Plan, interval: Interval) {
     console.error("startTrialCheckout error:", err);
     const msg = String(err?.message || "");
     if (msg.includes("401") || msg.toLowerCase().includes("unauth")) {
-      alert("Please sign in to start your free trial.");
+      const errorMsg = "Please sign in to start your free trial.";
+      if (showAlert) {
+        showAlert(errorMsg, "error");
+      } else {
+        alert(errorMsg);
+      }
       return;
     }
-    alert("Could not start the free trial. Please try again or contact support.");
+    const errorMsg = "Could not start the free trial. Please try again or contact support.";
+    if (showAlert) {
+      showAlert(errorMsg, "error");
+    } else {
+      alert(errorMsg);
+    }
   } finally {
     if (btn) {
       btn.disabled = false;
