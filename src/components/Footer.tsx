@@ -1,4 +1,5 @@
 import { SUPPORT_EMAIL } from '../lib/support';
+import { Linkedin, Instagram, Music, Twitter } from 'lucide-react';
 import '../styles/logo.css';
 import Logo from './Logo';
 
@@ -100,6 +101,48 @@ export default function Footer() {
           <p className="text-[#4A4A4A] mt-3">
             Support: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#5E3B76] hover:underline">{SUPPORT_EMAIL}</a>
           </p>
+
+          <div className="mt-8 pt-6 border-t border-[#DCE3ED]">
+            <p className="text-[#000000] font-semibold mb-4">Follow us</p>
+            <div className="flex items-center justify-center gap-6">
+              <a
+                href="https://www.tiktok.com/@supplementsafetybible"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors"
+              >
+                <Music size={24} />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/supplement-safety-bible"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors"
+              >
+                <Linkedin size={24} />
+              </a>
+              <a
+                href="https://www.instagram.com/supplementsafetybible"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors"
+              >
+                <Instagram size={24} />
+              </a>
+              <a
+                href="https://x.com/suppsafetybible"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors"
+              >
+                <Twitter size={24} />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
