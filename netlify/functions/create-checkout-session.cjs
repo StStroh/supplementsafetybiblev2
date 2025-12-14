@@ -117,6 +117,10 @@ exports.handler = async (event) => {
         allow_promotion_codes: true,
         automatic_tax: { enabled: true },
         billing_address_collection: 'auto',
+        subscription_data: {
+          trial_period_days: 14,
+          metadata: metadata,
+        },
         success_url: `${origin}/premium/thanks?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/pricing?cancelled=1`,
         metadata,
