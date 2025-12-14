@@ -255,28 +255,28 @@ const Pricing: React.FC = () => {
             Upgrade for unlimited checks and advanced features.
           </p>
 
-          <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 text-xs font-medium text-slate-600">
+          <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 text-sm font-medium text-slate-600">
             <button
               type="button"
               onClick={() => setBillingPeriod("monthly")}
-              className={`px-3 py-1 rounded-full ${
+              className={`px-4 py-2 rounded-full transition ${
                 billingPeriod === "monthly"
                   ? "bg-slate-900 text-white"
-                  : "text-slate-600"
+                  : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              Monthly
+              Pay Monthly
             </button>
             <button
               type="button"
               onClick={() => setBillingPeriod("annual")}
-              className={`px-3 py-1 rounded-full ${
+              className={`px-4 py-2 rounded-full transition ${
                 billingPeriod === "annual"
                   ? "bg-slate-900 text-white"
-                  : "text-slate-600"
+                  : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              Annual (save more)
+              Pay Annually (Save More)
             </button>
           </div>
         </div>
@@ -347,9 +347,9 @@ const Pricing: React.FC = () => {
                         Processing…
                       </span>
                     ) : billingPeriod === "monthly" ? (
-                      `Start ${tier.name} – Monthly`
+                      `Start ${tier.name} Monthly Plan`
                     ) : (
-                      `Start ${tier.name} – Annual`
+                      `Start ${tier.name} Annual Plan`
                     )}
                   </button>
                 </div>

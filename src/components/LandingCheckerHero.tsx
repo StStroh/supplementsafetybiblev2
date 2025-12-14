@@ -195,7 +195,7 @@ export default function LandingCheckerHero() {
             style={{ color: 'var(--color-text-muted)' }}
             data-testid="landing-hero-sub"
           >
-            Instant, evidence-based supplement–medication interaction guidance. A clinical-grade interaction engine for safer decisions.
+            Check supplement–drug interactions instantly with our clinical-grade interaction engine. Evidence-based guidance trusted by healthcare professionals and informed consumers.
           </p>
 
           {/* Primary action: Large search/selector input */}
@@ -204,7 +204,7 @@ export default function LandingCheckerHero() {
               <div className="grid gap-4 sm:grid-cols-2 mb-4">
                 <TypeaheadInput
                   label="Supplement"
-                  placeholder="Type a drug..."
+                  placeholder="e.g., Vitamin D, Magnesium..."
                   type="supplement"
                   onChoose={(name) => setSupplementName(name)}
                   className="w-full border-2 rounded-lg p-3 text-base focus:ring-2 focus:border-transparent transition"
@@ -214,13 +214,94 @@ export default function LandingCheckerHero() {
 
                 <TypeaheadInput
                   label="Medication"
-                  placeholder="...and a supplement"
+                  placeholder="e.g., Warfarin, Metformin..."
                   type="medication"
                   onChoose={(name) => setMedicationName(name)}
                   className="w-full border-2 rounded-lg p-3 text-base focus:ring-2 focus:border-transparent transition"
                   style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
                   data-testid="medication-select"
                 />
+              </div>
+
+              {/* Quick-select chips */}
+              <div className="mb-4">
+                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--color-text-muted)' }}>
+                  Quick Select:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSupplementName('Vitamin D')}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium border-2 transition hover:scale-105"
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-text)',
+                      background: supplementName === 'Vitamin D' ? 'var(--color-trial)' : 'white'
+                    }}
+                  >
+                    Vitamin D
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSupplementName('Magnesium')}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium border-2 transition hover:scale-105"
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-text)',
+                      background: supplementName === 'Magnesium' ? 'var(--color-trial)' : 'white'
+                    }}
+                  >
+                    Magnesium
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSupplementName('Omega-3')}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium border-2 transition hover:scale-105"
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-text)',
+                      background: supplementName === 'Omega-3' ? 'var(--color-trial)' : 'white'
+                    }}
+                  >
+                    Omega-3
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSupplementName('Ginkgo Biloba')}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium border-2 transition hover:scale-105"
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-text)',
+                      background: supplementName === 'Ginkgo Biloba' ? 'var(--color-trial)' : 'white'
+                    }}
+                  >
+                    Ginkgo Biloba
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSupplementName('St. John\'s Wort')}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium border-2 transition hover:scale-105"
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-text)',
+                      background: supplementName === 'St. John\'s Wort' ? 'var(--color-trial)' : 'white'
+                    }}
+                  >
+                    St. John's Wort
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSupplementName('Turmeric')}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium border-2 transition hover:scale-105"
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-text)',
+                      background: supplementName === 'Turmeric' ? 'var(--color-trial)' : 'white'
+                    }}
+                  >
+                    Turmeric
+                  </button>
+                </div>
               </div>
 
               <button
