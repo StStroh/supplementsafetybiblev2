@@ -1,17 +1,111 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, Award, Database, CheckCircle2 } from "lucide-react";
+import { useDebouncedCallback } from "../utils/debounce";
+import "../styles/autocomplete.css";
+import "../styles/interaction.css";
+
+type Suggestion = {
+  name: string;
+  type: "supplement" | "medication";
+};
+
+const SUPPLEMENT_PRESETS = ["Magnesium", "Omega-3", "Vitamin D", "St. John's Wort"];
+const MEDICATION_PRESETS = ["Metformin", "Atorvastatin", "Warfarin", "Sertraline"];
 
 export default function PrimaryInteractionChecker() {
   const navigate = useNavigate();
   const [supplement, setSupplement] = useState("");
   const [medication, setMedication] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [activeField, setActiveField] = useState<"supplement" | "medication" | null>(null);
+
+  const [suppSuggestions, setSuppSuggestions] = useState<Suggestion[]>([]);
+  const [medSuggestions, setMedSuggestions] = useState<Suggestion[]>([]);
+  const [showSuppDropdown, setShowSuppDropdown] = useState(false);
+  const [showMedDropdown, setShowMedDropdown] = useState(false);
+
+  const suppRef = useRef<HTMLInputElement>(null);
+  const medRef = useRef<HTMLInputElement>(null);
+  const suppDropdownRef = useRef<HTMLDivElement>(null);
+  const medDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 20);
     return () => clearTimeout(t);
   }, []);
+
+  const fetchSuggestions = async (query: string, type: "supplement" | "medication") => {
+    if (query.length < 2) {
+      if (type === "supplement") setSuppSuggestions([]);
+      else setMedSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/.netlify/functions/autocomplete?q=${encodeURIComponent(query)}`);
+      if (!response.ok) return;
+      const data = await response.json();
+      const filtered = (data.suggestions || []).filter((s: Suggestion) => s.type === type);
+
+      if (type === "supplement") {
+        setSuppSuggestions(filtered);
+        setShowSuppDropdown(filtered.length > 0);
+      } else {
+        setMedSuggestions(filtered);
+        setShowMedDropdown(filtered.length > 0);
+      }
+    } catch (err) {
+      console.error("Autocomplete failed:", err);
+    }
+  };
+
+  const debouncedSuppSearch = useDebouncedCallback((query: string) => {
+    fetchSuggestions(query, "supplement");
+  }, 250);
+
+  const debouncedMedSearch = useDebouncedCallback((query: string) => {
+    fetchSuggestions(query, "medication");
+  }, 250);
+
+  const focusField = (field: "supplement" | "medication") => {
+    const ref = field === "supplement" ? suppRef : medRef;
+    ref.current?.focus();
+    setActiveField(field);
+  };
+
+  const handleSuppChange = (value: string) => {
+    setSupplement(value);
+    debouncedSuppSearch(value);
+  };
+
+  const handleMedChange = (value: string) => {
+    setMedication(value);
+    debouncedMedSearch(value);
+  };
+
+  const selectSuggestion = (value: string, field: "supplement" | "medication") => {
+    if (field === "supplement") {
+      setSupplement(value);
+      setShowSuppDropdown(false);
+      setTimeout(() => medRef.current?.focus(), 0);
+    } else {
+      setMedication(value);
+      setShowMedDropdown(false);
+    }
+  };
+
+  const handleChipClick = (value: string, field: "supplement" | "medication") => {
+    if (field === "supplement") {
+      setSupplement(value);
+      setShowSuppDropdown(false);
+      suppRef.current?.focus();
+    } else {
+      setMedication(value);
+      setShowMedDropdown(false);
+      medRef.current?.focus();
+    }
+  };
 
   function handleSubmit(e?: React.FormEvent) {
     if (e) e.preventDefault();
@@ -20,6 +114,21 @@ export default function PrimaryInteractionChecker() {
     if (medication.trim()) params.set("medication", medication.trim());
     navigate(`/search?${params.toString()}`);
   }
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (suppDropdownRef.current && !suppDropdownRef.current.contains(e.target as Node) &&
+          suppRef.current && !suppRef.current.contains(e.target as Node)) {
+        setShowSuppDropdown(false);
+      }
+      if (medDropdownRef.current && !medDropdownRef.current.contains(e.target as Node) &&
+          medRef.current && !medRef.current.contains(e.target as Node)) {
+        setShowMedDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#F8FBFF] via-white to-white py-16 lg:py-24">
@@ -84,37 +193,184 @@ export default function PrimaryInteractionChecker() {
 
           <div
             className="max-w-5xl mx-auto bg-white rounded-2xl p-6 md:p-8 lg:p-10 border-2 border-[#0066CC]/20"
-            style={{boxShadow: '0 12px 40px rgba(0,102,204,0.12)'}}
+            style={{boxShadow: '0 12px 40px rgba(0,102,204,0.12)', pointerEvents: 'auto'}}
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-base font-bold text-[#1A1A1A] mb-2">
+                <div className="autocomplete relative" style={{position: 'relative', zIndex: 2}}>
+                  <button
+                    type="button"
+                    className="field-label block text-base font-bold text-[#1A1A1A] mb-2 text-left cursor-pointer hover:text-[#0066CC] transition-colors"
+                    onClick={() => focusField("supplement")}
+                    aria-controls="suppInput"
+                  >
                     Supplement
-                  </label>
+                  </button>
                   <input
+                    id="suppInput"
+                    ref={suppRef}
                     type="text"
                     inputMode="search"
                     placeholder="e.g., St. John's Wort"
-                    className="w-full rounded-xl border-2 border-[#DCE3ED] px-5 py-4 text-base outline-none focus:border-[#0066CC] focus:ring-4 focus:ring-[#0066CC]/15 transition-all bg-[#F8FBFF]"
+                    className="interaction-input w-full rounded-xl border-2 border-[#DCE3ED] px-5 py-4 text-base outline-none focus:border-[#0066CC] focus:ring-4 focus:ring-[#0066CC]/15 transition-all bg-[#F8FBFF]"
+                    style={{pointerEvents: 'auto', position: 'relative', zIndex: 2}}
                     value={supplement}
-                    onChange={(e) => setSupplement(e.target.value)}
+                    onChange={(e) => handleSuppChange(e.target.value)}
+                    onFocus={() => {
+                      setActiveField("supplement");
+                      if (supplement.length >= 2 && suppSuggestions.length > 0) {
+                        setShowSuppDropdown(true);
+                      }
+                    }}
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded={showSuppDropdown}
+                    aria-controls="supp-listbox"
                     aria-label="Supplement"
+                    autoComplete="off"
                   />
+
+                  {showSuppDropdown && suppSuggestions.length > 0 && (
+                    <div
+                      ref={suppDropdownRef}
+                      id="supp-listbox"
+                      role="listbox"
+                      className="ac__list"
+                      style={{pointerEvents: 'auto', position: 'absolute', zIndex: 9999}}
+                    >
+                      {suppSuggestions.map((suggestion, index) => (
+                        <button
+                          key={`${suggestion.name}-${index}`}
+                          type="button"
+                          className="ac__item"
+                          role="option"
+                          tabIndex={-1}
+                          onPointerDown={(e) => e.preventDefault()}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selectSuggestion(suggestion.name, "supplement");
+                          }}
+                          style={{pointerEvents: 'auto'}}
+                        >
+                          <span className="ac__labelText">{suggestion.name}</span>
+                          <span className="ac__meta text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                            {suggestion.type}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {SUPPLEMENT_PRESETS.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        className="chip px-3 py-1.5 text-sm bg-[#E3F2FD] text-[#0066CC] rounded-full hover:bg-[#0066CC] hover:text-white transition-all font-medium border border-[#0066CC]/20"
+                        style={{pointerEvents: 'auto', position: 'relative', zIndex: 2}}
+                        onClick={() => handleChipClick(preset, "supplement")}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleChipClick(preset, "supplement");
+                          }
+                        }}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-base font-bold text-[#1A1A1A] mb-2">
+
+                <div className="autocomplete relative" style={{position: 'relative', zIndex: 2}}>
+                  <button
+                    type="button"
+                    className="field-label block text-base font-bold text-[#1A1A1A] mb-2 text-left cursor-pointer hover:text-[#0066CC] transition-colors"
+                    onClick={() => focusField("medication")}
+                    aria-controls="medInput"
+                  >
                     Medication
-                  </label>
+                  </button>
                   <input
+                    id="medInput"
+                    ref={medRef}
                     type="text"
                     inputMode="search"
                     placeholder="e.g., Sertraline (Zoloft)"
-                    className="w-full rounded-xl border-2 border-[#DCE3ED] px-5 py-4 text-base outline-none focus:border-[#0066CC] focus:ring-4 focus:ring-[#0066CC]/15 transition-all bg-[#F8FBFF]"
+                    className="interaction-input w-full rounded-xl border-2 border-[#DCE3ED] px-5 py-4 text-base outline-none focus:border-[#0066CC] focus:ring-4 focus:ring-[#0066CC]/15 transition-all bg-[#F8FBFF]"
+                    style={{pointerEvents: 'auto', position: 'relative', zIndex: 2}}
                     value={medication}
-                    onChange={(e) => setMedication(e.target.value)}
+                    onChange={(e) => handleMedChange(e.target.value)}
+                    onFocus={() => {
+                      setActiveField("medication");
+                      if (medication.length >= 2 && medSuggestions.length > 0) {
+                        setShowMedDropdown(true);
+                      }
+                    }}
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded={showMedDropdown}
+                    aria-controls="med-listbox"
                     aria-label="Medication"
+                    autoComplete="off"
                   />
+
+                  {showMedDropdown && medSuggestions.length > 0 && (
+                    <div
+                      ref={medDropdownRef}
+                      id="med-listbox"
+                      role="listbox"
+                      className="ac__list"
+                      style={{pointerEvents: 'auto', position: 'absolute', zIndex: 9999}}
+                    >
+                      {medSuggestions.map((suggestion, index) => (
+                        <button
+                          key={`${suggestion.name}-${index}`}
+                          type="button"
+                          className="ac__item"
+                          role="option"
+                          tabIndex={-1}
+                          onPointerDown={(e) => e.preventDefault()}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selectSuggestion(suggestion.name, "medication");
+                          }}
+                          style={{pointerEvents: 'auto'}}
+                        >
+                          <span className="ac__labelText">{suggestion.name}</span>
+                          <span className="ac__meta text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">
+                            {suggestion.type}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {MEDICATION_PRESETS.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        className="chip px-3 py-1.5 text-sm bg-[#E8F5E9] text-[#2E7D32] rounded-full hover:bg-[#2E7D32] hover:text-white transition-all font-medium border border-[#2E7D32]/20"
+                        style={{pointerEvents: 'auto', position: 'relative', zIndex: 2}}
+                        onClick={() => handleChipClick(preset, "medication")}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleChipClick(preset, "medication");
+                          }
+                        }}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

@@ -1,0 +1,83 @@
+/* Interaction Checker Styles */
+
+.interaction-hero-overlay {
+  pointer-events: none;
+}
+
+.interaction-input,
+.chip,
+.autocomplete,
+.ac__list,
+.ac__item,
+.field-label {
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.chip {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.field-label {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.field-label:focus-visible {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ensure form containers don't block clicks */
+form,
+.form-container {
+  pointer-events: auto;
+}
+
+/* Prevent background overlays from stealing clicks */
+section > .absolute {
+  pointer-events: none;
+}
+
+/* Ensure interactive elements are always clickable */
+button,
+input,
+select,
+textarea,
+a {
+  pointer-events: auto;
+}
+
+/* Mobile touch optimization */
+@media (max-width: 768px) {
+  .chip {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
+  }
+
+  .field-label {
+    min-height: 44px;
+  }
+
+  .interaction-input {
+    font-size: 16px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .chip:active {
+    transform: none;
+  }
+}
