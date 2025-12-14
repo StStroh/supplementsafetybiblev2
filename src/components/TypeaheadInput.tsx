@@ -27,7 +27,9 @@ export default function TypeaheadInput({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const committingRef = useRef(false);
 
   async function suggest(query: string) {
     const u = `/.netlify/functions/suggest?q=${encodeURIComponent(query)}&type=${type}&limit=12`;
@@ -67,17 +69,26 @@ export default function TypeaheadInput({
     setQ("");
     setOpen(false);
     onChoose(value);
+    committingRef.current = false;
+    requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   return (
     <div className="autocomplete relative" ref={boxRef}>
       <label className="ac__label block text-sm font-semibold mb-2" style={{ color: 'var(--color-text)' }}>{label}</label>
       <input
+        ref={inputRef}
         value={q}
         onChange={(e) => setQ(e.target.value)}
         onFocus={() => setOpen(true)}
-        onBlur={() => {
-          setTimeout(() => setOpen(false), 250);
+        onBlur={(e) => {
+          if (committingRef.current) {
+            e.preventDefault();
+            committingRef.current = false;
+            requestAnimationFrame(() => inputRef.current?.focus());
+            return;
+          }
+          setOpen(false);
         }}
         inputMode="search"
         autoCorrect="off"
@@ -106,8 +117,16 @@ export default function TypeaheadInput({
                 type="button"
                 className="ac__item block w-full px-3 py-2 text-left transition min-h-[44px]"
                 style={{ color: 'var(--color-text)' }}
-                onPointerDown={(e) => e.preventDefault()} // Prevent blur on iOS
-                onMouseDown={(e) => e.preventDefault()} // Prevent blur on desktop
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  committingRef.current = true;
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  committingRef.current = true;
+                }}
                 onClick={() => handleSelect(q)}
                 role="option"
                 tabIndex={-1}
@@ -123,11 +142,15 @@ export default function TypeaheadInput({
                 type="button"
                 className="ac__item block w-full px-3 py-2 text-left transition text-sm min-h-[44px] hover:bg-gray-50"
                 style={{ color: 'var(--color-text)', touchAction: 'manipulation' }}
-                onPointerDown={(e) => e.preventDefault()}
-                onMouseDown={(e) => e.preventDefault()}
-                onTouchEnd={(e) => {
+                onPointerDown={(e) => {
                   e.preventDefault();
-                  handleSelect(it.name);
+                  e.stopPropagation();
+                  committingRef.current = true;
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  committingRef.current = true;
                 }}
                 onClick={() => handleSelect(it.name)}
                 role="option"

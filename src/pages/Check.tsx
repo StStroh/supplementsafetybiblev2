@@ -254,8 +254,8 @@ export default function Check() {
           <div className="space-y-6">
             <div>
               <TypeaheadInput
-                label="Supplements"
-                placeholder="Type a supplement..."
+                label="Supplement"
+                placeholder="Type a supplement…"
                 type="supplement"
                 onChoose={(name) => setSelSup(name)}
                 className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
@@ -296,8 +296,8 @@ export default function Check() {
 
             <div>
               <TypeaheadInput
-                label="Medications"
-                placeholder="Type a medication..."
+                label="Medication"
+                placeholder="Type a drug…"
                 type="medication"
                 onChoose={(name) => setSelMed(name)}
                 className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
@@ -505,7 +505,7 @@ export default function Check() {
       <FooterClinical />
 
       {showStickyFooter && !stickyDismissed && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-slide-up">
+        <div className="fixed bottom-0 left-0 right-0 z-[50] p-4 animate-slide-up">
           <div className="max-w-4xl mx-auto">
             <Banner
               variant="info"

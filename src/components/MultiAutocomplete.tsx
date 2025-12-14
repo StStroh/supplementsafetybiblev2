@@ -35,6 +35,7 @@ export default function MultiAutocomplete({
 }: MultiAutocompleteProps) {
   const listboxId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const committingRef = useRef(false);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
@@ -60,6 +61,7 @@ export default function MultiAutocomplete({
     setQuery("");
     setIsOpen(false);
     setHighlightIndex(-1);
+    committingRef.current = false;
     requestAnimationFrame(() => inputRef.current?.focus());
   }
 
@@ -134,7 +136,15 @@ export default function MultiAutocomplete({
                 setIsOpen(false);
               }
             }}
-            onBlur={() => { setTimeout(() => setIsOpen(false), 0); }}
+            onBlur={(e) => {
+              if (committingRef.current) {
+                e.preventDefault();
+                committingRef.current = false;
+                requestAnimationFrame(() => inputRef.current?.focus());
+                return;
+              }
+              setIsOpen(false);
+            }}
             role="combobox"
             aria-autocomplete="list"
             aria-expanded={isOpen}
@@ -156,8 +166,16 @@ export default function MultiAutocomplete({
                 aria-selected={i === highlightIndex}
                 tabIndex={-1}
                 className={`multi-ac__item ${i === highlightIndex ? "is-active" : ""}`}
-                onPointerDown={(e) => e.preventDefault()}
-                onMouseDown={(e) => e.preventDefault()}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  committingRef.current = true;
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  committingRef.current = true;
+                }}
                 onClick={() => commit(o)}
               >
                 <div className="multi-ac__itemMain">
