@@ -44,7 +44,7 @@ const tiers: PricingTier[] = [
     name: "Pro",
     description: "For power users and health professionals.",
     monthlyPriceLabel: "$14.99 / mo",
-    annualPriceLabel: "$149 / yr",
+    annualPriceLabel: "$199 / yr",
     stripeMonthlyPriceId: PRICE_PRO_MONTHLY,
     stripeAnnualPriceId: PRICE_PRO_ANNUAL,
     features: [
@@ -61,7 +61,7 @@ const tiers: PricingTier[] = [
     name: "Premium",
     description: "For clinics and small practices.",
     monthlyPriceLabel: "$24.99 / mo",
-    annualPriceLabel: "$249 / yr",
+    annualPriceLabel: "$399 / yr",
     stripeMonthlyPriceId: PRICE_PREMIUM_MONTHLY,
     stripeAnnualPriceId: PRICE_PREMIUM_ANNUAL,
     features: [

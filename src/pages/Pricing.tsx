@@ -22,7 +22,7 @@ const features: FeatureRow[] = [
   { name: 'Full interaction explanations', starter: false, pro: true, premium: true },
   { name: 'Evidence-based rationale', starter: false, pro: true, premium: true },
   { name: 'Clinical context & considerations', starter: false, pro: true, premium: true },
-  { name: 'PDF reports', starter: false, pro: true, premium: true },
+  { name: 'PDF reports (download)', starter: false, pro: true, premium: true },
   { name: 'Monitoring & follow-up guidance', starter: false, pro: false, premium: true },
   { name: 'Professional-grade language', starter: false, pro: false, premium: true },
   { name: 'Unlimited interaction checks', starter: false, pro: true, premium: true },
@@ -87,9 +87,9 @@ export default function Pricing() {
     }
   }
 
-  const proPrice = interval === 'annual' ? 199 : 19;
-  const premiumPrice = interval === 'annual' ? 399 : 39;
-  const annualSavings = Math.round(((19 * 12 - 199) / (19 * 12)) * 100);
+  const proPrice = interval === 'annual' ? 199 : 14.99;
+  const premiumPrice = interval === 'annual' ? 399 : 24.99;
+  const annualSavings = Math.round(((14.99 * 12 - 199) / (14.99 * 12)) * 100);
 
   return (
     <div className="min-h-screen" style={{background: 'var(--color-bg)'}}>
@@ -456,7 +456,7 @@ export default function Pricing() {
                 Is there a money-back guarantee?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Yes. All paid plans are covered by a 60-day money-back guarantee. If the platform isn't right for you, cancel within 60 days for a full refund.
+                Yes. All paid plans are covered by a 60-day money-back guarantee. Cancel within 60 days for a full refund.
               </p>
             </div>
 
@@ -465,7 +465,7 @@ export default function Pricing() {
                 Can I change or cancel my plan anytime?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Yes. You can upgrade, downgrade, or cancel your plan at any time from your account settings. There are no contracts or penalties.
+                Yes. You can upgrade, downgrade, or cancel from your account settings. No contracts or penalties.
               </p>
             </div>
 
@@ -474,7 +474,7 @@ export default function Pricing() {
                 Is this for individual or team use?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Pro and Premium plans are for individual practitioners. For clinics, teams, or institutional access, please contact us for a custom plan.
+                Pro and Premium are for individual practitioners. For teams or institutions, contact us.
               </p>
             </div>
 
@@ -483,7 +483,7 @@ export default function Pricing() {
                 Is Supplement Safety Bible a medical device?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                No. Supplement Safety Bible provides evidence-based educational guidance and does not replace professional medical judgment or prescribing information.
+                No. It provides evidence-based educational guidance and does not replace professional medical judgment or prescribing information.
               </p>
             </div>
 
@@ -492,14 +492,14 @@ export default function Pricing() {
                 How often is the data updated?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Our interaction database is continuously reviewed and updated as new evidence and safety information becomes available.
+                Continuously reviewed and updated as new evidence becomes available.
               </p>
             </div>
           </div>
 
           <div className="mt-12 p-6 rounded-lg" style={{background: 'var(--color-bg)', border: '1px solid var(--color-border)'}}>
             <p className="text-sm text-center" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-              Supplement Safety Bible is designed to support informed decision-making. It does not provide medical diagnoses or treatment recommendations and should be used alongside professional judgment and official prescribing information.
+              Supplement Safety Bible supports informed decision-making. It does not provide medical diagnoses or treatment recommendations and should be used alongside professional judgment and official prescribing information.
             </p>
           </div>
         </div>
