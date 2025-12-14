@@ -232,7 +232,7 @@ export default function Pricing() {
 
             <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
               <button
-                onClick={() => startTrialCheckout('pro')}
+                onClick={() => startTrialCheckout('pro', interval)}
                 className="btn-cta w-full flex items-center justify-center"
               >
                 Try Pro free for 14 days
@@ -308,7 +308,7 @@ export default function Pricing() {
 
             <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
               <button
-                onClick={() => startTrialCheckout('premium')}
+                onClick={() => startTrialCheckout('premium', interval)}
                 className="btn-outline w-full flex items-center justify-center"
               >
                 Try Premium free for 14 days
