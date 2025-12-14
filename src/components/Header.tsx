@@ -27,10 +27,10 @@ export default function Header() {
   return (
     <nav className="border-b border-gray-100 sticky top-0 z-30 bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between" style={{height: 'clamp(64px, 8vw, 80px)'}}>
-          <a href="/" className="flex items-center" style={{gap: 'clamp(0.5rem, 2vw, 0.75rem)'}}>
+        <div className="flex items-center justify-between" style={{height: 'clamp(72px, 9vw, 88px)'}}>
+          <a href="/" className="flex items-center" style={{gap: 'clamp(0.75rem, 2.5vw, 1rem)'}}>
             <Logo variant="dark" className="logo--nav" />
-            <span className="font-bold text-[#8B7BA8] leading-tight tracking-tight" style={{fontSize: 'clamp(18px, 4vw, 24px)'}}>
+            <span className="font-bold text-[#8B7BA8] leading-tight tracking-tight" style={{fontSize: 'clamp(20px, 4.5vw, 26px)'}}>
               {BRAND_NAME_FULL}
             </span>
           </a>
