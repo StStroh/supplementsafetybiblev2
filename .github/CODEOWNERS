@@ -9,6 +9,7 @@
 netlify/functions/stripe-webhook.cjs @OWNER
 netlify/functions/retrieve-session.cjs @OWNER
 netlify/functions/_lib/upsertEntitlement.cjs @OWNER
+netlify/functions/_lib/plan-map.cjs @OWNER
 netlify/functions/create-checkout-session.cjs @OWNER
 netlify/functions/me.cjs @OWNER
 src/lib/stripe/plan-map.cjs @OWNER

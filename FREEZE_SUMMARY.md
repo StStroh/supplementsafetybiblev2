@@ -12,7 +12,17 @@ Lock down the working Stripe → Supabase billing flow to prevent regressions. A
 
 ---
 
-## Files Modified (Comments Only)
+## Files Modified
+
+### Module Path Fix (Required for Build)
+
+**File:** `netlify/functions/_lib/upsertEntitlement.cjs`
+**Change:** Updated require path from `../../src/lib/stripe/plan-map.cjs` to `./plan-map.cjs`
+**Reason:** Netlify Functions bundler cannot resolve paths outside functions directory
+**File Added:** `netlify/functions/_lib/plan-map.cjs` (copy of src version)
+**Functional change:** NONE - same module, just colocated for bundler
+
+### Comments Only Changes
 
 ### 1. `netlify/functions/stripe-webhook.cjs`
 **Change:** Added warning comment block at top
@@ -30,7 +40,7 @@ Lock down the working Stripe → Supabase billing flow to prevent regressions. A
 **Functional change:** NONE
 
 ### 3. `netlify/functions/_lib/upsertEntitlement.cjs`
-**Change:** Added warning comment block at top
+**Change:** Added warning comment block at top + updated require path (see Module Path Fix above)
 **Functional change:** NONE
 
 ### 4. `src/pages/PremiumDashboard.tsx`

@@ -8,7 +8,7 @@
  * Verified working: 2025-12-14
  * See: /docs/BILLING_FLOW_LOCKED.md
  */
-const { getPlanInfo } = require('../../src/lib/stripe/plan-map.cjs');
+const { getPlanInfo } = require('./plan-map.cjs');
 
 const upsertEntitlement = async ({ supabaseAdmin, email, stripe_customer_id, subscription_id, subscription_status, current_period_end, price_id }) => {
   if (!email && !stripe_customer_id) return { error: 'email_or_customer_required' };
