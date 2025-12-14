@@ -234,8 +234,11 @@ export default function Pricing() {
 
             <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
               <button
+                type="button"
                 onClick={() => startTrialCheckout('pro', interval, showAlert)}
-                className="btn-cta w-full flex items-center justify-center"
+                data-testid={`checkout-btn-pro-${interval === 'monthly' ? 'monthly' : 'annual'}`}
+                className="btn-cta w-full flex items-center justify-center relative"
+                style={{ zIndex: 60, pointerEvents: 'auto' }}
               >
                 Try Pro free for 14 days
               </button>
@@ -310,8 +313,11 @@ export default function Pricing() {
 
             <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
               <button
+                type="button"
                 onClick={() => startTrialCheckout('premium', interval, showAlert)}
-                className="btn-cta w-full flex items-center justify-center"
+                data-testid={`checkout-btn-premium-${interval === 'monthly' ? 'monthly' : 'annual'}`}
+                className="btn-cta w-full flex items-center justify-center relative"
+                style={{ zIndex: 60, pointerEvents: 'auto' }}
               >
                 Try Premium free for 14 days
               </button>

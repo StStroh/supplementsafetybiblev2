@@ -281,7 +281,7 @@ const Pricing: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2" style={{ position: 'relative', zIndex: 10 }}>
           {tiers.filter(tier => tier.id !== "core").map((tier) => {
             const isPopular = tier.popular;
             const priceLabel =
@@ -335,11 +335,13 @@ const Pricing: React.FC = () => {
                     type="button"
                     onClick={() => handleCheckout(tierKey)}
                     disabled={loadingPriceId === tierKey}
-                    className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${
+                    data-testid={`checkout-btn-${tierKey}`}
+                    className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition relative ${
                       loadingPriceId === tierKey
                         ? "bg-slate-400 cursor-wait"
                         : "bg-green-600 hover:bg-green-700"
                     }`}
+                    style={{ zIndex: 60, pointerEvents: 'auto' }}
                   >
                     {loadingPriceId === tierKey ? (
                       <span className="inline-flex items-center gap-2">

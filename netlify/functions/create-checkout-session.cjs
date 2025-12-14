@@ -98,6 +98,8 @@ exports.handler = async (event) => {
       'premium_annual': PLAN_PRICE_MAP.PREMIUM_YEARLY,
     };
 
+    console.log('[create-checkout-session] Received tier:', tier);
+
     const priceId = tierMap[tier];
     if (!priceId) {
       console.error('❌ Invalid tier received:', tier);
