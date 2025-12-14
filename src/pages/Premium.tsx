@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Star } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 import { SEO, StructuredData } from '../lib/seo';
 import { startTrialCheckout } from '../utils/checkout';
 import { useAlert } from '../state/AlertProvider';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseAnon = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnon);
 
 const productSchema = {
   "@context": "https://schema.org",
@@ -50,6 +55,154 @@ export default function Premium() {
   const { showAlert } = useAlert();
   const [cadence, setCadence] = useState<'monthly' | 'annual'>('monthly');
   const [loading, setLoading] = useState<string | null>(null);
+  const [finalizing, setFinalizing] = useState(false);
+  const [finalizingStatus, setFinalizingStatus] = useState('Processing your payment...');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    const success = urlParams.get('success');
+
+    if (!sessionId || !success) {
+      return;
+    }
+
+    let mounted = true;
+    let pollInterval: NodeJS.Timeout | null = null;
+    const startTime = Date.now();
+    const TIMEOUT_MS = 30000;
+
+    const waitForAuth = async (): Promise<string | null> => {
+      const maxWait = 8000;
+      const startAuth = Date.now();
+
+      while (Date.now() - startAuth < maxWait) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.id) return user.id;
+        await new Promise(r => setTimeout(r, 500));
+      }
+      return null;
+    };
+
+    const callFinalize = async (userId: string, sessionId: string) => {
+      try {
+        const res = await fetch('/.netlify/functions/stripe-finalize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId, user_id: userId }),
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+          console.error('[Premium] Finalize failed:', json);
+          return false;
+        }
+
+        console.log('[Premium] Finalize success:', json);
+        return true;
+      } catch (err) {
+        console.error('[Premium] Finalize error:', err);
+        return false;
+      }
+    };
+
+    const checkPremiumStatus = async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('is_premium, plan, tier')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (error) {
+          console.error('[Premium] Profile query error:', error);
+          return false;
+        }
+
+        const isPremium = data?.is_premium === true ||
+                         data?.plan === 'premium' ||
+                         data?.plan === 'pro' ||
+                         data?.tier === 'premium';
+
+        return isPremium;
+      } catch (err) {
+        console.error('[Premium] Check error:', err);
+        return false;
+      }
+    };
+
+    const pollForPremium = (userId: string) => {
+      pollInterval = setInterval(async () => {
+        if (!mounted) return;
+
+        if (Date.now() - startTime > TIMEOUT_MS) {
+          if (pollInterval) clearInterval(pollInterval);
+          if (mounted) {
+            setFinalizingStatus('Taking longer than expected. You can refresh or try again.');
+            setTimeout(() => {
+              if (mounted) setFinalizing(false);
+            }, 3000);
+          }
+          return;
+        }
+
+        const isPremium = await checkPremiumStatus(userId);
+        if (isPremium) {
+          if (pollInterval) clearInterval(pollInterval);
+          if (mounted) {
+            setFinalizingStatus('Success! Redirecting to your dashboard...');
+            setTimeout(() => {
+              navigate('/premium/dashboard', { replace: true });
+            }, 1000);
+          }
+        }
+      }, 1500);
+    };
+
+    (async () => {
+      if (!mounted) return;
+
+      setFinalizing(true);
+      setFinalizingStatus('Restoring your session...');
+
+      const userId = await waitForAuth();
+
+      if (!mounted) return;
+
+      if (!userId) {
+        setFinalizingStatus('Session restoration failed. Please try again.');
+        setTimeout(() => {
+          if (mounted) setFinalizing(false);
+        }, 3000);
+        return;
+      }
+
+      const alreadyPremium = await checkPremiumStatus(userId);
+      if (alreadyPremium) {
+        setFinalizingStatus('Already activated! Redirecting...');
+        setTimeout(() => {
+          navigate('/premium/dashboard', { replace: true });
+        }, 1000);
+        return;
+      }
+
+      setFinalizingStatus('Finalizing your subscription...');
+
+      await callFinalize(userId, sessionId);
+
+      if (!mounted) return;
+
+      setFinalizingStatus('Activating Premium access...');
+
+      pollForPremium(userId);
+    })();
+
+    return () => {
+      mounted = false;
+      if (pollInterval) clearInterval(pollInterval);
+    };
+  }, [navigate]);
 
   const tiers = [
     {
@@ -128,6 +281,18 @@ export default function Premium() {
 
   const getPrice = (tier: typeof tiers[0]) =>
     cadence === 'monthly' ? tier.monthlyPrice : tier.annualPrice;
+
+  if (finalizing) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 border-4 border-t-black border-gray-200 rounded-full animate-spin"></div>
+          <h1 className="text-2xl font-semibold text-gray-900">{finalizingStatus}</h1>
+          <p className="mt-2 text-gray-600">This only takes a moment.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
