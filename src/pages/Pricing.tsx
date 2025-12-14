@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Check, X, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { PLAN_PRICE_MAP } from '../lib/stripe/plan-map';
+import { startTrialCheckout } from '../utils/checkout';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
@@ -45,7 +46,7 @@ export default function Pricing() {
     setUser(currentUser);
   }
 
-  async function handleSelectPlan(plan: 'starter' | 'pro' | 'premium') {
+  async function handleSelectPlan(plan: 'starter' | 'pro' | 'premium', button?: HTMLButtonElement) {
     if (plan === 'starter') {
       if (!user) {
         navigate('/auth?redirect=/free');
@@ -55,25 +56,35 @@ export default function Pricing() {
       return;
     }
 
+    if (!user) {
+      navigate(`/auth?redirect=/pricing`);
+      return;
+    }
+
     setLoading(plan);
 
     try {
-      const priceId = plan === 'pro'
-        ? (interval === 'annual' ? PLAN_PRICE_MAP.PRO_YEARLY : PLAN_PRICE_MAP.PRO_MONTHLY)
-        : (interval === 'annual' ? PLAN_PRICE_MAP.PREMIUM_YEARLY : PLAN_PRICE_MAP.PREMIUM_MONTHLY);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth?redirect=/pricing');
+        return;
+      }
+
+      const cadence = interval === 'annual' ? 'annual' : 'monthly';
+      const tier = `${plan}_${cadence}`;
 
       const res = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId,
-          userId: user?.id,
-          userEmail: user?.email,
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ tier }),
       });
 
       if (!res.ok) {
-        throw new Error('Failed to create checkout session');
+        const errorData = await res.json().catch(() => ({ error: { message: 'Unknown error' } }));
+        throw new Error(errorData.error?.message || 'Failed to create checkout session');
       }
 
       const data = await res.json();
@@ -83,6 +94,7 @@ export default function Pricing() {
       }
     } catch (err) {
       console.error('Checkout error:', err);
+      alert('Could not start checkout. Please try again or contact support.');
       setLoading(null);
     }
   }
@@ -268,7 +280,7 @@ export default function Pricing() {
 
             <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
               <button
-                onClick={() => handleSelectPlan('pro')}
+                onClick={(e) => handleSelectPlan('pro', e.currentTarget)}
                 disabled={loading !== null}
                 className="btn-cta w-full flex items-center justify-center disabled:opacity-50"
               >
@@ -352,7 +364,7 @@ export default function Pricing() {
 
             <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
               <button
-                onClick={() => handleSelectPlan('premium')}
+                onClick={(e) => handleSelectPlan('premium', e.currentTarget)}
                 disabled={loading !== null}
                 className="btn-outline w-full flex items-center justify-center disabled:opacity-50"
               >

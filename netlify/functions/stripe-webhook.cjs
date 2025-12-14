@@ -45,6 +45,10 @@ exports.handler = async (event) => {
         await handleInvoicePaymentSucceeded(evt.data.object);
         break;
 
+      case "invoice.payment_failed":
+        await handlePaymentFailed(evt.data.object);
+        break;
+
       case "customer.subscription.updated":
         await handleSubscriptionUpdated(evt.data.object);
         break;
@@ -90,15 +94,23 @@ async function handleCheckoutCompleted(session) {
     return;
   }
 
-  console.log(`[Checkout] Mapped: ${priceId} → ${planInfo.plan} (${planInfo.interval})`);
+  const isTrialing = subscription.status === 'trialing';
+  const trialEnd = subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null;
+  const planBase = planInfo.plan;
+  const planState = isTrialing ? `${planBase}_trial` : planBase;
+
+  console.log(`[Checkout] Mapped: ${priceId} → ${planState} (trialing: ${isTrialing})`);
 
   await upsertProfile(customerId, customerEmail, {
-    subscription_id: subscriptionId,
+    stripe_subscription_id: subscriptionId,
     subscription_status: subscription.status,
     is_premium: planInfo.plan === "premium",
     plan_name: planInfo.plan,
     billing_interval: planInfo.interval,
     role: planInfo.plan === "premium" ? "premium" : "pro",
+    plan: planState,
+    trial_end: trialEnd,
+    trial_used: true,
   });
 }
 
@@ -115,9 +127,15 @@ async function handleInvoicePaymentSucceeded(invoice) {
   const planInfo = getPlanInfo(priceId);
 
   if (planInfo) {
+    const isTrialing = subscription.status === 'trialing';
+    const planBase = planInfo.plan;
+    const planState = isTrialing ? `${planBase}_trial` : planBase;
+
     await upsertProfile(customerId, null, {
       subscription_status: subscription.status,
       is_premium: planInfo.plan === "premium",
+      plan: planState,
+      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
     });
   }
 }
@@ -130,9 +148,24 @@ async function handleSubscriptionUpdated(subscription) {
   const planInfo = getPlanInfo(priceId);
 
   if (planInfo) {
+    const isTrialing = subscription.status === 'trialing';
+    const isActive = subscription.status === 'active';
+    const planBase = planInfo.plan;
+    let planState = 'starter';
+
+    if (isTrialing) {
+      planState = `${planBase}_trial`;
+    } else if (isActive) {
+      planState = planBase;
+    }
+
+    console.log(`[Subscription] Status: ${subscription.status}, Plan: ${planState}`);
+
     await upsertProfile(customerId, null, {
       subscription_status: subscription.status,
       is_premium: planInfo.plan === "premium",
+      plan: planState,
+      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
     });
   }
 }
@@ -143,6 +176,19 @@ async function handleSubscriptionDeleted(subscription) {
   await upsertProfile(subscription.customer, null, {
     subscription_status: "canceled",
     is_premium: false,
+    plan: "starter",
+    stripe_subscription_id: null,
+    trial_end: null,
+  });
+}
+
+async function handlePaymentFailed(invoice) {
+  console.log(`[Payment Failed] Invoice: ${invoice.id}`);
+
+  const customerId = invoice.customer;
+
+  await upsertProfile(customerId, null, {
+    plan: "starter",
   });
 }
 
