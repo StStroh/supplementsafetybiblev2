@@ -25,6 +25,9 @@
     --brand-purple: #8B7BA8;
     --header-bg: #ffffff;
     --header-border: #E5E0F0;
+
+    /* Alert Banner Safe Spacing */
+    --alert-banner-h: 0px;
   }
 
   body {
@@ -151,4 +154,11 @@
 .site-header * {
   background-color: #ffffff !important;
   color-scheme: light !important;
+}
+
+/* Alert Banner Safe Spacing */
+@supports (padding: max(0px)) {
+  .with-alert-padding {
+    padding-top: max(var(--alert-banner-h, 0px), env(safe-area-inset-top, 0px));
+  }
 }
