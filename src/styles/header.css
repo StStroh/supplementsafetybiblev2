@@ -1,8 +1,8 @@
 /* Header global styles */
 :root {
-  --header-height-d: 64px;
-  --header-height-t: 56px;
-  --header-height-m: 48px;
+  --header-height-d: 80px;
+  --header-height-t: 72px;
+  --header-height-m: 64px;
   --space-inline: clamp(16px, 4vw, 32px);
   --gap-header: clamp(12px, 3vw, 24px);
   --color-focus: #3b82f6;

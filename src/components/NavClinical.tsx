@@ -1,13 +1,17 @@
 import { Link, NavLink } from "react-router-dom";
+import { BRAND_NAME_FULL } from '../lib/brand';
 import '../styles/logo.css';
 import Logo from './Logo';
 
 export default function NavClinical() {
   return (
     <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3">
           <Logo variant="dark" className="logo--nav" />
+          <span className="font-semibold text-[#2E2555] text-lg md:text-xl leading-tight tracking-tight">
+            {BRAND_NAME_FULL}
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm">

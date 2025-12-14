@@ -2,7 +2,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { SUPPORT_EMAIL } from '../lib/support';
-import { BRAND_NAME } from '../lib/brand';
+import { BRAND_NAME_FULL } from '../lib/brand';
 import '../styles/header.css';
 import '../styles/logo.css';
 import Logo from './Logo';
@@ -67,9 +67,12 @@ export default function Navbar() {
   return (
     <nav className="site-header bg-white border-b border-[#DCE3ED] sticky top-0 z-50" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}} role="banner" data-header>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <a href="/" className="brand flex items-center gap-3" aria-label={`Go to ${BRAND_NAME} home`}>
+        <div className="flex justify-between items-center h-20">
+          <a href="/" className="brand flex items-center gap-3" aria-label={`Go to ${BRAND_NAME_FULL} home`}>
             <Logo variant="dark" className="logo--nav" />
+            <span className="font-semibold text-[#2E2555] text-lg md:text-xl leading-tight tracking-tight">
+              {BRAND_NAME_FULL}
+            </span>
           </a>
 
           <div className="hidden md:flex items-center gap-8">

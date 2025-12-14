@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { BRAND_NAME_FULL } from '../lib/brand';
 import '../styles/logo.css';
 import Logo from './Logo';
 
@@ -26,9 +27,12 @@ export default function Header() {
   return (
     <nav className="border-b border-gray-100 sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <a href="/" className="flex items-center">
+        <div className="flex items-center justify-between h-20">
+          <a href="/" className="flex items-center gap-3">
             <Logo variant="dark" className="logo--nav" />
+            <span className="font-semibold text-[#2E2555] text-lg md:text-xl leading-tight tracking-tight">
+              {BRAND_NAME_FULL}
+            </span>
           </a>
 
           <div className="hidden md:flex items-center space-x-8">
