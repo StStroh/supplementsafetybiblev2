@@ -1,4 +1,6 @@
-const upsertEntitlement = async ({ supabaseAdmin, email, stripe_customer_id, subscription_id, subscription_status, current_period_end }) => {
+const { getPlanInfo } = require('../../src/lib/stripe/plan-map.cjs');
+
+const upsertEntitlement = async ({ supabaseAdmin, email, stripe_customer_id, subscription_id, subscription_status, current_period_end, price_id }) => {
   if (!email && !stripe_customer_id) return { error: 'email_or_customer_required' };
 
   const is_premium =
@@ -6,7 +8,10 @@ const upsertEntitlement = async ({ supabaseAdmin, email, stripe_customer_id, sub
     subscription_status === 'trialing' ||
     subscription_status === 'past_due';
 
-  const role = is_premium ? 'premium' : 'free';
+  const planInfo = price_id ? getPlanInfo(price_id) : null;
+  const basePlan = planInfo?.plan || 'starter';
+  const role = is_premium && (basePlan === 'pro' || basePlan === 'premium') ? basePlan : 'free';
+  const plan = subscription_status === 'trialing' ? `${basePlan}_trial` : basePlan;
 
   const current_period_end_bigint = current_period_end
     ? (typeof current_period_end === 'string'
@@ -21,6 +26,7 @@ const upsertEntitlement = async ({ supabaseAdmin, email, stripe_customer_id, sub
     subscription_status: subscription_status || null,
     is_premium,
     role,
+    plan,
     current_period_end: current_period_end_bigint,
     updated_at: new Date().toISOString(),
   };

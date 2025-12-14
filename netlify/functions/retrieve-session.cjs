@@ -14,7 +14,7 @@ exports.handler = async (event) => {
 
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id, {
-      expand: ['customer', 'subscription']
+      expand: ['customer', 'subscription', 'subscription.items.data.price']
     });
 
     const status = session.status;
@@ -38,6 +38,11 @@ exports.handler = async (event) => {
         ? new Date(session.subscription.current_period_end * 1000).toISOString()
         : null;
 
+    const price_id =
+      typeof session.subscription !== 'string' && session.subscription?.items?.data?.[0]?.price?.id
+        ? session.subscription.items.data[0].price.id
+        : null;
+
     if (status === 'complete' && payment_status === 'paid') {
       await upsertEntitlement({
         supabaseAdmin,
@@ -49,6 +54,7 @@ exports.handler = async (event) => {
             : session.subscription?.id || null,
         subscription_status: subscription_status || 'active',
         current_period_end,
+        price_id,
       });
     }
 
