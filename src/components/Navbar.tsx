@@ -65,12 +65,12 @@ export default function Navbar() {
   }, [tryFreeOpen]);
 
   return (
-    <nav className="site-header bg-white border-b border-[#DCE3ED] sticky top-0 z-50" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}} role="banner" data-header>
+    <nav className="site-header bg-white border-b border-[#DCE3ED] sticky top-0 z-30" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}} role="banner" data-header>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <a href="/" className="brand flex items-center gap-3" aria-label={`Go to ${BRAND_NAME_FULL} home`}>
+        <div className="flex justify-between items-center" style={{height: 'clamp(64px, 8vw, 80px)'}}>
+          <a href="/" className="brand flex items-center" style={{gap: 'clamp(0.5rem, 2vw, 0.75rem)'}} aria-label={`Go to ${BRAND_NAME_FULL} home`}>
             <Logo variant="dark" className="logo--nav" />
-            <span className="font-semibold text-[#2E2555] text-lg md:text-xl leading-tight tracking-tight">
+            <span className="font-bold text-[#3b1d6a] leading-tight tracking-tight" style={{fontSize: 'clamp(17px, 3.8vw, 23px)'}}>
               {BRAND_NAME_FULL}
             </span>
           </a>

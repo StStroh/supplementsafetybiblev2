@@ -25,12 +25,12 @@ export default function Header() {
   }, []);
 
   return (
-    <nav className="border-b border-gray-100 sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
+    <nav className="border-b border-gray-100 sticky top-0 z-30 bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <a href="/" className="flex items-center gap-3">
+        <div className="flex items-center justify-between" style={{height: 'clamp(64px, 8vw, 80px)'}}>
+          <a href="/" className="flex items-center" style={{gap: 'clamp(0.5rem, 2vw, 0.75rem)'}}>
             <Logo variant="dark" className="logo--nav" />
-            <span className="font-semibold text-[#2E2555] text-lg md:text-xl leading-tight tracking-tight">
+            <span className="font-bold text-[#3b1d6a] leading-tight tracking-tight" style={{fontSize: 'clamp(17px, 3.8vw, 23px)'}}>
               {BRAND_NAME_FULL}
             </span>
           </a>
