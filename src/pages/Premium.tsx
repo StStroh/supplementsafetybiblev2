@@ -279,19 +279,22 @@ export default function Premium() {
 
     setLoading(tier);
 
-    const plan = tier as 'pro' | 'premium';
-    const interval = cadence as 'monthly' | 'annual';
+    try {
+      const plan = tier as 'pro' | 'premium';
+      const interval = cadence as 'monthly' | 'annual';
 
-    await startTrialCheckout(plan, interval, (message, type) => {
-      if (showAlert) {
-        showAlert(message, type);
-      } else {
-        alert(message);
-      }
+      await startTrialCheckout(plan, interval, (message, type) => {
+        if (showAlert) {
+          showAlert(message, type);
+        } else {
+          alert(message);
+        }
+      });
+    } catch (err) {
+      console.error('Checkout error:', err);
+    } finally {
       setLoading(null);
-    });
-
-    setLoading(null);
+    }
   };
 
   const getPrice = (tier: typeof tiers[0]) =>

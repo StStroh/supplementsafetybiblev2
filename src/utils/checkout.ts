@@ -23,29 +23,43 @@ export async function startTrialCheckout(plan: Plan, interval: Interval, showAle
     const token = data.session?.access_token;
 
     const baseUrl = getFunctionsBaseUrl();
-    const res = await fetch(`${baseUrl}/.netlify/functions/create-checkout-session`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({ plan, cadence: bill }),
-    });
 
-    if (!res.ok) {
-      const text = await res.text();
-      if (res.status === 404) {
-        throw new Error("Preview mode can't reach local functions; using live endpoint.");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    try {
+      const res = await fetch(`${baseUrl}/.netlify/functions/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ plan, cadence: bill }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const text = await res.text();
+        if (res.status === 404) {
+          throw new Error("Preview mode can't reach local functions; using live endpoint.");
+        }
+        if (res.status === 401) {
+          throw new Error("Please sign in to start a trial.");
+        }
+        throw new Error(`Checkout failed: HTTP ${res.status} – ${text}`);
       }
-      if (res.status === 401) {
-        throw new Error("Please sign in to start a trial.");
+
+      const { url } = await res.json();
+      if (!url) throw new Error("Server did not return a checkout URL");
+      window.location.href = url;
+    } catch (fetchErr: any) {
+      clearTimeout(timeoutId);
+      if (fetchErr.name === 'AbortError') {
+        throw new Error("Request timed out. Please try again.");
       }
-      throw new Error(`Checkout failed: HTTP ${res.status} – ${text}`);
+      throw fetchErr;
     }
-
-    const { url } = await res.json();
-    if (!url) throw new Error("Server did not return a checkout URL");
-    window.location.href = url;
   } catch (err: any) {
     console.error("startTrialCheckout error:", err);
     const msg = String(err?.message || "");
@@ -56,6 +70,10 @@ export async function startTrialCheckout(plan: Plan, interval: Interval, showAle
       } else {
         alert(errorMsg);
       }
+      if (btn) {
+        btn.disabled = false;
+        btn.removeAttribute("aria-busy");
+      }
       return;
     }
     const errorMsg = "Could not start the free trial. Please try again or contact support.";
@@ -64,7 +82,6 @@ export async function startTrialCheckout(plan: Plan, interval: Interval, showAle
     } else {
       alert(errorMsg);
     }
-  } finally {
     if (btn) {
       btn.disabled = false;
       btn.removeAttribute("aria-busy");
