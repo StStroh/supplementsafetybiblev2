@@ -188,7 +188,7 @@ exports.handler = async (event) => {
         automatic_tax: { enabled: true },
         billing_address_collection: 'auto',
         subscription_data: subscriptionData,
-        success_url: `${origin}/premium?success=1&session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${origin}/post-checkout?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/pricing?cancelled=1`,
         metadata,
       });

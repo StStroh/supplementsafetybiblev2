@@ -55,6 +55,25 @@ export default function Premium() {
   const [finalizingStatus, setFinalizingStatus] = useState('Processing your payment...');
 
   useEffect(() => {
+    const checkUserTier = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profile?.plan === 'pro' || profile?.plan === 'pro_trial') {
+        navigate('/premium/dashboard', { replace: true });
+      }
+    };
+
+    checkUserTier();
+  }, [navigate]);
+
+  useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
     const success = urlParams.get('success');

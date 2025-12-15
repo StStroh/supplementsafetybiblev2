@@ -28,6 +28,7 @@ import PreviewChecker from './pages/PreviewChecker';
 import PreviewGuides from './pages/PreviewGuides';
 import PreviewFeed from './pages/PreviewFeed';
 import PregnancyLactation from './pages/PregnancyLactation';
+import PostCheckout from './pages/PostCheckout';
 
 function NotFound() {
   return <div style={{padding: 40}}>Page not found</div>;
@@ -157,6 +158,10 @@ export const router = createBrowserRouter([
       {
         path: 'checkout/cancel',
         element: <CheckoutCancel />
+      },
+      {
+        path: 'post-checkout',
+        element: <PostCheckout />
       },
       {
         path: '*',
