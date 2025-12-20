@@ -1,4 +1,5 @@
 const { supabaseAdmin } = require('./_lib/supabaseAdmin.cjs');
+const { supabaseAnon } = require('./_lib/supabaseClient.cjs');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') return { statusCode: 405, body: 'Method Not Allowed' };
@@ -7,7 +8,7 @@ exports.handler = async (event) => {
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
   if (!token) return { statusCode: 401, body: 'Missing bearer token' };
 
-  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+  const { data: { user }, error } = await supabaseAnon().auth.getUser(token);
   if (error || !user?.email) return { statusCode: 401, body: 'Invalid token' };
 
   const email = user.email;
