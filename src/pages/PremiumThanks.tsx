@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { SEO } from '../lib/seo';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseAnon = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnon);
 
 type State = "loading" | "finalizing" | "checking" | "success" | "timeout" | "fail";
 
