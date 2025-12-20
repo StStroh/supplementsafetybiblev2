@@ -7,12 +7,23 @@ type Client = SupabaseClient<any, "public", any>;
 declare global {
   interface Window {
     __supabase_client?: Client;
+    __supabase_initializing?: boolean;
   }
 }
 
-function getSupabaseClient(): Client {
-  if (typeof window !== 'undefined' && window.__supabase_client) {
-    return window.__supabase_client;
+let clientInstance: Client | undefined;
+
+function initSupabaseClient(): Client {
+  if (typeof window !== 'undefined') {
+    if (window.__supabase_client) {
+      return window.__supabase_client;
+    }
+
+    if (window.__supabase_initializing) {
+      throw new Error('Supabase client is already initializing. This should not happen.');
+    }
+
+    window.__supabase_initializing = true;
   }
 
   const { url, anon, ok } = getEnv();
@@ -37,12 +48,24 @@ function getSupabaseClient(): Client {
 
   if (typeof window !== 'undefined') {
     window.__supabase_client = client;
+    window.__supabase_initializing = false;
   }
 
   return client;
 }
 
-export const supabase = getSupabaseClient();
+function getSupabaseClient(): Client {
+  if (!clientInstance) {
+    clientInstance = initSupabaseClient();
+  }
+  return clientInstance;
+}
+
+export const supabase = new Proxy({} as Client, {
+  get(_, prop) {
+    return getSupabaseClient()[prop as keyof Client];
+  }
+});
 
 export type Database = {
   public: {

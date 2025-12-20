@@ -11,7 +11,7 @@ Global singleton pattern using `window.__supabase_client`
 ### ✅ Requirement 1: Exactly ONE Supabase client created
 ```bash
 $ grep -R "createClient(" -n src
-src/lib/supabase.ts:23:    client = createClient(url, anon, {
+src/lib/supabase.ts:34:    client = createClient(url, anon, {
 ```
 **Result:** Only 1 match found ✓
 
@@ -60,20 +60,32 @@ dist/assets/index-B96cbg_9.js   1,088.19 kB │ gzip: 294.36 kB
 
 ## Implementation Details
 
-### Global Singleton Pattern
-**File:** `src/lib/supabase.ts:13-43`
+### Lazy Proxy Pattern with Triple-Layer Protection
+**File:** `src/lib/supabase.ts:14-68`
 
 ```typescript
 declare global {
   interface Window {
     __supabase_client?: Client;
+    __supabase_initializing?: boolean;
   }
 }
 
-function getSupabaseClient(): Client {
-  // Check global instance first
-  if (typeof window !== 'undefined' && window.__supabase_client) {
-    return window.__supabase_client;
+let clientInstance: Client | undefined;
+
+function initSupabaseClient(): Client {
+  // Layer 1: Check window global first (cross-module protection)
+  if (typeof window !== 'undefined') {
+    if (window.__supabase_client) {
+      return window.__supabase_client;
+    }
+
+    // Prevent concurrent initialization
+    if (window.__supabase_initializing) {
+      throw new Error('Supabase client is already initializing.');
+    }
+
+    window.__supabase_initializing = true;
   }
 
   const { url, anon, ok } = getEnv();
@@ -98,19 +110,52 @@ function getSupabaseClient(): Client {
   // Store globally
   if (typeof window !== 'undefined') {
     window.__supabase_client = client;
+    window.__supabase_initializing = false;
   }
 
   return client;
 }
 
-export const supabase = getSupabaseClient();
+// Layer 2: Module-level cache
+function getSupabaseClient(): Client {
+  if (!clientInstance) {
+    clientInstance = initSupabaseClient();
+  }
+  return clientInstance;
+}
+
+// Layer 3: Lazy Proxy export
+export const supabase = new Proxy({} as Client, {
+  get(_, prop) {
+    return getSupabaseClient()[prop as keyof Client];
+  }
+});
 ```
 
-### Why This Works
-1. **True Global Scope:** Uses `window` object, which persists across module reloads
-2. **Lazy Check:** Checks for existing instance before creating new one
-3. **Code Splitting Safe:** Even if module is loaded multiple times, only one instance exists
-4. **HMR Compatible:** Hot module replacement won't create duplicate instances
+### Why This Works (Triple Protection)
+
+**Layer 1: Window Global Check**
+- Uses `window.__supabase_client` for cross-module protection
+- Includes `window.__supabase_initializing` flag to prevent race conditions
+- Works even if module is evaluated multiple times
+
+**Layer 2: Module-level Cache**
+- `clientInstance` variable caches the client within the module
+- Prevents repeated initialization within the same module scope
+- Fast path for repeated calls
+
+**Layer 3: Lazy Proxy Export**
+- **CRITICAL:** Uses Proxy to defer initialization until first use
+- Module can be imported without calling `createClient()`
+- Only when code accesses `supabase.auth` or any property, client is initialized
+- Eliminates module load-time initialization race conditions
+
+**Benefits:**
+1. **Truly Lazy:** Client isn't created until actually needed
+2. **Race-proof:** Multiple simultaneous imports won't create duplicate clients
+3. **HMR Safe:** Hot module replacement won't trigger re-initialization
+4. **Code Splitting Safe:** Works correctly even with dynamic imports
+5. **StrictMode Safe:** React StrictMode double-mounting won't affect it
 
 ## Result
 - ✅ Exactly 1 `createClient()` call in entire src directory
