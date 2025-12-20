@@ -1,8 +1,16 @@
 # 401 Unauthorized Fix - Complete
 
-## Root Cause
+## Root Causes
+
+### 1. Backend Auth Validation
 Netlify functions were using **service role key** to validate user access tokens.
 This is incorrect - auth validation must use the **anon key**.
+
+### 2. Multiple Supabase Client Instances
+Multiple frontend files were creating separate Supabase client instances, causing:
+- "Multiple GoTrueClient instances" warning
+- Session management conflicts
+- Potential auth state desynchronization
 
 ## Service Role vs Anon Key
 
@@ -111,13 +119,41 @@ const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(tok
 
 ---
 
-## Frontend (No Changes)
+## Frontend Changes
+
+### 1. checkout.ts (No Changes)
 **File:** `src/utils/checkout.ts`
 
-Frontend already correct:
+Already correct:
 - Line 22: Gets session via `supabase.auth.getSession()`
 - Line 23: Extracts access_token
 - Line 35: Sends as `Authorization: Bearer ${token}`
+
+### 2. premiumGuard.ts (Singleton)
+**File:** `src/lib/premiumGuard.ts`
+
+**Line 1:** Changed from creating new client to importing singleton
+```typescript
+import { supabase } from './supabase';  // was: createClient(...)
+```
+
+### 3. PremiumThanks.tsx (Singleton)
+**File:** `src/pages/PremiumThanks.tsx`
+
+**Line 3:** Changed from creating new client to importing singleton
+```typescript
+import { supabase } from '../lib/supabase';  // was: createClient(...)
+```
+
+### 4. PremiumDashboard.tsx (Singleton)
+**File:** `src/pages/PremiumDashboard.tsx`
+
+**Line 4:** Changed from creating new client to importing singleton
+```typescript
+import { supabase } from '../lib/supabase';  // was: createClient(...)
+```
+
+**Result:** Only ONE Supabase client instance now exists (in `src/lib/supabase.ts`)
 
 ---
 
@@ -178,12 +214,19 @@ Get from: https://supabase.com/dashboard/project/qbefejbnxrsdwtsbkmon/settings/a
 
 **Before:**
 - Functions used service role key for token validation ❌
+- Multiple Supabase client instances created in frontend ❌
 - Service role bypasses RLS and is for admin operations only
+- Multiple clients caused session management conflicts
 - Tokens couldn't be properly validated
 
 **After:**
 - Functions use anon key for token validation ✅
+- Single Supabase client singleton in frontend ✅
 - Anon key respects RLS and validates user sessions correctly
 - Service role only used for privileged DB operations after auth
+- No more "Multiple GoTrueClient instances" warnings
 
-**Result:** 401 errors resolved, auth flow works correctly
+**Result:**
+- 401 errors resolved
+- Auth flow works correctly
+- Session management stable
