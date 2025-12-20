@@ -1,6 +1,6 @@
 const Stripe = require('stripe');
 const { PLAN_PRICE_MAP } = require('../../src/lib/stripe/plan-map.cjs');
-const { supabaseAdmin, supabaseAnon } = require('./_lib/supabaseClient.cjs');
+const { supabaseAdmin } = require('./_lib/supabaseClient.cjs');
 
 const ok = (data, origin) => ({
   statusCode: 200,
@@ -31,7 +31,7 @@ async function getUserFromAuth(event) {
   }
 
   const token = authHeader.replace('Bearer ', '');
-  const sb = supabaseAnon();
+  const sb = supabaseAdmin();
 
   try {
     const { data: { user }, error } = await sb.auth.getUser(token);

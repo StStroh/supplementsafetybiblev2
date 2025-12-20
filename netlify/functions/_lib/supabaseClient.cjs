@@ -13,17 +13,4 @@ function supabaseAdmin() {
   });
 }
 
-function supabaseAnon() {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !anonKey) {
-    throw new Error('Missing Supabase credentials: SUPABASE_URL or SUPABASE_ANON_KEY');
-  }
-
-  return createClient(supabaseUrl, anonKey, {
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
-
-module.exports = { supabaseAdmin, supabaseAnon };
+module.exports = { supabaseAdmin };

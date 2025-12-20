@@ -1,7 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const corsHeaders = {
@@ -39,10 +38,9 @@ exports.handler = async (event, context) => {
 
     const token = authHeader.replace('Bearer ', '');
 
-    const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
 
     if (authError || !user) {
       console.error('Auth error:', authError);

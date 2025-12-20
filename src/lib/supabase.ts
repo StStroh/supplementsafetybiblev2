@@ -5,82 +5,39 @@ import { getEnv } from './env';
 type Client = SupabaseClient<any, "public", any>;
 
 declare global {
-  interface Window {
-    __ssb_supabase_client?: Client;
-    __ssb_supabase_initializing?: boolean;
-    __ssb_init_count?: number;
-  }
+  var __ssb_supabase_client: Client | undefined;
 }
 
-let clientInstance: Client | undefined;
+let supabase: Client;
 
-function initSupabaseClient(): Client {
-  const global = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : undefined);
+const { url, anon, ok } = getEnv();
 
-  if (global) {
-    if (global.__ssb_supabase_client) {
-      console.error('[SUPABASE] createClient() SECOND init attempt — STACK TRACE:');
-      console.trace();
-      return global.__ssb_supabase_client;
-    }
-
-    if (global.__ssb_supabase_initializing) {
-      throw new Error('Supabase client is already initializing. This should not happen.');
-    }
-
-    global.__ssb_supabase_initializing = true;
-    global.__ssb_init_count = (global.__ssb_init_count || 0) + 1;
-  }
-
-  const { url, anon, ok } = getEnv();
-
-  const storageKey = `sb-${url?.split('//')[1]?.split('.')[0] || 'unknown'}-auth-token`;
-
-  let client: Client;
-
-  if (ok) {
-    console.info('[SUPABASE] createClient() FIRST init', { url, storageKey });
-
-    client = createClient(url, anon, {
+if (ok) {
+  if (globalThis.__ssb_supabase_client) {
+    console.error('[SUPABASE SINGLETON VIOLATION] Attempted to create second Supabase client instance.');
+    console.error('[SUPABASE SINGLETON VIOLATION] Stack trace:', new Error().stack);
+    supabase = globalThis.__ssb_supabase_client;
+  } else {
+    console.log('[SUPABASE SINGLETON] First initialization:', { url, storageKey: 'sb-auth-token' });
+    supabase = createClient(url, anon, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,
-        storageKey
+        detectSessionInUrl: true
       }
     }) as Client;
-  } else {
-    client = new Proxy({} as Client, {
-      get() {
-        throw new Error("Supabase configuration missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
-      },
-    }) as Client;
+    globalThis.__ssb_supabase_client = supabase;
   }
-
-  if (global) {
-    global.__ssb_supabase_client = client;
-    global.__ssb_supabase_initializing = false;
-  }
-
-  return client;
+} else {
+  const fail = new Proxy({} as Client, {
+    get() {
+      throw new Error("Supabase configuration missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
+    },
+  }) as Client;
+  supabase = fail;
 }
 
-function getSupabaseClient(): Client {
-  if (!clientInstance) {
-    clientInstance = initSupabaseClient();
-  }
-  return clientInstance;
-}
-
-export function getSupabase(): Client {
-  return getSupabaseClient();
-}
-
-export const supabase = new Proxy({} as Client, {
-  get(_, prop) {
-    return getSupabaseClient()[prop as keyof Client];
-  }
-});
+export { supabase };
 
 export type Database = {
   public: {
