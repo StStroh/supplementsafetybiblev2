@@ -6,36 +6,47 @@ type Client = SupabaseClient<any, "public", any>;
 
 declare global {
   interface Window {
-    __supabase_client?: Client;
-    __supabase_initializing?: boolean;
+    __ssb_supabase_client?: Client;
+    __ssb_supabase_initializing?: boolean;
+    __ssb_init_count?: number;
   }
 }
 
 let clientInstance: Client | undefined;
 
 function initSupabaseClient(): Client {
-  if (typeof window !== 'undefined') {
-    if (window.__supabase_client) {
-      return window.__supabase_client;
+  const global = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : undefined);
+
+  if (global) {
+    if (global.__ssb_supabase_client) {
+      console.error('[SUPABASE] createClient() SECOND init attempt — STACK TRACE:');
+      console.trace();
+      return global.__ssb_supabase_client;
     }
 
-    if (window.__supabase_initializing) {
+    if (global.__ssb_supabase_initializing) {
       throw new Error('Supabase client is already initializing. This should not happen.');
     }
 
-    window.__supabase_initializing = true;
+    global.__ssb_supabase_initializing = true;
+    global.__ssb_init_count = (global.__ssb_init_count || 0) + 1;
   }
 
   const { url, anon, ok } = getEnv();
 
+  const storageKey = `sb-${url?.split('//')[1]?.split('.')[0] || 'unknown'}-auth-token`;
+
   let client: Client;
 
   if (ok) {
+    console.info('[SUPABASE] createClient() FIRST init', { url, storageKey });
+
     client = createClient(url, anon, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        storageKey
       }
     }) as Client;
   } else {
@@ -46,9 +57,9 @@ function initSupabaseClient(): Client {
     }) as Client;
   }
 
-  if (typeof window !== 'undefined') {
-    window.__supabase_client = client;
-    window.__supabase_initializing = false;
+  if (global) {
+    global.__ssb_supabase_client = client;
+    global.__ssb_supabase_initializing = false;
   }
 
   return client;
@@ -59,6 +70,10 @@ function getSupabaseClient(): Client {
     clientInstance = initSupabaseClient();
   }
   return clientInstance;
+}
+
+export function getSupabase(): Client {
+  return getSupabaseClient();
 }
 
 export const supabase = new Proxy({} as Client, {
