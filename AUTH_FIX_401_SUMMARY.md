@@ -129,7 +129,44 @@ Already correct:
 - Line 23: Extracts access_token
 - Line 35: Sends as `Authorization: Bearer ${token}`
 
-### 2. premiumGuard.ts (Singleton)
+### 2. supabase.ts (Global Singleton Pattern)
+**File:** `src/lib/supabase.ts`
+
+**Lines 7-45:** Implemented global singleton using `window` object
+
+```typescript
+declare global {
+  interface Window {
+    __supabase_client?: Client;
+  }
+}
+
+function getSupabaseClient(): Client {
+  // Check if instance already exists globally
+  if (typeof window !== 'undefined' && window.__supabase_client) {
+    return window.__supabase_client;
+  }
+
+  // Create client
+  const client = createClient(url, anon, {...});
+
+  // Store globally to prevent duplicate instances
+  if (typeof window !== 'undefined') {
+    window.__supabase_client = client;
+  }
+
+  return client;
+}
+
+export const supabase = getSupabaseClient();
+```
+
+**Why this approach:**
+- Prevents duplicate clients even if module is loaded multiple times
+- Code splitting or HMR can cause module duplication
+- `window` object is truly global across all module instances
+
+### 3. premiumGuard.ts (Use Singleton)
 **File:** `src/lib/premiumGuard.ts`
 
 **Line 1:** Changed from creating new client to importing singleton
@@ -137,7 +174,7 @@ Already correct:
 import { supabase } from './supabase';  // was: createClient(...)
 ```
 
-### 3. PremiumThanks.tsx (Singleton)
+### 4. PremiumThanks.tsx (Use Singleton)
 **File:** `src/pages/PremiumThanks.tsx`
 
 **Line 3:** Changed from creating new client to importing singleton
@@ -145,7 +182,7 @@ import { supabase } from './supabase';  // was: createClient(...)
 import { supabase } from '../lib/supabase';  // was: createClient(...)
 ```
 
-### 4. PremiumDashboard.tsx (Singleton)
+### 5. PremiumDashboard.tsx (Use Singleton)
 **File:** `src/pages/PremiumDashboard.tsx`
 
 **Line 4:** Changed from creating new client to importing singleton
@@ -153,7 +190,10 @@ import { supabase } from '../lib/supabase';  // was: createClient(...)
 import { supabase } from '../lib/supabase';  // was: createClient(...)
 ```
 
-**Result:** Only ONE Supabase client instance now exists (in `src/lib/supabase.ts`)
+**Result:**
+- Only ONE Supabase client instance across entire application
+- Global singleton pattern prevents duplication from code splitting
+- All frontend code imports from single source
 
 ---
 

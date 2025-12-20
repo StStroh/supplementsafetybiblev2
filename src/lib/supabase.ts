@@ -4,28 +4,45 @@ import { getEnv } from './env';
 
 type Client = SupabaseClient<any, "public", any>;
 
-let supabase: Client;
-
-const { url, anon, ok } = getEnv();
-
-if (ok) {
-  supabase = createClient(url, anon, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true
-    }
-  }) as Client;
-} else {
-  const fail = new Proxy({} as Client, {
-    get() {
-      throw new Error("Supabase configuration missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
-    },
-  }) as Client;
-  supabase = fail;
+declare global {
+  interface Window {
+    __supabase_client?: Client;
+  }
 }
 
-export { supabase };
+function getSupabaseClient(): Client {
+  if (typeof window !== 'undefined' && window.__supabase_client) {
+    return window.__supabase_client;
+  }
+
+  const { url, anon, ok } = getEnv();
+
+  let client: Client;
+
+  if (ok) {
+    client = createClient(url, anon, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    }) as Client;
+  } else {
+    client = new Proxy({} as Client, {
+      get() {
+        throw new Error("Supabase configuration missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
+      },
+    }) as Client;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.__supabase_client = client;
+  }
+
+  return client;
+}
+
+export const supabase = getSupabaseClient();
 
 export type Database = {
   public: {
