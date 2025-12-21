@@ -93,7 +93,8 @@ export default function Check() {
           }
         }
       } catch (error) {
-        console.error('Error fetching user plan:', error);
+        console.error('[TIER] Error fetching user plan:', error);
+        setUserPlan('free');
       }
     }
     fetchUserPlan();
