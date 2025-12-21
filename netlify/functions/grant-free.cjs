@@ -22,9 +22,9 @@ exports.handler = async (event) => {
 
     const name = (body.name ?? '').toString().trim();
 
-    const url = process.env.VITE_SUPABASE_URL;
+    const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url) return json(500, { error: 'Missing VITE_SUPABASE_URL' }, origin);
+    if (!url) return json(500, { error: 'Missing SUPABASE_URL' }, origin);
     if (!key) return json(500, { error: 'Missing SUPABASE_SERVICE_ROLE_KEY' }, origin);
 
     const admin = createClient(url, key);
