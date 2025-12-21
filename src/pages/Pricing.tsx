@@ -75,6 +75,22 @@ export default function Pricing() {
     }
   }
 
+  function handleSelectPro() {
+    if (!user) {
+      navigate('/auth?redirect=/pricing');
+    } else {
+      startTrialCheckout('pro', interval, showAlert);
+    }
+  }
+
+  function handleSelectPremium() {
+    if (!user) {
+      navigate('/auth?redirect=/pricing');
+    } else {
+      startTrialCheckout('premium', interval, showAlert);
+    }
+  }
+
   const proMonthly = 14.99;
   const proAnnual = 199;
   const premiumMonthly = 24.99;
@@ -246,11 +262,11 @@ export default function Pricing() {
 
               <button
                 type="button"
-                onClick={() => startTrialCheckout('pro', interval, showAlert)}
+                onClick={handleSelectPro}
                 data-testid={`checkout-btn-pro-${interval === 'monthly' ? 'monthly' : 'annual'}`}
                 className="btn-cta w-full mb-6"
               >
-                Try Pro free for 14 days
+                {user ? 'Try Pro free for 14 days' : 'Sign up for Pro trial'}
               </button>
 
               <div className="flex-1">
@@ -313,11 +329,11 @@ export default function Pricing() {
 
               <button
                 type="button"
-                onClick={() => startTrialCheckout('premium', interval, showAlert)}
+                onClick={handleSelectPremium}
                 data-testid={`checkout-btn-premium-${interval === 'monthly' ? 'monthly' : 'annual'}`}
                 className="btn-cta w-full mb-6"
               >
-                Try Premium free for 14 days
+                {user ? 'Try Premium free for 14 days' : 'Sign up for Premium trial'}
               </button>
 
               <div className="flex-1">

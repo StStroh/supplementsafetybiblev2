@@ -53,6 +53,16 @@ export default function Premium() {
   const [loading, setLoading] = useState<string | null>(null);
   const [finalizing, setFinalizing] = useState(false);
   const [finalizingStatus, setFinalizingStatus] = useState('Processing your payment...');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  async function loadUser() {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    setUser(currentUser);
+  }
 
   useEffect(() => {
     const checkUserTier = async () => {
@@ -274,6 +284,11 @@ export default function Premium() {
   const handleCheckout = async (tier: string) => {
     if (tier === 'starter') {
       navigate('/search');
+      return;
+    }
+
+    if (!user) {
+      navigate('/auth?redirect=/premium');
       return;
     }
 

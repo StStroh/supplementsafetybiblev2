@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { startTrialCheckout } from "../utils/checkout";
+import { supabase } from "../lib/supabase";
 
 type Props = {
   monthlyLabel?: string;
@@ -18,6 +19,16 @@ export default function PricingSection({
   const [interval, setInterval] = useState<"month" | "year">("year");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  async function loadUser() {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    setUser(currentUser);
+  }
 
   const priceLabel = useMemo(
     () => (interval === "month" ? monthlyLabel : yearlyLabel),
@@ -35,6 +46,11 @@ export default function PricingSection({
   }, [interval, monthlyLabel, yearlyLabel]);
 
   async function startCheckout() {
+    if (!user) {
+      navigate('/auth?redirect=/pricing');
+      return;
+    }
+
     setLoading(true);
     setErr(null);
 
