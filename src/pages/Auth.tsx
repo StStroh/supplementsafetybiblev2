@@ -1,11 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Mail, Loader2, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Mail, Loader2, CheckCircle, AlertCircle, Clock, Copy, Info } from 'lucide-react';
 import { SUPPORT_EMAIL } from '../lib/support';
 import { SITE_URL } from '../lib/siteUrl';
 
-const RATE_LIMIT_SECONDS = 60;
+const RATE_LIMIT_SECONDS = 30;
+const ENABLE_MAGIC_LINK = import.meta.env.VITE_AUTH_ENABLE_MAGIC_LINK !== 'false';
+const ENABLE_PASSWORD = import.meta.env.VITE_AUTH_ENABLE_PASSWORD !== 'false';
+
+interface DebugInfo {
+  timestamp: string;
+  email: string;
+  emailDomain: string;
+  redirectUrl: string;
+  error: string | null;
+  success: boolean;
+  rateLimited: boolean;
+}
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -14,7 +26,9 @@ export default function Auth() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const [lastSentTime, setLastSentTime] = useState<number | null>(null);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [showTroubleshooting, setShowTroubleshooting] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
   const redirect = urlParams.get('redirect') || '/account';
@@ -48,11 +62,34 @@ export default function Auth() {
     }
   }, [cooldownSeconds]);
 
-  // Check if still in cooldown period
   const isInCooldown = cooldownSeconds > 0;
+
+  // Get email domain for diagnostics
+  const getEmailDomain = (email: string): string => {
+    const parts = email.split('@');
+    return parts.length === 2 ? parts[1].toLowerCase() : '';
+  };
+
+  // Check if email is from problematic provider
+  const isProblematicProvider = (email: string): boolean => {
+    const domain = getEmailDomain(email);
+    return ['msn.com', 'outlook.com', 'hotmail.com', 'live.com'].includes(domain);
+  };
+
+  // Validate email format
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Basic validation
+    if (!isValidEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
 
     if (isInCooldown) {
       setError(`Please wait ${cooldownSeconds} seconds before requesting another email`);
@@ -62,16 +99,37 @@ export default function Auth() {
     setLoading(true);
     setError(null);
 
+    const redirectUrl = `${SITE_URL}/auth/callback`;
+    const emailDomain = getEmailDomain(email);
+    const timestamp = new Date().toISOString();
+
     try {
       console.info('[Auth] Attempting to send magic link to:', email);
-      console.info('[Auth] Redirect URL:', `${SITE_URL}/auth/callback`);
+      console.info('[Auth] Email domain:', emailDomain);
+      console.info('[Auth] Redirect URL:', redirectUrl);
+      console.info('[Auth] Timestamp:', timestamp);
 
-      const { error: signInError } = await supabase.auth.signInWithOtp({
+      const { data, error: signInError } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${SITE_URL}/auth/callback`,
+          emailRedirectTo: redirectUrl,
         },
       });
+
+      // Store debug info
+      const debug: DebugInfo = {
+        timestamp,
+        email,
+        emailDomain,
+        redirectUrl,
+        error: signInError?.message || null,
+        success: !signInError,
+        rateLimited: signInError?.message?.includes('rate') || false,
+      };
+      setDebugInfo(debug);
+
+      console.info('[Auth] Response data:', data);
+      console.info('[Auth] Response error:', signInError);
 
       if (signInError) {
         console.error('[Auth] Error sending magic link:', signInError);
@@ -95,13 +153,23 @@ export default function Auth() {
       console.info('[Auth] Magic link sent successfully to:', email);
 
       // Set cooldown
-      const now = Date.now();
-      setLastSentTime(now);
       setCooldownSeconds(RATE_LIMIT_SECONDS);
-
       setSent(true);
+      setLoading(false);
     } catch (err) {
       console.error('[Auth] Unexpected error:', err);
+
+      const debug: DebugInfo = {
+        timestamp,
+        email,
+        emailDomain,
+        redirectUrl,
+        error: err instanceof Error ? err.message : 'Unknown error',
+        success: false,
+        rateLimited: false,
+      };
+      setDebugInfo(debug);
+
       setError('An unexpected error occurred. Please try again or use password sign-in.');
       setLoading(false);
     }
@@ -110,11 +178,42 @@ export default function Auth() {
   const handleResend = async () => {
     setSent(false);
     setError(null);
-    // The form will handle the resend with rate limiting
     await handleSubmit(new Event('submit') as any);
   };
 
+  const copyDebugInfo = () => {
+    if (!debugInfo) return;
+
+    const debugText = `
+=== SUPPLEMENT SAFETY BIBLE AUTH DEBUG INFO ===
+Timestamp: ${debugInfo.timestamp}
+Email: ${debugInfo.email}
+Email Domain: ${debugInfo.emailDomain}
+Redirect URL: ${debugInfo.redirectUrl}
+Success: ${debugInfo.success}
+Error: ${debugInfo.error || 'None'}
+Rate Limited: ${debugInfo.rateLimited}
+Browser: ${navigator.userAgent}
+===========================================
+    `.trim();
+
+    navigator.clipboard.writeText(debugText).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  // If magic link is disabled, redirect to password auth
+  if (!ENABLE_MAGIC_LINK && ENABLE_PASSWORD) {
+    useEffect(() => {
+      navigate('/auth/password');
+    }, []);
+    return null;
+  }
+
   if (sent) {
+    const isOutlook = isProblematicProvider(email);
+
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
@@ -129,15 +228,81 @@ export default function Auth() {
             </p>
           </div>
 
-          {/* Help section */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <h3 className="text-sm font-semibold text-blue-900 mb-2">Email not arriving?</h3>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• Check your spam or junk folder</li>
-              <li>• Make sure {email} is correct</li>
-              <li>• Wait a few minutes for delivery</li>
-              <li>• Use "Resend Email" below if needed</li>
-            </ul>
+          {/* Outlook/MSN Warning */}
+          {isOutlook && (
+            <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-4">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-semibold text-amber-900 mb-1">Outlook/MSN/Hotmail User?</h3>
+                  <p className="text-xs text-amber-800">
+                    Microsoft email services sometimes filter or delay authentication emails.
+                    Check your <strong>Junk</strong> folder and wait 2-3 minutes.
+                    Consider using Gmail or another provider if issues persist.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Troubleshooting */}
+          <div className="mb-4">
+            <button
+              onClick={() => setShowTroubleshooting(!showTroubleshooting)}
+              className="w-full flex items-center justify-between text-left px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition"
+            >
+              <span className="text-sm font-semibold text-blue-900">
+                Email not arriving? Click for help
+              </span>
+              <Info className="w-4 h-4 text-blue-600" />
+            </button>
+
+            {showTroubleshooting && (
+              <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="text-sm font-semibold text-blue-900 mb-2">Troubleshooting Steps</h3>
+                <ul className="text-xs text-blue-800 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600">1.</span>
+                    <span>Check your <strong>spam</strong> or <strong>junk</strong> folder</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600">2.</span>
+                    <span>Verify {email} is spelled correctly</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600">3.</span>
+                    <span>Wait 2-5 minutes for delivery (email can be slow)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600">4.</span>
+                    <span>Search your inbox for "supplementsafetybible" or "supabase"</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600">5.</span>
+                    <span>If using Outlook/MSN/Hotmail, check "Other" or "Focused" tabs</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600">6.</span>
+                    <span>Try a Gmail address if your provider blocks authentication emails</span>
+                  </li>
+                </ul>
+
+                {debugInfo && (
+                  <div className="mt-3 pt-3 border-t border-blue-300">
+                    <button
+                      onClick={copyDebugInfo}
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-medium"
+                    >
+                      <Copy className="w-4 h-4" />
+                      {copied ? 'Copied!' : 'Copy debug info for support'}
+                    </button>
+                    <p className="text-xs text-blue-700 mt-2">
+                      If you contact support, include this debug info to help us diagnose the issue.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Resend section */}
@@ -157,17 +322,19 @@ export default function Auth() {
           )}
 
           {/* Alternative auth option */}
-          <div className="border-t pt-4">
-            <p className="text-center text-sm text-gray-600 mb-3">
-              Having trouble with magic links?
-            </p>
-            <button
-              onClick={() => navigate('/auth/password')}
-              className="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition"
-            >
-              Sign in with password instead
-            </button>
-          </div>
+          {ENABLE_PASSWORD && (
+            <div className="border-t pt-4">
+              <p className="text-center text-sm text-gray-600 mb-3">
+                Having trouble with magic links?
+              </p>
+              <button
+                onClick={() => navigate(`/auth/password?email=${encodeURIComponent(email)}`)}
+                className="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition"
+              >
+                Sign in with password instead
+              </button>
+            </div>
+          )}
 
           <p className="text-center text-xs text-gray-500 mt-4">
             You can close this window and check your email now
@@ -176,6 +343,8 @@ export default function Auth() {
       </div>
     );
   }
+
+  const isOutlookEmail = isProblematicProvider(email);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex items-center justify-center p-4">
@@ -203,14 +372,30 @@ export default function Auth() {
             />
           </div>
 
+          {/* Outlook warning */}
+          {isOutlookEmail && email.length > 5 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-amber-800">
+                    <strong>Note:</strong> Outlook/MSN/Hotmail sometimes delays or filters authentication emails.
+                    We recommend using Gmail or trying password sign-in below.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
               <div className="flex items-start gap-2">
                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm text-red-700">{error}</p>
-                  {error.includes('couldn\'t send') && (
+                  {(error.includes('couldn\'t send') && ENABLE_PASSWORD) && (
                     <button
+                      type="button"
                       onClick={() => navigate('/auth/password')}
                       className="text-sm text-red-600 underline mt-1 hover:text-red-800"
                     >
@@ -250,23 +435,25 @@ export default function Auth() {
         </form>
 
         {/* Alternative: Password sign-in */}
-        <div className="mt-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+        {ENABLE_PASSWORD && (
+          <div className="mt-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or</span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or</span>
-            </div>
-          </div>
 
-          <button
-            onClick={() => navigate('/auth/password')}
-            className="mt-4 w-full bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition"
-          >
-            Sign in with password
-          </button>
-        </div>
+            <button
+              onClick={() => navigate(`/auth/password${email ? `?email=${encodeURIComponent(email)}` : ''}`)}
+              className="mt-4 w-full bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition"
+            >
+              Sign in with password
+            </button>
+          </div>
+        )}
 
         <div className="mt-6 space-y-3">
           <p className="text-center text-sm text-gray-500">
