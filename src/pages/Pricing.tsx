@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, X } from 'lucide-react';
+import { Check, X, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { startTrialCheckout } from '../utils/checkout';
 import { useAlert } from '../state/AlertProvider';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import Logo from '../components/Logo';
+import { BRAND_NAME_FULL } from '../lib/brand';
 
 type BillingInterval = 'monthly' | 'annual';
 
@@ -50,9 +52,14 @@ export default function Pricing() {
   const { showAlert } = useAlert();
   const [interval, setInterval] = useState<BillingInterval>('annual');
   const [user, setUser] = useState<any>(null);
+  const [showCancelledAlert, setShowCancelledAlert] = useState(false);
 
   useEffect(() => {
     loadUser();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('cancelled') === '1') {
+      setShowCancelledAlert(true);
+    }
   }, []);
 
   async function loadUser() {
@@ -83,6 +90,33 @@ export default function Pricing() {
         canonical="/pricing"
       />
       <Navbar />
+
+      {showCancelledAlert && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+          <div className="rounded-lg border-2 p-4 flex items-start gap-3" style={{ borderColor: '#FFA726', background: '#FFF3E0' }}>
+            <div className="flex-shrink-0 mt-0.5">
+              <Logo className="h-8 w-auto" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertCircle className="w-5 h-5" style={{ color: '#F57C00' }} />
+                <h3 className="font-semibold" style={{ color: '#E65100' }}>Checkout Cancelled</h3>
+              </div>
+              <p className="text-sm" style={{ color: '#E65100' }}>
+                Your payment was cancelled. No charges were made. When you're ready, choose a plan below to continue.
+              </p>
+              <p className="text-xs mt-2 font-medium" style={{ color: '#BF360C' }}>{BRAND_NAME_FULL}</p>
+            </div>
+            <button
+              onClick={() => setShowCancelledAlert(false)}
+              className="flex-shrink-0 p-1 rounded hover:bg-orange-200 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" style={{ color: '#E65100' }} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center mb-12">

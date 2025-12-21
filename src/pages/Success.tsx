@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { SUPPORT_EMAIL } from '../lib/support';
+import Logo from '../components/Logo';
+import { BRAND_NAME_FULL } from '../lib/brand';
 
 interface SessionData {
   customer_email: string;
@@ -105,6 +107,10 @@ const Success: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center py-16 px-4" style={{ background: 'var(--color-bg)' }}>
       <div className="card p-10 max-w-2xl w-full">
         <div className="text-center mb-10">
+          <div className="mb-6">
+            <Logo className="h-16 w-auto mx-auto mb-3" />
+            <p className="text-lg font-semibold" style={{ color: 'var(--color-text-muted)' }}>{BRAND_NAME_FULL}</p>
+          </div>
           <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6" style={{background: '#E8F5E9'}}>
             <CheckCircle className="w-14 h-14" style={{ color: 'var(--color-success)' }} />
           </div>
