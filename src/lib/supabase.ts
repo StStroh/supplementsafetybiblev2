@@ -1,3 +1,12 @@
+/*
+ * ⚠️ PRODUCTION-CRITICAL: Supabase Client Singleton
+ *
+ * This creates THE ONLY Supabase client instance for the entire app.
+ * Multiple clients cause auth conflicts and session corruption.
+ *
+ * STORAGE_KEY must match production Supabase project ID.
+ * See: OPERATIONS.md → Auth Failures
+ */
 /// <reference types="vite/client" />
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { getEnv } from './env';

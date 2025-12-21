@@ -1,3 +1,12 @@
+/*
+ * ⚠️ PRODUCTION-CRITICAL: Stripe Checkout Creation
+ *
+ * This function handles ALL payment initiation.
+ * Changes here directly affect revenue collection.
+ *
+ * Fail-safe: Rejects invalid tiers/prices (user not charged).
+ * See: OPERATIONS.md → Stripe Checkout Errors
+ */
 const Stripe = require('stripe');
 const { PLAN_PRICE_MAP } = require('../../src/lib/stripe/plan-map.cjs');
 const { supabaseAdmin } = require('./_lib/supabaseClient.cjs');

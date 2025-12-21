@@ -5,10 +5,16 @@ exports.handler = async (event) => {
 
   const auth = event.headers.authorization || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-  if (!token) return { statusCode: 401, body: 'Missing bearer token' };
+  if (!token) {
+    console.warn('[AUTH] Missing bearer token');
+    return { statusCode: 401, body: 'Missing bearer token' };
+  }
 
   const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user?.email) return { statusCode: 401, body: 'Invalid token' };
+  if (error || !user?.email) {
+    console.warn('[AUTH] Invalid token or missing email:', error?.message);
+    return { statusCode: 401, body: 'Invalid token' };
+  }
 
   const email = user.email;
 
@@ -18,7 +24,14 @@ exports.handler = async (event) => {
     .eq('email', email)
     .maybeSingle();
 
-  if (qErr) return { statusCode: 500, body: 'Query error' };
+  if (qErr) {
+    console.error('[TIER] Profile query error for', email, ':', qErr.message);
+    return { statusCode: 500, body: 'Query error' };
+  }
+
+  if (!data) {
+    console.warn('[TIER] No profile found for', email, '- defaulting to non-premium');
+  }
 
   return {
     statusCode: 200,
