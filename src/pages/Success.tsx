@@ -102,25 +102,27 @@ const Success: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ background: 'var(--color-bg)' }}>
-      <div className="card p-8 max-w-2xl w-full">
-        <div className="text-center mb-8">
-          <CheckCircle className="w-20 h-20 mx-auto mb-4" style={{ color: 'var(--color-success)' }} />
-          <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Access Activated!</h1>
-          <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>
+    <div className="min-h-screen flex items-center justify-center py-16 px-4" style={{ background: 'var(--color-bg)' }}>
+      <div className="card p-10 max-w-2xl w-full">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6" style={{background: '#E8F5E9'}}>
+            <CheckCircle className="w-14 h-14" style={{ color: 'var(--color-success)' }} />
+          </div>
+          <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>Welcome to Premium!</h1>
+          <p className="text-xl" style={{ color: 'var(--color-text-muted)' }}>
             Your subscription has been successfully activated.
           </p>
         </div>
 
         {sessionData && (
-          <div className="rounded-lg p-6 mb-6 space-y-4" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
-            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Email</span>
+          <div className="rounded-xl p-7 mb-8 space-y-5" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+            <div className="flex justify-between items-center pb-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="font-medium text-sm" style={{ color: 'var(--color-text-muted)' }}>Email</span>
               <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{sessionData.customer_email}</span>
             </div>
 
-            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Plan</span>
+            <div className="flex justify-between items-center pb-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="font-medium text-sm" style={{ color: 'var(--color-text-muted)' }}>Plan</span>
               <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{getPlanName()}</span>
             </div>
 
@@ -143,15 +145,15 @@ const Success: React.FC = () => {
               </div>
             )}
 
-            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Status</span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" style={{ background: '#E8F5E9', color: '#2E7D32' }}>
+            <div className="flex justify-between items-center pb-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <span className="font-medium text-sm" style={{ color: 'var(--color-text-muted)' }}>Status</span>
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold" style={{ background: '#E8F5E9', color: '#2E7D32' }}>
                 {sessionData.subscription_status}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="font-medium" style={{ color: 'var(--color-text-muted)' }}>Next Billing Date</span>
+              <span className="font-medium text-sm" style={{ color: 'var(--color-text-muted)' }}>Next Billing Date</span>
               <span className="font-semibold" style={{ color: 'var(--color-text)' }}>
                 {formatDate(sessionData.current_period_end)}
               </span>
@@ -159,22 +161,22 @@ const Success: React.FC = () => {
           </div>
         )}
 
-        <div className="space-y-3">
-          <a href="/#checker" className="btn-cta block w-full text-center">
+        <div className="space-y-4">
+          <a href="/#checker" className="btn-cta block w-full text-center text-base py-4">
             Start Checking Interactions
           </a>
-          <a href="/account" className="btn-outline block w-full text-center">
+          <a href="/account" className="btn-outline block w-full text-center text-base py-4">
             Manage Account
           </a>
         </div>
 
-        <div className="mt-6 text-center space-y-2">
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Prefer monthly? You can switch plans anytime.
+        <div className="mt-8 text-center space-y-3 pt-6" style={{borderTop: '1px solid var(--color-border)'}}>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
+            Prefer monthly? You can switch plans anytime from your account settings.
           </p>
-          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            If you have any issues with your subscription, contact us at{' '}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline" style={{ color: 'var(--color-trial)' }}>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
+            Questions? Contact us at{' '}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium hover:underline" style={{ color: 'var(--color-trial)' }}>
               {SUPPORT_EMAIL}
             </a>
           </p>

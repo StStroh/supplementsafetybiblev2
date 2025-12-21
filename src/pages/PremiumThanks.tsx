@@ -155,17 +155,17 @@ export default function PremiumThanks() {
 
   if (state === "loading" || state === "finalizing" || state === "checking") {
     return (
-      <main className="mx-auto max-w-3xl p-6 text-center">
+      <main className="min-h-screen flex items-center justify-center" style={{background: 'var(--color-bg)'}}>
         <SEO
           title="Activating Premium | Supplement Safety Bible"
           description="Activating your Premium subscription"
           canonical="/premium/thanks"
           noindex={true}
         />
-        <div className="animate-pulse">
-          <div className="w-16 h-16 mx-auto mb-4 border-4 border-t-black border-gray-200 rounded-full animate-spin"></div>
-          <h1 className="text-2xl font-semibold text-gray-900">{statusText}</h1>
-          <p className="mt-2 text-gray-600">This only takes a moment.</p>
+        <div className="card p-12 max-w-md text-center">
+          <div className="w-20 h-20 mx-auto mb-6 border-4 rounded-full animate-spin" style={{borderColor: '#EDE7F6', borderTopColor: 'var(--color-brand)'}}></div>
+          <h1 className="text-2xl font-bold mb-3" style={{color: 'var(--color-text)'}}>{statusText}</h1>
+          <p style={{color: 'var(--color-text-muted)'}}>This only takes a moment.</p>
         </div>
       </main>
     );
@@ -173,33 +173,38 @@ export default function PremiumThanks() {
 
   if (state === "timeout") {
     return (
-      <main className="mx-auto max-w-3xl p-6 text-center">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{background: 'var(--color-bg)'}}>
         <SEO
           title="Premium Activation | Supplement Safety Bible"
           description="Completing your Premium subscription"
           canonical="/premium/thanks"
           noindex={true}
         />
-        <h1 className="text-2xl font-semibold text-gray-900">Almost there…</h1>
-        <p className="mt-2 text-gray-600">
-          Your payment was successful, but activation is taking longer than expected.
-        </p>
-        <p className="mt-2 text-gray-600">
-          This can happen if our servers are busy. Your Premium access will be ready shortly.
-        </p>
-        <div className="mt-6 space-x-4">
-          <button
-            onClick={() => window.location.reload()}
-            className="inline-block rounded-lg px-5 py-3 bg-black text-white hover:bg-gray-900"
-          >
-            Refresh Page
-          </button>
-          <a
-            href="/premium/dashboard"
-            className="inline-block rounded-lg px-5 py-3 border-2 border-black text-black hover:bg-gray-50"
-          >
-            Go to Dashboard
-          </a>
+        <div className="card p-10 max-w-md text-center">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center" style={{background: '#FFF4E5'}}>
+            <svg className="w-8 h-8" style={{color: 'var(--color-warning)'}} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-3" style={{color: 'var(--color-text)'}}>Almost there…</h1>
+          <p className="mb-3" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
+            Your payment was successful, but activation is taking longer than expected.
+          </p>
+          <p className="mb-8" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
+            This can happen during high traffic. Your Premium access will be ready shortly.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full btn-cta py-3"
+            >
+              Refresh Page
+            </button>
+            <a
+              href="/premium/dashboard"
+              className="block w-full btn-outline py-3"
+            >
+              Go to Dashboard
+            </a>
+          </div>
         </div>
       </main>
     );
@@ -207,19 +212,22 @@ export default function PremiumThanks() {
 
   if (state === "fail") {
     return (
-      <main className="mx-auto max-w-3xl p-6 text-center">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{background: 'var(--color-bg)'}}>
         <SEO
           title="Premium Activation | Supplement Safety Bible"
           description="Completing your Premium subscription"
           canonical="/premium/thanks"
           noindex={true}
         />
-        <h1 className="text-2xl font-semibold text-gray-900">Unable to verify session</h1>
-        <p className="mt-2 text-gray-600">
-          We couldn't find your payment session. If you were charged, your access will be activated shortly.
-        </p>
-        <div className="mt-6 space-x-4">
-          <a href="/pricing" className="inline-block underline text-gray-700">
+        <div className="card p-10 max-w-md text-center">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center" style={{background: '#FFEBEE'}}>
+            <svg className="w-8 h-8" style={{color: 'var(--color-error)'}} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-3" style={{color: 'var(--color-text)'}}>Unable to Verify Session</h1>
+          <p className="mb-8" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
+            We couldn't find your payment session. If you were charged, your access will be activated shortly.
+          </p>
+          <a href="/pricing" className="btn-outline block w-full py-3">
             Back to Pricing
           </a>
         </div>
@@ -228,16 +236,21 @@ export default function PremiumThanks() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl p-6 text-center">
+    <main className="min-h-screen flex items-center justify-center px-4" style={{background: 'var(--color-bg)'}}>
       <SEO
         title="Welcome to Premium | Supplement Safety Bible"
         description="Thank you for upgrading to Premium. Your account is now active."
         canonical="/premium/thanks"
         noindex={true}
       />
-      <h1 className="text-3xl font-bold text-gray-900">Welcome to Premium 🎉</h1>
-      <p className="mt-4 text-gray-700">Your Premium access is now active.</p>
-      <p className="mt-2 text-gray-600">Redirecting to your dashboard…</p>
+      <div className="card p-12 max-w-md text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6" style={{background: '#E8F5E9'}}>
+          <svg className="w-10 h-10" style={{color: 'var(--color-success)'}} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+        </div>
+        <h1 className="text-3xl font-bold mb-4" style={{color: 'var(--color-text)'}}>Welcome to Premium!</h1>
+        <p className="mb-2" style={{color: 'var(--color-text-muted)'}}>Your Premium access is now active.</p>
+        <p style={{color: 'var(--color-text-muted)'}}>Redirecting to your dashboard…</p>
+      </div>
     </main>
   );
 }
