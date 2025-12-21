@@ -29,14 +29,9 @@ import PreviewGuides from './pages/PreviewGuides';
 import PreviewFeed from './pages/PreviewFeed';
 import PregnancyLactation from './pages/PregnancyLactation';
 import PostCheckout from './pages/PostCheckout';
-
-function NotFound() {
-  return <div style={{padding: 40}}>Page not found</div>;
-}
-
-function CheckoutCancel() {
-  return <div style={{padding: 40}}>Checkout canceled.</div>;
-}
+import NotFound from './pages/NotFound';
+import CheckoutCancel from './pages/CheckoutCancel';
+import AuthTest from './pages/AuthTest';
 
 export const router = createBrowserRouter([
   {
@@ -106,6 +101,10 @@ export const router = createBrowserRouter([
       {
         path: 'auth/callback',
         element: <AuthCallback />
+      },
+      {
+        path: 'auth/test',
+        element: <AuthTest />
       },
       {
         path: 'free',
