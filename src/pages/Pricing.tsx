@@ -60,7 +60,7 @@ export default function Pricing() {
     setUser(currentUser);
   }
 
-  function handleSelectPlan(plan: 'starter') {
+  function handleSelectStarter() {
     if (!user) {
       navigate('/auth?redirect=/free');
     } else {
@@ -68,15 +68,18 @@ export default function Pricing() {
     }
   }
 
-  const proPrice = interval === 'annual' ? 199 : 14.99;
-  const premiumPrice = interval === 'annual' ? 399 : 24.99;
-  const annualSavings = Math.round(((14.99 * 12 - 199) / (14.99 * 12)) * 100);
+  const proMonthly = 14.99;
+  const proAnnual = 199;
+  const premiumMonthly = 24.99;
+  const premiumAnnual = 399;
+
+  const annualSavings = Math.round(((proMonthly * 12 - proAnnual) / (proMonthly * 12)) * 100);
 
   return (
     <div className="min-h-screen" style={{background: 'var(--color-bg)'}}>
       <SEO
         title="Pricing Plans — Supplement Safety Bible"
-        description="Choose the plan that's right for you. Start with a 14-day free trial on paid plans. 60-day money-back guarantee."
+        description="Professional supplement-medication interaction screening for healthcare providers and individuals."
         canonical="/pricing"
       />
       <Navbar />
@@ -84,282 +87,253 @@ export default function Pricing() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{color: 'var(--color-text)'}}>
-            Plans for safe, evidence-based decisions
+            Plans for Safe, Evidence-Based Decisions
           </h1>
           <p className="text-lg" style={{color: 'var(--color-text-muted)'}}>
-            Start a 14-day free trial on paid plans. 60-day money-back guarantee.
+            Professional supplement-medication interaction screening
           </p>
 
-          <div className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-slate-300 bg-white p-1">
+          <div className="mt-8 inline-flex items-center gap-2 rounded-full border-2" style={{borderColor: 'var(--color-border)', background: 'var(--color-surface)', padding: '4px'}}>
             <button
               onClick={() => setInterval('monthly')}
-              className={`px-6 py-2 rounded-full font-semibold transition ${
-                interval === 'monthly'
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-700 hover:text-slate-900'
+              className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                interval === 'monthly' ? 'text-white' : ''
               }`}
+              style={{
+                background: interval === 'monthly' ? 'var(--color-brand)' : 'transparent',
+                color: interval === 'monthly' ? 'white' : 'var(--color-text-muted)'
+              }}
             >
               Monthly
             </button>
             <button
               onClick={() => setInterval('annual')}
-              className={`px-6 py-2 rounded-full font-semibold transition relative ${
-                interval === 'annual'
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-700 hover:text-slate-900'
+              className={`px-6 py-2 rounded-full font-semibold transition-all relative ${
+                interval === 'annual' ? 'text-white' : ''
               }`}
+              style={{
+                background: interval === 'annual' ? 'var(--color-brand)' : 'transparent',
+                color: interval === 'annual' ? 'white' : 'var(--color-text-muted)'
+              }}
             >
-              Annual
+              Yearly
               {interval === 'annual' && (
-                <span className="absolute -top-3 -right-3 bg-green-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                <span className="absolute -top-2 -right-2 text-white text-xs px-2 py-0.5 rounded-full font-bold" style={{background: 'var(--color-success)'}}>
                   Save {annualSavings}%
                 </span>
               )}
             </button>
           </div>
-
-          <div className="mt-6 text-center max-w-md mx-auto">
-            <p className="text-sm font-medium mb-1" style={{color: 'var(--color-text-muted)'}}>
-              Most professionals choose annual to save time and money.
-            </p>
-            <p className="text-xs" style={{color: 'var(--color-text-muted)', lineHeight: '1.5'}}>
-              Save up to 17% compared to monthly. Lock in uninterrupted access for the year.
-            </p>
-          </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
-          {/* Starter Card */}
-          <div className="card flex flex-col" style={{padding: '32px'}}>
-            <div className="mb-6">
-              <div className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3" style={{background: 'var(--color-bg)', color: 'var(--color-text-muted)'}}>
-                Free forever
+        <div className="rounded-2xl p-8 mb-12" style={{background: 'rgba(94, 59, 118, 0.03)', border: '1px solid rgba(94, 59, 118, 0.1)'}}>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Starter Card */}
+            <div className="card flex flex-col relative" style={{padding: '32px', background: 'var(--color-surface)'}}>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Starter</h2>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For exploring safety basics</p>
               </div>
-              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Starter</h2>
-              <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For basic safety previews</p>
-            </div>
 
-            <div className="mb-6">
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold" style={{color: 'var(--color-text)'}}>$0</span>
-                <span style={{color: 'var(--color-text-muted)'}}>/month</span>
-              </div>
-            </div>
-
-            <ul className="space-y-3 mb-8 flex-1">
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Interaction preview (risk level only)</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Basic supplement/medication search</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Save up to 10 handouts/protocols</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text-muted)'}}>
-                <X className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-text-muted)'}} />
-                <span>PDF export not included</span>
-              </li>
-            </ul>
-
-            <button
-              onClick={() => handleSelectPlan('starter')}
-              className="btn-outline w-full"
-            >
-              Start free
-            </button>
-
-            <p className="guarantee-note text-center mt-3">No credit card required</p>
-          </div>
-
-          {/* Pro Card - Most Popular */}
-          <div className="card relative shadow-lg" style={{borderColor: 'var(--color-brand)', borderWidth: '2px'}}>
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 text-white text-sm font-bold rounded-full" style={{background: 'var(--color-brand)'}}>
-              Most popular
-            </div>
-
-            <div className="mb-6" style={{paddingTop: '32px', paddingLeft: '32px', paddingRight: '32px'}}>
-              <div className="badge-trial mb-3">
-                Try free for 14 days
-              </div>
-              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Pro</h2>
-              <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For full insights and reports</p>
-            </div>
-
-            <div className="mb-6" style={{paddingLeft: '32px', paddingRight: '32px'}}>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold" style={{color: 'var(--color-text)'}}>
-                  ${interval === 'annual' ? Math.round(proPrice / 12) : proPrice}
-                </span>
-                <span style={{color: 'var(--color-text-muted)'}}>/month</span>
-              </div>
-              {interval === 'annual' && (
-                <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
-                  ${proPrice} billed annually
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>$0</span>
+                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
+                </div>
+                <p className="text-sm mt-2" style={{color: 'var(--color-success)', fontWeight: 600}}>
+                  Free forever
                 </p>
-              )}
-              <p className="text-xs mt-2" style={{color: 'var(--color-text-muted)'}}>
-                Best value when billed annually.
+              </div>
+
+              <button
+                onClick={handleSelectStarter}
+                className="btn-outline w-full mb-6"
+              >
+                {user ? 'Go to Dashboard' : 'Create free account'}
+              </button>
+
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold mb-3" style={{color: 'var(--color-text)', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                  Essentials
+                </h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Interaction preview (risk level only)</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Basic supplement/medication search</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Up to 10 checks per month</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text-muted)'}}>
+                    <X className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-text-muted)'}} />
+                    <span>No PDF exports</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text-muted)'}}>
+                    <X className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-text-muted)'}} />
+                    <span>No clinical explanations</span>
+                  </li>
+                </ul>
+              </div>
+
+              <p className="mt-6 text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                No credit card required
               </p>
             </div>
 
-            <div className="mb-6" style={{paddingLeft: '32px', paddingRight: '32px'}}>
-              <h3 className="font-semibold text-base mb-2" style={{color: 'var(--color-text)'}}>
-                Work smarter and help your patients thrive
-              </h3>
-              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
-                Supplement Safety Bible Pro can save you hours every week and keep your patient resources automatically updated with the latest evidence.
-              </p>
-            </div>
+            {/* Pro Card - Most Popular */}
+            <div className="card relative shadow-xl flex flex-col" style={{borderColor: 'var(--color-brand)', borderWidth: '2px', padding: '32px', background: 'var(--color-surface)'}}>
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 text-white text-sm font-bold rounded-full" style={{background: 'var(--color-brand)'}}>
+                Most popular
+              </div>
 
-            <ul className="space-y-3 mb-8 flex-1" style={{paddingLeft: '32px', paddingRight: '32px'}}>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span className="font-semibold">Everything in Starter, plus:</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Drug–Supplement Interaction Checker (full results)</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Mechanism explanations (PK/PD, CYP pathways)</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Unlimited handouts & protocols</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>PDF exports</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Shareable links for clients/patients</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Light branding (logo/header)</span>
-              </li>
-            </ul>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Pro</h2>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For full insights and clinical guidance</p>
+              </div>
 
-            <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>
+                    ${interval === 'annual' ? Math.round(proAnnual / 12) : proMonthly}
+                  </span>
+                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
+                </div>
+                {interval === 'annual' && (
+                  <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
+                    ${proAnnual} billed annually
+                  </p>
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={() => startTrialCheckout('pro', interval, showAlert)}
                 data-testid={`checkout-btn-pro-${interval === 'monthly' ? 'monthly' : 'annual'}`}
-                className="btn-cta w-full flex items-center justify-center relative"
-                style={{ zIndex: 60, pointerEvents: 'auto' }}
+                className="btn-cta w-full mb-6"
               >
                 Try Pro free for 14 days
               </button>
 
-              <div className="mt-4 text-center space-y-2">
-                <p className="guarantee-note">
-                  Full access. Cancel anytime.
-                </p>
-                <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
-                  Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please contact us.
-                </p>
-                <p className="text-xs" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
-                  If you have any questions or could use assistance, please do not hesitate to reach out to our <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>support team</a>.
-                </p>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold mb-3" style={{color: 'var(--color-text)', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                  Everything in Starter, plus:
+                </h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Unlimited interaction checks</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Full clinical explanations (PK/PD, CYP pathways)</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Evidence-based recommendations</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>PDF report exports</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Shareable patient handouts</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Priority email support</span>
+                  </li>
+                </ul>
               </div>
-            </div>
-          </div>
 
-          {/* Premium Card */}
-          <div className="card flex flex-col">
-            <div className="mb-6" style={{paddingTop: '32px', paddingLeft: '32px', paddingRight: '32px'}}>
-              <div className="badge-trial mb-3">
-                Try free for 14 days
-              </div>
-              <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Premium</h2>
-              <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and professionals</p>
-            </div>
-
-            <div className="mb-6" style={{paddingLeft: '32px', paddingRight: '32px'}}>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold" style={{color: 'var(--color-text)'}}>
-                  ${interval === 'annual' ? Math.round(premiumPrice / 12) : premiumPrice}
-                </span>
-                <span style={{color: 'var(--color-text-muted)'}}>/month</span>
-              </div>
-              {interval === 'annual' && (
-                <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
-                  ${premiumPrice} billed annually
-                </p>
-              )}
-              <p className="text-xs mt-2" style={{color: 'var(--color-text-muted)'}}>
-                Best value when billed annually.
+              <p className="mt-6 text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                Cancel anytime. For individual use.
               </p>
             </div>
 
-            <ul className="space-y-3 mb-8 flex-1" style={{paddingLeft: '32px', paddingRight: '32px'}}>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span className="font-semibold">Everything in Pro, plus:</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>+1 read-only user</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Full white-label (remove SSB branding)</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Customize fonts & colors</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Advanced patient-ready reports</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
-                <span>Priority support</span>
-              </li>
-            </ul>
+            {/* Premium Card */}
+            <div className="card flex flex-col relative" style={{padding: '32px', background: 'var(--color-surface)'}}>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Premium</h2>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and professionals</p>
+              </div>
 
-            <div style={{paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px'}}>
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>
+                    ${interval === 'annual' ? Math.round(premiumAnnual / 12) : premiumMonthly}
+                  </span>
+                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
+                </div>
+                {interval === 'annual' && (
+                  <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
+                    ${premiumAnnual} billed annually
+                  </p>
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={() => startTrialCheckout('premium', interval, showAlert)}
                 data-testid={`checkout-btn-premium-${interval === 'monthly' ? 'monthly' : 'annual'}`}
-                className="btn-cta w-full flex items-center justify-center relative"
-                style={{ zIndex: 60, pointerEvents: 'auto' }}
+                className="btn-cta w-full mb-6"
               >
                 Try Premium free for 14 days
               </button>
 
-              <div className="mt-4 text-center space-y-2">
-                <p className="guarantee-note">
-                  Designed for clinical use.
-                </p>
-                <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
-                  Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please contact us.
-                </p>
-                <p className="text-xs" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
-                  If you have any questions or could use assistance, please do not hesitate to reach out to our <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>support team</a>.
-                </p>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold mb-3" style={{color: 'var(--color-text)', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                  Everything in Pro, plus:
+                </h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>+1 read-only user</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Full white-label branding</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Custom fonts & colors</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Advanced patient-ready reports</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Priority support</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+                    <span>Clinical follow-up protocols</span>
+                  </li>
+                </ul>
               </div>
+
+              <p className="mt-6 text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                Designed for clinical use
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="text-center py-6 space-y-3" style={{borderTop: '1px solid var(--color-border)'}}>
-          <p className="guarantee-note">
-            60-day money-back guarantee · Change or cancel at any time
+        <div className="text-center py-6 space-y-3 max-w-2xl mx-auto">
+          <p className="text-sm font-medium" style={{color: 'var(--color-text-muted)'}}>
+            Cancel anytime · Educational use only — not medical advice
           </p>
-          <p className="text-xs" style={{ color: 'var(--color-text-muted)', lineHeight: '1.5', maxWidth: '600px', margin: '0 auto' }}>
-            Please note that SafetyBible Pro subscriptions are for individual use. For team, practice, enterprise, or multiple user access, please <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>contact us</a>.
+          <p className="text-xs" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
+            Supplement Safety Bible provides evidence-based educational guidance to support informed clinical decisions. This tool does not replace professional medical judgment, official prescribing information, or consultation with qualified healthcare providers.
           </p>
-          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            If you have any questions or could use assistance, please reach out to our <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>support team</a>.
+          <p className="text-xs" style={{color: 'var(--color-text-muted)'}}>
+            Questions? Contact us at <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{color: 'var(--color-trial)'}}>support@supplementsafetybible.com</a>
           </p>
         </div>
 
@@ -423,7 +397,7 @@ export default function Pricing() {
 
         <div className="mt-16 max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12" style={{color: 'var(--color-text)'}}>
-            Pricing FAQs
+            Frequently Asked Questions
           </h2>
 
           <div className="space-y-8">
@@ -433,15 +407,6 @@ export default function Pricing() {
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
                 During the Pro or Premium trial, you have full access to all features in that plan. You can cancel at any time before the trial ends and you won't be charged.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
-                Is there a money-back guarantee?
-              </h3>
-              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Yes. All paid plans are covered by a 60-day money-back guarantee. Cancel within 60 days for a full refund.
               </p>
             </div>
 
@@ -459,16 +424,16 @@ export default function Pricing() {
                 Is this for individual or team use?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Pro and Premium are for individual practitioners. For teams or institutions, contact us.
+                Pro is for individual practitioners. Premium includes 1 additional read-only user. For larger teams or institutions, please contact us.
               </p>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
-                Is Supplement Safety Bible a medical device?
+                Is this a medical device or diagnostic tool?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                No. It provides evidence-based educational guidance and does not replace professional medical judgment or prescribing information.
+                No. Supplement Safety Bible provides evidence-based educational guidance and does not replace professional medical judgment, diagnosis, or treatment recommendations. Always consult official prescribing information and qualified healthcare providers.
               </p>
             </div>
 
@@ -477,23 +442,23 @@ export default function Pricing() {
                 How often is the data updated?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Continuously reviewed and updated as new evidence becomes available.
+                Our interaction database is continuously reviewed and updated as new evidence becomes available from peer-reviewed literature and clinical studies.
               </p>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
-                Does SafetyBible cover controlled substances and prescription medications?
+                Does SafetyBible cover prescription medications?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Yes. SafetyBible includes screening for interactions with controlled substances, narrow-therapeutic-index drugs (like warfarin, digoxin), immunosuppressants, and other prescription medications that require careful monitoring when combined with dietary supplements.
+                Yes. SafetyBible screens for interactions with prescription medications including controlled substances, narrow-therapeutic-index drugs (warfarin, digoxin), immunosuppressants, and other medications requiring careful monitoring when combined with dietary supplements.
               </p>
             </div>
           </div>
 
-          <div className="mt-12 p-6 rounded-lg" style={{background: 'var(--color-bg)', border: '1px solid var(--color-border)'}}>
+          <div className="mt-12 p-6 rounded-lg" style={{background: 'rgba(94, 59, 118, 0.05)', border: '1px solid rgba(94, 59, 118, 0.1)'}}>
             <p className="text-sm text-center" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-              Supplement Safety Bible supports informed decision-making. It does not provide medical diagnoses or treatment recommendations and should be used alongside professional judgment and official prescribing information.
+              <strong>Medical Disclaimer:</strong> Supplement Safety Bible supports informed decision-making for educational purposes only. It does not provide medical diagnoses, treatment recommendations, or replace consultation with qualified healthcare providers. Use alongside professional clinical judgment and official prescribing information.
             </p>
           </div>
         </div>

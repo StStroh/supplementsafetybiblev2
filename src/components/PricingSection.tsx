@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Check } from "lucide-react";
 import { startTrialCheckout } from "../utils/checkout";
 
 type Props = {
@@ -8,11 +10,12 @@ type Props = {
 };
 
 export default function PricingSection({
-  monthlyLabel = "$—",
-  yearlyLabel = "$—",
+  monthlyLabel = "$24.99",
+  yearlyLabel = "$399",
   className = "",
 }: Props) {
-  const [interval, setInterval] = useState<"month" | "year">("month");
+  const navigate = useNavigate();
+  const [interval, setInterval] = useState<"month" | "year">("year");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -20,6 +23,16 @@ export default function PricingSection({
     () => (interval === "month" ? monthlyLabel : yearlyLabel),
     [interval, monthlyLabel, yearlyLabel]
   );
+
+  const displayPrice = useMemo(() => {
+    if (interval === "month") {
+      return monthlyLabel;
+    } else {
+      const yearlyPrice = parseFloat(yearlyLabel.replace('$', ''));
+      const monthlyEquiv = (yearlyPrice / 12).toFixed(0);
+      return `$${monthlyEquiv}`;
+    }
+  }, [interval, monthlyLabel, yearlyLabel]);
 
   async function startCheckout() {
     setLoading(true);
@@ -37,82 +50,117 @@ export default function PricingSection({
 
   return (
     <section
-      className={`w-full bg-white text-slate-900 border border-slate-200 rounded-2xl shadow-sm ${className}`}
+      className={`w-full rounded-2xl ${className}`}
+      style={{background: 'rgba(94, 59, 118, 0.03)', border: '1px solid rgba(94, 59, 118, 0.1)', padding: '2rem'}}
     >
-      <div className="px-6 pt-6 pb-4">
-        <h2 className="text-2xl font-bold">Choose Your Access</h2>
-        <p className="mt-1 text-slate-600">
-          Full interaction database, clinical explanations, continuous updates.
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold mb-3" style={{color: 'var(--color-text)'}}>
+          Professional Interaction Screening
+        </h2>
+        <p className="text-base" style={{color: 'var(--color-text-muted)'}}>
+          Full database access with clinical explanations
         </p>
-      </div>
 
-      <div className="px-6">
-        <div className="inline-flex items-center rounded-xl border border-slate-200 p-1">
+        <div className="mt-6 inline-flex items-center gap-2 rounded-full border-2" style={{borderColor: 'var(--color-border)', background: 'var(--color-surface)', padding: '4px'}}>
           <button
             onClick={() => setInterval("month")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium ${
-              interval === "month"
-                ? "bg-slate-900 text-white"
-                : "text-slate-700 hover:bg-slate-100"
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
+              interval === "month" ? 'text-white' : ''
             }`}
+            style={{
+              background: interval === "month" ? 'var(--color-brand)' : 'transparent',
+              color: interval === "month" ? 'white' : 'var(--color-text-muted)'
+            }}
             aria-pressed={interval === "month"}
           >
             Monthly
           </button>
           <button
             onClick={() => setInterval("year")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium ${
-              interval === "year"
-                ? "bg-slate-900 text-white"
-                : "text-slate-700 hover:bg-slate-100"
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all relative ${
+              interval === "year" ? 'text-white' : ''
             }`}
+            style={{
+              background: interval === "year" ? 'var(--color-brand)' : 'transparent',
+              color: interval === "year" ? 'white' : 'var(--color-text-muted)'
+            }}
             aria-pressed={interval === "year"}
           >
             Yearly
+            {interval === "year" && (
+              <span className="absolute -top-2 -right-2 text-white text-xs px-2 py-0.5 rounded-full font-bold" style={{background: 'var(--color-success)'}}>
+                Save 33%
+              </span>
+            )}
           </button>
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="rounded-2xl border border-slate-200 p-6 bg-slate-50">
-          <div className="flex items-baseline gap-3">
-            <h3 className="text-xl font-semibold">Premium</h3>
-            <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 border border-blue-100">
-              Don't Mix Blind™
+      <div className="max-w-md mx-auto card" style={{padding: '2rem', background: 'var(--color-surface)'}}>
+        <div className="mb-6">
+          <h3 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Premium</h3>
+          <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and professionals</p>
+        </div>
+
+        <div className="mb-6">
+          <div className="flex items-baseline gap-1">
+            <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>
+              {displayPrice}
             </span>
+            <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
           </div>
+          {interval === "year" && (
+            <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
+              {yearlyLabel} billed annually
+            </p>
+          )}
+        </div>
 
-          <p className="mt-2 text-slate-600">
-            Evidence-based guidance for safe supplement + medication use.
-          </p>
+        <ul className="space-y-3 mb-8">
+          <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+            <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+            <span>Unlimited interaction checks</span>
+          </li>
+          <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+            <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+            <span>Full clinical explanations (PK/PD, CYP pathways)</span>
+          </li>
+          <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+            <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+            <span>PDF report exports</span>
+          </li>
+          <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+            <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+            <span>White-label branding</span>
+          </li>
+          <li className="flex items-start gap-3 text-sm" style={{color: 'var(--color-text)'}}>
+            <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{color: 'var(--color-success)'}} />
+            <span>Priority support</span>
+          </li>
+        </ul>
 
-          <div className="mt-5">
-            <div className="text-4xl font-bold leading-none">{priceLabel}</div>
-            <div className="text-sm text-slate-500 mt-1">
-              *Actual charge set in Stripe. You can change pricing anytime.
-            </div>
-          </div>
+        <button
+          onClick={startCheckout}
+          disabled={loading}
+          className="btn-cta w-full mb-4 disabled:opacity-60"
+        >
+          {loading ? "Redirecting…" : "Try Premium free for 14 days"}
+        </button>
 
-          <ul className="mt-6 space-y-2 text-sm text-slate-700">
-            <li>• Complete interaction database</li>
-            <li>• Risk levels with mechanisms</li>
-            <li>• Clear, clinician-style summaries</li>
-            <li>• Red-flag warnings & updates</li>
-          </ul>
+        {err && <p className="mt-3 text-sm text-center" style={{color: 'var(--color-error)'}}>{err}</p>}
 
+        <p className="text-xs text-center" style={{color: 'var(--color-text-muted)'}}>
+          Cancel anytime · For educational purposes only
+        </p>
+
+        <div className="mt-6 text-center">
           <button
-            onClick={startCheckout}
-            disabled={loading}
-            className="btn-cta mt-6 w-full disabled:opacity-60"
+            onClick={() => navigate('/pricing')}
+            className="text-sm hover:underline"
+            style={{color: 'var(--color-trial)'}}
           >
-            {loading ? "Redirecting…" : "Upgrade — Don't Mix Blind™"}
+            Compare all plans →
           </button>
-
-          {err && <p className="mt-3 text-sm" style={{color: 'var(--color-error)'}}>{err}</p>}
-
-          <p className="guarantee-note mt-4 text-center">
-            Instant access. Cancel anytime.
-          </p>
         </div>
       </div>
     </section>
