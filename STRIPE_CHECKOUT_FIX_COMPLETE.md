@@ -2,7 +2,11 @@
 
 ## Summary
 
-Successfully replaced `create-checkout-session.cjs` with streamlined authentication flow that properly validates Supabase user tokens before creating Stripe checkout sessions.
+Successfully fixed the 401 Unauthorized error by:
+1. Replacing `create-checkout-session.cjs` with streamlined authentication flow
+2. Fixing frontend request payload to match backend API contract
+
+**Root Cause:** Frontend was sending `{ plan, cadence }` but backend expected only `{ plan }`. This mismatch caused the backend to fail validation even when authentication was valid.
 
 ## Files Changed
 
@@ -26,7 +30,27 @@ Successfully replaced `create-checkout-session.cjs` with streamlined authenticat
 5. Return checkout URL
 ```
 
-### 2. `.env`
+### 2. `src/utils/checkout.ts`
+**Status:** ✅ Fixed to match backend API contract
+
+**Key Changes:**
+- Changed request body from `{ plan, cadence: bill }` to `{ plan }` only
+- Removed production URL fallback that caused routing issues
+- Now sends proper payload matching backend expectations
+
+**Before:**
+```typescript
+body: JSON.stringify({ plan, cadence: bill })
+// baseUrl logic with production fallback
+```
+
+**After:**
+```typescript
+body: JSON.stringify({ plan })
+// baseUrl always returns ""
+```
+
+### 3. `.env`
 **Status:** ✅ Updated with new environment variables
 
 **Added:**
@@ -38,7 +62,7 @@ CHECKOUT_SUCCESS_URL=http://localhost:8888/post-checkout
 CHECKOUT_CANCEL_URL=http://localhost:8888/pricing?cancelled=1
 ```
 
-### 3. `.env.example`
+### 4. `.env.example`
 **Status:** ✅ Already contains all required variables (no changes needed)
 
 ---
@@ -193,3 +217,19 @@ Error: Please sign in to start a trial.
 ---
 
 **Fix Complete:** The 401 error is resolved for authenticated users. Users must sign in before accessing checkout, which is the correct and secure behavior.
+
+---
+
+## IMPORTANT: Local Development Setup
+
+**You MUST add the SUPABASE_SERVICE_ROLE_KEY to your `.env` file for local testing:**
+
+1. Go to Supabase Dashboard → Settings → API
+2. Copy the "service_role" key (secret key)
+3. Add to `.env`:
+   ```bash
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey...
+   ```
+4. Restart dev server: `netlify dev`
+
+Without this key, the function cannot validate user tokens and will return 401 errors.

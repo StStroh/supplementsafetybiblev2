@@ -4,9 +4,7 @@ type Plan = "pro" | "premium";
 type Interval = "monthly" | "annual";
 
 function getFunctionsBaseUrl(): string {
-  const h = window.location.hostname;
-  const isProd = h === "supplementsafetybible.com" || h.endsWith(".netlify.app");
-  return isProd ? "" : "https://supplementsafetybible.com";
+  return "";
 }
 
 export async function startTrialCheckout(plan: Plan, interval: Interval, showAlert?: (message: string, type?: "error" | "success") => void) {
@@ -34,7 +32,7 @@ export async function startTrialCheckout(plan: Plan, interval: Interval, showAle
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ plan, cadence: bill }),
+        body: JSON.stringify({ plan }),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
