@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import AlertBanner from '../components/AlertBanner';
 import EnvWarning from '../components/EnvWarning';
+import FloatingStarter from '../components/FloatingStarter';
 import { useAlert } from '../state/AlertProvider';
 
 export default function RootLayout() {
@@ -20,6 +21,8 @@ export default function RootLayout() {
         <EnvWarning />
         <Outlet />
       </div>
+
+      <FloatingStarter />
     </div>
   );
 }
