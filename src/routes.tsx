@@ -16,6 +16,7 @@ import Check from './pages/Check';
 import Account from './pages/Account';
 import Auth from './pages/Auth';
 import AuthCallback from './pages/AuthCallback';
+import AuthPassword from './pages/AuthPassword';
 import Free from './pages/Free';
 import FreeThanks from './pages/FreeThanks';
 import Landing from './pages/Landing';
@@ -101,6 +102,10 @@ export const router = createBrowserRouter([
       {
         path: 'auth/callback',
         element: <AuthCallback />
+      },
+      {
+        path: 'auth/password',
+        element: <AuthPassword />
       },
       {
         path: 'auth/test',
