@@ -24,7 +24,7 @@ export default function ComplianceSection() {
                   Educational Use Only
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  SafetyBible is an educational decision-support tool. It does not provide medical diagnoses, treatment recommendations, or prescribing guidance. All information should be used in consultation with a licensed healthcare provider.
+                  Supplement Safety Bible is an educational decision-support tool. It does not provide medical diagnoses, treatment recommendations, or prescribing guidance. All information should be used in consultation with a licensed healthcare provider.
                 </p>
               </div>
             </div>
@@ -72,7 +72,7 @@ export default function ComplianceSection() {
                   Not a Medical Device
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  SafetyBible is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease. It does not replace official prescribing information or clinical judgment.
+                  Supplement Safety Bible is not a medical device and is not intended to diagnose, treat, cure, or prevent any disease. It does not replace official prescribing information or clinical judgment.
                 </p>
               </div>
             </div>

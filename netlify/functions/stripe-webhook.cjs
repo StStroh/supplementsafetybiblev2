@@ -11,8 +11,8 @@
 'use strict';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
+const { getPlanInfo } = require('./_lib/plan-map.cjs');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
-const PRICE_TO_PLAN = { [process.env.PRICE_PRO_MONTHLY]:'pro', [process.env.PRICE_PREMIUM_MONTHLY]:'premium' };
 async function logEvent(id, type){ const { error }=await supabase.from('events_log').insert({id,type}).select().single(); if(error&&error.code!=='23505') throw error; }
 async function getUserByCustomer(c){ const { data }=await supabase.from('profiles').select('*').eq('stripe_customer_id',c).maybeSingle(); return data; }
 async function getUserByEmail(e){ const { data }=await supabase.from('profiles').select('*').eq('email',e).maybeSingle(); return data; }
@@ -24,7 +24,7 @@ exports.handler = async (event) => {
   const obj = stripeEvent.data.object;
   if (stripeEvent.type==='checkout.session.completed' && obj.subscription){
     const sub = await stripe.subscriptions.retrieve(obj.subscription, { expand:['items.data.price'] });
-    const priceId = sub.items.data[0].price.id; const plan = PRICE_TO_PLAN[priceId]; const email = obj.customer_details?.email;
+    const priceId = sub.items.data[0].price.id; const planInfo = getPlanInfo(priceId); const plan = planInfo?.plan || 'starter'; const email = obj.customer_details?.email;
     let user = await getUserByCustomer(obj.customer); if(!user && email) user = await getUserByEmail(email); if(!user) return { statusCode:200 };
     const isPremium = plan === 'pro' || plan === 'premium';
     await supabase.from('profiles').update({
@@ -40,7 +40,7 @@ exports.handler = async (event) => {
   }
   if (stripeEvent.type==='customer.subscription.updated'){
     const sub = obj.items ? obj : await stripe.subscriptions.retrieve(obj.id, { expand:['items.data.price'] });
-    const priceId = sub.items.data[0].price.id; const plan = PRICE_TO_PLAN[priceId];
+    const priceId = sub.items.data[0].price.id; const planInfo = getPlanInfo(priceId); const plan = planInfo?.plan || 'starter';
     const { data:user } = await supabase.from('profiles').select('*').eq('stripe_customer_id', sub.customer).maybeSingle();
     if (user && plan){
       const isPremium = (plan === 'pro' || plan === 'premium') && (sub.status === 'active' || sub.status === 'trialing');

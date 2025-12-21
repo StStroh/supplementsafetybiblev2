@@ -448,10 +448,10 @@ export default function Pricing() {
 
             <div>
               <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
-                Does SafetyBible cover prescription medications?
+                Does Supplement Safety Bible cover prescription medications?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Yes. SafetyBible screens for interactions with prescription medications including controlled substances, narrow-therapeutic-index drugs (warfarin, digoxin), immunosuppressants, and other medications requiring careful monitoring when combined with dietary supplements.
+                Yes. Supplement Safety Bible screens for interactions with prescription medications including controlled substances, narrow-therapeutic-index drugs (warfarin, digoxin), immunosuppressants, and other medications requiring careful monitoring when combined with dietary supplements.
               </p>
             </div>
           </div>

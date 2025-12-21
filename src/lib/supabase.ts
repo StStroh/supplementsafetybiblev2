@@ -4,7 +4,7 @@ import { getEnv } from './env';
 
 type Client = SupabaseClient<any, "public", any>;
 
-const STORAGE_KEY = 'sb-qbefejbnxrsdwtsbkmon-auth-token';
+const STORAGE_KEY = 'sb-cyxfxjoadzxhxwxjqkez-auth-token';
 
 declare global {
   var __ssb_supabase_client: Client | undefined;

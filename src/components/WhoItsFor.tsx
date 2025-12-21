@@ -6,7 +6,7 @@ export default function WhoItsFor() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Who SafetyBible Is For
+            Who Supplement Safety Bible Is For
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Designed for anyone who needs accurate, evidence-based information about supplement and medication interactions.

@@ -6,7 +6,7 @@ export default function WhatWeScreen() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            What SafetyBible Helps You Screen
+            What Supplement Safety Bible Helps You Screen
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Comprehensive interaction analysis across multiple substance categories, with severity classification and evidence-based rationale.
@@ -89,7 +89,7 @@ export default function WhatWeScreen() {
 
         <div className="mt-12 max-w-3xl mx-auto bg-blue-50 border border-blue-200 rounded-xl p-6">
           <p className="text-sm text-gray-700 leading-relaxed text-center">
-            <strong>Educational Use Only:</strong> SafetyBible provides educational information to support informed decision-making. It does not diagnose, treat, or prescribe. Always consult a licensed healthcare provider before starting, stopping, or changing any medication or supplement regimen.
+            <strong>Educational Use Only:</strong> Supplement Safety Bible provides educational information to support informed decision-making. It does not diagnose, treat, or prescribe. Always consult a licensed healthcare provider before starting, stopping, or changing any medication or supplement regimen.
           </p>
         </div>
       </div>

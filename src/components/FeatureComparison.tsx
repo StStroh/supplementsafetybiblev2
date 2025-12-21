@@ -138,10 +138,10 @@ export default function FeatureComparison() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            SafetyBible Feature Comparison
+            Supplement Safety Bible Feature Comparison
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            See what's included at each tier and understand the depth of interaction coverage that sets SafetyBible apart.
+            See what's included at each tier and understand the depth of interaction coverage that sets Supplement Safety Bible apart.
           </p>
         </div>
 
@@ -205,7 +205,7 @@ export default function FeatureComparison() {
           <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
               <Check className="w-5 h-5 text-[#6B46C1]" />
-              SafetyBible Coverage Includes
+              Supplement Safety Bible Coverage Includes
             </h3>
             <ul className="space-y-2 text-sm text-gray-700">
               <li className="flex items-start gap-2">
@@ -236,7 +236,7 @@ export default function FeatureComparison() {
               Scope of Coverage
             </h3>
             <p className="text-sm text-gray-700 leading-relaxed mb-3">
-              SafetyBible focuses specifically on <strong>supplement–medication interactions</strong> and includes analysis of:
+              Supplement Safety Bible focuses specifically on <strong>supplement–medication interactions</strong> and includes analysis of:
             </p>
             <ul className="space-y-2 text-sm text-gray-700">
               <li className="flex items-start gap-2">
@@ -257,7 +257,7 @@ export default function FeatureComparison() {
 
         <div className="mt-8 max-w-4xl mx-auto bg-amber-50 border border-amber-200 rounded-xl p-6">
           <p className="text-sm text-gray-700 leading-relaxed text-center">
-            <strong>Important:</strong> SafetyBible is designed for educational purposes and does not replace professional medical judgment. All interaction information should be reviewed in the context of the individual patient's clinical status, comorbidities, and prescribing information.
+            <strong>Important:</strong> Supplement Safety Bible is designed for educational purposes and does not replace professional medical judgment. All interaction information should be reviewed in the context of the individual patient's clinical status, comorbidities, and prescribing information.
           </p>
         </div>
       </div>

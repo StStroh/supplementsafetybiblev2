@@ -185,7 +185,7 @@ export default function Admin() {
               </button>
               <div className="flex items-center space-x-2">
                 <Shield className="w-6 h-6" style={{ color: 'var(--color-trial)' }} />
-                <span className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>SafetyBible Admin</span>
+                <span className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>Supplement Safety Bible Admin</span>
               </div>
             </div>
           </div>

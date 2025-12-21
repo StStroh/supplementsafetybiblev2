@@ -8,20 +8,20 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    question: 'What types of interactions does SafetyBible screen for?',
-    answer: 'SafetyBible screens for supplement–medication interactions, including over-the-counter and prescription drugs. This includes narrow-therapeutic-index medications (like warfarin, digoxin), immunosuppressants, anticoagulants, and other high-risk drug classes. We analyze both pharmacokinetic (metabolism, absorption) and pharmacodynamic (additive, synergistic) interactions.',
+    question: 'What types of interactions does Supplement Safety Bible screen for?',
+    answer: 'Supplement Safety Bible screens for supplement–medication interactions, including over-the-counter and prescription drugs. This includes narrow-therapeutic-index medications (like warfarin, digoxin), immunosuppressants, anticoagulants, and other high-risk drug classes. We analyze both pharmacokinetic (metabolism, absorption) and pharmacodynamic (additive, synergistic) interactions.',
   },
   {
-    question: 'Is SafetyBible a substitute for medical advice?',
-    answer: 'No. SafetyBible is an educational tool designed to support informed decision-making, not replace professional medical advice. Always consult your physician, pharmacist, or healthcare provider before starting, stopping, or changing any medication or supplement regimen. Our tool helps facilitate more informed conversations with your healthcare team.',
+    question: 'Is Supplement Safety Bible a substitute for medical advice?',
+    answer: 'No. Supplement Safety Bible is an educational tool designed to support informed decision-making, not replace professional medical advice. Always consult your physician, pharmacist, or healthcare provider before starting, stopping, or changing any medication or supplement regimen. Our tool helps facilitate more informed conversations with your healthcare team.',
   },
   {
     question: 'How is interaction severity determined?',
     answer: 'Interactions are classified as Low, Moderate, or High severity based on clinical significance, documented outcomes, onset timing, and reversibility. Classifications are based on peer-reviewed literature, pharmacological research, and clinical case reports. Severity ratings help prioritize which interactions require immediate attention or monitoring.',
   },
   {
-    question: 'Does SafetyBible include controlled substances and prescription medications?',
-    answer: 'Yes. SafetyBible includes screening for interactions with controlled substances, narrow-therapeutic-index drugs, immunosuppressants, and other prescription medications that require careful monitoring when combined with dietary supplements.',
+    question: 'Does Supplement Safety Bible include controlled substances and prescription medications?',
+    answer: 'Yes. Supplement Safety Bible includes screening for interactions with controlled substances, narrow-therapeutic-index drugs, immunosuppressants, and other prescription medications that require careful monitoring when combined with dietary supplements.',
   },
   {
     question: 'How often is the interaction database updated?',
