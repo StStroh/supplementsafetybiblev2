@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Check, Loader2, Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { SUPPORT_EMAIL } from "../lib/support";
 import { startTrialCheckout } from "../utils/checkout";
@@ -77,6 +78,7 @@ const tiers: PricingTier[] = [
 ];
 
 const Pricing: React.FC = () => {
+  const navigate = useNavigate();
   const { showAlert } = useAlert();
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
@@ -86,6 +88,16 @@ const Pricing: React.FC = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [_resendCooldown, setResendCooldown] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  async function loadUser() {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    setUser(currentUser);
+  }
 
   // Auto-scroll to pricing if locked=interactions in URL
   useEffect(() => {
@@ -134,6 +146,11 @@ const Pricing: React.FC = () => {
   }, []);
 
   const handleCheckout = async (tier: 'pro_monthly' | 'pro_annual' | 'premium_monthly' | 'premium_annual') => {
+    if (!user) {
+      navigate('/auth?redirect=/pricing');
+      return;
+    }
+
     setLoadingPriceId(tier);
 
     const plan = tier.startsWith('pro') ? 'pro' : 'premium';
