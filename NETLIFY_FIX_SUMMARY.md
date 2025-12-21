@@ -259,4 +259,26 @@ Fixes compatibility issues with Netlify deployment.
 
 ---
 
+## 🔧 Additional Fix: 401 Auth Error
+
+### Issue
+Local development was failing with `401 Unauthorized` on checkout because `.env` was missing backend environment variables.
+
+### Solution
+Added backend env var placeholders to `.env`:
+```bash
+SUPABASE_URL=https://cyxfxjoadzxhxwxjqkez.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=          # ⚠️ User must add this from Supabase dashboard
+```
+
+### User Action Required
+To fix the 401 error locally:
+1. Get service role key from [Supabase Dashboard](https://supabase.com/dashboard) → Settings → API
+2. Add it to `.env`: `SUPABASE_SERVICE_ROLE_KEY=your_actual_key_here`
+3. Restart dev server: `npm run dev` or `netlify dev`
+
+See `AUTH_ERROR_FIX.md` for detailed instructions.
+
+---
+
 **End of Summary**
