@@ -12,7 +12,7 @@ type Props = {
 
 export default function PricingSection({
   monthlyLabel = "$24.99",
-  yearlyLabel = "$399",
+  yearlyLabel = "$299",
   className = "",
 }: Props) {
   const navigate = useNavigate();
@@ -115,7 +115,7 @@ export default function PricingSection({
       <div className="max-w-md mx-auto card" style={{padding: '2rem', background: 'var(--color-surface)'}}>
         <div className="mb-6">
           <h3 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Premium</h3>
-          <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and professionals</p>
+          <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and small practices</p>
         </div>
 
         <div className="mb-6">
