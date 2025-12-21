@@ -94,7 +94,7 @@ export default function Pricing() {
   const proMonthly = 14.99;
   const proAnnual = 199;
   const premiumMonthly = 24.99;
-  const premiumAnnual = 399;
+  const premiumAnnual = 299;
 
   const annualSavings = Math.round(((proMonthly * 12 - proAnnual) / (proMonthly * 12)) * 100);
 
@@ -310,7 +310,7 @@ export default function Pricing() {
             <div className="card flex flex-col relative" style={{padding: '32px', background: 'var(--color-surface)'}}>
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Premium</h2>
-                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and professionals</p>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and small practices</p>
               </div>
 
               <div className="mb-6">
