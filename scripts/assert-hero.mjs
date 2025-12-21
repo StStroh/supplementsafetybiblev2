@@ -22,7 +22,7 @@ const REQUIRED_COMPONENTS = {
     'data-testid="landing-hero-check-btn"',
     'data-testid="landing-hero-pdf-btn"',
     'Don\'t Mix Blind',
-    'clinical-grade interaction engine',
+    'evidence-based severity ratings',
   ],
   'src/components/HowItWorks.tsx': [
     'data-testid="how-title"',

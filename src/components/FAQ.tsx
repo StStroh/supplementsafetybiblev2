@@ -8,20 +8,36 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    question: 'Does this replace my doctor?',
-    answer: 'No. Supplement Safety Bible is a decision-support tool designed to help you have more informed conversations with your healthcare provider. Always consult your doctor before making changes to your medications or supplement regimen.',
+    question: 'What types of interactions does SafetyBible screen for?',
+    answer: 'SafetyBible screens for supplement–medication interactions, including over-the-counter and prescription drugs. This includes narrow-therapeutic-index medications (like warfarin, digoxin), immunosuppressants, anticoagulants, and other high-risk drug classes. We analyze both pharmacokinetic (metabolism, absorption) and pharmacodynamic (additive, synergistic) interactions.',
   },
   {
-    question: 'How accurate are the interaction checks?',
-    answer: 'Our database is built from peer-reviewed clinical studies, pharmacological research, and industry-standard drug interaction databases. However, individual responses can vary, so we always recommend discussing findings with your healthcare provider.',
+    question: 'Is SafetyBible a substitute for medical advice?',
+    answer: 'No. SafetyBible is an educational tool designed to support informed decision-making, not replace professional medical advice. Always consult your physician, pharmacist, or healthcare provider before starting, stopping, or changing any medication or supplement regimen. Our tool helps facilitate more informed conversations with your healthcare team.',
   },
   {
-    question: 'Which supplements are covered?',
-    answer: 'We currently cover 200+ of the most commonly used dietary supplements, including vitamins, minerals, herbal supplements, amino acids, and other nutraceuticals. Our database is continuously updated with new research and products.',
+    question: 'How is interaction severity determined?',
+    answer: 'Interactions are classified as Low, Moderate, or High severity based on clinical significance, documented outcomes, onset timing, and reversibility. Classifications are based on peer-reviewed literature, pharmacological research, and clinical case reports. Severity ratings help prioritize which interactions require immediate attention or monitoring.',
   },
   {
-    question: 'Is my data private? Can I cancel anytime?',
-    answer: 'Yes. We take privacy seriously and never share your personal health information. You own your data, and you can export or delete it at any time. Pro and Premium subscriptions can be canceled anytime with no penalties or fees.',
+    question: 'Does SafetyBible include controlled substances and prescription medications?',
+    answer: 'Yes. SafetyBible includes screening for interactions with controlled substances, narrow-therapeutic-index drugs, immunosuppressants, and other prescription medications that require careful monitoring when combined with dietary supplements.',
+  },
+  {
+    question: 'How often is the interaction database updated?',
+    answer: 'Our database is continuously reviewed and updated as new evidence becomes available. We monitor peer-reviewed publications, FDA safety alerts, pharmacological research, and clinical case reports to ensure information reflects current scientific understanding.',
+  },
+  {
+    question: 'Can I share reports with my healthcare provider?',
+    answer: 'Yes. Pro and Premium plans allow you to generate PDF reports that you can download and share with your doctor, pharmacist, or other healthcare providers. Reports include interaction findings, severity ratings, evidence summaries, and monitoring recommendations.',
+  },
+  {
+    question: 'Is my health information private and secure?',
+    answer: 'Absolutely. We take privacy seriously and never sell or share your personal health information. Your data is encrypted in transit and at rest. Payments are processed securely through Stripe, a PCI-compliant payment processor. You can export or delete your data at any time.',
+  },
+  {
+    question: 'Can I cancel my subscription anytime?',
+    answer: 'Yes. Pro and Premium subscriptions can be canceled at any time with no penalties or fees. We also offer a 60-day money-back guarantee if you are not satisfied with your subscription.',
   },
 ];
 

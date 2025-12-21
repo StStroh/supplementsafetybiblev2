@@ -19,16 +19,30 @@ interface FeatureRow {
 }
 
 const features: FeatureRow[] = [
-  { name: 'Interaction risk preview', starter: true, pro: true, premium: true },
-  { name: 'Full interaction explanations', starter: false, pro: true, premium: true },
+  { category: 'Interaction Screening', name: '', starter: false, pro: false, premium: false },
+  { name: 'Supplement–Medication interaction database', starter: true, pro: true, premium: true },
+  { name: 'Controlled substance & narrow-therapeutic-index drug coverage', starter: 'Preview only', pro: true, premium: true },
+  { name: 'CYP enzyme interaction analysis', starter: false, pro: true, premium: true },
+  { name: 'Pharmacodynamic interaction assessment', starter: false, pro: true, premium: true },
+  { category: 'Risk Classification', name: '', starter: false, pro: false, premium: false },
+  { name: 'Color-coded severity ratings (Low/Medium/High)', starter: 'Risk level', pro: true, premium: true },
+  { name: 'Clinical significance scoring', starter: false, pro: true, premium: true },
+  { name: 'Onset timing & duration estimates', starter: false, pro: true, premium: true },
+  { category: 'Evidence & Documentation', name: '', starter: false, pro: false, premium: false },
   { name: 'Evidence-based rationale', starter: false, pro: true, premium: true },
-  { name: 'Clinical context & considerations', starter: false, pro: true, premium: true },
-  { name: 'PDF reports (download)', starter: false, pro: true, premium: true },
-  { name: 'Monitoring & follow-up guidance', starter: false, pro: false, premium: true },
-  { name: 'Professional-grade language', starter: false, pro: false, premium: true },
-  { name: 'Unlimited interaction checks', starter: false, pro: true, premium: true },
-  { name: 'Early access to new tools', starter: false, pro: false, premium: true },
-  { name: 'Priority support', starter: false, pro: false, premium: true },
+  { name: 'Peer-reviewed literature references', starter: false, pro: 'Summary', premium: 'Full citations' },
+  { name: 'Mechanism of action explanations', starter: false, pro: true, premium: true },
+  { category: 'Clinical Management', name: '', starter: false, pro: false, premium: false },
+  { name: 'Basic safety recommendations', starter: true, pro: true, premium: true },
+  { name: 'Lab monitoring guidance', starter: false, pro: true, premium: true },
+  { name: 'Dose adjustment considerations', starter: false, pro: true, premium: true },
+  { name: 'Clinical follow-up protocols', starter: false, pro: false, premium: true },
+  { category: 'Reports & Exports', name: '', starter: false, pro: false, premium: false },
+  { name: 'PDF report generation', starter: false, pro: true, premium: true },
+  { name: 'White-label branding', starter: false, pro: false, premium: true },
+  { category: 'Usage Limits', name: '', starter: false, pro: false, premium: false },
+  { name: 'Interaction checks per month', starter: '10', pro: 'Unlimited', premium: 'Unlimited' },
+  { name: 'Saved regimens', starter: '3', pro: 'Unlimited', premium: 'Unlimited' },
 ];
 
 export default function Pricing() {
@@ -368,25 +382,40 @@ export default function Pricing() {
                 </tr>
               </thead>
               <tbody>
-                {features.map((feature, idx) => (
-                  <tr
-                    key={idx}
-                    style={{borderBottom: '1px solid var(--color-border)'}}
-                  >
-                    <td className="py-3 px-4 text-sm" style={{color: 'var(--color-text-muted)'}}>
-                      {feature.name}
-                    </td>
-                    <td className="py-3 px-4 text-center text-sm">
-                      {renderFeatureValue(feature.starter)}
-                    </td>
-                    <td className="py-3 px-4 text-center text-sm" style={{background: 'var(--color-bg)'}}>
-                      {renderFeatureValue(feature.pro)}
-                    </td>
-                    <td className="py-3 px-4 text-center text-sm">
-                      {renderFeatureValue(feature.premium)}
-                    </td>
-                  </tr>
-                ))}
+                {features.map((feature, idx) => {
+                  if (feature.category) {
+                    return (
+                      <tr key={idx} className="bg-gray-50">
+                        <td
+                          colSpan={4}
+                          className="py-3 px-4 font-bold text-sm uppercase tracking-wide"
+                          style={{color: 'var(--color-text)', borderTop: '2px solid var(--color-border)'}}
+                        >
+                          {feature.category}
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return (
+                    <tr
+                      key={idx}
+                      style={{borderBottom: '1px solid var(--color-border)'}}
+                    >
+                      <td className="py-3 px-4 text-sm" style={{color: 'var(--color-text-muted)'}}>
+                        {feature.name}
+                      </td>
+                      <td className="py-3 px-4 text-center text-sm">
+                        {renderFeatureValue(feature.starter)}
+                      </td>
+                      <td className="py-3 px-4 text-center text-sm" style={{background: 'var(--color-bg)'}}>
+                        {renderFeatureValue(feature.pro)}
+                      </td>
+                      <td className="py-3 px-4 text-center text-sm">
+                        {renderFeatureValue(feature.premium)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -449,6 +478,15 @@ export default function Pricing() {
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
                 Continuously reviewed and updated as new evidence becomes available.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
+                Does SafetyBible cover controlled substances and prescription medications?
+              </h3>
+              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
+                Yes. SafetyBible includes screening for interactions with controlled substances, narrow-therapeutic-index drugs (like warfarin, digoxin), immunosuppressants, and other prescription medications that require careful monitoring when combined with dietary supplements.
               </p>
             </div>
           </div>

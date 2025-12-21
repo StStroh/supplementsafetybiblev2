@@ -195,7 +195,7 @@ export default function LandingCheckerHero() {
             style={{ color: 'var(--color-text-muted)' }}
             data-testid="landing-hero-sub"
           >
-            Check supplement–drug interactions instantly with our clinical-grade interaction engine. Evidence-based guidance trusted by healthcare professionals and informed consumers.
+            Screen supplement–medication interactions with evidence-based severity ratings. Identify risks, understand mechanisms, and make safer, more informed decisions about your health regimen.
           </p>
 
           {/* Primary action: Large search/selector input */}

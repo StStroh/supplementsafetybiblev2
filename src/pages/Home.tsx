@@ -1,8 +1,12 @@
 import Navbar from '../components/Navbar';
 import LandingCheckerHero from '../components/LandingCheckerHero';
+import WhatWeScreen from '../components/WhatWeScreen';
 import HowItWorks from '../components/HowItWorks';
 import WhyItMatters from '../components/WhyItMatters';
+import WhoItsFor from '../components/WhoItsFor';
+import FeatureComparison from '../components/FeatureComparison';
 import Pricing from '../components/Pricing';
+import ComplianceSection from '../components/ComplianceSection';
 import Trust from '../components/Trust';
 import FAQ from '../components/FAQ';
 import Footer from '../components/Footer';
@@ -59,10 +63,14 @@ export default function Home() {
       <StructuredData data={[websiteSchema, organizationSchema, appSchema]} />
       <Navbar />
       <LandingCheckerHero />
+      <Trust />
+      <WhatWeScreen />
       <HowItWorks />
       <WhyItMatters />
-      <Trust />
+      <WhoItsFor />
       <Pricing />
+      <FeatureComparison />
+      <ComplianceSection />
       <FAQ />
       <Footer />
     </div>
