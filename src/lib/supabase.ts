@@ -4,8 +4,15 @@ import { getEnv } from './env';
 
 type Client = SupabaseClient<any, "public", any>;
 
+const STORAGE_KEY = 'sb-qbefejbnxrsdwtsbkmon-auth-token';
+
 declare global {
   var __ssb_supabase_client: Client | undefined;
+  var __ssb_init_count: number | undefined;
+}
+
+if (!globalThis.__ssb_init_count) {
+  globalThis.__ssb_init_count = 0;
 }
 
 let supabase: Client;
@@ -14,19 +21,23 @@ const { url, anon, ok } = getEnv();
 
 if (ok) {
   if (globalThis.__ssb_supabase_client) {
-    console.error('[SUPABASE SINGLETON VIOLATION] Attempted to create second Supabase client instance.');
-    console.error('[SUPABASE SINGLETON VIOLATION] Stack trace:', new Error().stack);
+    globalThis.__ssb_init_count++;
+    console.warn(`[SSB] Reusing existing client (init attempt #${globalThis.__ssb_init_count})`);
     supabase = globalThis.__ssb_supabase_client;
   } else {
-    console.log('[SUPABASE SINGLETON] First initialization:', { url, storageKey: 'sb-auth-token' });
+    globalThis.__ssb_init_count++;
+    console.log(`[SSB] Creating first client instance with storage key: ${STORAGE_KEY}`);
     supabase = createClient(url, anon, {
       auth: {
+        storageKey: STORAGE_KEY,
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        storage: window.localStorage
       }
     }) as Client;
     globalThis.__ssb_supabase_client = supabase;
+    console.log('[SSB] ✅ Singleton established');
   }
 } else {
   const fail = new Proxy({} as Client, {

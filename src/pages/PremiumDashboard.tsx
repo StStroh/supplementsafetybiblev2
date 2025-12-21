@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Activity, ShieldCheck, Zap, CreditCard, LogOut, ChevronRight, Lock } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseAnon = import.meta.env.VITE_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnon);
 
 function clsx(...xs: Array<string | false | null | undefined>) { return xs.filter(Boolean).join(' '); }
 
