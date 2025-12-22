@@ -32,7 +32,7 @@ export async function startTrialCheckout(plan: Plan, interval: Interval, showAle
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, interval: bill }),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
