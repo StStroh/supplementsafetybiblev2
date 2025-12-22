@@ -33,6 +33,8 @@ import PostCheckout from './pages/PostCheckout';
 import NotFound from './pages/NotFound';
 import CheckoutCancel from './pages/CheckoutCancel';
 import AuthTest from './pages/AuthTest';
+import BillingSuccess from './pages/BillingSuccess';
+import BillingCancel from './pages/BillingCancel';
 
 export const router = createBrowserRouter([
   {
@@ -162,6 +164,14 @@ export const router = createBrowserRouter([
       {
         path: 'checkout/cancel',
         element: <CheckoutCancel />
+      },
+      {
+        path: 'billing/success',
+        element: <BillingSuccess />
+      },
+      {
+        path: 'billing/cancel',
+        element: <BillingCancel />
       },
       {
         path: 'post-checkout',

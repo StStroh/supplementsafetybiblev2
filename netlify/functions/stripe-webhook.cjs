@@ -25,9 +25,10 @@ exports.handler = async (event) => {
   if (stripeEvent.type==='checkout.session.completed' && obj.subscription){
     const sub = await stripe.subscriptions.retrieve(obj.subscription, { expand:['items.data.price'] });
     const priceId = sub.items.data[0].price.id; const planInfo = getPlanInfo(priceId); const plan = planInfo?.plan || 'starter'; const email = obj.customer_details?.email;
-    let user = await getUserByCustomer(obj.customer); if(!user && email) user = await getUserByEmail(email); if(!user) return { statusCode:200 };
+    if(!email) return { statusCode:200, body:'No email' };
+    let user = await getUserByCustomer(obj.customer); if(!user && email) user = await getUserByEmail(email);
     const isPremium = plan === 'pro' || plan === 'premium';
-    await supabase.from('profiles').update({
+    const updates = {
       stripe_customer_id: obj.customer,
       stripe_subscription_id: sub.id,
       plan: sub.status==='trialing' ? `${plan}_trial` : plan,
@@ -36,7 +37,13 @@ exports.handler = async (event) => {
       is_premium: isPremium || sub.status === 'trialing',
       subscription_status: sub.status,
       current_period_end: sub.current_period_end,
-    }).eq('id', user.id);
+      role: plan,
+    };
+    if(!user){
+      await supabase.from('profiles').insert({...updates, email, activated_at: new Date()});
+    } else {
+      await supabase.from('profiles').update(updates).eq('id', user.id);
+    }
   }
   if (stripeEvent.type==='customer.subscription.updated'){
     const sub = obj.items ? obj : await stripe.subscriptions.retrieve(obj.id, { expand:['items.data.price'] });

@@ -1,5 +1,9 @@
+/*
+ * Guest Checkout - NO AUTH REQUIRED
+ * Customer clicks checkout → immediately goes to Stripe
+ * After payment, webhook provisions access based on email
+ */
 const Stripe = require("stripe");
-const { createClient } = require("@supabase/supabase-js");
 
 function json(statusCode, body) {
   return {
@@ -12,86 +16,95 @@ function json(statusCode, body) {
   };
 }
 
-function getBearerToken(event) {
-  const h = event.headers || {};
-  const auth = h.authorization || h.Authorization || "";
-  const m = auth.match(/^Bearer\s+(.+)$/i);
-  return m ? m[1] : null;
+function getOrigin(event) {
+  const headers = event.headers || {};
+  const host = headers.host || headers.Host || "supplementsafetybible.com";
+  const proto = headers["x-forwarded-proto"] || (host.includes("localhost") ? "http" : "https");
+  return `${proto}://${host}`;
 }
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") return json(405, { error: "Method not allowed" });
+  if (event.httpMethod !== "POST") {
+    return json(405, { error: "Method not allowed" });
+  }
 
-  const token = getBearerToken(event);
-  if (!token) return json(401, { error: "Missing Authorization Bearer token" });
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2024-06-20",
+    });
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2024-06-20",
-  });
+    const { plan, interval, priceId } = JSON.parse(event.body || "{}");
 
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: { persistSession: false },
-      global: { headers: { Authorization: `Bearer ${token}` } },
+    if (!plan || !["pro", "premium"].includes(plan)) {
+      return json(400, { error: "Invalid plan. Must be 'pro' or 'premium'." });
     }
-  );
 
-  const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data?.user) return json(401, { error: "Invalid or expired session" });
+    const billing = interval === "annual" ? "annual" : "monthly";
 
-  const { plan, interval } = JSON.parse(event.body || "{}");
-  if (!["pro", "premium"].includes(plan)) return json(400, { error: "Invalid plan" });
+    // Select price ID based on plan and interval
+    let selectedPriceId = priceId;
+    if (!selectedPriceId) {
+      if (plan === "pro" && billing === "annual") {
+        selectedPriceId = process.env.VITE_STRIPE_PRICE_PRO_ANNUAL;
+      } else if (plan === "pro") {
+        selectedPriceId = process.env.VITE_STRIPE_PRICE_PRO;
+      } else if (plan === "premium" && billing === "annual") {
+        selectedPriceId = process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL;
+      } else {
+        selectedPriceId = process.env.VITE_STRIPE_PRICE_PREMIUM;
+      }
+    }
 
-  const billing = interval === "annual" ? "annual" : "monthly";
+    if (!selectedPriceId) {
+      return json(500, { error: `Price ID not configured for ${plan} ${billing}` });
+    }
 
-  // Select price ID based on plan and billing interval
-  let priceId;
-  if (plan === "pro" && billing === "annual") {
-    priceId = process.env.VITE_STRIPE_PRICE_PRO_ANNUAL;
-  } else if (plan === "pro") {
-    priceId = process.env.VITE_STRIPE_PRICE_PRO;
-  } else if (plan === "premium" && billing === "annual") {
-    priceId = process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL;
-  } else {
-    priceId = process.env.VITE_STRIPE_PRICE_PREMIUM;
-  }
+    const origin = getOrigin(event);
 
-  if (!priceId) {
-    return json(500, { error: `Price ID not configured for ${plan} ${billing}` });
-  }
+    // Use env vars with fallbacks
+    const successUrl = process.env.CHECKOUT_SUCCESS_URL ||
+      `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = process.env.CHECKOUT_CANCEL_URL ||
+      `${origin}/billing/cancel`;
 
-  // Get base URL from headers or use fallback
-  const headers = event.headers || {};
-  const host = headers.host || headers.Host || "supplementsafetybible.com";
-  const protocol = host.includes("localhost") ? "http" : "https";
-  const baseUrl = `${protocol}://${host}`;
-
-  // Use environment variables with fallbacks
-  const successUrl = process.env.CHECKOUT_SUCCESS_URL || `${baseUrl}/success`;
-  const cancelUrl = process.env.CHECKOUT_CANCEL_URL || `${baseUrl}/pricing?cancelled=1`;
-
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    customer_email: data.user.email,
-    metadata: {
-      supabase_user_id: data.user.id,
+    console.log("[create-checkout-session] Creating session:", {
       plan,
       interval: billing,
-    },
-    subscription_data: {
-      trial_period_days: parseInt(process.env.TRIAL_DAYS_PRO || "14"),
+      priceId: selectedPriceId,
+      successUrl,
+      cancelUrl,
+      origin,
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      line_items: [{ price: selectedPriceId, quantity: 1 }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      allow_promotion_codes: true,
+      billing_address_collection: "auto",
+      customer_creation: "always",
       metadata: {
-        supabase_user_id: data.user.id,
         plan,
         interval: billing,
       },
-    },
-  });
+      subscription_data: {
+        trial_period_days: parseInt(process.env.TRIAL_DAYS_PRO || "14"),
+        metadata: {
+          plan,
+          interval: billing,
+        },
+      },
+    });
 
-  return json(200, { url: session.url, id: session.id });
+    console.log("[create-checkout-session] Session created:", session.id);
+
+    return json(200, { url: session.url, sessionId: session.id });
+  } catch (error) {
+    console.error("[create-checkout-session] Error:", error);
+    return json(500, {
+      error: error.message || "Failed to create checkout session",
+      details: error.toString()
+    });
+  }
 };

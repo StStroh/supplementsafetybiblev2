@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, X, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { startTrialCheckout } from '../utils/checkout';
+import { startCheckout } from '../utils/checkout';
 import { useAlert } from '../state/AlertProvider';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -76,19 +76,11 @@ export default function Pricing() {
   }
 
   function handleSelectPro() {
-    if (!user) {
-      navigate('/auth?redirect=/pricing');
-    } else {
-      startTrialCheckout('pro', interval, showAlert);
-    }
+    startCheckout('pro', interval, (msg) => showAlert(msg, 'error'));
   }
 
   function handleSelectPremium() {
-    if (!user) {
-      navigate('/auth?redirect=/pricing');
-    } else {
-      startTrialCheckout('premium', interval, showAlert);
-    }
+    startCheckout('premium', interval, (msg) => showAlert(msg, 'error'));
   }
 
   const proMonthly = 14.99;
