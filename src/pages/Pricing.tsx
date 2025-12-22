@@ -83,10 +83,10 @@ export default function Pricing() {
     startCheckout('premium', interval, (msg) => showAlert(msg, 'error'));
   }
 
-  const proMonthly = 17;
-  const proAnnual = 199;
-  const premiumMonthly = 25;
-  const premiumAnnual = 299;
+  const proMonthly = 14.99;
+  const proAnnual = 144;
+  const premiumMonthly = 24.99;
+  const premiumAnnual = 240;
 
   const annualSavings = Math.round(((proMonthly * 12 - proAnnual) / (proMonthly * 12)) * 100);
 
@@ -241,7 +241,7 @@ export default function Pricing() {
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>
-                    ${interval === 'annual' ? Math.round(proAnnual / 12) : proMonthly}
+                    ${proMonthly}
                   </span>
                   <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
                 </div>
@@ -308,7 +308,7 @@ export default function Pricing() {
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>
-                    ${interval === 'annual' ? Math.round(premiumAnnual / 12) : premiumMonthly}
+                    ${premiumMonthly}
                   </span>
                   <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
                 </div>
