@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function PricingSection({
-  monthlyLabel = "$24.99",
+  monthlyLabel = "$25",
   yearlyLabel = "$299",
   className = "",
 }: Props) {

@@ -83,9 +83,9 @@ export default function Pricing() {
     startCheckout('premium', interval, (msg) => showAlert(msg, 'error'));
   }
 
-  const proMonthly = 14.99;
+  const proMonthly = 17;
   const proAnnual = 199;
-  const premiumMonthly = 24.99;
+  const premiumMonthly = 25;
   const premiumAnnual = 299;
 
   const annualSavings = Math.round(((proMonthly * 12 - proAnnual) / (proMonthly * 12)) * 100);
