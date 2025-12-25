@@ -83,7 +83,6 @@ exports.handler = async (event) => {
       cancel_url: cancelUrl,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
-      customer_creation: "always",
       metadata: {
         plan,
         interval: billing,
