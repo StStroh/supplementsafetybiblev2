@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { SUPPORT_EMAIL } from '../lib/support';
 import { BRAND_NAME_FULL } from '../lib/brand';
 import { Linkedin, Instagram, Shield, Lock, CreditCard, Award } from 'lucide-react';
@@ -50,29 +51,48 @@ export default function Footer() {
             <h4 className="text-[#000000] font-semibold mb-4">Explore</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/check" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/check" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Interactions
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/supplements" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/supplements" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Supplements A–Z
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/medications" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/medications" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Medications A–Z
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/conditions" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/conditions" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Conditions A–Z
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/preview/guides" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/preview/guides" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Guides
-                </a>
+                </Link>
+              </li>
+            </ul>
+
+            <h4 className="text-[#000000] font-semibold mb-2 mt-6">Popular Checks</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/check?query=vitamin-k-warfarin" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                  Vitamin K + Warfarin
+                </Link>
+              </li>
+              <li>
+                <Link to="/check?query=st-johns-wort-ssri" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                  St. John's Wort + SSRI
+                </Link>
+              </li>
+              <li>
+                <Link to="/check?query=magnesium-levothyroxine" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                  Magnesium + Levothyroxine
+                </Link>
               </li>
             </ul>
           </div>
@@ -81,19 +101,19 @@ export default function Footer() {
             <h4 className="text-[#000000] font-semibold mb-4">Get Started</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/pricing" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/pricing" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Pricing
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/pricing?plan=pro" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/pricing?plan=pro" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Try Pro (14-day)
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/pricing?plan=premium" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                <Link to="/pricing?plan=premium" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
                   Try Clinical (14-day)
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -102,19 +122,19 @@ export default function Footer() {
             <h4 className="text-[#000000] font-semibold mb-4">Policies</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/refund-policy" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <Link to="/refund-policy" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
                   Refund Policy (60-day guarantee)
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <Link to="/terms" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
                   Terms
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
+                <Link to="/privacy" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">
                   Privacy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
