@@ -1,6 +1,7 @@
 /*
  * Guest Checkout - NO AUTH REQUIRED
- * Direct to Stripe, no forced login
+ * Direct to Stripe, no email validation, no forced login
+ * Stripe collects email during checkout
  */
 
 type Plan = "pro" | "premium";
@@ -10,14 +11,30 @@ function getFunctionsBaseUrl(): string {
   return "";
 }
 
+function isValidPlan(plan: string): plan is Plan {
+  return plan === "pro" || plan === "premium";
+}
+
+function isValidInterval(interval: string): interval is Interval {
+  return interval === "monthly" || interval === "annual";
+}
+
 export async function startCheckout(
   plan: Plan,
   interval: Interval,
-  onError?: (message: string) => void
+  onError?: (message: string, type?: 'error' | 'success') => void
 ): Promise<void> {
   const btn = document.activeElement as HTMLButtonElement | null;
 
   try {
+    // Validate inputs
+    if (!isValidPlan(plan)) {
+      throw new Error(`Invalid plan: ${plan}`);
+    }
+    if (!isValidInterval(interval)) {
+      throw new Error(`Invalid interval: ${interval}`);
+    }
+
     if (btn) {
       btn.disabled = true;
       btn.setAttribute("aria-busy", "true");
@@ -29,7 +46,7 @@ export async function startCheckout(
     const baseUrl = getFunctionsBaseUrl();
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 20000); // Increased to 20s
 
     // Try to get auth token if user is logged in (optional)
     let authToken: string | null = null;
@@ -90,13 +107,14 @@ export async function startCheckout(
         throw new Error("Server did not return a checkout URL");
       }
 
+      // Redirect to Stripe Checkout
       window.location.href = data.url;
 
     } catch (fetchErr: any) {
       clearTimeout(timeoutId);
 
       if (fetchErr.name === 'AbortError') {
-        throw new Error("Request timed out after 15 seconds. Please try again.");
+        throw new Error("Request timed out after 20 seconds. Please check your connection and try again.");
       }
 
       throw fetchErr;
@@ -105,19 +123,35 @@ export async function startCheckout(
   } catch (err: any) {
     console.error("[checkout] Error:", err);
 
+    // Ensure error message is always a string
     const errorMsg = err?.message || "Could not start checkout. Please try again.";
 
+    // Call error handler with safe message
     if (onError) {
-      onError(errorMsg);
+      try {
+        onError(errorMsg, 'error');
+      } catch (handlerErr) {
+        console.error("[checkout] Error handler failed:", handlerErr);
+        // Fallback to alert if error handler crashes
+        alert(errorMsg);
+      }
     } else {
       alert(errorMsg);
     }
 
+    // Reset button state safely
     if (btn) {
-      btn.disabled = false;
-      btn.removeAttribute("aria-busy");
-      btn.textContent = btn.dataset.originalText || "Try Again";
+      try {
+        btn.disabled = false;
+        btn.removeAttribute("aria-busy");
+        btn.textContent = btn.dataset.originalText || "Try Again";
+      } catch (btnErr) {
+        console.error("[checkout] Failed to reset button:", btnErr);
+      }
     }
+
+    // Re-throw error to be caught by parent try/catch in Pricing.tsx
+    throw err;
   }
 }
 

@@ -146,21 +146,31 @@ const Pricing: React.FC = () => {
   }, []);
 
   const handleCheckout = async (tier: 'pro_monthly' | 'pro_annual' | 'premium_monthly' | 'premium_annual') => {
-    // DIRECT TO CHECKOUT - No auth gate required
+    // DIRECT TO CHECKOUT - No auth gate, no email validation required
     // Guest users can pay first, then sign in to access their subscription
     console.log('[Pricing] Direct checkout initiated:', { tier, isLoggedIn: !!user });
 
-    setLoadingPriceId(tier);
+    try {
+      setLoadingPriceId(tier);
 
-    const plan = tier.startsWith('pro') ? 'pro' : 'premium';
-    const interval = tier.endsWith('monthly') ? 'monthly' : 'annual';
+      const plan = tier.startsWith('pro') ? 'pro' : 'premium';
+      const interval = tier.endsWith('monthly') ? 'monthly' : 'annual';
 
-    await startTrialCheckout(plan, interval, (message, type) => {
-      setToast({ message, type: type || 'error' });
+      await startTrialCheckout(plan, interval, (message, type) => {
+        setToast({ message, type: type || 'error' });
+        setLoadingPriceId(null);
+      });
+
+      // Note: Loading state will be cleared by callback or by redirect
+    } catch (error: any) {
+      // Prevent React crash - handle error gracefully
+      console.error('[Pricing] Checkout error:', error);
+      setToast({
+        message: error?.message || 'Failed to start checkout. Please try again.',
+        type: 'error'
+      });
       setLoadingPriceId(null);
-    });
-
-    setLoadingPriceId(null);
+    }
   };
 
 
