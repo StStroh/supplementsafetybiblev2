@@ -35,6 +35,7 @@ import CheckoutCancel from './pages/CheckoutCancel';
 import AuthTest from './pages/AuthTest';
 import BillingSuccess from './pages/BillingSuccess';
 import BillingCancel from './pages/BillingCancel';
+import Welcome from './pages/Welcome';
 
 export const router = createBrowserRouter([
   {
@@ -176,6 +177,10 @@ export const router = createBrowserRouter([
       {
         path: 'post-checkout',
         element: <PostCheckout />
+      },
+      {
+        path: 'welcome',
+        element: <Welcome />
       },
       {
         path: '*',

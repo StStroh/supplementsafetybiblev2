@@ -229,9 +229,9 @@ exports.handler = async (event) => {
 
     const origin = getOrigin(event);
 
-    // Use env vars with fallbacks
+    // Use env vars with fallbacks - redirect to /welcome for paid plans
     const successUrl = process.env.CHECKOUT_SUCCESS_URL ||
-      `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
+      `${origin}/welcome?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = process.env.CHECKOUT_CANCEL_URL ||
       `${origin}/billing/cancel`;
 

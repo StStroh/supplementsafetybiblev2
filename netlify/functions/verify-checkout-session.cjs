@@ -1,10 +1,13 @@
 /*
- * Verify Checkout Session - Called after Stripe redirect
- * Returns customer email, tier, and subscription status
- * No auth required - session_id is the proof of payment
+ * Verify Checkout Session + Sync Profile
+ * Called from /welcome page after Stripe redirect
+ * Requires authentication and updates profile with plan info
  */
 const Stripe = require("stripe");
-const { getPlanInfo } = require("./_lib/plan-map.cjs");
+const { supabaseAdmin } = require('./_lib/supabaseAdmin.cjs');
+const { PRICE_TO_PLAN_MAP } = require('./_lib/plan-map.cjs');
+
+const SUPPORT_EMAIL = "support@supplementsafetybible.com";
 
 function json(statusCode, body) {
   return {
@@ -13,9 +16,50 @@ function json(statusCode, body) {
       "Content-Type": "application/json",
       "Cache-Control": "no-store",
       "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
     },
     body: JSON.stringify(body),
   };
+}
+
+async function verifySupabaseJWT(authHeader) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new Error('Missing or invalid Authorization header');
+  }
+
+  const token = authHeader.substring(7);
+  const supabase = supabaseAdmin();
+
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+
+  if (error || !user) {
+    throw new Error('Invalid or expired token');
+  }
+
+  return user;
+}
+
+function determinePlanFromSession(checkoutSession) {
+  try {
+    if (!checkoutSession.line_items?.data?.[0]?.price?.id) {
+      console.warn('[verify-checkout-session] No price ID found in session');
+      return { plan: 'free', interval: 'none' };
+    }
+
+    const priceId = checkoutSession.line_items.data[0].price.id;
+    const planInfo = PRICE_TO_PLAN_MAP[priceId];
+
+    if (!planInfo) {
+      console.warn('[verify-checkout-session] Unknown price ID:', priceId);
+      return { plan: 'free', interval: 'none' };
+    }
+
+    return planInfo;
+  } catch (err) {
+    console.error('[verify-checkout-session] Error determining plan:', err);
+    return { plan: 'free', interval: 'none' };
+  }
 }
 
 exports.handler = async (event) => {
@@ -23,100 +67,139 @@ exports.handler = async (event) => {
     return json(200, {});
   }
 
-  if (event.httpMethod !== "GET") {
-    return json(405, { error: "Method not allowed" });
-  }
-
   try {
+    if (event.httpMethod !== "POST") {
+      return json(405, { error: "Method Not Allowed" });
+    }
+
+    console.log('[verify-checkout-session] Starting verification');
+
+    // Verify user authentication
+    const user = await verifySupabaseJWT(event.headers.authorization);
+    console.log('[verify-checkout-session] User verified:', user.email);
+
+    // Parse request body
+    const body = JSON.parse(event.body || '{}');
+    const { session_id } = body;
+
+    if (!session_id) {
+      return json(400, { error: 'Missing session_id' });
+    }
+
+    console.log('[verify-checkout-session] Retrieving Stripe checkout session');
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2024-06-20",
     });
 
-    const params = event.queryStringParameters || {};
-    const sessionId = params.session_id;
-
-    if (!sessionId) {
-      return json(400, { error: "Missing session_id parameter" });
-    }
-
-    console.log("[verify-checkout-session] Verifying session:", sessionId);
-
-    // Retrieve the session
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ["subscription", "customer"],
+    // Retrieve checkout session with expanded data
+    const checkoutSession = await stripe.checkout.sessions.retrieve(session_id, {
+      expand: ['line_items', 'line_items.data.price', 'customer', 'subscription'],
     });
 
-    console.log("[verify-checkout-session] Session retrieved:", {
-      id: session.id,
-      status: session.status,
-      payment_status: session.payment_status,
-      customer: session.customer?.id || session.customer,
+    if (!checkoutSession) {
+      throw new Error('Checkout session not found');
+    }
+
+    console.log('[verify-checkout-session] Session retrieved:', {
+      status: checkoutSession.payment_status,
+      customer: checkoutSession.customer,
+      subscription: checkoutSession.subscription,
     });
 
-    if (session.payment_status !== "paid" && session.status !== "complete") {
-      return json(400, {
-        error: "Payment not completed",
-        status: session.status,
-        payment_status: session.payment_status,
-      });
+    // Determine plan from price ID
+    const planInfo = determinePlanFromSession(checkoutSession);
+    console.log('[verify-checkout-session] Plan determined:', planInfo);
+
+    // Get user's profile
+    const supabase = supabaseAdmin();
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('email', user.email)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error('[verify-checkout-session] Profile fetch error:', profileError);
+      throw new Error('Failed to fetch profile');
     }
 
-    const email = session.customer_details?.email || session.customer?.email;
-    const customerId = typeof session.customer === "string"
-      ? session.customer
-      : session.customer?.id;
-
-    if (!email) {
-      return json(400, { error: "No email found in session" });
+    if (!profile) {
+      throw new Error('Profile not found');
     }
 
-    // Get subscription details
-    let tier = "pro";
-    let subscriptionStatus = "active";
-    let currentPeriodEnd = null;
-    let trialEnd = null;
+    console.log('[verify-checkout-session] Profile found:', profile.email);
 
-    if (session.subscription) {
-      const sub = typeof session.subscription === "string"
-        ? await stripe.subscriptions.retrieve(session.subscription)
-        : session.subscription;
+    // Extract customer and subscription IDs
+    const customerId = typeof checkoutSession.customer === 'string'
+      ? checkoutSession.customer
+      : checkoutSession.customer?.id;
 
-      subscriptionStatus = sub.status;
-      currentPeriodEnd = sub.current_period_end;
-      trialEnd = sub.trial_end;
+    const subscriptionId = typeof checkoutSession.subscription === 'string'
+      ? checkoutSession.subscription
+      : checkoutSession.subscription?.id;
 
-      // Determine tier from price ID
-      if (sub.items?.data?.[0]?.price?.id) {
-        const priceId = sub.items.data[0].price.id;
-        const planInfo = getPlanInfo(priceId);
-        if (planInfo?.plan) {
-          tier = planInfo.plan;
-        }
+    // Build update data
+    const updateData = {
+      role: planInfo.plan,
+      subscription_status: checkoutSession.status === 'complete' ? 'active' : 'incomplete',
+    };
+
+    if (customerId) {
+      updateData.stripe_customer_id = customerId;
+    }
+
+    if (subscriptionId) {
+      updateData.stripe_subscription_id = subscriptionId;
+
+      // Add billing period end if available
+      if (checkoutSession.subscription?.current_period_end) {
+        updateData.current_period_end = checkoutSession.subscription.current_period_end;
       }
     }
 
-    console.log("[verify-checkout-session] Success:", {
-      email,
-      customerId,
-      tier,
-      subscriptionStatus,
-      trialEnd,
+    // Add customer name if available and not already set
+    const customerName = checkoutSession.customer_details?.name || null;
+    if (customerName && !profile.name) {
+      updateData.name = customerName;
+    }
+
+    console.log('[verify-checkout-session] Updating profile with:', {
+      ...updateData,
+      stripe_customer_id: updateData.stripe_customer_id ? '✓' : '✗',
+      stripe_subscription_id: updateData.stripe_subscription_id ? '✓' : '✗',
     });
 
+    // Update profile in database
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update(updateData)
+      .eq('email', user.email);
+
+    if (updateError) {
+      console.error('[verify-checkout-session] Profile update error:', updateError);
+      throw new Error('Failed to update profile');
+    }
+
+    console.log('[verify-checkout-session] Profile updated successfully');
+
     return json(200, {
-      email,
-      customerId,
-      tier,
-      status: subscriptionStatus,
-      currentPeriodEnd,
-      trialEnd,
-      isTrialing: subscriptionStatus === "trialing",
+      ok: true,
+      plan: planInfo.plan,
+      interval: planInfo.interval,
+      subscription_status: updateData.subscription_status,
+      customer_email: checkoutSession.customer_details?.email || user.email,
+      customer_name: customerName,
     });
+
   } catch (error) {
-    console.error("[verify-checkout-session] Error:", error);
-    return json(500, {
+    console.error('[verify-checkout-session] Error:', error);
+
+    const statusCode = error.message.includes('Authorization') || error.message.includes('token') ? 401 : 500;
+
+    return json(statusCode, {
       error: error.message || "Failed to verify checkout session",
-      details: error.toString(),
+      support: SUPPORT_EMAIL
     });
   }
 };
