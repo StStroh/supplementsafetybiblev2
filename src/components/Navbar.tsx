@@ -61,6 +61,9 @@ export default function Navbar() {
           <a href="/faq" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
             FAQ
           </a>
+          <a href="/safety-pack" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+            For Brands
+          </a>
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
@@ -121,6 +124,15 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
             >
               FAQ
+            </a>
+
+            <a
+              href="/safety-pack"
+              className="font-medium transition-colors"
+              style={{ color: 'var(--brand-purple)' }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              For Brands
             </a>
 
             {isLoggedIn ? (
