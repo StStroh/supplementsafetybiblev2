@@ -31,14 +31,36 @@ export async function startCheckout(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    console.log("[checkout] Starting checkout:", { plan, interval });
+    // Try to get auth token if user is logged in (optional)
+    let authToken: string | null = null;
+    try {
+      const { supabase } = await import('../lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        authToken = session.access_token;
+        console.log("[checkout] Authenticated checkout - token found");
+      } else {
+        console.log("[checkout] Guest checkout - no auth token");
+      }
+    } catch (err) {
+      console.log("[checkout] Could not get auth token, proceeding as guest");
+    }
+
+    console.log("[checkout] Starting checkout:", { plan, interval, authenticated: !!authToken });
 
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      // Add Authorization header only if user is logged in
+      if (authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+
       const res = await fetch(`${baseUrl}/.netlify/functions/create-checkout-session`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({ plan, interval }),
         signal: controller.signal,
       });

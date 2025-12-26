@@ -146,10 +146,9 @@ const Pricing: React.FC = () => {
   }, []);
 
   const handleCheckout = async (tier: 'pro_monthly' | 'pro_annual' | 'premium_monthly' | 'premium_annual') => {
-    if (!user) {
-      navigate('/auth?redirect=/pricing');
-      return;
-    }
+    // DIRECT TO CHECKOUT - No auth gate required
+    // Guest users can pay first, then sign in to access their subscription
+    console.log('[Pricing] Direct checkout initiated:', { tier, isLoggedIn: !!user });
 
     setLoadingPriceId(tier);
 

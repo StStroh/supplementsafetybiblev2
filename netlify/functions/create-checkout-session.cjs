@@ -125,9 +125,13 @@ exports.handler = async (event) => {
       cancel_url: cancelUrl,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
-      // Enable automatic payment methods (includes Amazon Pay, Cash App, Klarna where supported)
-      // This allows Stripe to show all available payment methods for the customer's region
-      payment_method_types: ['card', 'cashapp', 'klarna', 'amazon_pay'],
+      // Enable ALL automatic payment methods (Amazon Pay, Cash App, Klarna, Link, etc.)
+      // DO NOT specify payment_method_types - let Stripe automatically show all supported methods
+      payment_method_collection: 'always',
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always', // Required for Amazon Pay and other redirect-based methods
+      },
       automatic_tax: { enabled: false },
       metadata: {
         plan,
@@ -158,7 +162,11 @@ exports.handler = async (event) => {
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
 
-    console.log("[create-checkout-session] Session created:", session.id, "Guest:", isGuestCheckout);
+    if (isGuestCheckout) {
+      console.log("[create-checkout-session] ✅ GUEST checkout session created:", session.id);
+    } else {
+      console.log("[create-checkout-session] ✅ AUTHENTICATED checkout session created:", session.id);
+    }
 
     return json(200, { url: session.url, sessionId: session.id });
   } catch (error) {

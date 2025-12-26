@@ -46,10 +46,9 @@ export default function PricingSection({
   }, [interval, monthlyLabel, yearlyLabel]);
 
   async function startCheckout() {
-    if (!user) {
-      navigate('/auth?redirect=/pricing');
-      return;
-    }
+    // DIRECT TO CHECKOUT - No auth gate required
+    // Guest users can pay first, then sign in to access their subscription
+    console.log('[PricingSection] Direct checkout initiated:', { interval, isLoggedIn: !!user });
 
     setLoading(true);
     setErr(null);
