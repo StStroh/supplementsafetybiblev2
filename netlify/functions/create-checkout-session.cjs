@@ -311,6 +311,7 @@ exports.handler = async (event) => {
 
     return json(statusCode, {
       error: userMessage,
+      type: error.type || error.constructor?.name || 'Unknown',
       details: process.env.NODE_ENV === 'development' ? error.toString() : undefined
     });
   }
