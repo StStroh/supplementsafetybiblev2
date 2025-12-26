@@ -32,13 +32,13 @@ exports.handler = async (event) => {
     const { data: s } = await sp
       .from("supplements")
       .select("id,name")
-      .eq("name_norm", suppNorm)
+      .eq("name_normalized", suppNorm)
       .maybeSingle();
 
     const { data: m } = await sp
       .from("medications")
       .select("id,name")
-      .eq("name_norm", medNorm)
+      .eq("name_normalized", medNorm)
       .maybeSingle();
 
     if (!s || !m) {
@@ -104,7 +104,7 @@ function normalize(str) {
   return str
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, " ")
+    .replace(/\s+/g, "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }

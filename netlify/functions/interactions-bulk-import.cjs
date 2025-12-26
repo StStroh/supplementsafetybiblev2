@@ -200,13 +200,13 @@ async function processBatch(sp, batch) {
     let { data: supp } = await sp
       .from("supplements")
       .select("id")
-      .eq("name_norm", suppNorm)
+      .eq("name_normalized", suppNorm)
       .maybeSingle();
 
     if (!supp) {
       const { data: newSupp } = await sp
         .from("supplements")
-        .insert({ name: row.supplement_name, name_norm: suppNorm })
+        .insert({ name: row.supplement_name, name_normalized: suppNorm })
         .select("id")
         .single();
       supp = newSupp;
@@ -215,13 +215,13 @@ async function processBatch(sp, batch) {
     let { data: med } = await sp
       .from("medications")
       .select("id")
-      .eq("name_norm", medNorm)
+      .eq("name_normalized", medNorm)
       .maybeSingle();
 
     if (!med) {
       const { data: newMed } = await sp
         .from("medications")
-        .insert({ name: row.medication_name, name_norm: medNorm })
+        .insert({ name: row.medication_name, name_normalized: medNorm })
         .select("id")
         .single();
       med = newMed;
@@ -266,7 +266,7 @@ function normalize(str) {
   return str
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, " ")
+    .replace(/\s+/g, "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }

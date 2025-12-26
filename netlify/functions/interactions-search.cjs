@@ -34,14 +34,14 @@ exports.handler = async (event) => {
     const [suppsResult, medsResult] = await Promise.all([
       sp
         .from("supplements")
-        .select("id,name,name_norm")
-        .or(`name.ilike.${like},name_norm.ilike.%${normalized}%`)
+        .select("id,name,name_normalized")
+        .or(`name.ilike.${like},name_normalized.ilike.%${normalized}%`)
         .order("name")
         .limit(15),
       sp
         .from("medications")
-        .select("id,name,name_norm")
-        .or(`name.ilike.${like},name_norm.ilike.%${normalized}%`)
+        .select("id,name,name_normalized")
+        .or(`name.ilike.${like},name_normalized.ilike.%${normalized}%`)
         .order("name")
         .limit(15),
     ]);
@@ -70,7 +70,7 @@ function normalize(str) {
   return str
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, " ")
+    .replace(/\s+/g, "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }

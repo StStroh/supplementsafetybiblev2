@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const { supabaseAdmin } = require("./_lib/supabaseAdmin.cjs");
 
 function cors(headers = {}) {
   const origin = process.env.SITE_URL || "http://localhost:5173";
@@ -52,24 +52,45 @@ exports.handler = async (event) => {
       };
     }
 
-    const SB_URL = process.env.SUPABASE_URL;
-    const SB_KEY = process.env.SUPABASE_ANON_KEY;
-    if (SB_URL && SB_KEY) {
-      const typeFilter = kind === "all" ? "" : `&type=eq.${encodeURIComponent(kind)}`;
-      const endpoint = `${SB_URL}/rest/v1/substances?name=ilike.${encodeURIComponent('%' + q + '%')}${typeFilter}&select=name,type&limit=${limit}`;
-      const resp = await fetch(endpoint, {
-        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-      });
-      if (resp.ok) {
-        const rows = await resp.json();
-        if (Array.isArray(rows) && rows.length) {
-          return {
-            statusCode: 200,
-            headers: cors({ "Content-Type": "application/json" }),
-            body: JSON.stringify(rows),
-          };
+    try {
+      const sp = supabaseAdmin();
+      const results = [];
+
+      if (kind === "supplement" || kind === "all") {
+        const { data: supps } = await sp
+          .from("supplements")
+          .select("name")
+          .ilike("name", `%${q}%`)
+          .order("name")
+          .limit(limit);
+
+        if (supps && supps.length > 0) {
+          results.push(...supps.map(s => ({ name: s.name, type: "supplement" })));
         }
       }
+
+      if (kind === "medication" || kind === "all") {
+        const { data: meds } = await sp
+          .from("medications")
+          .select("name")
+          .ilike("name", `%${q}%`)
+          .order("name")
+          .limit(limit);
+
+        if (meds && meds.length > 0) {
+          results.push(...meds.map(m => ({ name: m.name, type: "medication" })));
+        }
+      }
+
+      if (results.length > 0) {
+        return {
+          statusCode: 200,
+          headers: cors({ "Content-Type": "application/json" }),
+          body: JSON.stringify(results.slice(0, limit)),
+        };
+      }
+    } catch (dbErr) {
+      console.error('[suggest] Database query error:', dbErr);
     }
 
     const meds = ["Levothyroxine","Sertraline","Metformin","Lisinopril","Atorvastatin","Ibuprofen","Omeprazole","Warfarin","Amlodipine","Losartan"];
