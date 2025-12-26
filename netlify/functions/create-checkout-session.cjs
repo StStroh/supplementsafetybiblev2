@@ -2,8 +2,10 @@
  * Guest Checkout - NO AUTH REQUIRED
  * Customer clicks checkout → immediately goes to Stripe
  * After payment, webhook provisions access based on email
+ * Supports Amazon Pay via automatic payment methods
  */
 const Stripe = require("stripe");
+const { createClient } = require('@supabase/supabase-js');
 
 function json(statusCode, body) {
   return {
@@ -67,36 +69,96 @@ exports.handler = async (event) => {
     const cancelUrl = process.env.CHECKOUT_CANCEL_URL ||
       `${origin}/billing/cancel`;
 
+    // Check if user is authenticated (optional)
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    let userId = null;
+    let existingCustomerId = null;
+    let isGuestCheckout = true;
+
+    if (authHeader) {
+      try {
+        const supabase = createClient(
+          process.env.SUPABASE_URL,
+          process.env.SUPABASE_SERVICE_ROLE_KEY,
+          { auth: { persistSession: false } }
+        );
+
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user } } = await supabase.auth.getUser(token);
+
+        if (user) {
+          userId = user.id;
+          isGuestCheckout = false;
+
+          // Try to get existing Stripe customer ID
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('stripe_customer_id')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (profile?.stripe_customer_id) {
+            existingCustomerId = profile.stripe_customer_id;
+          }
+        }
+      } catch (authError) {
+        console.log("[create-checkout-session] Auth token invalid or expired, proceeding as guest");
+      }
+    }
+
     console.log("[create-checkout-session] Creating session:", {
       plan,
       interval: billing,
       priceId: selectedPriceId,
+      isGuestCheckout,
+      userId: userId || 'guest',
       successUrl,
       cancelUrl,
       origin,
     });
 
-    const session = await stripe.checkout.sessions.create({
+    // Build checkout session config
+    const sessionConfig = {
       mode: "subscription",
       line_items: [{ price: selectedPriceId, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
+      // Enable automatic payment methods (includes Amazon Pay, Cash App, Klarna where supported)
+      // This allows Stripe to show all available payment methods for the customer's region
+      payment_method_types: ['card', 'cashapp', 'klarna', 'amazon_pay'],
+      automatic_tax: { enabled: false },
       metadata: {
         plan,
         interval: billing,
+        guest_checkout: isGuestCheckout.toString(),
+        ...(userId && { user_id: userId }),
       },
       subscription_data: {
         trial_period_days: parseInt(process.env.TRIAL_DAYS_PRO || "14"),
         metadata: {
           plan,
           interval: billing,
+          guest_checkout: isGuestCheckout.toString(),
+          ...(userId && { user_id: userId }),
         },
       },
-    });
+    };
 
-    console.log("[create-checkout-session] Session created:", session.id);
+    // If we have an existing customer, use it
+    if (existingCustomerId) {
+      sessionConfig.customer = existingCustomerId;
+    } else {
+      // For new customers, let Stripe collect email
+      sessionConfig.customer_email = null; // Stripe will prompt for email
+      // Use client_reference_id to track guest checkouts
+      sessionConfig.client_reference_id = userId || `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    console.log("[create-checkout-session] Session created:", session.id, "Guest:", isGuestCheckout);
 
     return json(200, { url: session.url, sessionId: session.id });
   } catch (error) {

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle, Loader2, AlertCircle, Mail } from 'lucide-react';
 import { SUPPORT_EMAIL } from '../lib/support';
 import Logo from '../components/Logo';
 import { BRAND_NAME_FULL } from '../lib/brand';
+import { supabase } from '../lib/supabase';
 
 interface SessionData {
   customer_email: string;
@@ -16,6 +17,18 @@ const Success: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [sendingMagicLink, setSendingMagicLink] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -77,6 +90,29 @@ const Success: React.FC = () => {
     });
   };
 
+  const handleResendMagicLink = async () => {
+    if (!sessionData?.customer_email) return;
+
+    setSendingMagicLink(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: sessionData.customer_email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) throw error;
+
+      setMagicLinkSent(true);
+    } catch (err) {
+      console.error('Error sending magic link:', err);
+      alert('Failed to send magic link. Please try again or contact support.');
+    } finally {
+      setSendingMagicLink(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
@@ -114,11 +150,44 @@ const Success: React.FC = () => {
           <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6" style={{background: '#E8F5E9'}}>
             <CheckCircle className="w-14 h-14" style={{ color: 'var(--color-success)' }} />
           </div>
-          <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>Welcome to Premium!</h1>
+          <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
+            {isLoggedIn ? 'Welcome to Premium!' : 'Payment Successful!'}
+          </h1>
           <p className="text-xl" style={{ color: 'var(--color-text-muted)' }}>
-            Your subscription has been successfully activated.
+            {isLoggedIn
+              ? 'Your subscription has been successfully activated.'
+              : 'Your subscription is ready. Check your email to sign in and access your account.'}
           </p>
         </div>
+
+        {!isLoggedIn && sessionData && (
+          <div className="mb-8 p-6 rounded-lg" style={{ background: '#E3F2FD', border: '1px solid #1976D2' }}>
+            <div className="flex items-start gap-3">
+              <Mail className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#1565C0' }} />
+              <div className="flex-1">
+                <h3 className="font-semibold mb-2" style={{ color: '#0D47A1' }}>Check Your Email</h3>
+                <p className="text-sm mb-3" style={{ color: '#1565C0', lineHeight: '1.6' }}>
+                  We've sent a sign-in link to <strong>{sessionData.customer_email}</strong>.
+                  Click the link in your email to access your account and start using your premium features.
+                </p>
+                {!magicLinkSent ? (
+                  <button
+                    onClick={handleResendMagicLink}
+                    disabled={sendingMagicLink}
+                    className="text-sm font-semibold hover:underline disabled:opacity-50"
+                    style={{ color: '#0D47A1' }}
+                  >
+                    {sendingMagicLink ? 'Sending...' : 'Resend Sign-In Link'}
+                  </button>
+                ) : (
+                  <p className="text-sm font-semibold" style={{ color: '#2E7D32' }}>
+                    ✓ Sign-in link sent! Check your inbox.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {sessionData && (
           <div className="rounded-xl p-7 mb-8 space-y-5" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
@@ -168,12 +237,29 @@ const Success: React.FC = () => {
         )}
 
         <div className="space-y-4">
-          <a href="/#checker" className="btn-cta block w-full text-center text-base py-4">
-            Start Checking Interactions
-          </a>
-          <a href="/account" className="btn-outline block w-full text-center text-base py-4">
-            Manage Account
-          </a>
+          {isLoggedIn ? (
+            <>
+              <a href="/#checker" className="btn-cta block w-full text-center text-base py-4">
+                Start Checking Interactions
+              </a>
+              <a href="/account" className="btn-outline block w-full text-center text-base py-4">
+                Manage Account
+              </a>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleResendMagicLink}
+                disabled={sendingMagicLink || magicLinkSent}
+                className="btn-cta block w-full text-center text-base py-4 disabled:opacity-50"
+              >
+                {sendingMagicLink ? 'Sending...' : magicLinkSent ? 'Sign-In Link Sent!' : 'Send Sign-In Link'}
+              </button>
+              <a href="/" className="btn-outline block w-full text-center text-base py-4">
+                Return to Home
+              </a>
+            </>
+          )}
         </div>
 
         <div className="mt-8 text-center space-y-3 pt-6" style={{borderTop: '1px solid var(--color-border)'}}>
