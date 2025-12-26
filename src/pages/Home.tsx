@@ -1,4 +1,5 @@
 import Navbar from '../components/Navbar';
+import SafetyAlertsSection from '../components/SafetyAlertsSection';
 import LandingCheckerHero from '../components/LandingCheckerHero';
 import WhatWeScreen from '../components/WhatWeScreen';
 import Philosophy from '../components/Philosophy';
@@ -64,6 +65,7 @@ export default function Home() {
       />
       <StructuredData data={[websiteSchema, organizationSchema, appSchema]} />
       <Navbar />
+      <SafetyAlertsSection />
       <LandingCheckerHero />
       <Trust />
       <WhatWeScreen />

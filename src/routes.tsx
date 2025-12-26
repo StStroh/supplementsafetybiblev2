@@ -36,6 +36,7 @@ import AuthTest from './pages/AuthTest';
 import BillingSuccess from './pages/BillingSuccess';
 import BillingCancel from './pages/BillingCancel';
 import Welcome from './pages/Welcome';
+import AlertDetail from './pages/AlertDetail';
 
 export const router = createBrowserRouter([
   {
@@ -181,6 +182,10 @@ export const router = createBrowserRouter([
       {
         path: 'welcome',
         element: <Welcome />
+      },
+      {
+        path: 'alerts/:alertId',
+        element: <AlertDetail />
       },
       {
         path: '*',
