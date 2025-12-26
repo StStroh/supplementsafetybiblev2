@@ -183,12 +183,19 @@ const Pricing: React.FC = () => {
       }
 
       const requestUrl = `/.netlify/functions/create-checkout-session`;
-      console.log('[Pricing] Calling:', requestUrl, { plan, interval });
+      const payload = { plan, interval };
+
+      console.log('[Pricing] ========== CHECKOUT REQUEST ==========');
+      console.log('[Pricing] URL:', requestUrl);
+      console.log('[Pricing] Method: POST');
+      console.log('[Pricing] POST checkout payload:', payload);
+      console.log('[Pricing] Headers:', Object.keys(headers));
+      console.log('[Pricing] =========================================');
 
       const res = await fetch(requestUrl, {
         method: "POST",
         headers,
-        body: JSON.stringify({ plan, interval }),
+        body: JSON.stringify(payload),
         signal: controller.signal,
       });
 

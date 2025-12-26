@@ -76,13 +76,19 @@ export async function startCheckout(
       }
 
       const requestUrl = `${baseUrl}/.netlify/functions/create-checkout-session`;
-      console.log("[checkout] Making request to:", requestUrl);
-      console.log("[checkout] Request body:", { plan, interval });
+      const payload = { plan, interval };
+
+      console.log("[checkout] ========== CHECKOUT REQUEST ==========");
+      console.log("[checkout] URL:", requestUrl);
+      console.log("[checkout] Method: POST");
+      console.log("[checkout] POST checkout payload:", payload);
+      console.log("[checkout] Headers:", Object.keys(headers));
+      console.log("[checkout] ===========================================");
 
       const res = await fetch(requestUrl, {
         method: "POST",
         headers,
-        body: JSON.stringify({ plan, interval }),
+        body: JSON.stringify(payload),
         signal: controller.signal,
       });
 
