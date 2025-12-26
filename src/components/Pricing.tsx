@@ -112,6 +112,28 @@ const Pricing: React.FC = () => {
     }
   }, []);
 
+  // Auto-trigger checkout if ?plan=pro or ?plan=premium in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const planParam = urlParams.get('plan');
+
+    if (planParam === 'pro' || planParam === 'premium') {
+      console.log('[Pricing] Auto-triggering checkout from URL param:', planParam);
+
+      // Small delay to ensure component is mounted and user sees the page
+      setTimeout(() => {
+        const tier = billingPeriod === 'monthly'
+          ? `${planParam}_monthly` as const
+          : `${planParam}_annual` as const;
+
+        handleCheckout(tier);
+      }, 500);
+
+      // Clean up URL to remove the plan parameter
+      window.history.replaceState({}, '', '/pricing');
+    }
+  }, []); // Only run once on mount
+
   // Check for missing environment variables on mount
   useEffect(() => {
     console.log('=== STRIPE CONFIGURATION CHECK ===');
