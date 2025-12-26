@@ -27,7 +27,6 @@
   height: clamp(56px, 7.5vw, 72px);
   width: auto;
   max-width: none;
-  overflow: visible;
   flex-shrink: 0;
 }
 
@@ -35,14 +34,12 @@
   height: 96px;
   width: auto;
   max-width: none;
-  overflow: visible;
 }
 
 .logo--footer {
   height: 40px;
   width: auto;
   max-width: none;
-  overflow: visible;
 }
 
 @media (max-width: 768px) {
