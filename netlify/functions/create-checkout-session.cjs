@@ -34,7 +34,10 @@ exports.handler = async (event) => {
     });
 
     if (event.httpMethod !== "POST") {
-      return json(405, { error: "Method not allowed" });
+      return json(405, {
+        error: "Method not allowed",
+        type: "MethodNotAllowed"
+      });
     }
 
     // EXPLICIT DIAGNOSTIC: Check all required environment variables
@@ -55,7 +58,10 @@ exports.handler = async (event) => {
       console.error('[create-checkout-session] ❌ CRITICAL: STRIPE_SECRET_KEY not configured in Netlify environment variables');
       console.error('[create-checkout-session] Go to: Netlify Dashboard → Site Settings → Environment Variables');
       console.error('[create-checkout-session] Add: STRIPE_SECRET_KEY with value from Stripe Dashboard');
-      return json(500, { error: "Payment system not configured. Please contact support." });
+      return json(500, {
+        error: "Payment system not configured. Please contact support.",
+        type: "ConfigurationError"
+      });
     }
 
     // Detect if using test or live mode (DO NOT print the actual key)
@@ -73,27 +79,109 @@ exports.handler = async (event) => {
     let requestBody;
     try {
       requestBody = JSON.parse(event.body || "{}");
-      console.log('[create-checkout-session] ✅ Request body parsed:', {
-        plan: requestBody.plan,
-        interval: requestBody.interval,
-        hasPriceId: !!requestBody.priceId
-      });
+
+      // Log parsed body keys (WITHOUT logging any values that could be secrets)
+      console.log('[create-checkout-session] ========== REQUEST PAYLOAD ==========');
+      console.log('[create-checkout-session] Body keys present:', Object.keys(requestBody));
+      console.log('[create-checkout-session] Has plan:', !!requestBody.plan);
+      console.log('[create-checkout-session] Has interval:', !!requestBody.interval);
+      console.log('[create-checkout-session] Has tier:', !!requestBody.tier);
+      console.log('[create-checkout-session] Has priceId:', !!requestBody.priceId);
+      console.log('[create-checkout-session] plan value:', requestBody.plan || 'undefined');
+      console.log('[create-checkout-session] interval value:', requestBody.interval || 'undefined');
+      console.log('[create-checkout-session] tier value:', requestBody.tier || 'undefined');
+      console.log('[create-checkout-session] ====================================');
+
     } catch (parseErr) {
       console.error('[create-checkout-session] ❌ Invalid JSON in request body:', parseErr.message);
-      return json(400, { error: "Invalid request format" });
+      return json(400, {
+        error: "Invalid JSON in request body",
+        type: "BadRequest",
+        received: {
+          bodyLength: event.body?.length || 0,
+          bodyPreview: event.body?.substring(0, 100) || 'empty'
+        }
+      });
     }
 
-    const { plan, interval, priceId } = requestBody;
+    // NORMALIZE PAYLOAD - Accept 3 variants:
+    // A) { plan: "pro"|"premium", interval: "monthly"|"annual" }
+    // B) { tier: "pro_monthly"|"pro_annual"|"premium_monthly"|"premium_annual" }
+    // C) { priceId: "price_..." }
 
-    // Validate plan
-    if (!plan) {
-      console.error('[create-checkout-session] ❌ Missing required field: plan');
-      return json(400, { error: "Missing required field: plan" });
+    let plan = requestBody.plan;
+    let interval = requestBody.interval;
+    let priceId = requestBody.priceId;
+
+    // Variant B: tier format
+    if (!plan && requestBody.tier) {
+      console.log('[create-checkout-session] Normalizing from tier format:', requestBody.tier);
+      const tierMap = {
+        'pro_monthly': { plan: 'pro', interval: 'monthly' },
+        'pro_annual': { plan: 'pro', interval: 'annual' },
+        'premium_monthly': { plan: 'premium', interval: 'monthly' },
+        'premium_annual': { plan: 'premium', interval: 'annual' },
+      };
+
+      const normalized = tierMap[requestBody.tier];
+      if (normalized) {
+        plan = normalized.plan;
+        interval = normalized.interval;
+        console.log('[create-checkout-session] ✅ Normalized to:', { plan, interval });
+      } else {
+        console.error('[create-checkout-session] ❌ Invalid tier value:', requestBody.tier);
+        return json(400, {
+          error: `Invalid tier. Must be one of: ${Object.keys(tierMap).join(', ')}`,
+          type: "BadRequest",
+          received: {
+            hasPlan: !!requestBody.plan,
+            hasInterval: !!requestBody.interval,
+            hasTier: !!requestBody.tier,
+            hasPriceId: !!requestBody.priceId,
+            tierValue: requestBody.tier
+          }
+        });
+      }
     }
 
-    if (!["pro", "premium"].includes(plan)) {
-      console.error('[create-checkout-session] ❌ Invalid plan value:', plan);
-      return json(400, { error: "Invalid plan. Must be 'pro' or 'premium'." });
+    // Variant C: Direct priceId override - skip plan/interval validation
+    if (priceId && !plan) {
+      console.log('[create-checkout-session] Using direct priceId override (no plan validation)');
+      // We'll use the priceId directly below, set dummy values for logging
+      plan = 'custom';
+      interval = 'custom';
+    }
+
+    // Validate plan (unless using direct priceId)
+    if (!priceId) {
+      if (!plan) {
+        console.error('[create-checkout-session] ❌ Missing required field: plan or priceId');
+        return json(400, {
+          error: "Missing required field: must provide either { plan, interval } or { tier } or { priceId }",
+          type: "BadRequest",
+          received: {
+            hasPlan: !!requestBody.plan,
+            hasInterval: !!requestBody.interval,
+            hasTier: !!requestBody.tier,
+            hasPriceId: !!requestBody.priceId
+          }
+        });
+      }
+
+      if (!["pro", "premium"].includes(plan)) {
+        console.error('[create-checkout-session] ❌ Invalid plan value:', plan);
+        return json(400, {
+          error: "Invalid plan. Must be 'pro' or 'premium'.",
+          type: "BadRequest",
+          received: {
+            hasPlan: !!requestBody.plan,
+            hasInterval: !!requestBody.interval,
+            hasTier: !!requestBody.tier,
+            hasPriceId: !!requestBody.priceId,
+            planValue: plan
+          }
+        });
+      }
     }
 
     const billing = interval === "annual" ? "annual" : "monthly";
@@ -121,7 +209,7 @@ exports.handler = async (event) => {
       }
       console.log('[create-checkout-session] Selected env var:', envVarName);
     } else {
-      console.log('[create-checkout-session] Using priceId from request body');
+      console.log('[create-checkout-session] ✅ Using priceId from request body:', selectedPriceId);
     }
 
     if (!selectedPriceId) {
@@ -130,7 +218,11 @@ exports.handler = async (event) => {
       console.error('[create-checkout-session] Looking for env var:', envVarName);
       console.error('[create-checkout-session] Value found:', selectedPriceId || 'EMPTY/UNDEFINED');
       console.error('[create-checkout-session] Fix: Go to Netlify → Environment Variables → Add', envVarName);
-      return json(500, { error: `Price configuration missing for ${plan} ${billing}. Please contact support.` });
+      return json(500, {
+        error: `Price configuration missing for ${plan} ${billing}. Please contact support.`,
+        type: "ConfigurationError",
+        missingVar: envVarName
+      });
     }
 
     console.log('[create-checkout-session] ✅ Using price ID:', selectedPriceId);
