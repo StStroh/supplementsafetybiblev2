@@ -258,7 +258,7 @@ export default function Pricing() {
                 data-testid={`checkout-btn-pro-${interval === 'monthly' ? 'monthly' : 'annual'}`}
                 className="btn-cta w-full mb-6"
               >
-                {user ? 'Try Pro free for 14 days' : 'Sign up for Pro trial'}
+                {user ? 'Upgrade to Pro' : 'Sign up for Pro'}
               </button>
 
               <div className="flex-1">
@@ -325,7 +325,7 @@ export default function Pricing() {
                 data-testid={`checkout-btn-premium-${interval === 'monthly' ? 'monthly' : 'annual'}`}
                 className="btn-cta w-full mb-6"
               >
-                {user ? 'Try Premium free for 14 days' : 'Sign up for Premium trial'}
+                {user ? 'Upgrade to Premium' : 'Sign up for Premium'}
               </button>
 
               <div className="flex-1">
@@ -444,12 +444,8 @@ export default function Pricing() {
 
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-semibold mb-2" style={{color: 'var(--color-text)'}}>
-                What happens during the free trial?
-              </h3>
-              <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                During the Pro or Premium trial, you have full access to all features in that plan. You can cancel at any time before the trial ends and you won't be charged.
-              </p>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text)' }}>What do paid plans include?</h3>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)', lineHeight: '1.7' }}>Paid plans unlock Pro and Premium features, including unlimited interaction checks, clinical explanations, evidence‑based recommendations and more. You can upgrade or downgrade at any time, and you'll only be charged for the current billing period.</p>
             </div>
 
             <div>
