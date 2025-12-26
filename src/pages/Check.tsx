@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { AlertTriangle, CheckCircle2, Info, Shield, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { AlertTriangle, CheckCircle2, Info, Shield, FileText, Loader2 } from "lucide-react";
 import { API_BASE } from "../lib/apiBase";
 import NavClinical from "../components/NavClinical";
 import FooterClinical from "../components/FooterClinical";
@@ -18,6 +19,7 @@ import SafetyBadges from "../components/SafetyBadges";
 import { getSafetyLabel } from "../lib/safetyGrades";
 import PdfExportButton from "../components/PdfExportButton";
 import ReportVault from "../components/ReportVault";
+import { useAuth } from "../state/AuthProvider";
 
 function isFreeActive(): boolean {
   try { return localStorage.getItem('free_active') === 'true'; } catch { return false; }
@@ -71,6 +73,8 @@ type CheckResp =
     };
 
 export default function Check() {
+  const navigate = useNavigate();
+  const { user, session, plan, loading: authLoading } = useAuth();
   const [selSup, setSelSup] = useState<string>("");
   const [selMed, setSelMed] = useState<string>("");
   const [result, setResult] = useState<CheckResp | null>(null);
@@ -79,31 +83,17 @@ export default function Check() {
   const [stickyDismissed, setStickyDismissed] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userPlan, setUserPlan] = useState<string>('free');
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-  useEffect(() => {
-    async function fetchUserPlan() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('plan')
-            .eq('id', session.user.id)
-            .maybeSingle();
+  const userPlan = plan || 'free';
 
-          if (profile) {
-            setUserPlan(profile.plan || 'free');
-          }
-        }
-      } catch (error) {
-        console.error('[TIER] Error fetching user plan:', error);
-        setUserPlan('free');
-      }
+  // Guard: Redirect to auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !session) {
+      console.log('[Check] No session found, redirecting to auth...');
+      navigate('/auth?next=/check', { replace: true });
     }
-    fetchUserPlan();
-  }, []);
+  }, [authLoading, session, navigate]);
 
   async function check() {
     setError(null);
@@ -225,6 +215,23 @@ export default function Check() {
       },
     ],
   };
+
+  // Show loading screen while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-600 mx-auto mb-4 animate-spin" />
+          <p className="text-lg text-gray-700">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, return null (redirect is handled by useEffect)
+  if (!session) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-900">

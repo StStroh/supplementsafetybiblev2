@@ -99,7 +99,8 @@ export default function Auth() {
     setLoading(true);
     setError(null);
 
-    const redirectUrl = `${SITE_URL}/auth/callback`;
+    const nextUrl = redirect || '/welcome';
+    const redirectUrl = `${SITE_URL}/auth/callback?next=${encodeURIComponent(nextUrl)}`;
     const emailDomain = getEmailDomain(email);
     const timestamp = new Date().toISOString();
 
@@ -107,6 +108,7 @@ export default function Auth() {
       console.info('[Auth] Attempting to send magic link to:', email);
       console.info('[Auth] Email domain:', emailDomain);
       console.info('[Auth] Redirect URL:', redirectUrl);
+      console.info('[Auth] Next URL:', nextUrl);
       console.info('[Auth] Timestamp:', timestamp);
 
       const { data, error: signInError } = await supabase.auth.signInWithOtp({

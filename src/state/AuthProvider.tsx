@@ -1,33 +1,112 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import type { User, Session } from '@supabase/supabase-js';
 
-const Ctx = createContext({ user: null, plan: null, loading: true });
-export const useAuth = () => useContext(Ctx);
+interface AuthState {
+  user: User | null;
+  session: Session | null;
+  plan: string | null;
+  loading: boolean;
+}
 
-export function AuthProvider({ children }) {
-  const [state, setState] = useState({ user: null, plan: null, loading: true });
+interface AuthContextValue extends AuthState {
+  signOut: () => Promise<void>;
+}
 
-  async function load() {
-    const { data:{ session } } = await supabase.auth.getSession();
-    const user = session?.user ?? null;
+const AuthContext = createContext<AuthContextValue>({
+  user: null,
+  session: null,
+  plan: null,
+  loading: true,
+  signOut: async () => {},
+});
 
-    if (!user) return setState({ user:null, plan:null, loading:false });
+export const useAuth = () => useContext(AuthContext);
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('plan')
-      .eq('id', user.id)
-      .single();
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-    const plan = error ? 'free' : (data?.plan ?? 'free');
-    setState({ user, plan, loading:false });
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [state, setState] = useState<AuthState>({
+    user: null,
+    session: null,
+    plan: null,
+    loading: true,
+  });
+
+  async function loadSession() {
+    try {
+      console.log('[AuthProvider] Loading session...');
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error('[AuthProvider] Error loading session:', error);
+        setState({ user: null, session: null, plan: null, loading: false });
+        return;
+      }
+
+      const user = session?.user ?? null;
+
+      if (!user) {
+        console.log('[AuthProvider] No user session found');
+        setState({ user: null, session: null, plan: null, loading: false });
+        return;
+      }
+
+      console.log('[AuthProvider] Session found for user:', user.id);
+
+      // Fetch user plan from profiles
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const plan = profileError ? 'free' : (profileData?.plan ?? 'free');
+      console.log('[AuthProvider] User plan:', plan);
+
+      setState({ user, session, plan, loading: false });
+    } catch (err) {
+      console.error('[AuthProvider] Unexpected error loading session:', err);
+      setState({ user: null, session: null, plan: null, loading: false });
+    }
+  }
+
+  async function signOut() {
+    try {
+      console.log('[AuthProvider] Signing out...');
+      await supabase.auth.signOut();
+      setState({ user: null, session: null, plan: null, loading: false });
+    } catch (err) {
+      console.error('[AuthProvider] Error signing out:', err);
+    }
   }
 
   useEffect(() => {
-    load();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
-    return () => sub.subscription.unsubscribe();
+    loadSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('[AuthProvider] Auth state changed:', event);
+
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          await loadSession();
+        } else if (event === 'SIGNED_OUT') {
+          setState({ user: null, session: null, plan: null, loading: false });
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  return <Ctx.Provider value={state}>{children}</Ctx.Provider>;
+  const value: AuthContextValue = {
+    ...state,
+    signOut,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

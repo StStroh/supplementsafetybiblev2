@@ -16,6 +16,11 @@ export default function AuthCallback() {
       try {
         console.info('[AuthCallback] Processing authentication callback...');
 
+        // Get the 'next' redirect parameter from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next') || '/welcome';
+        console.info('[AuthCallback] Next URL:', nextUrl);
+
         // Wait a moment for Supabase to fully process the auth exchange
         await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -93,20 +98,20 @@ export default function AuthCallback() {
 
             // Redirect after short delay
             setTimeout(() => {
-              console.info('[AuthCallback] Redirecting to account page...');
-              navigate('/account');
+              console.info('[AuthCallback] Redirecting to:', nextUrl);
+              navigate(nextUrl, { replace: true });
             }, 1500);
           } else {
             // Free tier activation failed, but user is authenticated
             console.warn('[AuthCallback] Free tier activation failed, redirecting anyway');
             setState('success');
-            setTimeout(() => navigate('/account'), 1000);
+            setTimeout(() => navigate(nextUrl, { replace: true }), 1000);
           }
         } catch (err) {
           console.error('[AuthCallback] Failed to activate free tier:', err);
-          // Still redirect to account even if free tier failed
+          // Still redirect even if free tier failed
           setState('success');
-          setTimeout(() => navigate('/account'), 1000);
+          setTimeout(() => navigate(nextUrl, { replace: true }), 1000);
         }
       } catch (err) {
         console.error('[AuthCallback] Unexpected error:', err);
