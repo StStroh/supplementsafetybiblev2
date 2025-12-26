@@ -89,6 +89,8 @@ export default function Check() {
 
   const [selSup, setSelSup] = useState<string>("");
   const [selMed, setSelMed] = useState<string>("");
+  const [supQuery, setSupQuery] = useState<string>("");
+  const [medQuery, setMedQuery] = useState<string>("");
   const [result, setResult] = useState<CheckResp | null>(null);
   const [loading, setLoading] = useState(false);
   const [showStickyFooter, setShowStickyFooter] = useState(false);
@@ -155,7 +157,11 @@ export default function Check() {
   }
 
   async function check() {
-    if (!selSup || !selMed) return;
+    console.log('[Check] Button clicked - selSup:', selSup, 'selMed:', selMed);
+    if (!selSup || !selMed) {
+      console.log('[Check] Missing selection, cannot proceed');
+      return;
+    }
 
     if (!isAuthenticated) {
       const payload = {
@@ -341,7 +347,16 @@ export default function Check() {
                 label="Supplement"
                 placeholder="Type a supplement…"
                 type="supplement"
-                onChoose={(name) => setSelSup(name)}
+                value={supQuery}
+                onChange={(val) => {
+                  console.log('[Check] Supplement query changed:', val);
+                  setSupQuery(val);
+                }}
+                onChoose={(name) => {
+                  console.log('[Check] Supplement chosen:', name);
+                  setSelSup(name);
+                  setSupQuery("");
+                }}
                 className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
               />
               {selSup && (
@@ -349,7 +364,11 @@ export default function Check() {
                   <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
                     {selSup}
                     <button
-                      onClick={() => setSelSup("")}
+                      onClick={() => {
+                        console.log('[Check] Clearing supplement selection');
+                        setSelSup("");
+                        setSupQuery("");
+                      }}
                       className="ml-2 text-blue-600 hover:text-blue-800"
                       aria-label="Remove"
                     >
@@ -366,7 +385,11 @@ export default function Check() {
                       <button
                         key={name}
                         type="button"
-                        onClick={() => setSelSup(name)}
+                        onClick={() => {
+                          console.log('[Check] Quick select supplement:', name);
+                          setSelSup(name);
+                          setSupQuery(name);
+                        }}
                         className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors font-medium"
                         style={{ touchAction: 'manipulation' }}
                       >
@@ -383,7 +406,16 @@ export default function Check() {
                 label="Medication"
                 placeholder="Type a drug…"
                 type="medication"
-                onChoose={(name) => setSelMed(name)}
+                value={medQuery}
+                onChange={(val) => {
+                  console.log('[Check] Medication query changed:', val);
+                  setMedQuery(val);
+                }}
+                onChoose={(name) => {
+                  console.log('[Check] Medication chosen:', name);
+                  setSelMed(name);
+                  setMedQuery("");
+                }}
                 className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all"
               />
               {selMed && (
@@ -391,7 +423,11 @@ export default function Check() {
                   <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
                     {selMed}
                     <button
-                      onClick={() => setSelMed("")}
+                      onClick={() => {
+                        console.log('[Check] Clearing medication selection');
+                        setSelMed("");
+                        setMedQuery("");
+                      }}
                       className="ml-2 text-blue-600 hover:text-blue-800"
                       aria-label="Remove"
                     >
@@ -408,7 +444,11 @@ export default function Check() {
                       <button
                         key={name}
                         type="button"
-                        onClick={() => setSelMed(name)}
+                        onClick={() => {
+                          console.log('[Check] Quick select medication:', name);
+                          setSelMed(name);
+                          setMedQuery(name);
+                        }}
                         className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors font-medium"
                         style={{ touchAction: 'manipulation' }}
                       >

@@ -11,6 +11,8 @@ type Props = {
   className: string;
   dropdownClassName?: string;
   "data-testid"?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 };
 
 export default function TypeaheadInput({
@@ -21,6 +23,8 @@ export default function TypeaheadInput({
   className,
   dropdownClassName,
   "data-testid": testId,
+  value: externalValue,
+  onChange: externalOnChange,
 }: Props) {
   const [q, setQ] = useState("");
   const [list, setList] = useState<Item[]>([]);
@@ -31,6 +35,9 @@ export default function TypeaheadInput({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const committingRef = useRef(false);
 
+  const isControlled = externalValue !== undefined;
+  const displayValue = isControlled ? externalValue : q;
+
   async function suggest(query: string) {
     const u = `/.netlify/functions/suggest?q=${encodeURIComponent(query)}&type=${type}&limit=12`;
     const r = await fetch(u);
@@ -38,11 +45,18 @@ export default function TypeaheadInput({
   }
 
   useEffect(() => {
+    const searchQuery = isControlled ? externalValue : q;
+    if (!searchQuery || searchQuery.length === 0) {
+      setList([]);
+      setOpen(false);
+      return;
+    }
+
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
       try {
         setLoading(true);
-        setList(await suggest(q));
+        setList(await suggest(searchQuery));
         setOpen(true);
       } catch {
         setList([]);
@@ -54,7 +68,7 @@ export default function TypeaheadInput({
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [q, type]);
+  }, [q, externalValue, type, isControlled]);
 
   useEffect(() => {
     function outside(e: MouseEvent) {
@@ -66,11 +80,25 @@ export default function TypeaheadInput({
   }, []);
 
   const handleSelect = (value: string) => {
-    setQ("");
+    console.log(`[TypeaheadInput] Selected: ${value} (type: ${type})`);
+    if (isControlled && externalOnChange) {
+      externalOnChange("");
+    } else {
+      setQ("");
+    }
     setOpen(false);
     onChoose(value);
     committingRef.current = false;
     requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const handleInputChange = (newValue: string) => {
+    console.log(`[TypeaheadInput] Input change: "${newValue}" (type: ${type})`);
+    if (isControlled && externalOnChange) {
+      externalOnChange(newValue);
+    } else {
+      setQ(newValue);
+    }
   };
 
   return (
@@ -78,8 +106,8 @@ export default function TypeaheadInput({
       <label className="ac__label block text-sm font-semibold mb-2" style={{ color: 'var(--color-text)' }}>{label}</label>
       <input
         ref={inputRef}
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
+        value={displayValue}
+        onChange={(e) => handleInputChange(e.target.value)}
         onFocus={() => setOpen(true)}
         onBlur={(e) => {
           if (committingRef.current) {
