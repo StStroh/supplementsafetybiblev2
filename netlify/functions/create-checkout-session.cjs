@@ -26,18 +26,40 @@ function getOrigin(event) {
 }
 
 exports.handler = async (event) => {
+  // Log the incoming request for debugging
+  console.log('[create-checkout-session] Request received:', {
+    method: event.httpMethod,
+    hasAuth: !!(event.headers.authorization || event.headers.Authorization),
+  });
+
   if (event.httpMethod !== "POST") {
     return json(405, { error: "Method not allowed" });
   }
 
   try {
+    // Validate Stripe key exists
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('[create-checkout-session] STRIPE_SECRET_KEY not configured');
+      return json(500, { error: "Payment system not configured" });
+    }
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2024-06-20",
     });
 
-    const { plan, interval, priceId } = JSON.parse(event.body || "{}");
+    // Parse request body safely
+    let requestBody;
+    try {
+      requestBody = JSON.parse(event.body || "{}");
+    } catch (parseErr) {
+      console.error('[create-checkout-session] Invalid JSON:', parseErr);
+      return json(400, { error: "Invalid request format" });
+    }
+
+    const { plan, interval, priceId } = requestBody;
 
     if (!plan || !["pro", "premium"].includes(plan)) {
+      console.error('[create-checkout-session] Invalid plan:', plan);
       return json(400, { error: "Invalid plan. Must be 'pro' or 'premium'." });
     }
 
@@ -58,8 +80,11 @@ exports.handler = async (event) => {
     }
 
     if (!selectedPriceId) {
+      console.error('[create-checkout-session] Price ID not configured:', { plan, billing });
       return json(500, { error: `Price ID not configured for ${plan} ${billing}` });
     }
+
+    console.log('[create-checkout-session] Using price ID:', selectedPriceId);
 
     const origin = getOrigin(event);
 
@@ -69,7 +94,7 @@ exports.handler = async (event) => {
     const cancelUrl = process.env.CHECKOUT_CANCEL_URL ||
       `${origin}/billing/cancel`;
 
-    // Check if user is authenticated (optional)
+    // Check if user is authenticated (optional - guest checkout is fully supported)
     const authHeader = event.headers.authorization || event.headers.Authorization;
     let userId = null;
     let existingCustomerId = null;
@@ -77,32 +102,40 @@ exports.handler = async (event) => {
 
     if (authHeader) {
       try {
-        const supabase = createClient(
-          process.env.SUPABASE_URL,
-          process.env.SUPABASE_SERVICE_ROLE_KEY,
-          { auth: { persistSession: false } }
-        );
+        // Validate Supabase env vars
+        if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+          console.warn("[create-checkout-session] Supabase not configured, treating as guest");
+        } else {
+          const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY,
+            { auth: { persistSession: false } }
+          );
 
-        const token = authHeader.replace('Bearer ', '');
-        const { data: { user } } = await supabase.auth.getUser(token);
+          const token = authHeader.replace('Bearer ', '');
+          const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
-        if (user) {
-          userId = user.id;
-          isGuestCheckout = false;
+          if (authError) {
+            console.log("[create-checkout-session] Auth error, proceeding as guest:", authError.message);
+          } else if (user) {
+            userId = user.id;
+            isGuestCheckout = false;
 
-          // Try to get existing Stripe customer ID
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('stripe_customer_id')
-            .eq('id', user.id)
-            .maybeSingle();
+            // Try to get existing Stripe customer ID
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('stripe_customer_id')
+              .eq('id', user.id)
+              .maybeSingle();
 
-          if (profile?.stripe_customer_id) {
-            existingCustomerId = profile.stripe_customer_id;
+            if (profile?.stripe_customer_id) {
+              existingCustomerId = profile.stripe_customer_id;
+              console.log("[create-checkout-session] Found existing customer ID");
+            }
           }
         }
       } catch (authError) {
-        console.log("[create-checkout-session] Auth token invalid or expired, proceeding as guest");
+        console.log("[create-checkout-session] Auth token invalid or expired, proceeding as guest:", authError);
       }
     }
 
@@ -170,10 +203,20 @@ exports.handler = async (event) => {
 
     return json(200, { url: session.url, sessionId: session.id });
   } catch (error) {
-    console.error("[create-checkout-session] Error:", error);
-    return json(500, {
-      error: error.message || "Failed to create checkout session",
-      details: error.toString()
+    // Log full error details for debugging
+    console.error("[create-checkout-session] ❌ ERROR:", {
+      message: error.message,
+      stack: error.stack,
+      type: error.constructor.name,
+    });
+
+    // Return safe error message to client
+    const userMessage = error.message || "Failed to create checkout session";
+    const statusCode = error.statusCode || 500;
+
+    return json(statusCode, {
+      error: userMessage,
+      details: process.env.NODE_ENV === 'development' ? error.toString() : undefined
     });
   }
 };
