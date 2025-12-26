@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, X, AlertCircle } from 'lucide-react';
+import { Check, X, AlertCircle, Shield, Lock, CreditCard } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { startCheckout } from '../utils/checkout';
 import { useAlert } from '../state/AlertProvider';
+import { getPricingFlags } from '../lib/pricingFlags';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
@@ -50,7 +51,8 @@ const features: FeatureRow[] = [
 export default function Pricing() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const [interval, setInterval] = useState<BillingInterval>('annual');
+  const pricingFlags = getPricingFlags();
+  const [interval, setInterval] = useState<BillingInterval>('monthly'); // Default to monthly
   const [user, setUser] = useState<any>(null);
   const [showCancelledAlert, setShowCancelledAlert] = useState(false);
 
@@ -135,37 +137,54 @@ export default function Pricing() {
             Professional supplement-medication interaction screening
           </p>
 
-          <div className="mt-8 inline-flex items-center gap-2 rounded-full border-2" style={{borderColor: 'var(--color-border)', background: 'var(--color-surface)', padding: '4px'}}>
-            <button
-              onClick={() => setInterval('monthly')}
-              className={`px-6 py-2 rounded-full font-semibold transition-all ${
-                interval === 'monthly' ? 'text-white' : ''
-              }`}
-              style={{
-                background: interval === 'monthly' ? 'var(--color-brand)' : 'transparent',
-                color: interval === 'monthly' ? 'white' : 'var(--color-text-muted)'
-              }}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setInterval('annual')}
-              className={`px-6 py-2 rounded-full font-semibold transition-all relative ${
-                interval === 'annual' ? 'text-white' : ''
-              }`}
-              style={{
-                background: interval === 'annual' ? 'var(--color-brand)' : 'transparent',
-                color: interval === 'annual' ? 'white' : 'var(--color-text-muted)'
-              }}
-            >
-              Yearly
+          {pricingFlags.enableAnnualToggle && (
+            <div className="mt-8 inline-flex flex-col items-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full border-2" style={{borderColor: 'var(--color-border)', background: 'var(--color-surface)', padding: '4px'}}>
+                <button
+                  onClick={() => setInterval('monthly')}
+                  className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                    interval === 'monthly' ? 'text-white' : ''
+                  }`}
+                  style={{
+                    background: interval === 'monthly' ? 'var(--color-brand)' : 'transparent',
+                    color: interval === 'monthly' ? 'white' : 'var(--color-text-muted)'
+                  }}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setInterval('annual')}
+                  className={`px-6 py-2 rounded-full font-semibold transition-all relative ${
+                    interval === 'annual' ? 'text-white' : ''
+                  }`}
+                  style={{
+                    background: interval === 'annual' ? 'var(--color-brand)' : 'transparent',
+                    color: interval === 'annual' ? 'white' : 'var(--color-text-muted)'
+                  }}
+                >
+                  Pay yearly (save {annualSavings}%)
+                  {interval === 'annual' && (
+                    <span className="absolute -top-2 -right-2 text-white text-xs px-2 py-0.5 rounded-full font-bold" style={{background: 'var(--color-success)'}}>
+                      Save {annualSavings}%
+                    </span>
+                  )}
+                </button>
+              </div>
               {interval === 'annual' && (
-                <span className="absolute -top-2 -right-2 text-white text-xs px-2 py-0.5 rounded-full font-bold" style={{background: 'var(--color-success)'}}>
-                  Save {annualSavings}%
-                </span>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>
+                  Best value for ongoing use
+                </p>
               )}
-            </button>
-          </div>
+            </div>
+          )}
+
+          {!pricingFlags.enableAnnualToggle && (
+            <div className="mt-6">
+              <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>
+                Yearly plan available soon
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="rounded-2xl p-8 mb-12" style={{background: 'rgba(94, 59, 118, 0.03)', border: '1px solid rgba(94, 59, 118, 0.1)'}}>
@@ -174,24 +193,20 @@ export default function Pricing() {
             <div className="card flex flex-col relative" style={{padding: '32px', background: 'var(--color-surface)'}}>
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Starter</h2>
-                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For exploring safety basics</p>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>Basic checks to get you started.</p>
               </div>
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>$0</span>
-                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
+                  <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>Free</span>
                 </div>
-                <p className="text-sm mt-2" style={{color: 'var(--color-success)', fontWeight: 600}}>
-                  Free forever
-                </p>
               </div>
 
               <button
                 onClick={handleSelectStarter}
                 className="btn-outline w-full mb-6"
               >
-                {user ? 'Go to Dashboard' : 'Create free account'}
+                Start free
               </button>
 
               <div className="flex-1">
@@ -222,9 +237,17 @@ export default function Pricing() {
                 </ul>
               </div>
 
-              <p className="mt-6 text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
-                No credit card required
-              </p>
+              <div className="mt-6 space-y-2">
+                <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                  No card required.
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <Shield size={14} style={{color: 'var(--color-success)'}} />
+                  <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                    Secure connection (TLS).
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Pro Card - Most Popular */}
@@ -235,19 +258,35 @@ export default function Pricing() {
 
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Pro</h2>
-                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For full insights and clinical guidance</p>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>
+                  {interval === 'monthly' ? 'Most popular for everyday users.' : 'Best value for ongoing use.'}
+                </p>
               </div>
 
               <div className="mb-6">
+                {pricingFlags.enableFirstMonthAnchor && interval === 'monthly' && (
+                  <div className="mb-2">
+                    <span className="inline-block px-3 py-1 text-xs font-bold rounded-full" style={{background: 'var(--color-trial)', color: 'white'}}>
+                      First month ${pricingFlags.firstMonthPricePro}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>
-                    ${proMonthly}
+                    ${interval === 'monthly' ? proMonthly : proAnnual}
                   </span>
-                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
+                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>
+                    {interval === 'monthly' ? '/ month' : '/ year'}
+                  </span>
                 </div>
+                {pricingFlags.enableFirstMonthAnchor && interval === 'monthly' && (
+                  <p className="text-xs mt-1" style={{color: 'var(--color-text-muted)'}}>
+                    Then ${proMonthly}/month. Cancel anytime.
+                  </p>
+                )}
                 {interval === 'annual' && (
                   <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
-                    ${proAnnual} billed annually
+                    Save {annualSavings}% vs monthly.
                   </p>
                 )}
               </div>
@@ -258,7 +297,7 @@ export default function Pricing() {
                 data-testid={`checkout-btn-pro-${interval === 'monthly' ? 'monthly' : 'annual'}`}
                 className="btn-cta w-full mb-6"
               >
-                {user ? 'Upgrade to Pro' : 'Sign up for Pro'}
+                {interval === 'monthly' ? 'Start Pro' : 'Start Pro (Yearly)'}
               </button>
 
               <div className="flex-1">
@@ -293,28 +332,55 @@ export default function Pricing() {
                 </ul>
               </div>
 
-              <p className="mt-6 text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
-                Cancel anytime. For individual use.
-              </p>
+              <div className="mt-6 space-y-2">
+                <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                  Cancel anytime.
+                </p>
+                <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                  14-day trial included.
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <CreditCard size={14} style={{color: 'var(--color-text-muted)'}} />
+                  <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                    Secure checkout via Stripe.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Premium Card */}
+            {/* Clinical/Premium Card */}
             <div className="card flex flex-col relative" style={{padding: '32px', background: 'var(--color-surface)'}}>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Premium</h2>
-                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>For clinics and small practices</p>
+                <h2 className="text-2xl font-bold mb-2" style={{color: 'var(--color-text)'}}>Clinical</h2>
+                <p className="text-sm" style={{color: 'var(--color-text-muted)'}}>
+                  {interval === 'monthly' ? 'For deeper, ongoing review.' : 'Best value for clinical practice.'}
+                </p>
               </div>
 
               <div className="mb-6">
+                {pricingFlags.enableFirstMonthAnchor && interval === 'monthly' && (
+                  <div className="mb-2">
+                    <span className="inline-block px-3 py-1 text-xs font-bold rounded-full" style={{background: 'var(--color-trial)', color: 'white'}}>
+                      First month ${pricingFlags.firstMonthPricePremium}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-baseline gap-1">
                   <span className="text-5xl font-bold" style={{color: 'var(--color-text)'}}>
-                    ${premiumMonthly}
+                    ${interval === 'monthly' ? premiumMonthly : premiumAnnual}
                   </span>
-                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>/month</span>
+                  <span className="text-lg" style={{color: 'var(--color-text-muted)'}}>
+                    {interval === 'monthly' ? '/ month' : '/ year'}
+                  </span>
                 </div>
+                {pricingFlags.enableFirstMonthAnchor && interval === 'monthly' && (
+                  <p className="text-xs mt-1" style={{color: 'var(--color-text-muted)'}}>
+                    Then ${premiumMonthly}/month. Cancel anytime.
+                  </p>
+                )}
                 {interval === 'annual' && (
                   <p className="text-sm mt-1" style={{color: 'var(--color-text-muted)'}}>
-                    ${premiumAnnual} billed annually
+                    Save {annualSavings}% vs monthly.
                   </p>
                 )}
               </div>
@@ -325,7 +391,7 @@ export default function Pricing() {
                 data-testid={`checkout-btn-premium-${interval === 'monthly' ? 'monthly' : 'annual'}`}
                 className="btn-cta w-full mb-6"
               >
-                {user ? 'Upgrade to Premium' : 'Sign up for Premium'}
+                {interval === 'monthly' ? 'Start Clinical' : 'Start Clinical (Yearly)'}
               </button>
 
               <div className="flex-1">
@@ -360,16 +426,30 @@ export default function Pricing() {
                 </ul>
               </div>
 
-              <p className="mt-6 text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
-                Designed for clinical use
-              </p>
+              <div className="mt-6 space-y-2">
+                <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                  Cancel anytime.
+                </p>
+                <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                  14-day trial included.
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <CreditCard size={14} style={{color: 'var(--color-text-muted)'}} />
+                  <p className="text-center text-xs" style={{color: 'var(--color-text-muted)'}}>
+                    Secure checkout via Stripe.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="text-center py-6 space-y-3 max-w-2xl mx-auto">
           <p className="text-sm font-medium" style={{color: 'var(--color-text-muted)'}}>
-            Cancel anytime · Educational use only — not medical advice
+            Cancel anytime · Secure checkout via Stripe
+          </p>
+          <p className="text-xs" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
+            For education only. Not medical advice.
           </p>
           <p className="text-xs" style={{color: 'var(--color-text-muted)', lineHeight: '1.6'}}>
             Supplement Safety Bible provides evidence-based educational guidance to support informed clinical decisions. This tool does not replace professional medical judgment, official prescribing information, or consultation with qualified healthcare providers.
@@ -394,7 +474,7 @@ export default function Pricing() {
                     Pro
                     <div className="text-xs font-normal mt-1" style={{color: 'var(--color-brand)'}}>Most Popular</div>
                   </th>
-                  <th className="text-center py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}>Premium</th>
+                  <th className="text-center py-4 px-4 font-semibold" style={{color: 'var(--color-text)'}}>Clinical</th>
                 </tr>
               </thead>
               <tbody>
@@ -445,7 +525,7 @@ export default function Pricing() {
           <div className="space-y-8">
             <div>
               <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text)' }}>What do paid plans include?</h3>
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)', lineHeight: '1.7' }}>Paid plans unlock Pro and Premium features, including unlimited interaction checks, clinical explanations, evidence‑based recommendations and more. You can upgrade or downgrade at any time, and you'll only be charged for the current billing period.</p>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)', lineHeight: '1.7' }}>Paid plans unlock Pro and Clinical features, including unlimited interaction checks, clinical explanations, evidence‑based recommendations and more. You can upgrade or downgrade at any time, and you'll only be charged for the current billing period.</p>
             </div>
 
             <div>
@@ -462,7 +542,7 @@ export default function Pricing() {
                 Is this for individual or team use?
               </h3>
               <p className="text-sm" style={{color: 'var(--color-text-muted)', lineHeight: '1.7'}}>
-                Pro is for individual practitioners. Premium includes 1 additional read-only user. For larger teams or institutions, please contact us.
+                Pro is for individual practitioners. Clinical includes 1 additional read-only user. For larger teams or institutions, please contact us.
               </p>
             </div>
 
