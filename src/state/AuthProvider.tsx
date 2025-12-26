@@ -36,9 +36,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   });
 
   async function loadSession() {
+    const timeout = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Session load timeout')), 5000);
+    });
+
     try {
       console.log('[AuthProvider] Loading session...');
-      const { data: { session }, error } = await supabase.auth.getSession();
+
+      const sessionPromise = supabase.auth.getSession();
+      const { data: { session }, error } = await Promise.race([
+        sessionPromise,
+        timeout
+      ]) as Awaited<ReturnType<typeof sessionPromise>>;
 
       if (error) {
         console.error('[AuthProvider] Error loading session:', error);
@@ -56,19 +65,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       console.log('[AuthProvider] Session found for user:', user.id);
 
-      // Fetch user plan from profiles
-      const { data: profileData, error: profileError } = await supabase
+      const profileTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 3000);
+      });
+
+      const profilePromise = supabase
         .from('profiles')
         .select('plan')
         .eq('id', user.id)
         .maybeSingle();
+
+      const { data: profileData, error: profileError } = await Promise.race([
+        profilePromise,
+        profileTimeout
+      ]) as Awaited<ReturnType<typeof profilePromise>>;
 
       const plan = profileError ? 'free' : (profileData?.plan ?? 'free');
       console.log('[AuthProvider] User plan:', plan);
 
       setState({ user, session, plan, loading: false });
     } catch (err) {
-      console.error('[AuthProvider] Unexpected error loading session:', err);
+      console.error('[AuthProvider] Session load failed or timed out:', err);
       setState({ user: null, session: null, plan: null, loading: false });
     }
   }
