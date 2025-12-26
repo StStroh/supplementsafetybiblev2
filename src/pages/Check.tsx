@@ -16,6 +16,8 @@ import { downloadBlob } from "../lib/download";
 import TypeaheadInput from "../components/TypeaheadInput";
 import SafetyBadges from "../components/SafetyBadges";
 import { getSafetyLabel } from "../lib/safetyGrades";
+import PdfExportButton from "../components/PdfExportButton";
+import ReportVault from "../components/ReportVault";
 
 function isFreeActive(): boolean {
   try { return localStorage.getItem('free_active') === 'true'; } catch { return false; }
@@ -78,6 +80,7 @@ export default function Check() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string>('free');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     async function fetchUserPlan() {
@@ -428,37 +431,11 @@ export default function Check() {
                   );
                 })()}
 
-                <div className="bg-white shadow-md rounded-2xl p-6 sm:p-8 border border-gray-200">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                      <FileText className="text-blue-600" size={22} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-base mb-2">Export Report</h3>
-                      {['pro', 'premium'].includes(userPlan) ? (
-                        <button
-                          onClick={handleGeneratePDF}
-                          disabled={pdfLoading}
-                          className="px-5 py-2.5 rounded-xl font-semibold border-2 border-blue-600 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          {pdfLoading ? "Generating..." : "Download PDF report"}
-                        </button>
-                      ) : (
-                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                          <p className="text-sm text-gray-700 mb-2">
-                            PDF reports are available on Pro and Premium plans.
-                          </p>
-                          <a
-                            href="/pricing"
-                            className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
-                          >
-                            Upgrade to unlock
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <PdfExportButton
+                  result={result}
+                  userPlan={userPlan}
+                  onUpgradeClick={() => setShowUpgradeModal(true)}
+                />
 
                 <div className="bg-white shadow-md rounded-2xl p-6 sm:p-8 border border-gray-200">
                   <div className="flex items-start gap-3 mb-4">
@@ -507,6 +484,11 @@ export default function Check() {
                 )}
 
                 <UpgradeBand className="mt-8" />
+
+                <ReportVault
+                  userPlan={userPlan}
+                  onUpgradeClick={() => setShowUpgradeModal(true)}
+                />
               </>
             )}
           </div>
@@ -514,6 +496,42 @@ export default function Check() {
       </main>
 
       <FooterClinical />
+
+      {showUpgradeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={() => setShowUpgradeModal(false)}>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">PDF Export is included with Pro</h2>
+            <ul className="space-y-3 mb-6">
+              <li className="flex items-start gap-3">
+                <CheckCircle2 size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
+                <span className="text-gray-700">Shareable report</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
+                <span className="text-gray-700">Saved in Report Vault</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
+                <span className="text-gray-700">Email to yourself (Premium)</span>
+              </li>
+            </ul>
+            <div className="flex gap-3">
+              <a
+                href="/pricing"
+                className="flex-1 px-6 py-3 rounded-xl font-semibold bg-black text-white hover:bg-gray-800 transition-colors text-center"
+              >
+                Upgrade
+              </a>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="px-6 py-3 rounded-xl font-medium text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Not now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showStickyFooter && !stickyDismissed && (
         <div className="fixed bottom-0 left-0 right-0 z-[50] p-4 animate-slide-up">
