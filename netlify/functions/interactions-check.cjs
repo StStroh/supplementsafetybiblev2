@@ -58,7 +58,6 @@ exports.handler = async (event) => {
       .select("*")
       .eq("supplement_id", s.id)
       .eq("medication_id", m.id)
-      .eq("is_active", true)
       .maybeSingle();
 
     if (!inter) {

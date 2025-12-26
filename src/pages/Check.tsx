@@ -381,7 +381,7 @@ export default function Check() {
                 <div className="mt-3">
                   <p className="text-xs font-medium text-gray-600 mb-2">Select common:</p>
                   <div className="flex flex-wrap gap-2">
-                    {['Magnesium', 'Omega-3', 'Vitamin D', 'Turmeric', 'Ashwagandha', 'Probiotics'].map((name) => (
+                    {['Magnesium', 'Omega-3', 'Vitamin D3', 'Turmeric', 'Ashwagandha', 'Probiotics'].map((name) => (
                       <button
                         key={name}
                         type="button"
