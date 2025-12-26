@@ -1,12 +1,18 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
+
+const PLAN_CACHE_KEY = 'ssb_plan_cache_v1';
+const SESSION_TIMEOUT_MS = 5000;
+const PROFILE_TIMEOUT_MS = 3000;
+const RETRY_DELAY_MS = 2000;
 
 interface AuthState {
   user: User | null;
   session: Session | null;
   plan: string | null;
   loading: boolean;
+  degraded: boolean;
 }
 
 interface AuthContextValue extends AuthState {
@@ -18,6 +24,7 @@ const AuthContext = createContext<AuthContextValue>({
   session: null,
   plan: null,
   loading: true,
+  degraded: false,
   signOut: async () => {},
 });
 
@@ -27,96 +34,230 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const id = setTimeout(() => reject(new Error(`${label} timeout`)), ms);
+    p.then(
+      (v) => { clearTimeout(id); resolve(v); },
+      (e) => { clearTimeout(id); reject(e); }
+    );
+  });
+}
+
+function getCachedPlan(): string | null {
+  try {
+    return localStorage.getItem(PLAN_CACHE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function setCachedPlan(plan: string | null): void {
+  try {
+    if (plan) {
+      localStorage.setItem(PLAN_CACHE_KEY, plan);
+    } else {
+      localStorage.removeItem(PLAN_CACHE_KEY);
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>({
     user: null,
     session: null,
     plan: null,
     loading: true,
+    degraded: false,
   });
 
-  async function loadSession() {
-    const timeout = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Session load timeout')), 5000);
-    });
+  const mountedRef = useRef(true);
+  const retryTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  function safeSetState(updates: Partial<AuthState>) {
+    if (mountedRef.current) {
+      setState(prev => ({ ...prev, ...updates }));
+    }
+  }
+
+  async function fetchProfile(userId: string): Promise<void> {
+    const cachedPlan = getCachedPlan();
+
+    if (cachedPlan) {
+      safeSetState({ plan: cachedPlan });
+    }
 
     try {
-      console.log('[AuthProvider] Loading session...');
+      const profilePromise = supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', userId)
+        .maybeSingle();
 
+      const { data: profileData, error: profileError } = await withTimeout(
+        profilePromise,
+        PROFILE_TIMEOUT_MS,
+        'Profile fetch'
+      );
+
+      if (profileError) {
+        console.info('[Auth] profile_error', profileError.message);
+        safeSetState({ plan: 'unknown' });
+        return;
+      }
+
+      const plan = profileData?.plan ?? 'free';
+      setCachedPlan(plan);
+      safeSetState({ plan });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      if (message.includes('timeout')) {
+        console.info('[Auth] profile_timeout');
+        safeSetState({ plan: 'unknown' });
+      } else {
+        console.info('[Auth] profile_error', message);
+        safeSetState({ plan: 'unknown' });
+      }
+    }
+  }
+
+  async function loadSession(isRetry = false): Promise<void> {
+    try {
       const sessionPromise = supabase.auth.getSession();
-      const { data: { session }, error } = await Promise.race([
+      const { data: { session }, error } = await withTimeout(
         sessionPromise,
-        timeout
-      ]) as Awaited<ReturnType<typeof sessionPromise>>;
+        SESSION_TIMEOUT_MS,
+        'Session load'
+      );
 
       if (error) {
-        console.error('[AuthProvider] Error loading session:', error);
-        setState({ user: null, session: null, plan: null, loading: false });
+        console.info('[Auth] session_error', error.message);
+        safeSetState({
+          user: null,
+          session: null,
+          plan: null,
+          loading: false,
+          degraded: true
+        });
         return;
       }
 
       const user = session?.user ?? null;
 
       if (!user) {
-        console.log('[AuthProvider] No user session found');
-        setState({ user: null, session: null, plan: null, loading: false });
+        safeSetState({
+          user: null,
+          session: null,
+          plan: null,
+          loading: false,
+          degraded: false
+        });
+        setCachedPlan(null);
         return;
       }
 
-      console.log('[AuthProvider] Session found for user:', user.id);
-
-      const profileTimeout = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 3000);
+      safeSetState({
+        user,
+        session,
+        loading: false,
+        degraded: false
       });
 
-      const profilePromise = supabase
-        .from('profiles')
-        .select('plan')
-        .eq('id', user.id)
-        .maybeSingle();
+      fetchProfile(user.id);
 
-      const { data: profileData, error: profileError } = await Promise.race([
-        profilePromise,
-        profileTimeout
-      ]) as Awaited<ReturnType<typeof profilePromise>>;
-
-      const plan = profileError ? 'free' : (profileData?.plan ?? 'free');
-      console.log('[AuthProvider] User plan:', plan);
-
-      setState({ user, session, plan, loading: false });
     } catch (err) {
-      console.error('[AuthProvider] Session load failed or timed out:', err);
-      setState({ user: null, session: null, plan: null, loading: false });
+      const message = err instanceof Error ? err.message : 'Unknown error';
+
+      if (message.includes('timeout')) {
+        console.info('[Auth] session_timeout');
+        safeSetState({
+          user: null,
+          session: null,
+          plan: null,
+          loading: false,
+          degraded: true
+        });
+
+        if (!isRetry) {
+          retryTimerRef.current = setTimeout(() => {
+            console.info('[Auth] retrying session load...');
+            loadSession(true);
+          }, RETRY_DELAY_MS);
+        }
+      } else {
+        console.info('[Auth] session_error', message);
+        safeSetState({
+          user: null,
+          session: null,
+          plan: null,
+          loading: false,
+          degraded: true
+        });
+      }
     }
   }
 
   async function signOut() {
     try {
-      console.log('[AuthProvider] Signing out...');
       await supabase.auth.signOut();
-      setState({ user: null, session: null, plan: null, loading: false });
+      setCachedPlan(null);
+      safeSetState({
+        user: null,
+        session: null,
+        plan: null,
+        loading: false,
+        degraded: false
+      });
     } catch (err) {
-      console.error('[AuthProvider] Error signing out:', err);
+      console.error('[Auth] Error signing out:', err);
     }
   }
 
   useEffect(() => {
+    mountedRef.current = true;
     loadSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('[AuthProvider] Auth state changed:', event);
+        if (!mountedRef.current) return;
 
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          await loadSession();
+          console.info('[Auth] signed_in');
+          const user = session?.user ?? null;
+
+          safeSetState({
+            user,
+            session,
+            loading: false,
+            degraded: false
+          });
+
+          if (user) {
+            fetchProfile(user.id);
+          }
         } else if (event === 'SIGNED_OUT') {
-          setState({ user: null, session: null, plan: null, loading: false });
+          console.info('[Auth] signed_out');
+          setCachedPlan(null);
+          safeSetState({
+            user: null,
+            session: null,
+            plan: null,
+            loading: false,
+            degraded: false
+          });
         }
       }
     );
 
     return () => {
+      mountedRef.current = false;
       subscription.unsubscribe();
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
     };
   }, []);
 
