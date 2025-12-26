@@ -26,17 +26,16 @@ function getOrigin(event) {
 }
 
 exports.handler = async (event) => {
-  // Log the incoming request for debugging
-  console.log('[create-checkout-session] Request received:', {
-    method: event.httpMethod,
-    hasAuth: !!(event.headers.authorization || event.headers.Authorization),
-  });
-
-  if (event.httpMethod !== "POST") {
-    return json(405, { error: "Method not allowed" });
-  }
-
   try {
+    // Log the incoming request for debugging
+    console.log('[create-checkout-session] Request received:', {
+      method: event.httpMethod,
+      hasAuth: !!(event.headers.authorization || event.headers.Authorization),
+    });
+
+    if (event.httpMethod !== "POST") {
+      return json(405, { error: "Method not allowed" });
+    }
     // Validate Stripe key exists
     if (!process.env.STRIPE_SECRET_KEY) {
       console.error('[create-checkout-session] STRIPE_SECRET_KEY not configured');
@@ -202,17 +201,33 @@ exports.handler = async (event) => {
     }
 
     return json(200, { url: session.url, sessionId: session.id });
-  } catch (error) {
-    // Log full error details for debugging
-    console.error("[create-checkout-session] ❌ ERROR:", {
-      message: error.message,
-      stack: error.stack,
-      type: error.constructor.name,
-    });
 
-    // Return safe error message to client
-    const userMessage = error.message || "Failed to create checkout session";
+  } catch (error) {
+    // COMPREHENSIVE ERROR LOGGING
+    console.error("[create-checkout-session] ❌ ERROR:");
+    console.error("[create-checkout-session] Message:", error.message);
+    console.error("[create-checkout-session] Type:", error.constructor?.name);
+    console.error("[create-checkout-session] Stack:", error.stack);
+
+    // Log Stripe-specific errors
+    if (error.type) {
+      console.error("[create-checkout-session] Stripe Error Type:", error.type);
+      console.error("[create-checkout-session] Stripe Error Code:", error.code);
+      console.error("[create-checkout-session] Stripe Error Param:", error.param);
+    }
+
+    // Return user-friendly error message
+    let userMessage = error.message || "Failed to create checkout session";
     const statusCode = error.statusCode || 500;
+
+    // Provide specific guidance for common errors
+    if (userMessage.includes("No such price")) {
+      userMessage = "Invalid plan configuration. Please contact support.";
+    } else if (userMessage.includes("API key")) {
+      userMessage = "Payment system configuration error. Please contact support.";
+    } else if (userMessage.includes("authenticated")) {
+      userMessage = "Authentication error. Please try again.";
+    }
 
     return json(statusCode, {
       error: userMessage,

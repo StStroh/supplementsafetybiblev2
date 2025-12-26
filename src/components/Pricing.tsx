@@ -89,6 +89,7 @@ const Pricing: React.FC = () => {
   const [_resendCooldown, setResendCooldown] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
     loadUser();
@@ -112,27 +113,8 @@ const Pricing: React.FC = () => {
     }
   }, []);
 
-  // Auto-trigger checkout if ?plan=pro or ?plan=premium in URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const planParam = urlParams.get('plan');
-
-    if (planParam === 'pro' || planParam === 'premium') {
-      console.log('[Pricing] Auto-triggering checkout from URL param:', planParam);
-
-      // Small delay to ensure component is mounted and user sees the page
-      setTimeout(() => {
-        const tier = billingPeriod === 'monthly'
-          ? `${planParam}_monthly` as const
-          : `${planParam}_annual` as const;
-
-        handleCheckout(tier);
-      }, 500);
-
-      // Clean up URL to remove the plan parameter
-      window.history.replaceState({}, '', '/pricing');
-    }
-  }, []); // Only run once on mount
+  // REMOVED: Auto-trigger checkout - caused regressions
+  // Users must manually click checkout buttons
 
   // Check for missing environment variables on mount
   useEffect(() => {
@@ -168,41 +150,92 @@ const Pricing: React.FC = () => {
   }, []);
 
   const handleCheckout = async (tier: 'pro_monthly' | 'pro_annual' | 'premium_monthly' | 'premium_annual') => {
-    // DIRECT TO CHECKOUT - No auth gate, no email validation required
-    // Guest users can pay first, then sign in to access their subscription
-    console.log('[Pricing] Direct checkout initiated:', { tier, isLoggedIn: !!user });
+    console.log('[Pricing] Checkout initiated:', { tier, isLoggedIn: !!user });
+
+    // Clear any previous errors
+    setCheckoutError(null);
+    setLoadingPriceId(tier);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
 
     try {
-      setLoadingPriceId(tier);
-
       const plan = tier.startsWith('pro') ? 'pro' : 'premium';
       const interval = tier.endsWith('monthly') ? 'monthly' : 'annual';
 
-      // Safety timeout: If redirect doesn't happen within 30s, reset button
-      const safetyTimeout = setTimeout(() => {
-        console.warn('[Pricing] Redirect timeout - resetting button state');
-        setLoadingPriceId(null);
-        setToast({
-          message: 'Redirect is taking longer than expected. Please try again.',
-          type: 'error'
-        });
-      }, 30000);
+      // Get auth token if user is logged in
+      let authToken: string | null = null;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          authToken = session.access_token;
+        }
+      } catch (err) {
+        console.log('[Pricing] No auth token, proceeding as guest');
+      }
 
-      await startTrialCheckout(plan, interval, (message, type) => {
-        clearTimeout(safetyTimeout);
-        setToast({ message, type: type || 'error' });
-        setLoadingPriceId(null);
+      // Build request
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+
+      const requestUrl = `/.netlify/functions/create-checkout-session`;
+      console.log('[Pricing] Calling:', requestUrl, { plan, interval });
+
+      const res = await fetch(requestUrl, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ plan, interval }),
+        signal: controller.signal,
       });
 
-      // If we reach here, checkout was successful and redirect is pending
-      // Loading state will remain active until page navigates away
-    } catch (error: any) {
-      // Prevent React crash - handle error gracefully
-      console.error('[Pricing] Checkout error:', error);
-      setToast({
-        message: error?.message || 'Failed to start checkout. Please try again.',
-        type: 'error'
-      });
+      clearTimeout(timeoutId);
+
+      console.log('[Pricing] Response:', res.status, res.ok);
+
+      if (!res.ok) {
+        let errorMessage = `Checkout failed (HTTP ${res.status})`;
+        try {
+          const errorData = await res.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+          console.error('[Pricing] Error response:', errorData);
+        } catch (parseErr) {
+          console.error('[Pricing] Could not parse error response');
+        }
+        setCheckoutError(errorMessage);
+        return; // Stop here - do not throw during render
+      }
+
+      const data = await res.json();
+      console.log('[Pricing] Success:', data);
+
+      if (!data.url) {
+        setCheckoutError('No checkout URL returned from server');
+        return;
+      }
+
+      console.log('[Pricing] Redirecting to:', data.url);
+      window.location.assign(data.url);
+
+      // Note: Loading state stays active until redirect completes
+      // This is intentional - user should see "Redirecting..." until navigation happens
+
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+
+      if (err.name === 'AbortError') {
+        setCheckoutError('Request timed out after 20 seconds. Please check your connection and try again.');
+      } else {
+        setCheckoutError(err?.message || 'Failed to start checkout. Please try again.');
+      }
+      console.error('[Pricing] Checkout error:', err);
+    } finally {
+      // ALWAYS clear loading state in finally block - this is mandatory
       setLoadingPriceId(null);
     }
   };
@@ -269,6 +302,28 @@ const Pricing: React.FC = () => {
   return (
     <section id="pricing" className="py-16 bg-slate-50">
       <div className="mx-auto max-w-6xl px-4">
+        {checkoutError && (
+          <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 text-red-600 text-xl">⚠️</div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-red-900">
+                  Checkout Error
+                </h3>
+                <p className="mt-1 text-sm text-red-700">
+                  {checkoutError}
+                </p>
+                <button
+                  onClick={() => setCheckoutError(null)}
+                  className="mt-2 text-xs text-red-600 hover:text-red-800 underline"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {isLocked && (
           <div className="mb-6 rounded-lg bg-blue-50 border border-blue-200 p-4">
             <div className="flex items-start gap-3">
