@@ -156,12 +156,24 @@ const Pricing: React.FC = () => {
       const plan = tier.startsWith('pro') ? 'pro' : 'premium';
       const interval = tier.endsWith('monthly') ? 'monthly' : 'annual';
 
+      // Safety timeout: If redirect doesn't happen within 30s, reset button
+      const safetyTimeout = setTimeout(() => {
+        console.warn('[Pricing] Redirect timeout - resetting button state');
+        setLoadingPriceId(null);
+        setToast({
+          message: 'Redirect is taking longer than expected. Please try again.',
+          type: 'error'
+        });
+      }, 30000);
+
       await startTrialCheckout(plan, interval, (message, type) => {
+        clearTimeout(safetyTimeout);
         setToast({ message, type: type || 'error' });
         setLoadingPriceId(null);
       });
 
-      // Note: Loading state will be cleared by callback or by redirect
+      // If we reach here, checkout was successful and redirect is pending
+      // Loading state will remain active until page navigates away
     } catch (error: any) {
       // Prevent React crash - handle error gracefully
       console.error('[Pricing] Checkout error:', error);

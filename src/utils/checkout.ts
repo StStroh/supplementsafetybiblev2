@@ -75,7 +75,11 @@ export async function startCheckout(
         headers.Authorization = `Bearer ${authToken}`;
       }
 
-      const res = await fetch(`${baseUrl}/.netlify/functions/create-checkout-session`, {
+      const requestUrl = `${baseUrl}/.netlify/functions/create-checkout-session`;
+      console.log("[checkout] Making request to:", requestUrl);
+      console.log("[checkout] Request body:", { plan, interval });
+
+      const res = await fetch(requestUrl, {
         method: "POST",
         headers,
         body: JSON.stringify({ plan, interval }),
@@ -84,7 +88,8 @@ export async function startCheckout(
 
       clearTimeout(timeoutId);
 
-      console.log("[checkout] Response status:", res.status);
+      console.log("[checkout] Response received - status:", res.status);
+      console.log("[checkout] Response ok:", res.ok);
 
       if (!res.ok) {
         let errorMessage = `Checkout failed (HTTP ${res.status})`;
@@ -107,8 +112,15 @@ export async function startCheckout(
         throw new Error("Server did not return a checkout URL");
       }
 
-      // Redirect to Stripe Checkout
-      window.location.href = data.url;
+      console.log("[checkout] Redirecting to:", data.url);
+
+      // Small delay to ensure console logs are visible
+      setTimeout(() => {
+        window.location.href = data.url;
+      }, 100);
+
+      // Note: Loading state will remain active until redirect completes
+      // This is intentional - user should see "Redirecting..." until navigation happens
 
     } catch (fetchErr: any) {
       clearTimeout(timeoutId);
