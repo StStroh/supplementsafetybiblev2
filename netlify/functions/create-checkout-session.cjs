@@ -310,7 +310,7 @@ exports.handler = async (event) => {
         ...(userId && { user_id: userId }),
       },
       subscription_data: {
-        trial_period_days: parseInt(process.env.TRIAL_DAYS_PRO || "14"),
+        // No trial_period_days defined; subscriptions start immediately
         metadata: {
           plan,
           interval: billing,
@@ -404,4 +404,3 @@ exports.handler = async (event) => {
     });
   }
 };
-
