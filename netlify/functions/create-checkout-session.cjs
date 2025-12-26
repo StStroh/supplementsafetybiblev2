@@ -299,13 +299,9 @@ exports.handler = async (event) => {
       cancel_url: cancelUrl,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
-      // Enable ALL automatic payment methods (Amazon Pay, Cash App, Klarna, Link, etc.)
-      // DO NOT specify payment_method_types - let Stripe automatically show all supported methods
+      // Specify allowed payment methods explicitly
       payment_method_collection: 'always',
-      automatic_payment_methods: {
-        enabled: true,
-        allow_redirects: 'always', // Required for Amazon Pay and other redirect-based methods
-      },
+      payment_method_types: ['card'],
       automatic_tax: { enabled: false },
       metadata: {
         plan,
@@ -408,3 +404,4 @@ exports.handler = async (event) => {
     });
   }
 };
+
