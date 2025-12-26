@@ -1,14 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { isPaid, roleName } from '../lib/roles';
+import { useAuth } from '../state/AuthProvider';
 import Autocomplete from './Autocomplete';
 
-type State = 'loading' | 'no_user' | 'free_locked' | 'paid' | 'data_error' | 'result';
+type State = 'loading' | 'free_locked' | 'paid' | 'data_error' | 'result';
 
 export default function InteractionChecker() {
+  const navigate = useNavigate();
+  const { user, session, plan, loading: authLoading } = useAuth();
+
   const [state, setState] = useState<State>('loading');
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState('free');
   const [supplementValue, setSupplementValue] = useState('');
   const [medicationValue, setMedicationValue] = useState('');
   const [supplementId, setSupplementId] = useState('');
@@ -22,32 +25,27 @@ export default function InteractionChecker() {
   const suppRef = useRef<HTMLInputElement>(null);
   const medRef = useRef<HTMLInputElement>(null);
 
+  const userRole = plan || 'free';
+
+  // Redirect to auth if not logged in
   useEffect(() => {
+    if (!authLoading && !session) {
+      console.info('[InteractionChecker] No session, redirecting to auth');
+      navigate('/auth?next=/check', { replace: true });
+    }
+  }, [authLoading, session, navigate]);
+
+  // Load data once auth is confirmed
+  useEffect(() => {
+    if (authLoading || !session || !user) {
+      return;
+    }
+
     (async () => {
-      const { data: u } = await supabase.auth.getUser();
+      console.info('[InteractionChecker] User authenticated, role:', userRole);
 
-      // No authenticated user - show locked panel with sign-in CTA
-      if (!u?.user?.email) {
-        console.info('[InteractionChecker] No authenticated user');
-        setState('no_user');
-        return;
-      }
-
-      setEmail(u.user.email);
-
-      // Fetch user profile and role
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role, free_checks_count, free_last_check_at')
-        .eq('email', u.user.email)
-        .maybeSingle();
-
-      const r = profile?.role ?? 'free';
-      setRole(r);
-      console.info('[InteractionChecker] User role:', r);
-
-      // Check if user has paid access (pro or premium)
-      if (!isPaid(r)) {
+      // Check if user has paid access
+      if (!isPaid(userRole)) {
         console.info('[InteractionChecker] Free user - showing locked panel');
         setState('free_locked');
         return;
@@ -103,7 +101,7 @@ export default function InteractionChecker() {
       setMedications(medData);
       setState('paid');
     })();
-  }, []);
+  }, [authLoading, session, user, userRole]);
 
   const focusField = (field: 'supplement' | 'medication') => {
     (field === 'supplement' ? suppRef.current : medRef.current)?.focus();
@@ -136,10 +134,15 @@ export default function InteractionChecker() {
       return;
     }
 
+    if (!user?.email) {
+      setErrorMsg('Authentication required. Please sign in again.');
+      return;
+    }
+
     const res = await fetch('/.netlify/functions/get-interactions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ supplementId, medicationId, userEmail: email }),
+      body: JSON.stringify({ supplementId, medicationId, userEmail: user.email }),
     });
 
     if (res.status === 403) {
@@ -163,8 +166,8 @@ export default function InteractionChecker() {
     setState('result');
   };
 
-  // Loading state
-  if (state === 'loading') {
+  // Loading state (auth or data)
+  if (authLoading || state === 'loading') {
     return (
       <div className="p-6 bg-white rounded-xl shadow">
         <div className="flex items-center justify-center py-8">
@@ -174,40 +177,9 @@ export default function InteractionChecker() {
     );
   }
 
-  // No authenticated user - show lock panel with sign-in CTA
-  if (state === 'no_user') {
-    return (
-      <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-lg border border-blue-100">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro & Premium Feature</h3>
-          <p className="text-gray-700 mb-6 max-w-md mx-auto">
-            The Interaction Checker is available on our Pro and Premium plans. Create a free account or upgrade to check supplement-medication interactions instantly.
-          </p>
-          <div className="flex gap-3 justify-center">
-            <a
-              href="/auth?redirect=/"
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold shadow-md"
-            >
-              Start Free
-            </a>
-            <a
-              href="/#pricing"
-              className="inline-block bg-white text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition font-semibold"
-            >
-              View Plans
-            </a>
-          </div>
-          <p className="text-xs mt-4 text-gray-600">
-            60-day money-back guarantee · Change or cancel anytime · Individual use
-          </p>
-        </div>
-      </div>
-    );
+  // If no session after loading, redirect will happen via useEffect
+  if (!session) {
+    return null;
   }
 
   // Free user - show lock panel with upgrade CTA
@@ -281,7 +253,7 @@ export default function InteractionChecker() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-gray-900">Check Supplement-Medication Interactions</h3>
           <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
-            {roleName(role)}
+            {roleName(userRole)}
           </span>
         </div>
         <p className="text-gray-600 text-sm">
