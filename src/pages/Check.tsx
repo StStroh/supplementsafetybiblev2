@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AlertTriangle, CheckCircle2, Info, Shield, FileText, Loader2 } from "lucide-react";
 import { API_BASE } from "../lib/apiBase";
 import NavClinical from "../components/NavClinical";
@@ -19,7 +19,17 @@ import SafetyBadges from "../components/SafetyBadges";
 import { getSafetyLabel } from "../lib/safetyGrades";
 import PdfExportButton from "../components/PdfExportButton";
 import ReportVault from "../components/ReportVault";
-import { useAuth } from "../state/AuthProvider";
+import PaywallOverlay from "../components/PaywallOverlay";
+import { useAuthUser } from "../hooks/useAuthUser";
+import {
+  getDemoCount,
+  incrementDemoCount,
+  canRunDemoCheck,
+  getRemainingDemoChecks,
+  saveLastPayload,
+  loadLastPayload,
+  clearLastPayload,
+} from "../lib/demoGate";
 
 function isFreeActive(): boolean {
   try { return localStorage.getItem('free_active') === 'true'; } catch { return false; }
@@ -74,7 +84,9 @@ type CheckResp =
 
 export default function Check() {
   const navigate = useNavigate();
-  const { user, session, plan, loading: authLoading } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { user, profile, loading: authLoading, isAuthenticated } = useAuthUser();
+
   const [selSup, setSelSup] = useState<string>("");
   const [selMed, setSelMed] = useState<string>("");
   const [result, setResult] = useState<CheckResp | null>(null);
@@ -84,21 +96,83 @@ export default function Check() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
-  const userPlan = plan || 'free';
+  const userPlan = profile?.plan || 'free';
+  const demoCount = getDemoCount();
+  const demoRemaining = getRemainingDemoChecks(2);
 
-  // Guard: Redirect to auth if not logged in
   useEffect(() => {
-    if (!authLoading && !session) {
-      console.log('[Check] No session found, redirecting to auth...');
-      navigate('/auth?next=/check', { replace: true });
+    const resumeCheck = searchParams.get('resumeCheck');
+
+    if (resumeCheck === 'true' && isAuthenticated) {
+      const payload = loadLastPayload();
+
+      if (payload && payload.supplements.length > 0 && payload.medications.length > 0) {
+        setSelSup(payload.supplements[0].name);
+        setSelMed(payload.medications[0].name);
+
+        setTimeout(() => {
+          executeCheck(payload.supplements[0].name, payload.medications[0].name);
+        }, 500);
+
+        clearLastPayload();
+        searchParams.delete('resumeCheck');
+        setSearchParams(searchParams, { replace: true });
+      }
     }
-  }, [authLoading, session, navigate]);
+  }, [isAuthenticated, searchParams, setSearchParams]);
+
+  async function executeCheck(supplement: string, medication: string) {
+    setError(null);
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const r = await fetch(`${API_BASE}/interactions-check`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          supplement,
+          medication,
+        }),
+      });
+      const j: CheckResp = await r.json();
+      setResult(j);
+
+      if (j && j.ok) {
+        setShowStickyFooter(true);
+        if (isFreeActive()) {
+          incrementFreeUsage();
+        }
+      }
+    } catch (err) {
+      console.error('Check error:', err);
+      setError('Failed to check interaction. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function check() {
-    setError(null);
+    if (!selSup || !selMed) return;
 
-    if (isFreeActive()) {
+    if (!isAuthenticated) {
+      const payload = {
+        supplements: [{ id: selSup, name: selSup }],
+        medications: [{ id: selMed, name: selMed }],
+        timestamp: Date.now(),
+      };
+
+      saveLastPayload(payload);
+
+      if (!canRunDemoCheck(2)) {
+        setShowPaywall(true);
+        return;
+      }
+
+      incrementDemoCount();
+    } else if (isFreeActive()) {
       const gate = canUseFreeToday(5);
       if (!gate.ok) {
         const msg = gate.message + ' Upgrade for unlimited checks.';
@@ -107,30 +181,28 @@ export default function Check() {
       }
     }
 
-    setLoading(true);
-    setResult(null);
-    const r = await fetch(`${API_BASE}/interactions-check`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        supplement: selSup,
-        medication: selMed,
-      }),
-    });
-    const j: CheckResp = await r.json();
-    setResult(j);
-    setLoading(false);
+    await executeCheck(selSup, selMed);
+  }
 
-    if (j && j.ok) {
-      setShowStickyFooter(true);
-      if (isFreeActive()) {
-        incrementFreeUsage();
-      }
+  function handlePremiumAction() {
+    if (!isAuthenticated) {
+      const payload = {
+        supplements: [{ id: selSup, name: selSup }],
+        medications: [{ id: selMed, name: selMed }],
+        timestamp: Date.now(),
+      };
+      saveLastPayload(payload);
+      setShowPaywall(true);
     }
   }
 
   async function handleGeneratePDF() {
     if (!result || !result.ok) return;
+
+    if (!isAuthenticated) {
+      handlePremiumAction();
+      return;
+    }
 
     if (!['pro', 'premium'].includes(userPlan)) {
       window.location.href = '/pricing';
@@ -216,7 +288,6 @@ export default function Check() {
     ],
   };
 
-  // Show loading screen while checking auth
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 flex items-center justify-center">
@@ -226,11 +297,6 @@ export default function Check() {
         </div>
       </div>
     );
-  }
-
-  // If not authenticated, return null (redirect is handled by useEffect)
-  if (!session) {
-    return null;
   }
 
   return (
@@ -248,11 +314,16 @@ export default function Check() {
 
       <main className="max-w-3xl mx-auto px-4 py-10 sm:py-16">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
             <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 leading-tight">
               Check Supplement–Drug Interactions
             </h1>
-            {isFreeActive() && (
+            {!isAuthenticated && (
+              <span className="rounded-lg bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 px-3 py-1.5 text-xs font-semibold shadow-sm">
+                Demo Mode · {demoRemaining}/2 free checks
+              </span>
+            )}
+            {isFreeActive() && isAuthenticated && (
               <span className="rounded bg-green-100 text-green-700 px-2 py-0.5 text-xs font-medium">
                 Free — Active
               </span>
@@ -441,7 +512,7 @@ export default function Check() {
                 <PdfExportButton
                   result={result}
                   userPlan={userPlan}
-                  onUpgradeClick={() => setShowUpgradeModal(true)}
+                  onUpgradeClick={isAuthenticated ? () => setShowUpgradeModal(true) : handlePremiumAction}
                 />
 
                 <div className="bg-white shadow-md rounded-2xl p-6 sm:p-8 border border-gray-200">
@@ -494,7 +565,7 @@ export default function Check() {
 
                 <ReportVault
                   userPlan={userPlan}
-                  onUpgradeClick={() => setShowUpgradeModal(true)}
+                  onUpgradeClick={isAuthenticated ? () => setShowUpgradeModal(true) : handlePremiumAction}
                 />
               </>
             )}
@@ -503,6 +574,17 @@ export default function Check() {
       </main>
 
       <FooterClinical />
+
+      <PaywallOverlay
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onSignIn={() => {
+          navigate(`/auth?next=/check&resumeCheck=true`);
+        }}
+        onSignUp={() => {
+          navigate(`/auth?next=/check&resumeCheck=true`);
+        }}
+      />
 
       {showUpgradeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={() => setShowUpgradeModal(false)}>
@@ -540,7 +622,7 @@ export default function Check() {
         </div>
       )}
 
-      {showStickyFooter && !stickyDismissed && (
+      {showStickyFooter && !stickyDismissed && isAuthenticated && (
         <div className="fixed bottom-0 left-0 right-0 z-[50] p-4 animate-slide-up">
           <div className="max-w-4xl mx-auto">
             <Banner

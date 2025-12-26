@@ -31,7 +31,9 @@ export default function Auth() {
   const [showTroubleshooting, setShowTroubleshooting] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const redirect = urlParams.get('redirect') || '/account';
+  const next = urlParams.get('next');
+  const resumeCheck = urlParams.get('resumeCheck');
+  const redirect = next || urlParams.get('redirect') || '/account';
   const prefillEmail = urlParams.get('email') || '';
 
   // Prefill email from URL param
@@ -47,10 +49,11 @@ export default function Auth() {
       const { data } = await supabase.auth.getUser();
       if (data?.user) {
         console.info('[Auth] User already logged in, redirecting to:', redirect);
-        window.location.href = redirect;
+        const finalUrl = resumeCheck ? `${redirect}?resumeCheck=true` : redirect;
+        window.location.href = finalUrl;
       }
     })();
-  }, [redirect]);
+  }, [redirect, resumeCheck]);
 
   // Cooldown timer
   useEffect(() => {
@@ -100,7 +103,11 @@ export default function Auth() {
     setError(null);
 
     const nextUrl = redirect || '/welcome';
-    const redirectUrl = `${SITE_URL}/auth/callback?next=${encodeURIComponent(nextUrl)}`;
+    let callbackUrl = `${SITE_URL}/auth/callback?next=${encodeURIComponent(nextUrl)}`;
+    if (resumeCheck) {
+      callbackUrl += '&resumeCheck=true';
+    }
+    const redirectUrl = callbackUrl;
     const emailDomain = getEmailDomain(email);
     const timestamp = new Date().toISOString();
 
@@ -354,7 +361,7 @@ Browser: ${navigator.userAgent}
         <div className="text-center mb-6">
           <Mail className="w-12 h-12 text-blue-600 mx-auto mb-3" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign in to your account</h2>
-          <p className="text-gray-600">Enter your email to receive a magic sign-in link</p>
+          <p className="text-gray-600">Enter your email to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
