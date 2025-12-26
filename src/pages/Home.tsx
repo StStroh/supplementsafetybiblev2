@@ -1,6 +1,7 @@
 import Navbar from '../components/Navbar';
 import LandingCheckerHero from '../components/LandingCheckerHero';
 import WhatWeScreen from '../components/WhatWeScreen';
+import Philosophy from '../components/Philosophy';
 import HowItWorks from '../components/HowItWorks';
 import WhyItMatters from '../components/WhyItMatters';
 import WhoItsFor from '../components/WhoItsFor';
@@ -65,6 +66,7 @@ export default function Home() {
       <LandingCheckerHero />
       <Trust />
       <WhatWeScreen />
+      <Philosophy />
       <HowItWorks />
       <WhyItMatters />
       <WhoItsFor />

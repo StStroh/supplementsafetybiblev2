@@ -14,6 +14,8 @@ import SourcesAccordion from "../components/check/SourcesAccordion";
 import { supabase } from "../lib/supabase";
 import { downloadBlob } from "../lib/download";
 import TypeaheadInput from "../components/TypeaheadInput";
+import SafetyBadges from "../components/SafetyBadges";
+import { getSafetyLabel } from "../lib/safetyGrades";
 
 function isFreeActive(): boolean {
   try { return localStorage.getItem('free_active') === 'true'; } catch { return false; }
@@ -377,28 +379,18 @@ export default function Check() {
               </div>
             ) : (
               <>
-                <div className="bg-white shadow-md rounded-2xl overflow-hidden border border-gray-200">
-                  <div
-                    className="px-6 py-5"
-                    style={{
-                      background:
-                        result.severity === "severe"
-                          ? "#DC2626"
-                          : result.severity === "high"
-                          ? "#F97316"
-                          : result.severity === "moderate"
-                          ? "#EAB308"
-                          : "#6B7280",
-                    }}
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <div>
-                        <div className="text-base font-semibold text-white mb-2">
-                          {result.pair.supplement} + {result.pair.medication}
-                        </div>
-                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-white bg-opacity-90 text-sm font-bold uppercase tracking-wide"
+                {(() => {
+                  const safetyLabel = getSafetyLabel({
+                    severity: result.severity,
+                    evidence: 'clinical trial',
+                  });
+                  return (
+                    <>
+                      <div className="bg-white shadow-md rounded-2xl overflow-hidden border border-gray-200">
+                        <div
+                          className="px-6 py-5"
                           style={{
-                            color:
+                            background:
                               result.severity === "severe"
                                 ? "#DC2626"
                                 : result.severity === "high"
@@ -408,15 +400,33 @@ export default function Check() {
                                 : "#6B7280",
                           }}
                         >
-                          {result.severity} Risk
+                          <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                              <div className="text-base font-semibold text-white mb-3">
+                                {result.pair.supplement} + {result.pair.medication}
+                              </div>
+                              <SafetyBadges
+                                grade={safetyLabel.grade}
+                                confidence={safetyLabel.confidence}
+                                gradeLabel={safetyLabel.gradeLabel}
+                                confidenceLabel={safetyLabel.confidenceLabel}
+                                showHelp={true}
+                              />
+                            </div>
+                            {(result.severity === "severe" || result.severity === "high") && (
+                              <AlertTriangle size={36} className="text-white" />
+                            )}
+                          </div>
+                        </div>
+                        <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
+                          <p className="text-xs text-gray-600">
+                            <strong>About these labels:</strong> Safety Grade shows how risky the combination can be. Confidence shows how strong the evidence is.
+                          </p>
                         </div>
                       </div>
-                      {(result.severity === "severe" || result.severity === "high") && (
-                        <AlertTriangle size={36} className="text-white" />
-                      )}
-                    </div>
-                  </div>
-                </div>
+                    </>
+                  );
+                })()}
 
                 <div className="bg-white shadow-md rounded-2xl p-6 sm:p-8 border border-gray-200">
                   <div className="flex items-start gap-3">
