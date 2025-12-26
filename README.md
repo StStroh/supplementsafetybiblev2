@@ -4,27 +4,42 @@ A Vite + React application for checking supplement and medication interactions, 
 
 ## Environment Variables
 
-### Required for Netlify Deployment
+### ⚠️ REQUIRED - Set these in Netlify Dashboard → Site Settings → Environment Variables
 
-Set these in **Netlify Dashboard → Site Settings → Environment Variables**:
+#### 🔴 Critical Backend Variables (NEVER expose in browser)
+```bash
+# Stripe Configuration
+STRIPE_SECRET_KEY=sk_test_... or sk_live_...     # From https://dashboard.stripe.com/apikeys
+STRIPE_WEBHOOK_SECRET=whsec_...                   # From https://dashboard.stripe.com/webhooks
 
-#### Backend Only (NEVER expose these in browser)
-```
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+# Supabase Backend
+SUPABASE_URL=https://xxxxx.supabase.co           # From Supabase project settings
+SUPABASE_SERVICE_ROLE_KEY=eyJhbG...              # Service role key (KEEP SECRET)
 ```
 
-#### Frontend (Safe to expose - VITE_ prefix)
+#### 🟢 Frontend Variables (Safe to expose - VITE_ prefix)
+```bash
+# Supabase Frontend
+VITE_SUPABASE_URL=https://xxxxx.supabase.co      # Same as SUPABASE_URL
+VITE_SUPABASE_ANON_KEY=eyJhbG...                 # Anon key (public safe)
+
+# Stripe Frontend
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_... or pk_live_...
+
+# Stripe Price IDs (from https://dashboard.stripe.com/products)
+VITE_STRIPE_PRICE_PRO=price_...                  # Pro Monthly
+VITE_STRIPE_PRICE_PRO_ANNUAL=price_...           # Pro Annual
+VITE_STRIPE_PRICE_PREMIUM=price_...              # Premium Monthly
+VITE_STRIPE_PRICE_PREMIUM_ANNUAL=price_...       # Premium Annual
 ```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your_anon_key
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
-VITE_STRIPE_PRICE_PRO=price_... (monthly Pro plan)
-VITE_STRIPE_PRICE_PRO_ANNUAL=price_... (annual Pro plan)
-VITE_STRIPE_PRICE_PREMIUM=price_... (monthly Premium plan)
-VITE_STRIPE_PRICE_PREMIUM_ANNUAL=price_... (annual Premium plan)
+
+#### 🔵 Optional Variables
+```bash
+CHECKOUT_SUCCESS_URL=https://yourdomain.com/billing/success?session_id={CHECKOUT_SESSION_ID}
+CHECKOUT_CANCEL_URL=https://yourdomain.com/billing/cancel
 ```
+
+**📖 See [NETLIFY_ENV_VARS.md](./NETLIFY_ENV_VARS.md) for detailed setup instructions and troubleshooting.**
 
 ### Local Development
 
