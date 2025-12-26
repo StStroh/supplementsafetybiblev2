@@ -85,7 +85,7 @@ export default function Navbar() {
 
           {/* Primary CTA (replaces Try free dropdown) */}
           {!isLoggedIn && (
-            <a href="/auth" className="btn-cta">
+            <a href="/pricing" className="btn-cta">
               Sign Up
             </a>
           )}
@@ -152,7 +152,7 @@ export default function Navbar() {
 
                 {/* Mobile primary CTA */}
                 <a
-                  href="/auth"
+                  href="/pricing"
                   className="btn-cta text-center"
                   onClick={() => setMobileMenuOpen(false)}
                 >
