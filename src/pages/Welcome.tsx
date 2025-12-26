@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { SEO } from '../lib/seo';
 import { SUPPORT_EMAIL } from '../lib/support';
 import Autocomplete from '../components/Autocomplete';
+import Testimonials from '../components/Testimonials';
 
 interface Profile {
   id: string;
@@ -504,6 +505,8 @@ const Welcome: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <Testimonials />
       </div>
     </div>
   );

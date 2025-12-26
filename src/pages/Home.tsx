@@ -11,6 +11,7 @@ import ComplianceSection from '../components/ComplianceSection';
 import Trust from '../components/Trust';
 import FAQ from '../components/FAQ';
 import Footer from '../components/Footer';
+import Testimonials from '../components/Testimonials';
 import { SEO, StructuredData } from '../lib/seo';
 
 const websiteSchema = {
@@ -70,6 +71,7 @@ export default function Home() {
       <HowItWorks />
       <WhyItMatters />
       <WhoItsFor />
+      <Testimonials />
       <Pricing />
       <FeatureComparison />
       <ComplianceSection />
