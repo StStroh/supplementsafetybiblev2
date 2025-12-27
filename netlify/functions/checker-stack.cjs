@@ -134,44 +134,62 @@ exports.handler = async (event) => {
       };
     }
 
-    // Query all interactions for these pairs
+    // Batch query all interactions at once
     const results = [];
     const severityCounts = { avoid: 0, caution: 0, monitor: 0, info: 0, none: 0 };
     let worstSeverity = 'none';
 
+    // Build OR conditions for all pairs
+    const orConditions = filteredPairs.map(pair =>
+      `and(a_substance_id.eq.${pair.a},b_substance_id.eq.${pair.b})`
+    ).join(',');
+
+    const { data: interactions, error: interactionsError } = await supabase
+      .from('checker_interactions')
+      .select('*')
+      .or(orConditions);
+
+    if (interactionsError) {
+      console.error('[CheckStack] Batch query error:', interactionsError);
+      return {
+        statusCode: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Failed to query interactions' })
+      };
+    }
+
+    // Create interaction map for fast lookup
+    const interactionMap = new Map();
+    (interactions || []).forEach(interaction => {
+      const key = `${interaction.a_substance_id}|${interaction.b_substance_id}`;
+      interactionMap.set(key, interaction);
+    });
+
+    console.log('[CheckStack] Found', interactions.length, 'interactions out of', filteredPairs.length, 'pairs');
+
+    // Build results with interactions
     for (const pair of filteredPairs) {
-      const { data, error } = await supabase
-        .from('checker_interactions')
-        .select('*')
-        .eq('a_substance_id', pair.a)
-        .eq('b_substance_id', pair.b)
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        console.error('[CheckStack] Query error for pair', pair, ':', error);
-        continue;
-      }
-
+      const key = `${pair.a}|${pair.b}`;
+      const interaction = interactionMap.get(key);
       const aType = typeMap[pair.a];
       const bType = typeMap[pair.b];
 
-      if (data) {
+      if (interaction) {
         // Found interaction
         results.push({
           a_substance_id: pair.a,
           b_substance_id: pair.b,
           found: true,
-          interaction: data,
+          interaction: interaction,
           a_type: aType,
           b_type: bType
         });
 
-        severityCounts[data.severity]++;
+        severityCounts[interaction.severity]++;
 
         // Update worst severity
-        if (SEVERITY_ORDER[data.severity] < SEVERITY_ORDER[worstSeverity]) {
-          worstSeverity = data.severity;
+        if (SEVERITY_ORDER[interaction.severity] < SEVERITY_ORDER[worstSeverity]) {
+          worstSeverity = interaction.severity;
         }
       } else {
         // No interaction found
