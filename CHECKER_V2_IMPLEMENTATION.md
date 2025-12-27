@@ -13,12 +13,14 @@ Phase 1 of the world-class interaction checker is complete. This document summar
   - Drugs: Warfarin, Aspirin, Sertraline, Fluoxetine, Metformin, Levothyroxine, and more
   - Supplements: Ginkgo, St. John's Wort, Fish Oil, Vitamins, Minerals, Herbs
   - Includes aliases and tags for rich searching
+  - **Security**: Public read-only access, writes require service role
 
 - **checker_interactions** table with 26 interactions
   - Avoid severity (4 interactions) - High risk, should not combine
   - Caution severity (9 interactions) - Requires close monitoring
   - Monitor severity (9 interactions) - Safe with precautions
   - Info severity (4 interactions) - Beneficial or neutral
+  - **Security**: Public read-only access, writes require service role
 
 ### ✅ API Endpoints
 
@@ -328,12 +330,29 @@ Expected results:
 
 ## Security Features
 
-✅ Row Level Security (RLS) enabled
-✅ Public read-only access (no sensitive data)
+✅ Row Level Security (RLS) enabled on all tables
+✅ Public read-only access via SELECT policies
+✅ No INSERT/UPDATE/DELETE for anon or authenticated users
+✅ Write operations require service role (admin/seed scripts only)
 ✅ CORS headers on all endpoints
 ✅ No SQL injection vectors (parameterized queries)
 ✅ No XSS risks (React escaping)
 ✅ Service role key never exposed to frontend
+
+### Database Seeding Security
+
+**Important**: Data seeding MUST use service role key:
+- ✅ Server-side scripts with SUPABASE_SERVICE_ROLE_KEY
+- ✅ Direct SQL execution via Supabase dashboard
+- ❌ NOT via frontend with VITE_SUPABASE_ANON_KEY
+
+Example seed script pattern:
+```javascript
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY  // Service role bypasses RLS
+);
+```
 
 ---
 
@@ -416,11 +435,49 @@ These are intentional Phase 1 limitations, to be addressed in Phase 2.
 
 ---
 
+## Database Policy Audit
+
+To verify current policies on checker tables:
+
+```sql
+-- Check policies on checker_substances
+SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual, with_check
+FROM pg_policies
+WHERE tablename = 'checker_substances';
+
+-- Check policies on checker_interactions
+SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual, with_check
+FROM pg_policies
+WHERE tablename = 'checker_interactions';
+```
+
+**Expected policies (secure configuration):**
+- `Public can view active checker substances` - SELECT only, USING (is_active = true)
+- `Public can view checker interactions` - SELECT only, USING (true)
+- NO INSERT policies for anon or authenticated
+- NO UPDATE policies for anon or authenticated
+- NO DELETE policies for anon or authenticated
+
+**To manually remove any insecure policies:**
+```sql
+-- Drop any public write policies (if found)
+DROP POLICY IF EXISTS "Public can insert checker substances for seeding" ON checker_substances;
+DROP POLICY IF EXISTS "Public can update checker substances for seeding" ON checker_substances;
+DROP POLICY IF EXISTS "Public can insert checker interactions for seeding" ON checker_interactions;
+DROP POLICY IF EXISTS "Public can update checker interactions for seeding" ON checker_interactions;
+DROP POLICY IF EXISTS "Authenticated users can insert checker substances" ON checker_substances;
+DROP POLICY IF EXISTS "Authenticated users can update checker substances" ON checker_substances;
+DROP POLICY IF EXISTS "Authenticated users can insert checker interactions" ON checker_interactions;
+DROP POLICY IF EXISTS "Authenticated users can update checker interactions" ON checker_interactions;
+```
+
+---
+
 ## Deployment Checklist
 
 Before deploying to production:
 
-- [ ] Review and restrict RLS policies (currently allow public insert for seeding)
+- [x] Secure RLS policies (read-only for public, writes require service role)
 - [ ] Remove or protect seed scripts from production
 - [ ] Set up monitoring for API endpoints
 - [ ] Configure rate limiting on functions

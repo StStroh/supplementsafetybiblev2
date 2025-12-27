@@ -415,8 +415,7 @@ fetch('/.netlify/functions/checker-autocomplete?q=a')
 
 ### Database
 - `supabase/migrations/[timestamp]_create_checker_v2_tables.sql`
-- `supabase/migrations/[timestamp]_allow_public_checker_inserts_temp.sql`
-- `supabase/migrations/[timestamp]_fix_checker_update_policies.sql`
+- `supabase/migrations/[timestamp]_secure_checker_tables_policies.sql`
 
 ### Scripts
 - `scripts/seed-checker-data.cjs` - Substance seeding
@@ -430,6 +429,55 @@ fetch('/.netlify/functions/checker-autocomplete?q=a')
 - `src/components/StackBuilderChecker.tsx` - Main component
 - `src/pages/CheckV2.tsx` - Page wrapper
 - `src/routes.tsx` - Route configuration
+
+---
+
+## Security Configuration
+
+### RLS Policies (Read-Only Public Access)
+
+The checker tables use restrictive RLS policies:
+- ✅ **SELECT**: Public (anon) can read all active substances and interactions
+- ❌ **INSERT**: Service role only (no anon/authenticated access)
+- ❌ **UPDATE**: Service role only (no anon/authenticated access)
+- ❌ **DELETE**: Service role only (no anon/authenticated access)
+
+### Seeding Data Securely
+
+**All seed scripts require service role key:**
+
+```bash
+# In .env file (NEVER commit this)
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+```
+
+Seed scripts automatically use service role:
+```javascript
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY  // Bypasses RLS
+);
+```
+
+**Frontend uses anon key (read-only):**
+```javascript
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL,
+  process.env.VITE_SUPABASE_ANON_KEY  // Can only SELECT
+);
+```
+
+### Verify Policies
+
+Run this SQL in Supabase dashboard to audit policies:
+```sql
+SELECT tablename, policyname, cmd, roles
+FROM pg_policies
+WHERE tablename IN ('checker_substances', 'checker_interactions')
+ORDER BY tablename, cmd;
+```
+
+Expected result: Only SELECT policies exist for public.
 
 ---
 
@@ -472,6 +520,7 @@ fetch('/.netlify/functions/checker-autocomplete?q=a')
 - Check substances are seeded: `node scripts/seed-checker-data.cjs`
 - Check interactions seeded: `node scripts/seed-interactions.cjs`
 - Verify RLS policies allow public read
+- **Important**: Seed scripts require SUPABASE_SERVICE_ROLE_KEY in .env
 
 **Build fails:**
 - Clear node_modules: `rm -rf node_modules && npm install`
