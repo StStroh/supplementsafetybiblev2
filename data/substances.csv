@@ -1,0 +1,17 @@
+substance_id,type,display_name,canonical_name,aliases_json,tags_json,is_active
+D_ALPRAZOLAM,drug,"Alprazolam","alprazolam","[""alprazolam""]","[]",true
+D_FLUOXETINE,drug,"Fluoxetine","fluoxetine","[""fluoxetine""]","[]",true
+D_LEVOTHYROXINE,drug,"Levothyroxine","levothyroxine","[""levothyroxine""]","[]",true
+D_WARFARIN,drug,"Warfarin","warfarin","[""warfarin""]","[]",true
+S_CALCIUM,supplement,"Calcium","calcium","[""calcium""]","[]",true
+S_FISH_OIL,supplement,"Fish Oil","fish oil","[""fish oil""]","[]",true
+S_GARLIC,supplement,"Garlic","garlic","[""garlic""]","[]",true
+S_GINKGO,supplement,"Ginkgo","ginkgo","[""ginkgo""]","[]",true
+S_IRON,supplement,"Iron","iron","[""iron""]","[]",true
+S_MAGNESIUM,supplement,"Magnesium","magnesium","[""magnesium""]","[]",true
+S_MELATONIN,supplement,"Melatonin","melatonin","[""melatonin""]","[]",true
+S_ST_JOHNS_WORT,supplement,"St. John's Wort","st. john's wort","[""st. john's wort"",""st johns wort"",""st. johns wort""]","[]",true
+S_VITAMIN_C,supplement,"Vitamin C","vitamin c","[""vitamin c""]","[]",true
+S_VITAMIN_D,supplement,"Vitamin D","vitamin d","[""vitamin d""]","[]",true
+S_VITAMIN_E,supplement,"Vitamin E","vitamin e","[""vitamin e""]","[]",true
+S_VITAMIN_K,supplement,"Vitamin K","vitamin k","[""vitamin k""]","[]",true
