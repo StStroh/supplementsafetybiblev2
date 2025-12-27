@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Check, X, AlertCircle, Shield, Lock, CreditCard } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { startCheckout } from '../utils/checkout';
@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
 import Logo from '../components/Logo';
 import { BRAND_NAME_FULL } from '../lib/brand';
+import PricingPageChecker from '../components/PricingPageChecker';
 
 type BillingInterval = 'monthly' | 'annual';
 
@@ -51,10 +52,13 @@ const features: FeatureRow[] = [
 export default function Pricing() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+  const [searchParams] = useSearchParams();
   const pricingFlags = getPricingFlags();
   const [interval, setInterval] = useState<BillingInterval>('monthly'); // Default to monthly
   const [user, setUser] = useState<any>(null);
   const [showCancelledAlert, setShowCancelledAlert] = useState(false);
+
+  const showChecker = searchParams.get('from') === 'landing-checker';
 
   useEffect(() => {
     loadUser();
@@ -129,6 +133,8 @@ export default function Pricing() {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        {showChecker && <PricingPageChecker />}
+
         <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{color: 'var(--color-text)'}}>
             Plans for Safe, Evidence-Based Decisions
