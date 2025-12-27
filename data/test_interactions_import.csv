@@ -1,0 +1,4 @@
+substance_a_name,substance_b_name,interaction_type,severity,summary_short,mechanism,clinical_effect,management,evidence_grade,confidence
+Ginkgo,Warfarin,supplement-drug,caution,May increase bleeding risk,Ginkgo inhibits platelet aggregation and may potentiate anticoagulant effects,Increased risk of bleeding events,Monitor INR closely and watch for signs of bleeding,Moderate,High
+St. John's Wort,Fluoxetine,supplement-drug,avoid,Risk of serotonin syndrome,CYP450 induction reduces fluoxetine levels while increasing serotonergic activity,Serotonin syndrome symptoms including agitation and confusion,Avoid combination or use alternative treatments,High,Very High
+Magnesium,Calcium,supplement-supplement,monitor,May reduce absorption,Competitive absorption in the intestine,Reduced effectiveness of both minerals,Take at different times of day,Low,Medium
