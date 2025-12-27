@@ -34,6 +34,18 @@ function generatePairs(items) {
   return pairs;
 }
 
+// Determine pair type based on substance types
+function getPairType(aType, bType) {
+  if (aType === 'supplement' && bType === 'supplement') {
+    return 'supplement-supplement';
+  } else if ((aType === 'supplement' && bType === 'drug') || (aType === 'drug' && bType === 'supplement')) {
+    return 'supplement-drug';
+  } else if (aType === 'drug' && bType === 'drug') {
+    return 'drug-drug';
+  }
+  return 'unknown';
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers: corsHeaders, body: '' };
@@ -50,6 +62,7 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body || '{}');
     const items = body.items || [];
+    const mode = body.mode || 'supplements-drugs'; // Default to supplements-drugs mode
 
     if (!Array.isArray(items) || items.length < 2) {
       return {
@@ -59,18 +72,63 @@ exports.handler = async (event) => {
       };
     }
 
+    console.log('[CheckStack] Mode:', mode);
     console.log('[CheckStack] Checking', items.length, 'substances');
 
-    // Generate all pairs
-    const pairs = generatePairs(items);
-    console.log('[CheckStack] Generated', pairs.length, 'pairs');
+    // Fetch substance types for all items
+    const { data: substances, error: substanceError } = await supabase
+      .from('checker_substances')
+      .select('substance_id, type')
+      .in('substance_id', items);
 
-    if (pairs.length === 0) {
+    if (substanceError) {
+      console.error('[CheckStack] Error fetching substances:', substanceError);
+      return {
+        statusCode: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Failed to fetch substance types' })
+      };
+    }
+
+    // Create type map
+    const typeMap = {};
+    substances.forEach(sub => {
+      typeMap[sub.substance_id] = sub.type;
+    });
+
+    // Generate all pairs
+    const allPairs = generatePairs(items);
+    console.log('[CheckStack] Generated', allPairs.length, 'total pairs');
+
+    // Filter pairs based on mode
+    const filteredPairs = allPairs.filter(pair => {
+      const aType = typeMap[pair.a];
+      const bType = typeMap[pair.b];
+      const pairType = getPairType(aType, bType);
+
+      // Never check drug-drug pairs
+      if (pairType === 'drug-drug') {
+        return false;
+      }
+
+      // Filter based on mode
+      if (mode === 'supplements-drugs') {
+        return pairType === 'supplement-drug';
+      } else if (mode === 'supplements-supplements') {
+        return pairType === 'supplement-supplement';
+      }
+
+      return false;
+    });
+
+    console.log('[CheckStack] Filtered to', filteredPairs.length, 'pairs for mode:', mode);
+
+    if (filteredPairs.length === 0) {
       return {
         statusCode: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          summary: { total_pairs: 0, by_severity: {} },
+          summary: { total_pairs: 0, by_severity: {}, worst_severity: 'none' },
           results: []
         })
       };
@@ -81,7 +139,7 @@ exports.handler = async (event) => {
     const severityCounts = { avoid: 0, caution: 0, monitor: 0, info: 0, none: 0 };
     let worstSeverity = 'none';
 
-    for (const pair of pairs) {
+    for (const pair of filteredPairs) {
       const { data, error } = await supabase
         .from('checker_interactions')
         .select('*')
@@ -95,13 +153,18 @@ exports.handler = async (event) => {
         continue;
       }
 
+      const aType = typeMap[pair.a];
+      const bType = typeMap[pair.b];
+
       if (data) {
         // Found interaction
         results.push({
           a_substance_id: pair.a,
           b_substance_id: pair.b,
           found: true,
-          interaction: data
+          interaction: data,
+          a_type: aType,
+          b_type: bType
         });
 
         severityCounts[data.severity]++;
@@ -116,7 +179,9 @@ exports.handler = async (event) => {
           a_substance_id: pair.a,
           b_substance_id: pair.b,
           found: false,
-          interaction: null
+          interaction: null,
+          a_type: aType,
+          b_type: bType
         });
 
         severityCounts.none++;
@@ -131,7 +196,7 @@ exports.handler = async (event) => {
     });
 
     console.log('[CheckStack] Results:', {
-      total_pairs: pairs.length,
+      total_pairs: filteredPairs.length,
       worst_severity: worstSeverity,
       by_severity: severityCounts
     });
@@ -141,7 +206,7 @@ exports.handler = async (event) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         summary: {
-          total_pairs: pairs.length,
+          total_pairs: filteredPairs.length,
           worst_severity: worstSeverity,
           by_severity: severityCounts
         },

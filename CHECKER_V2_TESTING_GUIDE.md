@@ -411,6 +411,97 @@ fetch('/.netlify/functions/checker-autocomplete?q=a')
 
 ---
 
+## Mode Testing (A & B)
+
+### Mode A: Supplements + Prescription Medicines
+
+This is the default mode. Tests supplement-drug interactions only.
+
+**Test Case 1: Ginkgo + Warfarin (Caution)**
+1. Select "Supplements + Prescription Medicines" mode (default)
+2. Add "Ginkgo" in supplements column
+3. Add "Warfarin" in prescription medicines column
+4. Click "Run Check"
+5. **Expected**: 1 pair checked, severity "Caution", summary: "Increased bleeding risk"
+
+**Test Case 2: Multiple Supplements + 1 Drug**
+1. Stay in "Supplements + Prescription Medicines" mode
+2. Add "Ginkgo" and "Fish Oil" in supplements
+3. Add "Warfarin" in prescription medicines
+4. Click "Run Check"
+5. **Expected**: 2 pairs checked
+   - Ginkgo + Warfarin: Caution
+   - Fish Oil + Warfarin: Caution
+
+**Test Case 3: Validation - Missing Drug**
+1. Clear all items
+2. Add "Ginkgo" in supplements
+3. Do NOT add any prescription medicines
+4. **Expected**: "Run Check" button disabled with message "Add at least 1 supplement AND 1 prescription medicine"
+
+### Mode B: Supplements + Supplements
+
+This mode tests supplement-supplement interactions only.
+
+**Test Case 1: Ginkgo + Vitamin E (Caution)**
+1. Click "Supplements + Supplements" mode toggle
+2. Add "Ginkgo" in supplements
+3. Add "Vitamin E" in supplements
+4. Click "Run Check"
+5. **Expected**: 1 pair checked, severity "Caution", summary: "Increased bleeding risk when combined"
+
+**Test Case 2: Multiple Supplements**
+1. Stay in "Supplements + Supplements" mode
+2. Add "Ginkgo", "Fish Oil", and "Vitamin E"
+3. Click "Run Check"
+4. **Expected**: 3 pairs checked
+   - Ginkgo + Fish Oil: Caution
+   - Ginkgo + Vitamin E: Caution
+   - Fish Oil + Vitamin E: Monitor
+
+**Test Case 3: Calcium + Iron (Monitor)**
+1. Clear all items
+2. Add "Calcium" and "Iron" in supplements
+3. Click "Run Check"
+4. **Expected**: 1 pair checked, severity "Monitor", summary: "Calcium reduces iron absorption"
+
+**Test Case 4: Calcium + Vitamin D (Info)**
+1. Clear all items
+2. Add "Calcium" and "Vitamin D" in supplements
+3. Click "Run Check"
+4. **Expected**: 1 pair checked, severity "Info", summary: "Vitamin D enhances calcium absorption"
+
+**Test Case 5: Validation - Only 1 Supplement**
+1. Clear all items
+2. Add "Ginkgo" only
+3. **Expected**: "Run Check" button disabled with message "Add at least 2 supplements to compare"
+
+### Mode Switching Test
+
+**Test: Mode Switch Clears State**
+1. Start in Mode A
+2. Add "Ginkgo" (supplement) and "Warfarin" (drug)
+3. Run check and verify results appear
+4. Switch to Mode B (Supplements + Supplements)
+5. **Expected**:
+   - Medication list is cleared
+   - Previous results are cleared
+   - Only "Ginkgo" remains in supplements
+   - Helper text shows "Add 2 or more supplements to compare"
+
+### Results Display
+
+**Verify Substance Types Shown:**
+- Each result card should show substance types in parentheses
+- Example: "Ginkgo (supplement) + Warfarin (drug)"
+- Example: "Calcium (supplement) + Iron (supplement)"
+
+**Verify Summary Shows Mode:**
+- Mode A: "Checked X pairs in Supplements + Medicines mode"
+- Mode B: "Checked X pairs in Supplements + Supplements mode"
+
+---
+
 ## Files Modified
 
 ### Database
