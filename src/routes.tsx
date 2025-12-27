@@ -13,6 +13,7 @@ import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Check from './pages/Check';
+import CheckV2 from './pages/CheckV2';
 import Account from './pages/Account';
 import Auth from './pages/Auth';
 import AuthCallback from './pages/AuthCallback';
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
       },
       {
         path: 'check',
+        element: <CheckV2 />
+      },
+      {
+        path: 'check-old',
         element: <Check />
       },
       {
