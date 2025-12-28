@@ -114,6 +114,9 @@ export default function StackBuilderChecker() {
   const [suppInputError, setSuppInputError] = useState('');
   const [medInputError, setMedInputError] = useState('');
 
+  const [suppShowWarning, setSuppShowWarning] = useState(false);
+  const [medShowWarning, setMedShowWarning] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Interaction[] | null>(null);
   const [summary, setSummary] = useState<CheckSummary | null>(null);
@@ -167,11 +170,16 @@ export default function StackBuilderChecker() {
   useEffect(() => {
     setSuppInputError('');
     setSuppFuzzy([]);
+    setSuppShowWarning(false);
 
     if (suppInput.length < 1) {
       setSuppSuggestions([]);
       setSuppLoading(false);
       return;
+    }
+
+    if (suppInput.length >= 2) {
+      setSuppShowWarning(true);
     }
 
     setSuppLoading(true);
@@ -225,11 +233,16 @@ export default function StackBuilderChecker() {
   useEffect(() => {
     setMedInputError('');
     setMedFuzzy([]);
+    setMedShowWarning(false);
 
     if (medInput.length < 1) {
       setMedSuggestions([]);
       setMedLoading(false);
       return;
+    }
+
+    if (medInput.length >= 2) {
+      setMedShowWarning(true);
     }
 
     setMedLoading(true);
@@ -287,6 +300,8 @@ export default function StackBuilderChecker() {
     setSuppSuggestions([]);
     setSuppFuzzy([]);
     setSuppInputError('');
+    setSuppShowWarning(false);
+    setUnknownSubstances([]); // Clear unknown substances when valid selection is made
     suppInputRef.current?.focus();
   }
 
@@ -298,6 +313,8 @@ export default function StackBuilderChecker() {
     setMedSuggestions([]);
     setMedFuzzy([]);
     setMedInputError('');
+    setMedShowWarning(false);
+    setUnknownSubstances([]); // Clear unknown substances when valid selection is made
     medInputRef.current?.focus();
   }
 
@@ -352,27 +369,26 @@ export default function StackBuilderChecker() {
         }
       }
 
+      // STRICT: Only accept selections from dropdown
       // Priority: exact match > fuzzy match > normalized match
-      if (suppSuggestions.length > 0) {
-        addSupplement(suppSuggestions[suppHighlighted]);
-      } else if (suppFuzzy.length > 0) {
-        addSupplement(suppFuzzy[0]);
-      } else if (suppInput.trim().length > 0) {
-        // Try normalization-based matching
-        const normalizedMatch = findSubstanceByToken(suppInput, allSubstances.filter(s => s.type === 'supplement'));
+      const autoMatch = suppSuggestions.length > 0
+        ? suppSuggestions[suppHighlighted]
+        : suppFuzzy.length > 0
+          ? suppFuzzy[0]
+          : null;
 
-        if (normalizedMatch) {
-          addSupplement(normalizedMatch);
-        } else {
-          // Store unknown substance as soft warning
-          const unknownItem: UnknownSubstance = {
-            name: suppInput.trim(),
-            type: 'supplement',
-            suggestions: suppFuzzy.length > 0 ? suppFuzzy : []
-          };
-          setUnknownSubstances([...unknownSubstances, unknownItem]);
-          setSuppInput('');
-        }
+      const normalizedMatch = !autoMatch && suppInput.trim().length > 0
+        ? findSubstanceByToken(suppInput, allSubstances.filter(s => s.type === 'supplement'))
+        : null;
+
+      const match = autoMatch || normalizedMatch;
+
+      if (match) {
+        addSupplement(match);
+      } else if (suppInput.trim().length > 0) {
+        // No match found - show inline error
+        setSuppInputError('Please select a suggestion from the list');
+        setSuppShowWarning(true);
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -383,6 +399,12 @@ export default function StackBuilderChecker() {
       setSuppHighlighted(Math.max(suppHighlighted - 1, 0));
     } else if (e.key === 'Backspace' && suppInput === '' && supplements.length > 0) {
       removeSupplement(supplements[supplements.length - 1].substance_id);
+    } else if (e.key === 'Escape') {
+      setSuppInput('');
+      setSuppSuggestions([]);
+      setSuppFuzzy([]);
+      setSuppInputError('');
+      setSuppShowWarning(false);
     }
   }
 
@@ -397,27 +419,26 @@ export default function StackBuilderChecker() {
         }
       }
 
+      // STRICT: Only accept selections from dropdown
       // Priority: exact match > fuzzy match > normalized match
-      if (medSuggestions.length > 0) {
-        addMedication(medSuggestions[medHighlighted]);
-      } else if (medFuzzy.length > 0) {
-        addMedication(medFuzzy[0]);
-      } else if (medInput.trim().length > 0) {
-        // Try normalization-based matching
-        const normalizedMatch = findSubstanceByToken(medInput, allSubstances.filter(s => s.type === 'drug'));
+      const autoMatch = medSuggestions.length > 0
+        ? medSuggestions[medHighlighted]
+        : medFuzzy.length > 0
+          ? medFuzzy[0]
+          : null;
 
-        if (normalizedMatch) {
-          addMedication(normalizedMatch);
-        } else {
-          // Store unknown substance as soft warning
-          const unknownItem: UnknownSubstance = {
-            name: medInput.trim(),
-            type: 'drug',
-            suggestions: medFuzzy.length > 0 ? medFuzzy : []
-          };
-          setUnknownSubstances([...unknownSubstances, unknownItem]);
-          setMedInput('');
-        }
+      const normalizedMatch = !autoMatch && medInput.trim().length > 0
+        ? findSubstanceByToken(medInput, allSubstances.filter(s => s.type === 'drug'))
+        : null;
+
+      const match = autoMatch || normalizedMatch;
+
+      if (match) {
+        addMedication(match);
+      } else if (medInput.trim().length > 0) {
+        // No match found - show inline error
+        setMedInputError('Please select a suggestion from the list');
+        setMedShowWarning(true);
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -428,92 +449,38 @@ export default function StackBuilderChecker() {
       setMedHighlighted(Math.max(medHighlighted - 1, 0));
     } else if (e.key === 'Backspace' && medInput === '' && medications.length > 0) {
       removeMedication(medications[medications.length - 1].substance_id);
+    } else if (e.key === 'Escape') {
+      setMedInput('');
+      setMedSuggestions([]);
+      setMedFuzzy([]);
+      setMedInputError('');
+      setMedShowWarning(false);
     }
   }
 
   async function runCheck() {
-    // Auto-add pending inputs with normalization-based matching
-    let currentSupplements = [...supplements];
-    let currentMedications = [...medications];
-    const newUnknowns: UnknownSubstance[] = [];
-
-    // Auto-add supplement if text exists but not selected
-    if (suppInput.trim() && !loading) {
-      // Try autocomplete match first
-      const autoMatch = suppSuggestions.length > 0
-        ? suppSuggestions[0]
-        : suppFuzzy.length > 0
-          ? suppFuzzy[0]
-          : null;
-
-      // Try normalization-based matching against all substances
-      const normalizedMatch = !autoMatch ? findSubstanceByToken(suppInput, allSubstances.filter(s => s.type === 'supplement')) : null;
-
-      const match = autoMatch || normalizedMatch;
-
-      if (match && !currentSupplements.find(s => s.substance_id === match.substance_id)) {
-        currentSupplements.push(match);
-        setSupplements(currentSupplements);
-        setSuppInput('');
-        setSuppSuggestions([]);
-        setSuppFuzzy([]);
-        setSuppInputError('');
-      } else if (!match && suppInput.trim()) {
-        // Store for "did you mean" UI as soft warning (not blocking)
-        newUnknowns.push({
-          name: suppInput.trim(),
-          type: 'supplement',
-          suggestions: suppFuzzy
-        });
-        setSuppInput('');
+    // STRICT ENFORCEMENT: Block if there's unselected text in inputs
+    if (suppInput.trim() || medInput.trim()) {
+      if (suppInput.trim()) {
+        setSuppInputError('Please select a suggestion from the list or clear this field');
+        setSuppShowWarning(true);
       }
-    }
-
-    // Auto-add medication if text exists but not selected
-    if (medInput.trim() && !loading) {
-      // Try autocomplete match first
-      const autoMatch = medSuggestions.length > 0
-        ? medSuggestions[0]
-        : medFuzzy.length > 0
-          ? medFuzzy[0]
-          : null;
-
-      // Try normalization-based matching against all substances
-      const normalizedMatch = !autoMatch ? findSubstanceByToken(medInput, allSubstances.filter(s => s.type === 'drug')) : null;
-
-      const match = autoMatch || normalizedMatch;
-
-      if (match && !currentMedications.find(m => m.substance_id === match.substance_id)) {
-        currentMedications.push(match);
-        setMedications(currentMedications);
-        setMedInput('');
-        setMedSuggestions([]);
-        setMedFuzzy([]);
-        setMedInputError('');
-      } else if (!match && medInput.trim()) {
-        // Store for "did you mean" UI as soft warning (not blocking)
-        newUnknowns.push({
-          name: medInput.trim(),
-          type: 'drug',
-          suggestions: medFuzzy
-        });
-        setMedInput('');
+      if (medInput.trim()) {
+        setMedInputError('Please select a suggestion from the list or clear this field');
+        setMedShowWarning(true);
       }
-    }
-
-    // Show unknown substances as warnings but DON'T block the check
-    if (newUnknowns.length > 0) {
-      setUnknownSubstances([...unknownSubstances, ...newUnknowns]);
+      setError('Please select items from the dropdown or clear the input fields');
+      return;
     }
 
     // Validation: require minimum items
     if (mode === 'supplements-drugs') {
-      if (currentSupplements.length === 0 || currentMedications.length === 0) {
+      if (supplements.length === 0 || medications.length === 0) {
         setError('Please add at least 1 supplement AND 1 prescription medicine');
         return;
       }
     } else {
-      if (currentSupplements.length < 2) {
+      if (supplements.length < 2) {
         setError('Please add at least 2 supplements to compare');
         return;
       }
@@ -523,12 +490,13 @@ export default function StackBuilderChecker() {
     setError(null);
     setResults(null);
     setSummary(null);
+    setUnknownSubstances([]);
 
     try {
-      // Send normalized display names to backend
+      // Send display names (all items are guaranteed to have substance_id)
       const allNames = [
-        ...currentSupplements.map(s => s.display_name),
-        ...currentMedications.map(m => m.display_name)
+        ...supplements.map(s => s.display_name),
+        ...medications.map(m => m.display_name)
       ];
 
       const res = await fetch('/.netlify/functions/checker-get-interactions', {
@@ -561,10 +529,13 @@ export default function StackBuilderChecker() {
     setExpandedResults(newSet);
   }
 
-  // Allow button click even with pending input text
-  const canCheck = mode === 'supplements-drugs'
-    ? (supplements.length > 0 || suppInput.trim()) && (medications.length > 0 || medInput.trim())
-    : (supplements.length >= 2 || (supplements.length >= 1 && suppInput.trim()));
+  // STRICT: Only allow check if NO pending text and minimum selections met
+  const hasPendingText = suppInput.trim().length > 0 || medInput.trim().length > 0;
+  const canCheck = !hasPendingText && (
+    mode === 'supplements-drugs'
+      ? (supplements.length > 0 && medications.length > 0)
+      : supplements.length >= 2
+  );
 
   const groupedResults: Record<string, Interaction[]> = {
     avoid: [],
@@ -754,8 +725,9 @@ export default function StackBuilderChecker() {
             <div className="flex flex-wrap gap-2 mb-3 min-h-[40px]">
               {supplements.map(supp => (
                 <div key={supp.substance_id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style={{ background: '#7c3aed', color: 'white' }}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
                   {supp.display_name}
-                  <button onClick={() => removeSupplement(supp.substance_id)} className="hover:bg-white/20 rounded-full p-0.5">
+                  <button onClick={() => removeSupplement(supp.substance_id)} className="hover:bg-white/20 rounded-full p-0.5" aria-label={`Remove ${supp.display_name}`}>
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -773,12 +745,23 @@ export default function StackBuilderChecker() {
                 value={suppInput}
                 onChange={(e) => setSuppInput(e.target.value)}
                 onKeyDown={handleSuppKeyDown}
-                placeholder="Type name and press Enter (e.g., Vitamin B12)..."
+                placeholder="Type to search..."
                 className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
                 style={{ borderColor: suppInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
 
               {renderSuggestionDropdown(suppSuggestions, suppFuzzy, suppHighlighted, addSupplement, suppLoading, suppInputError)}
+
+              {suppShowWarning && suppInput.trim() && suppSuggestions.length === 0 && suppFuzzy.length === 0 && !suppLoading && (
+                <div className="mt-2 text-xs" style={{ color: '#E65100' }}>
+                  💡 Please select an item from the suggestions list
+                </div>
+              )}
+              {suppInputError && (
+                <div className="mt-2 text-xs font-medium" style={{ color: '#EF5350' }}>
+                  {suppInputError}
+                </div>
+              )}
             </div>
           </div>
 
@@ -792,8 +775,9 @@ export default function StackBuilderChecker() {
             <div className="flex flex-wrap gap-2 mb-3 min-h-[40px]">
               {medications.map(med => (
                 <div key={med.substance_id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style={{ background: '#0891b2', color: 'white' }}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
                   {med.display_name}
-                  <button onClick={() => removeMedication(med.substance_id)} className="hover:bg-white/20 rounded-full p-0.5">
+                  <button onClick={() => removeMedication(med.substance_id)} className="hover:bg-white/20 rounded-full p-0.5" aria-label={`Remove ${med.display_name}`}>
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -811,12 +795,23 @@ export default function StackBuilderChecker() {
                 value={medInput}
                 onChange={(e) => setMedInput(e.target.value)}
                 onKeyDown={handleMedKeyDown}
-                placeholder="Type name and press Enter (e.g., Losartan)..."
+                placeholder="Type to search..."
                 className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
                 style={{ borderColor: medInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
 
               {renderSuggestionDropdown(medSuggestions, medFuzzy, medHighlighted, addMedication, medLoading, medInputError)}
+
+              {medShowWarning && medInput.trim() && medSuggestions.length === 0 && medFuzzy.length === 0 && !medLoading && (
+                <div className="mt-2 text-xs" style={{ color: '#E65100' }}>
+                  💡 Please select an item from the suggestions list
+                </div>
+              )}
+              {medInputError && (
+                <div className="mt-2 text-xs font-medium" style={{ color: '#EF5350' }}>
+                  {medInputError}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -834,8 +829,9 @@ export default function StackBuilderChecker() {
             <div className="flex flex-wrap gap-2 mb-3 min-h-[40px]">
               {supplements.map(supp => (
                 <div key={supp.substance_id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style={{ background: '#7c3aed', color: 'white' }}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
                   {supp.display_name}
-                  <button onClick={() => removeSupplement(supp.substance_id)} className="hover:bg-white/20 rounded-full p-0.5">
+                  <button onClick={() => removeSupplement(supp.substance_id)} className="hover:bg-white/20 rounded-full p-0.5" aria-label={`Remove ${supp.display_name}`}>
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -853,80 +849,28 @@ export default function StackBuilderChecker() {
                 value={suppInput}
                 onChange={(e) => setSuppInput(e.target.value)}
                 onKeyDown={handleSuppKeyDown}
-                placeholder="Type name and press Enter (e.g., Fish Oil)..."
+                placeholder="Type to search..."
                 className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
                 style={{ borderColor: suppInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
 
               {renderSuggestionDropdown(suppSuggestions, suppFuzzy, suppHighlighted, addSupplement, suppLoading, suppInputError)}
+
+              {suppShowWarning && suppInput.trim() && suppSuggestions.length === 0 && suppFuzzy.length === 0 && !suppLoading && (
+                <div className="mt-2 text-xs" style={{ color: '#E65100' }}>
+                  💡 Please select an item from the suggestions list
+                </div>
+              )}
+              {suppInputError && (
+                <div className="mt-2 text-xs font-medium" style={{ color: '#EF5350' }}>
+                  {suppInputError}
+                </div>
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Unknown Substances - Soft Warning (Non-blocking) */}
-      {unknownSubstances.length > 0 && (
-        <div className="mb-6 space-y-3">
-          {unknownSubstances.map((unknown, idx) => (
-            <div key={idx} className="rounded-xl p-5" style={{ background: '#FFF9E6', border: '2px solid #FFB74D' }}>
-              <div className="flex items-start gap-3">
-                <Info className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#F57C00' }} />
-                <div className="flex-1">
-                  <h3 className="font-bold mb-1" style={{ color: '#F57C00' }}>
-                    "{unknown.name}" not found in our database
-                  </h3>
-                  <p className="text-sm mb-3" style={{ color: '#E65100' }}>
-                    This won't stop your check. You can continue with other items or try one of these similar matches:
-                  </p>
-
-                  {unknown.suggestions.length > 0 ? (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {unknown.suggestions.slice(0, 5).map(sugg => (
-                        <button
-                          key={sugg.substance_id}
-                          onClick={() => {
-                            if (unknown.type === 'supplement') {
-                              addSupplement(sugg);
-                            } else {
-                              addMedication(sugg);
-                            }
-                            setUnknownSubstances(unknownSubstances.filter((_, i) => i !== idx));
-                          }}
-                          className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-amber-100"
-                          style={{ background: 'white', border: '2px solid #FFB74D', color: '#F57C00' }}
-                        >
-                          {sugg.display_name}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm mb-3" style={{ color: '#E65100' }}>
-                      Try a different spelling or continue checking the other items you've added.
-                    </p>
-                  )}
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setUnknownSubstances(unknownSubstances.filter((_, i) => i !== idx))}
-                      className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-                      style={{ background: 'white', border: '2px solid #FFB74D', color: '#F57C00' }}
-                    >
-                      Dismiss
-                    </button>
-                    <a
-                      href={`mailto:support@supplementsafetybible.com?subject=Request to add: ${unknown.name}&body=Type: ${unknown.type}%0D%0AName: ${unknown.name}`}
-                      className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-amber-100"
-                      style={{ background: 'white', border: '2px solid #FFB74D', color: '#F57C00' }}
-                    >
-                      Request Addition
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Run Check Button */}
       <div className="text-center mb-8">
@@ -938,16 +882,16 @@ export default function StackBuilderChecker() {
           {loading && <Loader2 className="w-5 h-5 animate-spin" />}
           {loading ? 'Checking...' : 'Run Check'}
         </button>
-        {!canCheck && (
+        {!canCheck && hasPendingText && (
+          <p className="text-sm mt-2 font-medium" style={{ color: '#EF5350' }}>
+            Please select items from the dropdown or clear the input fields
+          </p>
+        )}
+        {!canCheck && !hasPendingText && (
           <p className="text-sm mt-2" style={{ color: 'var(--color-text-muted)' }}>
             {mode === 'supplements-drugs'
               ? 'Add at least 1 supplement AND 1 prescription medicine'
               : 'Add at least 2 supplements to compare'}
-          </p>
-        )}
-        {unknownSubstances.length > 0 && (
-          <p className="text-sm mt-2" style={{ color: '#E65100' }}>
-            ⚠️ Some items couldn't be found. You can still check the items that were matched.
           </p>
         )}
       </div>
