@@ -62,13 +62,13 @@ exports.handler = async (event) => {
 
     // If type column exists and we got data, count by type
     if (!typeCheckError && typeCheckData !== undefined) {
-      const { data: suppCount, error: suppError } = await supabase
+      const { count: suppCount, error: suppError } = await supabase
         .from('checker_substances')
         .select('substance_id', { count: 'exact', head: true })
         .eq('type', 'supplement')
         .eq('is_active', true);
 
-      const { data: drugCount, error: drugError } = await supabase
+      const { count: drugCount, error: drugError } = await supabase
         .from('checker_substances')
         .select('substance_id', { count: 'exact', head: true })
         .eq('type', 'drug')
