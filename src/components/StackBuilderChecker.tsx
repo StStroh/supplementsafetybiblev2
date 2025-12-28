@@ -329,18 +329,64 @@ export default function StackBuilderChecker() {
   }
 
   async function runCheck() {
+    // Auto-add pending inputs before validation
+    let currentSupplements = [...supplements];
+    let currentMedications = [...medications];
+
+    // Auto-add supplement if text exists but not selected
+    if (suppInput.trim() && !loading) {
+      const match = suppSuggestions.length > 0
+        ? suppSuggestions[0]
+        : suppFuzzy.length > 0
+          ? suppFuzzy[0]
+          : null;
+
+      if (match && !currentSupplements.find(s => s.substance_id === match.substance_id)) {
+        currentSupplements.push(match);
+        setSupplements(currentSupplements);
+        setSuppInput('');
+        setSuppSuggestions([]);
+        setSuppFuzzy([]);
+        setSuppInputError('');
+      } else if (!match && suppInput.trim()) {
+        setError(`Cannot find supplement: "${suppInput}". Please select from the dropdown.`);
+        return;
+      }
+    }
+
+    // Auto-add medication if text exists but not selected
+    if (medInput.trim() && !loading) {
+      const match = medSuggestions.length > 0
+        ? medSuggestions[0]
+        : medFuzzy.length > 0
+          ? medFuzzy[0]
+          : null;
+
+      if (match && !currentMedications.find(m => m.substance_id === match.substance_id)) {
+        currentMedications.push(match);
+        setMedications(currentMedications);
+        setMedInput('');
+        setMedSuggestions([]);
+        setMedFuzzy([]);
+        setMedInputError('');
+      } else if (!match && medInput.trim()) {
+        setError(`Cannot find medication: "${medInput}". Please select from the dropdown.`);
+        return;
+      }
+    }
+
     const allItems = [
-      ...supplements.map(s => s.substance_id),
-      ...medications.map(m => m.substance_id)
+      ...currentSupplements.map(s => s.substance_id),
+      ...currentMedications.map(m => m.substance_id)
     ];
 
     if (mode === 'supplements-drugs') {
-      if (supplements.length === 0 || medications.length === 0) {
+      if (currentSupplements.length === 0 || currentMedications.length === 0) {
         setError('Please add at least 1 supplement AND 1 prescription medicine');
         return;
       }
     } else {
-      if (supplements.length < 2) {
+      if (currentSupplements.length < 2) {
         setError('Please add at least 2 supplements to compare');
         return;
       }
@@ -382,9 +428,10 @@ export default function StackBuilderChecker() {
     setExpandedResults(newSet);
   }
 
+  // Allow button click even with pending input text
   const canCheck = mode === 'supplements-drugs'
-    ? supplements.length > 0 && medications.length > 0
-    : supplements.length >= 2;
+    ? (supplements.length > 0 || suppInput.trim()) && (medications.length > 0 || medInput.trim())
+    : (supplements.length >= 2 || (supplements.length >= 1 && suppInput.trim()));
 
   const groupedResults: Record<string, Interaction[]> = {
     avoid: [],
