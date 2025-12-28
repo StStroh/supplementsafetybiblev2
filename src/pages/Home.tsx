@@ -1,6 +1,6 @@
 import Navbar from '../components/Navbar';
 import SafetyAlertsSection from '../components/SafetyAlertsSection';
-import StackBuilderChecker from '../components/StackBuilderChecker';
+import StackBuilderCheckerV3 from '../components/StackBuilderCheckerV3';
 import WhatWeScreen from '../components/WhatWeScreen';
 import Philosophy from '../components/Philosophy';
 import HowItWorks from '../components/HowItWorks';
@@ -111,7 +111,7 @@ export default function Home() {
 
           {/* Modern Interaction Checker */}
           <div data-testid="landing-hero-checker">
-            <StackBuilderChecker />
+            <StackBuilderCheckerV3 />
           </div>
 
           {/* Trust strip */}

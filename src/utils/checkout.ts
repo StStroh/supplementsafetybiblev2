@@ -118,6 +118,21 @@ export async function startCheckout(
         throw new Error("Server did not return a checkout URL");
       }
 
+      // Extract session_id from Stripe checkout URL and store in localStorage for recovery
+      try {
+        const checkoutUrl = new URL(data.url);
+        // Stripe checkout URLs have format: https://checkout.stripe.com/c/pay/cs_test_...
+        // The session ID is in the path after /pay/
+        const pathParts = checkoutUrl.pathname.split('/');
+        const sessionId = pathParts[pathParts.length - 1];
+        if (sessionId && sessionId.startsWith('cs_')) {
+          localStorage.setItem('last_checkout_session_id', sessionId);
+          console.log("[checkout] Stored session_id in localStorage for recovery");
+        }
+      } catch (urlError) {
+        console.warn("[checkout] Could not extract session_id from URL:", urlError);
+      }
+
       console.log("[checkout] Redirecting to:", data.url);
 
       // Small delay to ensure console logs are visible

@@ -30,9 +30,9 @@ const REQUIRED_COMPONENTS = {
   'src/pages/Home.tsx': [
     'data-testid="landing-hero-headline"',
     'data-testid="landing-hero-checker"',
-    '<StackBuilderChecker />',
+    '<StackBuilderCheckerV3 />',
     '<HowItWorks />',
-    'import StackBuilderChecker from',
+    'import StackBuilderCheckerV3 from',
     'import HowItWorks from',
     'Check Drug–Supplement Interactions Before You Take Them',
   ],

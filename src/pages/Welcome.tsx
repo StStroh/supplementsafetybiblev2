@@ -102,10 +102,24 @@ const Welcome: React.FC = () => {
         setProfile(profileData);
       }
 
-      const sessionId = searchParams.get('session_id');
+      let sessionId = searchParams.get('session_id');
+
+      // Fallback: Check localStorage if session_id missing from URL
+      if (!sessionId) {
+        const storedSessionId = localStorage.getItem('last_checkout_session_id');
+        if (storedSessionId) {
+          console.log('[Welcome] No session_id in URL, using localStorage fallback');
+          sessionId = storedSessionId;
+        }
+      }
+
       if (sessionId && !planConfirmed) {
         console.log('[Welcome] Session ID present, verifying checkout');
+        // Store in localStorage for recovery
+        localStorage.setItem('last_checkout_session_id', sessionId);
         await verifyAndSyncPlan(sessionId, authUser);
+        // Clear after successful verification
+        localStorage.removeItem('last_checkout_session_id');
       } else {
         setPlanConfirmed(true);
       }
@@ -133,17 +147,11 @@ const Welcome: React.FC = () => {
   const verifyAndSyncPlan = async (sessionId: string, authUser: any) => {
     console.log('[Welcome] sync start');
     try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-      if (sessionError || !session?.access_token) {
-        throw new Error('Session expired. Please sign in again.');
-      }
-
-      const response = await fetch('/.netlify/functions/verify-checkout-session', {
+      // Use the new stripe-verify-session function
+      const response = await fetch('/.netlify/functions/stripe-verify-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ session_id: sessionId }),
       });
@@ -156,6 +164,7 @@ const Welcome: React.FC = () => {
 
       console.log('[Welcome] sync success:', data);
 
+      // Reload profile from database
       const { data: updatedProfile } = await supabase
         .from('profiles')
         .select('*')
@@ -195,7 +204,12 @@ const Welcome: React.FC = () => {
     setSyncingPlan(true);
 
     try {
-      const sessionId = searchParams.get('session_id');
+      // Try URL first, then localStorage
+      let sessionId = searchParams.get('session_id');
+      if (!sessionId) {
+        sessionId = localStorage.getItem('last_checkout_session_id');
+      }
+
       if (!sessionId) {
         throw new Error('No checkout session ID found');
       }
