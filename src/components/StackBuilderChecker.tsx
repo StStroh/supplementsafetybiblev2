@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { X, Search, AlertTriangle, AlertCircle, Info, CheckCircle2, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { getFuzzyMatches } from '../utils/fuzzyMatch';
 import { normalizeToken, findSubstanceByToken } from '../utils/normalize';
+import ConfidenceBadge from './ConfidenceBadge';
+import GlobalTrustStatement from './GlobalTrustStatement';
+import ConfidenceMetadata from './ConfidenceMetadata';
 
 const IS_DEV = import.meta.env.DEV;
 
@@ -921,6 +924,9 @@ export default function StackBuilderChecker() {
       {/* Results */}
       {results && summary && !loading && (
         <div>
+          {/* Global Trust Statement */}
+          <GlobalTrustStatement />
+
           <div className="rounded-xl p-6 mb-6" style={{ background: 'var(--color-surface)', border: '2px solid var(--color-border)' }}>
             <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
               Check Complete
@@ -965,12 +971,38 @@ export default function StackBuilderChecker() {
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: SEVERITY_CONFIG.none.bgColor, border: `1px solid ${SEVERITY_CONFIG.none.borderColor}` }}>
                   <CheckCircle2 className="w-4 h-4" style={{ color: SEVERITY_CONFIG.none.textColor }} />
                   <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.none.textColor }}>
-                    No Interactions Found
+                    No Known Interactions
                   </span>
                 </div>
               )}
             </div>
           </div>
+
+          {/* No Interactions Found - Detailed Explanation */}
+          {summary.total === 0 && (
+            <div className="rounded-xl p-6 mb-6" style={{ background: SEVERITY_CONFIG.none.bgColor, border: '2px solid ' + SEVERITY_CONFIG.none.borderColor }}>
+              <ConfidenceBadge level="none" showExplanation={true} />
+              <div className="mt-4 p-4 rounded-lg" style={{ background: 'white', border: '1px solid ' + SEVERITY_CONFIG.none.borderColor }}>
+                <h4 className="font-semibold mb-2" style={{ color: SEVERITY_CONFIG.none.textColor }}>
+                  What this means:
+                </h4>
+                <ul className="space-y-2 text-sm" style={{ color: 'var(--color-text)' }}>
+                  <li className="flex items-start gap-2">
+                    <span style={{ color: SEVERITY_CONFIG.none.textColor }}>•</span>
+                    <span>All substances in your stack have been checked against our database</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span style={{ color: SEVERITY_CONFIG.none.textColor }}>•</span>
+                    <span>No documented interactions were found in medical literature</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span style={{ color: SEVERITY_CONFIG.none.textColor }}>•</span>
+                    <span>This does not guarantee complete safety — always consult your healthcare provider</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
 
           {(['avoid', 'caution', 'monitor', 'info'] as const).map(severity => {
             const items = groupedResults[severity];
@@ -992,6 +1024,9 @@ export default function StackBuilderChecker() {
 
                     return (
                       <div key={resultKey} className="rounded-lg p-5" style={{ background: config.bgColor, border: `2px solid ${config.borderColor}` }}>
+                        {/* Confidence Badge */}
+                        <ConfidenceBadge level={severity} showExplanation={false} />
+
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg mb-1" style={{ color: config.textColor }}>
@@ -1034,20 +1069,6 @@ export default function StackBuilderChecker() {
                                 <p className="text-sm" style={{ color: config.textColor }}>{interaction.management}</p>
                               </div>
                             )}
-                            {interaction.evidence_grade && (
-                              <div className="flex gap-4 text-sm">
-                                <div>
-                                  <span className="font-semibold" style={{ color: config.textColor }}>Evidence Grade:</span>{' '}
-                                  <span style={{ color: config.textColor }}>{interaction.evidence_grade}</span>
-                                </div>
-                                {interaction.confidence && (
-                                  <div>
-                                    <span className="font-semibold" style={{ color: config.textColor }}>Confidence:</span>{' '}
-                                    <span style={{ color: config.textColor }}>{interaction.confidence}</span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
                             {interaction.citations && Array.isArray(interaction.citations) && interaction.citations.length > 0 && (
                               <div>
                                 <h5 className="font-semibold mb-2" style={{ color: config.textColor }}>Citations:</h5>
@@ -1067,6 +1088,13 @@ export default function StackBuilderChecker() {
                                 </div>
                               </div>
                             )}
+
+                            {/* Confidence Metadata - Collapsible */}
+                            <ConfidenceMetadata
+                              evidenceGrade={interaction.evidence_grade}
+                              confidence={interaction.confidence}
+                              severity={severity}
+                            />
                           </div>
                         )}
                       </div>
