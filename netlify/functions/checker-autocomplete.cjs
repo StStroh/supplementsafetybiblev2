@@ -83,9 +83,9 @@ exports.handler = async (event) => {
     // We attempt a join; if it fails (table missing/column mismatch), we fall back to tokens-only.
     // Expected:
     // - checker_substance_tokens(substance_id, token)
-    // - checker_substances(substance_id, name, type?)  <-- type optional
+    // - checker_substances(substance_id, display_name, canonical_name, aliases, type)
     const joinSelect =
-      'token, substance_id, checker_substances(name, type)';
+      'token, substance_id, checker_substances(display_name, canonical_name, aliases, type)';
 
     let rows = null;
 
@@ -122,14 +122,18 @@ exports.handler = async (event) => {
       if (!id || seen.has(id)) continue;
 
       // If join worked, r.checker_substances might be object OR array depending on relationship.
-      let name = null;
+      let displayName = null;
+      let canonicalName = null;
+      let aliases = [];
       let itemType = null;
 
       const cs = r.checker_substances;
       if (cs) {
         // sometimes it's an array
         const cs0 = Array.isArray(cs) ? cs[0] : cs;
-        name = cs0?.name ?? null;
+        displayName = cs0?.display_name ?? null;
+        canonicalName = cs0?.canonical_name ?? null;
+        aliases = cs0?.aliases ?? [];
         itemType = (cs0?.type ?? null);
       }
 
@@ -140,21 +144,22 @@ exports.handler = async (event) => {
 
       seen.add(id);
 
-      const label =
-        name
-          ? name
-          : titleize(r.token); // fallback pretty-ish label from token
+      const label = displayName || titleize(r.token);
+      const canonical = canonicalName || label;
 
+      // Frontend expects: substance_id, display_name, canonical_name, aliases, type
       suggestions.push({
-        id,
-        label,
-        type: itemType ? String(itemType).toLowerCase() : null,
+        substance_id: id,
+        display_name: label,
+        canonical_name: canonical,
+        aliases: Array.isArray(aliases) ? aliases : [],
+        type: itemType ? String(itemType).toLowerCase() : (typeRaw || 'supplement'),
       });
 
       if (suggestions.length >= 10) break;
     }
 
-    return json(200, { ok: true, q: qRaw, type: typeRaw, suggestions });
+    return json(200, { ok: true, q: qRaw, type: typeRaw, results: suggestions });
   } catch (e) {
     return json(500, { ok: false, error: e?.message ? e.message : String(e) });
   }
