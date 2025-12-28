@@ -15,7 +15,7 @@
  *
  * Notes:
  * - Measures full-stack latency (Netlify + network + Supabase RPC).
- * - Keeps checker-get-interactions.cjs pure passthrough.
+ * - Keeps checker-get-interactions.cjs pure passthrough (we call the same RPC here).
  */
 
 const { createClient } = require('@supabase/supabase-js');
@@ -119,24 +119,18 @@ exports.handler = async (event) => {
       });
     }
 
-    let runs = Number.isFinite(parsed.runs)
-      ? parsed.runs
-      : parseInt(parsed.runs, 10);
-
+    let runs = Number.isFinite(parsed.runs) ? parsed.runs : parseInt(parsed.runs, 10);
     if (!Number.isFinite(runs)) runs = 10;
     runs = Math.max(1, Math.min(50, runs)); // default + cap
 
     /* ---- Supabase client ---- */
     const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.SUPABASE_ANON_KEY;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !serviceKey) {
       return json(500, {
         ok: false,
-        error:
-          'Supabase env vars missing (SUPABASE_URL + SERVICE_ROLE_KEY/ANON_KEY)',
+        error: 'Supabase env vars missing (SUPABASE_URL + SERVICE_ROLE_KEY/ANON_KEY)',
       });
     }
 
@@ -151,10 +145,12 @@ exports.handler = async (event) => {
     for (let i = 0; i < runs; i++) {
       const start = Date.now();
 
-      const { data, error } = await supabase.rpc(
-        'checker_get_interactions',
-        { inputs }
-      );
+      // IMPORTANT FIX:
+      // Your DB RPC signature is checker_get_interactions(input_names text[])
+      // So we must pass { input_names: inputs } (not { inputs })
+      const { data, error } = await supabase.rpc('checker_get_interactions', {
+        input_names: inputs,
+      });
 
       const ms = Date.now() - start;
       elapsed.push(ms);
@@ -186,9 +182,7 @@ exports.handler = async (event) => {
 
     const sample = {
       summary: samplePayload?.summary || null,
-      results_count: Array.isArray(samplePayload?.results)
-        ? samplePayload.results.length
-        : null,
+      results_count: Array.isArray(samplePayload?.results) ? samplePayload.results.length : null,
     };
 
     return json(200, {
@@ -205,3 +199,4 @@ exports.handler = async (event) => {
     });
   }
 };
+
