@@ -1,107 +1,162 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.VITE_SUPABASE_ANON_KEY
-);
-
-const corsHeaders = {
+const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS'
+  'Access-Control-Allow-Headers': 'content-type, authorization',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
+
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      ...CORS_HEADERS,
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify(body),
+  };
+}
+
+function titleize(s) {
+  return String(s || '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
 
 exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: corsHeaders, body: '' };
-  }
-
-  if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
-  }
-
   try {
-    const params = event.queryStringParameters || {};
-    const query = (params.q || '').toLowerCase().trim();
-    const type = params.type || ''; // 'drug', 'supplement', or empty for all
-
-    if (!query || query.length < 2) {
+    // CORS preflight
+    if (event.httpMethod === 'OPTIONS') {
       return {
-        statusCode: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ results: [] })
+        statusCode: 204,
+        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' },
+        body: '',
       };
     }
 
-    console.log('[Autocomplete] Query:', query, 'Type:', type);
-
-    // Build query
-    let dbQuery = supabase
-      .from('checker_substances')
-      .select('substance_id, type, display_name, canonical_name, aliases')
-      .eq('is_active', true);
-
-    // Filter by type if specified
-    if (type && (type === 'drug' || type === 'supplement')) {
-      dbQuery = dbQuery.eq('type', type);
+    if (event.httpMethod !== 'GET') {
+      return json(500, { ok: false, error: 'Method not allowed' });
     }
 
-    // Search by display_name (case insensitive) OR aliases contains query
-    dbQuery = dbQuery.or(`display_name.ilike.%${query}%,canonical_name.ilike.%${query}%,aliases.cs.{${query}}`);
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
-    // Limit results
-    dbQuery = dbQuery.limit(8);
-
-    const { data, error } = await dbQuery;
-
-    if (error) {
-      console.error('[Autocomplete] DB error:', error);
-      return {
-        statusCode: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Database query failed', details: error.message })
-      };
+    if (!supabaseUrl || !serviceKey) {
+      return json(500, {
+        ok: false,
+        error: 'Supabase env vars missing (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY/ANON_KEY)',
+      });
     }
 
-    // Filter results where aliases contain the query (case insensitive)
-    const filtered = (data || []).filter(item => {
-      const displayMatch = item.display_name.toLowerCase().includes(query);
-      const canonicalMatch = item.canonical_name && item.canonical_name.toLowerCase().includes(query);
-      const aliasMatch = item.aliases && item.aliases.some(alias => alias.toLowerCase().includes(query));
-      return displayMatch || canonicalMatch || aliasMatch;
+    const supabase = createClient(supabaseUrl, serviceKey, {
+      auth: { persistSession: false },
     });
 
-    // Sort: exact matches first, then startsWith, then contains
-    const sorted = filtered.sort((a, b) => {
-      const aName = a.display_name.toLowerCase();
-      const bName = b.display_name.toLowerCase();
+    const qRaw = (event.queryStringParameters?.q || '').trim();
+    const typeRaw = (event.queryStringParameters?.type || '').trim().toLowerCase(); // 'supplement' | 'drug'
 
-      if (aName === query) return -1;
-      if (bName === query) return 1;
+    // Guardrails: avoid DB spam
+    if (qRaw.length < 2) {
+      return json(200, { ok: true, q: qRaw, type: typeRaw, suggestions: [] });
+    }
 
-      if (aName.startsWith(query) && !bName.startsWith(query)) return -1;
-      if (bName.startsWith(query) && !aName.startsWith(query)) return 1;
+    // Normalize using DB function so behavior matches token constraints
+    // (Assumes norm_token(text) exists as you created earlier)
+    const { data: normData, error: normErr } = await supabase.rpc('norm_token', { input: qRaw }).catch(() => ({
+      data: null,
+      error: null,
+    }));
 
-      return aName.localeCompare(bName);
-    });
+    // If norm_token is not exposed as RPC (depends how you defined it), fall back:
+    const qNorm =
+      typeof normData === 'string' && normData.length
+        ? normData
+        : qRaw.toLowerCase().replace(/[\s-]+/g, '');
 
-    console.log('[Autocomplete] Found', sorted.length, 'results');
+    // ---- Try "pretty" join if checker_substances exists ----
+    // We attempt a join; if it fails (table missing/column mismatch), we fall back to tokens-only.
+    // Expected:
+    // - checker_substance_tokens(substance_id, token)
+    // - checker_substances(substance_id, name, type?)  <-- type optional
+    const joinSelect =
+      'token, substance_id, checker_substances(name, type)';
 
-    return {
-      statusCode: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ results: sorted.slice(0, 8) })
-    };
-  } catch (err) {
-    console.error('[Autocomplete] Error:', err);
-    return {
-      statusCode: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Internal server error', details: err.message })
-    };
+    let rows = null;
+
+    {
+      const { data, error } = await supabase
+        .from('checker_substance_tokens')
+        .select(joinSelect)
+        .ilike('token', `${qNorm}%`)
+        .limit(25);
+
+      if (!error) {
+        rows = data || [];
+      } else {
+        // fallback: tokens only (no join)
+        const fallback = await supabase
+          .from('checker_substance_tokens')
+          .select('token, substance_id')
+          .ilike('token', `${qNorm}%`)
+          .limit(25);
+
+        if (fallback.error) {
+          return json(500, { ok: false, error: fallback.error.message || String(fallback.error) });
+        }
+        rows = fallback.data || [];
+      }
+    }
+
+    // Build suggestions: unique by substance_id, prefer pretty name if available
+    const seen = new Set();
+    const suggestions = [];
+
+    for (const r of rows) {
+      const id = r.substance_id;
+      if (!id || seen.has(id)) continue;
+
+      // If join worked, r.checker_substances might be object OR array depending on relationship.
+      let name = null;
+      let itemType = null;
+
+      const cs = r.checker_substances;
+      if (cs) {
+        // sometimes it's an array
+        const cs0 = Array.isArray(cs) ? cs[0] : cs;
+        name = cs0?.name ?? null;
+        itemType = (cs0?.type ?? null);
+      }
+
+      // If type filter is present AND we have type on the record, enforce it.
+      if (typeRaw && itemType && String(itemType).toLowerCase() !== typeRaw) {
+        continue;
+      }
+
+      seen.add(id);
+
+      const label =
+        name
+          ? name
+          : titleize(r.token); // fallback pretty-ish label from token
+
+      suggestions.push({
+        id,
+        label,
+        type: itemType ? String(itemType).toLowerCase() : null,
+      });
+
+      if (suggestions.length >= 10) break;
+    }
+
+    return json(200, { ok: true, q: qRaw, type: typeRaw, suggestions });
+  } catch (e) {
+    return json(500, { ok: false, error: e?.message ? e.message : String(e) });
   }
 };
+;
