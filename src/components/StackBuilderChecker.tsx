@@ -84,6 +84,12 @@ const SEVERITY_CONFIG = {
   }
 };
 
+interface UnknownSubstance {
+  name: string;
+  type: 'drug' | 'supplement';
+  suggestions: Substance[];
+}
+
 export default function StackBuilderChecker() {
   const [mode, setMode] = useState<CheckerMode>('supplements-drugs');
   const [supplements, setSupplements] = useState<Substance[]>([]);
@@ -115,11 +121,14 @@ export default function StackBuilderChecker() {
   const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
 
   const [allSubstances, setAllSubstances] = useState<Substance[]>([]);
+  const [unknownSubstances, setUnknownSubstances] = useState<UnknownSubstance[]>([]);
+
+  const [dbStats, setDbStats] = useState<{ supplements: number | null; drugs: number | null; interactions: number } | null>(null);
 
   const suppInputRef = useRef<HTMLInputElement>(null);
   const medInputRef = useRef<HTMLInputElement>(null);
 
-  // Load all substances for fuzzy matching
+  // Load all substances for fuzzy matching and database stats
   useEffect(() => {
     async function loadSubstances() {
       try {
@@ -132,7 +141,25 @@ export default function StackBuilderChecker() {
         console.error('Failed to load substances for fuzzy matching:', err);
       }
     }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/.netlify/functions/checker-stats');
+        const data = await res.json();
+        if (data.ok && data.counts) {
+          setDbStats({
+            supplements: data.counts.supplements,
+            drugs: data.counts.drugs,
+            interactions: data.counts.interactions || 0
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load database stats:', err);
+      }
+    }
+
     loadSubstances();
+    loadStats();
   }, []);
 
   // Debounced autocomplete for supplements
@@ -281,9 +308,48 @@ export default function StackBuilderChecker() {
     setMedications(medications.filter(m => m.substance_id !== id));
   }
 
+  function handleCommaInput(input: string, type: 'supplement' | 'drug') {
+    // Split by comma and process each item
+    const items = input.split(',').map(s => s.trim()).filter(Boolean);
+
+    if (items.length > 1) {
+      // Multiple items detected
+      items.forEach(item => {
+        const match = allSubstances.find(s =>
+          s.display_name.toLowerCase() === item.toLowerCase() &&
+          (type === 'supplement' ? s.type === 'supplement' : s.type === 'drug')
+        );
+
+        if (match) {
+          if (type === 'supplement') {
+            addSupplement(match);
+          } else {
+            addMedication(match);
+          }
+        }
+      });
+
+      // Clear input after processing
+      if (type === 'supplement') {
+        setSuppInput('');
+      } else {
+        setMedInput('');
+      }
+      return true;
+    }
+    return false;
+  }
+
   function handleSuppKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter') {
       e.preventDefault();
+
+      // Check for comma-separated input first
+      if (suppInput.includes(',')) {
+        if (handleCommaInput(suppInput, 'supplement')) {
+          return;
+        }
+      }
 
       // Priority: exact match > best fuzzy match
       if (suppSuggestions.length > 0) {
@@ -291,7 +357,14 @@ export default function StackBuilderChecker() {
       } else if (suppFuzzy.length > 0) {
         addSupplement(suppFuzzy[0]);
       } else if (suppInput.trim().length > 0) {
-        setSuppInputError('No match found. Check spelling or try a different name.');
+        // Store unknown substance for helpful UI instead of hard error
+        const unknownItem: UnknownSubstance = {
+          name: suppInput.trim(),
+          type: 'supplement',
+          suggestions: suppFuzzy.length > 0 ? suppFuzzy : []
+        };
+        setUnknownSubstances([...unknownSubstances, unknownItem]);
+        setSuppInput('');
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -309,12 +382,26 @@ export default function StackBuilderChecker() {
     if (e.key === 'Enter') {
       e.preventDefault();
 
+      // Check for comma-separated input first
+      if (medInput.includes(',')) {
+        if (handleCommaInput(medInput, 'drug')) {
+          return;
+        }
+      }
+
       if (medSuggestions.length > 0) {
         addMedication(medSuggestions[medHighlighted]);
       } else if (medFuzzy.length > 0) {
         addMedication(medFuzzy[0]);
       } else if (medInput.trim().length > 0) {
-        setMedInputError('No match found. Check spelling or try a different name.');
+        // Store unknown substance for helpful UI instead of hard error
+        const unknownItem: UnknownSubstance = {
+          name: medInput.trim(),
+          type: 'drug',
+          suggestions: medFuzzy.length > 0 ? medFuzzy : []
+        };
+        setUnknownSubstances([...unknownSubstances, unknownItem]);
+        setMedInput('');
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -332,6 +419,7 @@ export default function StackBuilderChecker() {
     // Auto-add pending inputs before validation
     let currentSupplements = [...supplements];
     let currentMedications = [...medications];
+    const newUnknowns: UnknownSubstance[] = [];
 
     // Auto-add supplement if text exists but not selected
     if (suppInput.trim() && !loading) {
@@ -349,8 +437,13 @@ export default function StackBuilderChecker() {
         setSuppFuzzy([]);
         setSuppInputError('');
       } else if (!match && suppInput.trim()) {
-        setError(`Cannot find supplement: "${suppInput}". Please select from the dropdown.`);
-        return;
+        // Store for "did you mean" UI instead of blocking
+        newUnknowns.push({
+          name: suppInput.trim(),
+          type: 'supplement',
+          suggestions: suppFuzzy
+        });
+        setSuppInput('');
       }
     }
 
@@ -370,9 +463,20 @@ export default function StackBuilderChecker() {
         setMedFuzzy([]);
         setMedInputError('');
       } else if (!match && medInput.trim()) {
-        setError(`Cannot find medication: "${medInput}". Please select from the dropdown.`);
-        return;
+        // Store for "did you mean" UI instead of blocking
+        newUnknowns.push({
+          name: medInput.trim(),
+          type: 'drug',
+          suggestions: medFuzzy
+        });
+        setMedInput('');
       }
+    }
+
+    // If there are unknown substances, show them instead of proceeding
+    if (newUnknowns.length > 0) {
+      setUnknownSubstances([...unknownSubstances, ...newUnknowns]);
+      return;
     }
 
     const allItems = [
@@ -528,9 +632,33 @@ export default function StackBuilderChecker() {
         <p className="text-lg mb-2" style={{ color: 'var(--color-text-muted)' }}>
           Build your complete stack and check for all possible interactions
         </p>
-        <p className="text-sm max-w-2xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="text-sm max-w-2xl mx-auto mb-4" style={{ color: 'var(--color-text-muted)' }}>
           Add multiple supplements and medications to analyze all interaction pairs in one comprehensive check
         </p>
+
+        {/* Database Coverage Stats */}
+        {dbStats && (
+          <div className="inline-flex items-center gap-4 px-4 py-2 rounded-lg text-sm" style={{ background: '#E3F2FD', border: '1px solid #64B5F6' }}>
+            <div className="flex items-center gap-1.5">
+              <Info className="w-4 h-4" style={{ color: '#1976D2' }} />
+              <span style={{ color: '#1565C0' }}>
+                <strong>{dbStats.supplements !== null ? dbStats.supplements.toLocaleString() : '3,000+'}</strong> supplements
+              </span>
+            </div>
+            <div className="h-4 w-px" style={{ background: '#64B5F6' }} />
+            <div className="flex items-center gap-1.5">
+              <span style={{ color: '#1565C0' }}>
+                <strong>{dbStats.drugs !== null ? dbStats.drugs.toLocaleString() : '1,500+'}</strong> medications
+              </span>
+            </div>
+            <div className="h-4 w-px" style={{ background: '#64B5F6' }} />
+            <div className="flex items-center gap-1.5">
+              <span style={{ color: '#1565C0' }}>
+                <strong>{dbStats.interactions.toLocaleString()}</strong> interactions
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mode Toggle */}
@@ -616,7 +744,7 @@ export default function StackBuilderChecker() {
                 value={suppInput}
                 onChange={(e) => setSuppInput(e.target.value)}
                 onKeyDown={handleSuppKeyDown}
-                placeholder="Search supplements..."
+                placeholder="Type or paste names (comma-separated ok)..."
                 className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
                 style={{ borderColor: suppInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
@@ -654,7 +782,7 @@ export default function StackBuilderChecker() {
                 value={medInput}
                 onChange={(e) => setMedInput(e.target.value)}
                 onKeyDown={handleMedKeyDown}
-                placeholder="Search medications..."
+                placeholder="Type or paste names (comma-separated ok)..."
                 className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
                 style={{ borderColor: medInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
@@ -696,7 +824,7 @@ export default function StackBuilderChecker() {
                 value={suppInput}
                 onChange={(e) => setSuppInput(e.target.value)}
                 onKeyDown={handleSuppKeyDown}
-                placeholder="Search supplements..."
+                placeholder="Type or paste names (comma-separated ok)..."
                 className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
                 style={{ borderColor: suppInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
@@ -704,6 +832,71 @@ export default function StackBuilderChecker() {
               {renderSuggestionDropdown(suppSuggestions, suppFuzzy, suppHighlighted, addSupplement, suppLoading, suppInputError)}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Unknown Substances - Did You Mean? */}
+      {unknownSubstances.length > 0 && (
+        <div className="mb-6 space-y-3">
+          {unknownSubstances.map((unknown, idx) => (
+            <div key={idx} className="rounded-xl p-5" style={{ background: '#FFF3E0', border: '2px solid #FFA726' }}>
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#E65100' }} />
+                <div className="flex-1">
+                  <h3 className="font-bold mb-2" style={{ color: '#E65100' }}>
+                    We couldn't find "{unknown.name}" in our database
+                  </h3>
+
+                  {unknown.suggestions.length > 0 ? (
+                    <>
+                      <p className="text-sm mb-3" style={{ color: '#E65100' }}>
+                        Did you mean one of these?
+                      </p>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {unknown.suggestions.slice(0, 5).map(sugg => (
+                          <button
+                            key={sugg.substance_id}
+                            onClick={() => {
+                              if (unknown.type === 'supplement') {
+                                addSupplement(sugg);
+                              } else {
+                                addMedication(sugg);
+                              }
+                              setUnknownSubstances(unknownSubstances.filter((_, i) => i !== idx));
+                            }}
+                            className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                            style={{ background: 'white', border: '2px solid #FFA726', color: '#E65100' }}
+                          >
+                            {sugg.display_name}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-sm mb-3" style={{ color: '#E65100' }}>
+                      This substance isn't in our database yet. You can continue checking other items in your stack, or try a different spelling.
+                    </p>
+                  )}
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setUnknownSubstances(unknownSubstances.filter((_, i) => i !== idx))}
+                      className="btn-outline text-sm"
+                    >
+                      Remove
+                    </button>
+                    <a
+                      href={`mailto:support@supplementsafetybible.com?subject=Request to add substance: ${unknown.name}&body=Type: ${unknown.type}%0D%0AName: ${unknown.name}`}
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                      style={{ background: 'white', border: '2px solid #FFA726', color: '#E65100' }}
+                    >
+                      Request to add this
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -722,6 +915,11 @@ export default function StackBuilderChecker() {
             {mode === 'supplements-drugs'
               ? 'Add at least 1 supplement AND 1 prescription medicine'
               : 'Add at least 2 supplements to compare'}
+          </p>
+        )}
+        {unknownSubstances.length > 0 && (
+          <p className="text-sm mt-2" style={{ color: '#E65100' }}>
+            Please resolve unknown substances above before running check
           </p>
         )}
       </div>
