@@ -1,9 +1,11 @@
 # Interaction Database Expansion - Complete
 
 ## Summary
-Added **35 new high-risk, clinically meaningful interactions** to `data/interactions_raw.csv`
+Added **55 new high-risk, clinically meaningful interactions** to `data/interactions_raw.csv`
+- **First Expansion**: 35 interactions (anticoagulants, SSRIs, diabetes, thyroid, BP meds)
+- **Second Expansion**: 20 interactions (cardiovascular, psychiatric, metabolic, sleep/anxiety)
 
-## New Coverage Areas
+## First Expansion Coverage
 
 ### Anticoagulants & Antiplatelets (9 interactions)
 - Aspirin + Fish Oil, Garlic
@@ -47,10 +49,37 @@ Added **35 new high-risk, clinically meaningful interactions** to `data/interact
 - Digoxin + Hawthorn
 - MAOIs + Tyramine
 
-## Severity Distribution
-- **Avoid**: 6 interactions (life-threatening risks)
-- **Caution**: 20 interactions (significant risks requiring monitoring)
-- **Monitor**: 8 interactions (require awareness/timing)
+## Second Expansion Coverage
+
+### Cardiovascular (5 interactions)
+- Amlodipine + Grapefruit
+- Digoxin + Licorice, St. John's Wort
+- Beta Blockers + Hawthorn
+- Warfarin + Cranberry
+
+### Psychiatric (5 interactions)
+- Fluoxetine + 5-HTP
+- Sertraline + SAMe
+- Venlafaxine + 5-HTP
+- Bupropion + Stimulants
+- Lithium + St. John's Wort
+
+### Diabetes / Metabolic (5 interactions)
+- Metformin + Cinnamon, Alpha Lipoic Acid
+- Insulin + Gymnema, Fenugreek
+- Sulfonylureas + Berberine
+
+### Sleep / Anxiety (5 interactions)
+- Zolpidem + Melatonin
+- Diphenhydramine + Valerian
+- Benzodiazepines + Melatonin
+- Alcohol + Kava
+- Trazodone + Melatonin
+
+## Combined Severity Distribution
+- **Avoid**: 15 interactions (life-threatening risks)
+- **Caution**: 29 interactions (significant risks requiring monitoring)
+- **Monitor**: 10 interactions (require awareness/timing)
 - **Info**: 1 interaction (beneficial combinations)
 
 ## Expected Impact
@@ -64,4 +93,6 @@ GitHub Actions will automatically import these interactions into Supabase within
 
 ---
 **Date**: 2025-12-28
-**Total Interactions**: 74 (39 original + 35 new)
+**Total Interactions**: 94 (39 original + 55 new)
+**Expansion 1**: 35 interactions
+**Expansion 2**: 20 interactions
