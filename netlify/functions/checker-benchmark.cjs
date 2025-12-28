@@ -1,33 +1,9 @@
-/**
- * Netlify Function: checker-benchmark
- *
- * POST JSON:
- *   { "inputs": ["omega-3","warfarin"], "runs": 10 }
- *
- * Returns:
- *   {
- *     ok: true,
- *     runs: number,
- *     stats: { p50_ms, p95_ms, min_ms, max_ms, avg_ms },
- *     sample: { summary, results_count },
- *     contract_ok: boolean
- *   }
- *
- * Notes:
- * - Measures full-stack latency (Netlify + network + Supabase RPC).
- * - Keeps checker-get-interactions.cjs pure passthrough (we call the same RPC here).
- */
-
 const { createClient } = require('@supabase/supabase-js');
-
-/* =========================
-   CORS + JSON helpers
-   ========================= */
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'content-type, authorization',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Max-Age': '86400',
 };
 
@@ -42,161 +18,71 @@ function json(statusCode, body) {
   };
 }
 
-/* =========================
-   Contract verification
-   ========================= */
-
-function asNumber(x) {
-  return typeof x === 'number' && Number.isFinite(x);
-}
-
-function contractOk(payload) {
-  if (!payload || typeof payload !== 'object') return false;
-
-  const { results, summary } = payload;
-  if (!Array.isArray(results)) return false;
-  if (!summary || typeof summary !== 'object') return false;
-
-  const keys = ['total', 'avoid', 'caution', 'monitor', 'info'];
-  for (const k of keys) {
-    if (!asNumber(summary[k])) return false;
-  }
-  return true;
-}
-
-/* =========================
-   Stats helpers
-   ========================= */
-
-function percentile(sortedAsc, p) {
-  if (!sortedAsc.length) return null;
-  if (sortedAsc.length === 1) return sortedAsc[0];
-
-  const idx = (sortedAsc.length - 1) * p;
-  const lo = Math.floor(idx);
-  const hi = Math.ceil(idx);
-  if (lo === hi) return sortedAsc[lo];
-
-  const w = idx - lo;
-  return sortedAsc[lo] * (1 - w) + sortedAsc[hi] * w;
-}
-
-/* =========================
-   Netlify handler
-   ========================= */
-
 exports.handler = async (event) => {
   try {
-    /* ---- CORS preflight ---- */
     if (event.httpMethod === 'OPTIONS') {
-      return {
-        statusCode: 204,
-        headers: {
-          ...CORS_HEADERS,
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-        body: '',
-      };
+      return { statusCode: 204, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' }, body: '' };
     }
 
-    if (event.httpMethod !== 'POST') {
+    if (event.httpMethod !== 'GET') {
       return json(500, { ok: false, error: 'Method not allowed' });
     }
 
-    /* ---- Parse body ---- */
-    let parsed;
-    try {
-      parsed = event.body ? JSON.parse(event.body) : {};
-    } catch {
-      return json(500, { ok: false, error: 'Invalid JSON body' });
-    }
-
-    const inputs = Array.isArray(parsed.inputs) ? parsed.inputs : null;
-    if (!inputs || inputs.length === 0) {
-      return json(500, {
-        ok: false,
-        error: 'Missing or invalid "inputs" (must be a non-empty array)',
-      });
-    }
-
-    let runs = Number.isFinite(parsed.runs) ? parsed.runs : parseInt(parsed.runs, 10);
-    if (!Number.isFinite(runs)) runs = 10;
-    runs = Math.max(1, Math.min(50, runs)); // default + cap
-
-    /* ---- Supabase client ---- */
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
-
     if (!supabaseUrl || !serviceKey) {
-      return json(500, {
-        ok: false,
-        error: 'Supabase env vars missing (SUPABASE_URL + SERVICE_ROLE_KEY/ANON_KEY)',
-      });
+      return json(500, { ok: false, error: 'Supabase env vars missing (SUPABASE_URL + SERVICE_ROLE_KEY/ANON_KEY)' });
     }
 
     const supabase = createClient(supabaseUrl, serviceKey, {
       auth: { persistSession: false },
     });
 
-    /* ---- Benchmark loop ---- */
-    const elapsed = [];
-    let samplePayload = null;
+    const qRaw = (event.queryStringParameters?.q || '').trim();
+    const typeRaw = (event.queryStringParameters?.type || '').trim().toLowerCase(); // 'supplement' | 'drug' maybe
 
-    for (let i = 0; i < runs; i++) {
-      const start = Date.now();
-
-      // IMPORTANT FIX:
-      // Your DB RPC signature is checker_get_interactions(input_names text[])
-      // So we must pass { input_names: inputs } (not { inputs })
-      const { data, error } = await supabase.rpc('checker_get_interactions', {
-        input_names: inputs,
-      });
-
-      const ms = Date.now() - start;
-      elapsed.push(ms);
-
-      if (error) {
-        return json(500, {
-          ok: false,
-          error: `Supabase RPC error: ${error.message || String(error)}`,
-        });
-      }
-
-      if (i === 0) {
-        samplePayload = data;
-      }
+    // Guardrails (avoid hammering DB on empty or 1-char queries)
+    if (qRaw.length < 2) {
+      return json(200, { ok: true, q: qRaw, type: typeRaw, suggestions: [] });
     }
 
-    /* ---- Stats ---- */
-    const sorted = [...elapsed].sort((a, b) => a - b);
+    // We don’t actually need "type" to return suggestions if tokens table is shared.
+    // But we keep it in the response for the UI.
+    // If you later add separate token sets per type, filter here.
 
-    const stats = {
-      min_ms: sorted[0],
-      max_ms: sorted[sorted.length - 1],
-      avg_ms: elapsed.reduce((a, b) => a + b, 0) / elapsed.length,
-      p50_ms: percentile(sorted, 0.5),
-      p95_ms: percentile(sorted, 0.95),
-    };
+    // Normalize query in SQL using your norm_token function:
+    // We'll do a LIKE search on token (already normalized in your DB).
+    // Important: use "ilike" for prefix search; token is normalized so case won't matter.
+    const qNorm = qRaw; // keep raw; DB token is normalized; we search prefix-ish
 
-    const contract_ok = contractOk(samplePayload);
+    const { data, error } = await supabase
+      .from('checker_substance_tokens')
+      .select('token, substance_id')
+      .ilike('token', `${qNorm.toLowerCase().replace(/\s+/g, '')}%`)
+      .limit(12);
 
-    const sample = {
-      summary: samplePayload?.summary || null,
-      results_count: Array.isArray(samplePayload?.results) ? samplePayload.results.length : null,
-    };
+    if (error) {
+      return json(500, { ok: false, error: error.message || String(error) });
+    }
 
-    return json(200, {
-      ok: true,
-      runs,
-      stats,
-      sample,
-      contract_ok,
-    });
+    // Return unique substance_ids (best-effort), but also include token hits.
+    const seen = new Set();
+    const suggestions = [];
+    for (const row of data || []) {
+      const key = row.substance_id;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      suggestions.push({
+        id: row.substance_id,
+        label: row.token, // UI can display token; if you want "pretty name" later, join a substances table
+      });
+      if (suggestions.length >= 10) break;
+    }
+
+    return json(200, { ok: true, q: qRaw, type: typeRaw, suggestions });
   } catch (e) {
-    return json(500, {
-      ok: false,
-      error: e?.message ? e.message : String(e),
-    });
+    return json(500, { ok: false, error: e?.message ? e.message : String(e) });
   }
 };
+
 
