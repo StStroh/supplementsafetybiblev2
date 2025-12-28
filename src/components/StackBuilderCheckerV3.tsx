@@ -127,6 +127,56 @@ export default function StackBuilderCheckerV3() {
     }
   };
 
+  // Normalize token (matches server-side norm_token function)
+  const normalizeToken = (text: string): string => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, ' ');
+  };
+
+  // Log lookup event asynchronously (fire-and-forget)
+  const logLookup = (inputs: string[], response: any) => {
+    try {
+      const normalized_inputs = inputs.map(normalizeToken);
+      const resolved_substance_ids = [
+        ...supplements.map(s => s.substance_id),
+        ...medications.map(s => s.substance_id)
+      ];
+      const unresolved_inputs = notFoundItems.map(item => item.rawName);
+
+      const results_summary = response.summary || { total: 0, avoid: 0, caution: 0, monitor: 0, info: 0 };
+      const has_results = (response.results || []).length > 0;
+
+      const client_meta = {
+        path: window.location.pathname,
+        ref: document.referrer || undefined,
+        ua: navigator.userAgent,
+        plan: 'free' // TODO: Get from auth context
+      };
+
+      // Fire-and-forget (don't await, ignore errors)
+      fetch('/.netlify/functions/checker-log-lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          inputs,
+          normalized_inputs,
+          resolved_substance_ids,
+          unresolved_inputs,
+          results_summary,
+          has_results,
+          client_meta
+        })
+      }).catch(() => {
+        // Silently ignore logging errors
+      });
+    } catch {
+      // Silently ignore any logging errors
+    }
+  };
+
   // Run check
   const runCheck = async () => {
     // Validation
@@ -166,6 +216,9 @@ export default function StackBuilderCheckerV3() {
       const response = await res.json();
       setResults(response.results || []);
       setSummary(response.summary || null);
+
+      // Log this lookup asynchronously (fire-and-forget)
+      logLookup(allNames, response);
     } catch (err: any) {
       setError(err.message || 'Failed to check interactions');
     } finally {
@@ -367,21 +420,22 @@ export default function StackBuilderCheckerV3() {
         />
       ))}
 
-      {/* Run Check Button */}
+      {/* Run Check Button - ALWAYS VISIBLE */}
       <div className="text-center mb-8">
         <button
           onClick={runCheck}
           disabled={!canCheck || loading}
-          className="btn-primary inline-flex items-center gap-2 px-8 py-3 rounded-lg font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary inline-flex items-center gap-2 px-8 py-3 rounded-lg font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+          style={{ minWidth: '200px' }}
         >
           {loading && <Loader2 className="w-5 h-5 animate-spin" />}
           {loading ? t('checker.checking') : t('checker.runCheck')}
         </button>
         {!canCheck && (
-          <p className="text-sm mt-2" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-sm mt-3 font-medium" style={{ color: 'var(--color-text-muted)' }}>
             {mode === 'supplements-drugs'
               ? t('checker.minRequired')
-              : 'Add at least 2 supplements to compare'}
+              : '🔒 Add at least 2 supplements to compare'}
           </p>
         )}
       </div>

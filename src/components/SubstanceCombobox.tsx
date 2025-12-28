@@ -250,10 +250,14 @@ export default function SubstanceCombobox({
         )}
       </div>
 
-      {/* Warning/Error messages */}
-      {showWarning && input.trim() && suggestions.length === 0 && !loading && (
-        <div className="mt-2 text-xs" style={{ color: '#E65100' }}>
-          💡 {t('checker.selectFromList')}
+      {/* Helpful inline hints - NEVER blocking */}
+      {input.trim() && !loading && (
+        <div className="mt-2 text-xs" style={{ color: '#666' }}>
+          {suggestions.length > 0 ? (
+            <span>💡 {t('checker.selectSuggestion')}</span>
+          ) : input.length >= 2 ? (
+            <span>💡 {t('checker.noMatchHint')}</span>
+          ) : null}
         </div>
       )}
       {error && (
