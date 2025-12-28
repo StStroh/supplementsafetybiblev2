@@ -226,7 +226,7 @@ export default function StackBuilderChecker() {
     setSummary(null);
 
     try {
-      const res = await fetch('/.netlify/functions/checker-stack', {
+      const res = await fetch('/.netlify/functions/checker-get-interactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: allItems, mode })
