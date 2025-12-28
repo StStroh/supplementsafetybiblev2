@@ -220,7 +220,8 @@ export default function LandingCheckerHero() {
           </p>
 
           {/* Optional Coverage Link */}
-          <div className="mb-6">
+          {/* Temporarily hidden due to incomplete coverage metrics */}
+          {/* <div className="mb-6">
             <button
               type="button"
               className="text-sm font-medium underline transition hover:no-underline"
@@ -229,7 +230,7 @@ export default function LandingCheckerHero() {
             >
               See database coverage
             </button>
-          </div>
+          </div> */}
 
           {/* Subhead */}
           <p
