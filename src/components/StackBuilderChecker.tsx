@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Search, AlertTriangle, AlertCircle, Info, CheckCircle2, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { getFuzzyMatches } from '../utils/fuzzyMatch';
+
+const IS_DEV = import.meta.env.DEV;
 
 interface Substance {
   substance_id: string;
@@ -92,8 +95,17 @@ export default function StackBuilderChecker() {
   const [suppSuggestions, setSuppSuggestions] = useState<Substance[]>([]);
   const [medSuggestions, setMedSuggestions] = useState<Substance[]>([]);
 
+  const [suppFuzzy, setSuppFuzzy] = useState<Substance[]>([]);
+  const [medFuzzy, setMedFuzzy] = useState<Substance[]>([]);
+
   const [suppHighlighted, setSuppHighlighted] = useState(0);
   const [medHighlighted, setMedHighlighted] = useState(0);
+
+  const [suppLoading, setSuppLoading] = useState(false);
+  const [medLoading, setMedLoading] = useState(false);
+
+  const [suppInputError, setSuppInputError] = useState('');
+  const [medInputError, setMedInputError] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Interaction[] | null>(null);
@@ -102,50 +114,142 @@ export default function StackBuilderChecker() {
 
   const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
 
+  const [allSubstances, setAllSubstances] = useState<Substance[]>([]);
+
   const suppInputRef = useRef<HTMLInputElement>(null);
   const medInputRef = useRef<HTMLInputElement>(null);
 
+  // Load all substances for fuzzy matching
+  useEffect(() => {
+    async function loadSubstances() {
+      try {
+        const res = await fetch('/.netlify/functions/checker-autocomplete?q=a&type=');
+        const data = await res.json();
+        if (data.results) {
+          setAllSubstances(data.results);
+        }
+      } catch (err) {
+        console.error('Failed to load substances for fuzzy matching:', err);
+      }
+    }
+    loadSubstances();
+  }, []);
+
   // Debounced autocomplete for supplements
   useEffect(() => {
-    if (suppInput.length < 2) {
+    setSuppInputError('');
+    setSuppFuzzy([]);
+
+    if (suppInput.length < 1) {
       setSuppSuggestions([]);
+      setSuppLoading(false);
       return;
     }
 
+    setSuppLoading(true);
+
     const timer = setTimeout(async () => {
+      const start = performance.now();
+
       try {
         const res = await fetch(`/.netlify/functions/checker-autocomplete?q=${encodeURIComponent(suppInput)}&type=supplement`);
         const data = await res.json();
-        setSuppSuggestions(data.results || []);
+        const elapsed = performance.now() - start;
+
+        if (IS_DEV) {
+          console.log('[Supp Autocomplete]', {
+            query: suppInput,
+            results: data.results?.length || 0,
+            latency: `${elapsed.toFixed(0)}ms`
+          });
+        }
+
+        const results = data.results || [];
+        setSuppSuggestions(results);
         setSuppHighlighted(0);
+
+        // Fuzzy matching if no exact matches
+        if (results.length === 0 && allSubstances.length > 0) {
+          const fuzzy = getFuzzyMatches(
+            suppInput,
+            allSubstances.filter(s => s.type === 'supplement'),
+            s => s.display_name,
+            40,
+            5
+          );
+          setSuppFuzzy(fuzzy);
+
+          if (IS_DEV && fuzzy.length === 0 && suppInput.length > 2) {
+            console.warn('[Supp Autocomplete] No substances indexed for common query:', suppInput);
+          }
+        }
       } catch (err) {
         console.error('Autocomplete error:', err);
+      } finally {
+        setSuppLoading(false);
       }
-    }, 200);
+    }, 150);
 
     return () => clearTimeout(timer);
-  }, [suppInput]);
+  }, [suppInput, allSubstances]);
 
   // Debounced autocomplete for medications
   useEffect(() => {
-    if (medInput.length < 2) {
+    setMedInputError('');
+    setMedFuzzy([]);
+
+    if (medInput.length < 1) {
       setMedSuggestions([]);
+      setMedLoading(false);
       return;
     }
 
+    setMedLoading(true);
+
     const timer = setTimeout(async () => {
+      const start = performance.now();
+
       try {
         const res = await fetch(`/.netlify/functions/checker-autocomplete?q=${encodeURIComponent(medInput)}&type=drug`);
         const data = await res.json();
-        setMedSuggestions(data.results || []);
+        const elapsed = performance.now() - start;
+
+        if (IS_DEV) {
+          console.log('[Med Autocomplete]', {
+            query: medInput,
+            results: data.results?.length || 0,
+            latency: `${elapsed.toFixed(0)}ms`
+          });
+        }
+
+        const results = data.results || [];
+        setMedSuggestions(results);
         setMedHighlighted(0);
+
+        // Fuzzy matching if no exact matches
+        if (results.length === 0 && allSubstances.length > 0) {
+          const fuzzy = getFuzzyMatches(
+            medInput,
+            allSubstances.filter(s => s.type === 'drug'),
+            s => s.display_name,
+            40,
+            5
+          );
+          setMedFuzzy(fuzzy);
+
+          if (IS_DEV && fuzzy.length === 0 && medInput.length > 2) {
+            console.warn('[Med Autocomplete] No substances indexed for common query:', medInput);
+          }
+        }
       } catch (err) {
         console.error('Autocomplete error:', err);
+      } finally {
+        setMedLoading(false);
       }
-    }, 200);
+    }, 150);
 
     return () => clearTimeout(timer);
-  }, [medInput]);
+  }, [medInput, allSubstances]);
 
   function addSupplement(substance: Substance) {
     if (!supplements.find(s => s.substance_id === substance.substance_id)) {
@@ -153,6 +257,8 @@ export default function StackBuilderChecker() {
     }
     setSuppInput('');
     setSuppSuggestions([]);
+    setSuppFuzzy([]);
+    setSuppInputError('');
     suppInputRef.current?.focus();
   }
 
@@ -162,6 +268,8 @@ export default function StackBuilderChecker() {
     }
     setMedInput('');
     setMedSuggestions([]);
+    setMedFuzzy([]);
+    setMedInputError('');
     medInputRef.current?.focus();
   }
 
@@ -174,12 +282,21 @@ export default function StackBuilderChecker() {
   }
 
   function handleSuppKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && suppSuggestions.length > 0) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      addSupplement(suppSuggestions[suppHighlighted]);
+
+      // Priority: exact match > best fuzzy match
+      if (suppSuggestions.length > 0) {
+        addSupplement(suppSuggestions[suppHighlighted]);
+      } else if (suppFuzzy.length > 0) {
+        addSupplement(suppFuzzy[0]);
+      } else if (suppInput.trim().length > 0) {
+        setSuppInputError('No match found. Check spelling or try a different name.');
+      }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSuppHighlighted(Math.min(suppHighlighted + 1, suppSuggestions.length - 1));
+      const maxIdx = suppSuggestions.length > 0 ? suppSuggestions.length - 1 : suppFuzzy.length - 1;
+      setSuppHighlighted(Math.min(suppHighlighted + 1, maxIdx));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setSuppHighlighted(Math.max(suppHighlighted - 1, 0));
@@ -189,12 +306,20 @@ export default function StackBuilderChecker() {
   }
 
   function handleMedKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && medSuggestions.length > 0) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      addMedication(medSuggestions[medHighlighted]);
+
+      if (medSuggestions.length > 0) {
+        addMedication(medSuggestions[medHighlighted]);
+      } else if (medFuzzy.length > 0) {
+        addMedication(medFuzzy[0]);
+      } else if (medInput.trim().length > 0) {
+        setMedInputError('No match found. Check spelling or try a different name.');
+      }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setMedHighlighted(Math.min(medHighlighted + 1, medSuggestions.length - 1));
+      const maxIdx = medSuggestions.length > 0 ? medSuggestions.length - 1 : medFuzzy.length - 1;
+      setMedHighlighted(Math.min(medHighlighted + 1, maxIdx));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setMedHighlighted(Math.max(medHighlighted - 1, 0));
@@ -209,7 +334,6 @@ export default function StackBuilderChecker() {
       ...medications.map(m => m.substance_id)
     ];
 
-    // Validation based on mode
     if (mode === 'supplements-drugs') {
       if (supplements.length === 0 || medications.length === 0) {
         setError('Please add at least 1 supplement AND 1 prescription medicine');
@@ -258,12 +382,10 @@ export default function StackBuilderChecker() {
     setExpandedResults(newSet);
   }
 
-  // Validation for "Run Check" button
   const canCheck = mode === 'supplements-drugs'
     ? supplements.length > 0 && medications.length > 0
     : supplements.length >= 2;
 
-  // Group results by severity
   const groupedResults: Record<string, Interaction[]> = {
     avoid: [],
     caution: [],
@@ -274,6 +396,81 @@ export default function StackBuilderChecker() {
   (results || []).forEach(result => {
     groupedResults[result.severity].push(result);
   });
+
+  const renderSuggestionDropdown = (
+    suggestions: Substance[],
+    fuzzy: Substance[],
+    highlighted: number,
+    onSelect: (s: Substance) => void,
+    isLoading: boolean,
+    error: string
+  ) => {
+    const hasSuggestions = suggestions.length > 0;
+    const hasFuzzy = fuzzy.length > 0;
+    const showDropdown = hasSuggestions || hasFuzzy || error;
+
+    if (!showDropdown) return null;
+
+    return (
+      <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg border-2 overflow-hidden" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
+        {isLoading && (
+          <div className="px-4 py-3 flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Searching...</span>
+          </div>
+        )}
+
+        {hasSuggestions && (
+          <div>
+            {suggestions.map((sugg, idx) => (
+              <button
+                key={sugg.substance_id}
+                onClick={() => onSelect(sugg)}
+                className="w-full text-left px-4 py-2.5 hover:bg-purple-50 first:rounded-t-lg transition-colors"
+                style={{ background: idx === highlighted ? '#f3e5f5' : 'transparent' }}
+              >
+                <div className="font-medium" style={{ color: 'var(--color-text)' }}>{sugg.display_name}</div>
+                {sugg.aliases.length > 0 && (
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                    Also known as: {sugg.aliases.slice(0, 2).join(', ')}
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {hasFuzzy && !hasSuggestions && (
+          <div>
+            <div className="px-4 py-2 text-xs font-semibold" style={{ color: 'var(--color-text-muted)', background: 'var(--color-surface)' }}>
+              Did you mean:
+            </div>
+            {fuzzy.map((sugg, idx) => (
+              <button
+                key={sugg.substance_id}
+                onClick={() => onSelect(sugg)}
+                className="w-full text-left px-4 py-2.5 hover:bg-purple-50 last:rounded-b-lg transition-colors"
+                style={{ background: idx === highlighted ? '#f3e5f5' : 'transparent' }}
+              >
+                <div className="font-medium" style={{ color: 'var(--color-text)' }}>{sugg.display_name}</div>
+                {sugg.aliases.length > 0 && (
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                    Also known as: {sugg.aliases.slice(0, 2).join(', ')}
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {error && !hasSuggestions && !hasFuzzy && (
+          <div className="px-4 py-3 text-sm" style={{ color: '#D32F2F', background: '#FFEBEE' }}>
+            {error}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -350,7 +547,6 @@ export default function StackBuilderChecker() {
               Supplements
             </h3>
 
-            {/* Chips */}
             <div className="flex flex-wrap gap-2 mb-3 min-h-[40px]">
               {supplements.map(supp => (
                 <div key={supp.substance_id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style={{ background: '#7c3aed', color: 'white' }}>
@@ -362,9 +558,11 @@ export default function StackBuilderChecker() {
               ))}
             </div>
 
-            {/* Input */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--color-text-muted)' }} />
+              {suppLoading && (
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin" style={{ color: 'var(--color-text-muted)' }} />
+              )}
               <input
                 ref={suppInputRef}
                 type="text"
@@ -372,30 +570,11 @@ export default function StackBuilderChecker() {
                 onChange={(e) => setSuppInput(e.target.value)}
                 onKeyDown={handleSuppKeyDown}
                 placeholder="Search supplements..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 text-base"
-                style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg)' }}
+                className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
+                style={{ borderColor: suppInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
 
-              {/* Suggestions Dropdown */}
-              {suppSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg border-2" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
-                  {suppSuggestions.map((sugg, idx) => (
-                    <button
-                      key={sugg.substance_id}
-                      onClick={() => addSupplement(sugg)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-purple-50 first:rounded-t-lg last:rounded-b-lg"
-                      style={{ background: idx === suppHighlighted ? '#f3e5f5' : 'transparent' }}
-                    >
-                      <div className="font-medium" style={{ color: 'var(--color-text)' }}>{sugg.display_name}</div>
-                      {sugg.aliases.length > 0 && (
-                        <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                          Also known as: {sugg.aliases.slice(0, 2).join(', ')}
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+              {renderSuggestionDropdown(suppSuggestions, suppFuzzy, suppHighlighted, addSupplement, suppLoading, suppInputError)}
             </div>
           </div>
 
@@ -406,7 +585,6 @@ export default function StackBuilderChecker() {
               Prescription Medicines
             </h3>
 
-            {/* Chips */}
             <div className="flex flex-wrap gap-2 mb-3 min-h-[40px]">
               {medications.map(med => (
                 <div key={med.substance_id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style={{ background: '#0891b2', color: 'white' }}>
@@ -418,9 +596,11 @@ export default function StackBuilderChecker() {
               ))}
             </div>
 
-            {/* Input */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--color-text-muted)' }} />
+              {medLoading && (
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin" style={{ color: 'var(--color-text-muted)' }} />
+              )}
               <input
                 ref={medInputRef}
                 type="text"
@@ -428,36 +608,16 @@ export default function StackBuilderChecker() {
                 onChange={(e) => setMedInput(e.target.value)}
                 onKeyDown={handleMedKeyDown}
                 placeholder="Search medications..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 text-base"
-                style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg)' }}
+                className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
+                style={{ borderColor: medInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
 
-              {/* Suggestions Dropdown */}
-              {medSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg border-2" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
-                  {medSuggestions.map((sugg, idx) => (
-                    <button
-                      key={sugg.substance_id}
-                      onClick={() => addMedication(sugg)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-cyan-50 first:rounded-t-lg last:rounded-b-lg"
-                      style={{ background: idx === medHighlighted ? '#cffafe' : 'transparent' }}
-                    >
-                      <div className="font-medium" style={{ color: 'var(--color-text)' }}>{sugg.display_name}</div>
-                      {sugg.aliases.length > 0 && (
-                        <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                          Also known as: {sugg.aliases.slice(0, 2).join(', ')}
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+              {renderSuggestionDropdown(medSuggestions, medFuzzy, medHighlighted, addMedication, medLoading, medInputError)}
             </div>
           </div>
         </div>
       ) : (
         <div className="mb-6">
-          {/* Supplements Only Mode */}
           <div className="rounded-xl p-6 max-w-2xl mx-auto" style={{ background: 'var(--color-surface)', border: '2px solid var(--color-border)' }}>
             <h3 className="text-lg font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
               <span className="w-3 h-3 rounded-full" style={{ background: '#7c3aed' }} />
@@ -467,7 +627,6 @@ export default function StackBuilderChecker() {
               Add 2 or more supplements to compare
             </p>
 
-            {/* Chips */}
             <div className="flex flex-wrap gap-2 mb-3 min-h-[40px]">
               {supplements.map(supp => (
                 <div key={supp.substance_id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style={{ background: '#7c3aed', color: 'white' }}>
@@ -479,9 +638,11 @@ export default function StackBuilderChecker() {
               ))}
             </div>
 
-            {/* Input */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--color-text-muted)' }} />
+              {suppLoading && (
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin" style={{ color: 'var(--color-text-muted)' }} />
+              )}
               <input
                 ref={suppInputRef}
                 type="text"
@@ -489,30 +650,11 @@ export default function StackBuilderChecker() {
                 onChange={(e) => setSuppInput(e.target.value)}
                 onKeyDown={handleSuppKeyDown}
                 placeholder="Search supplements..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 text-base"
-                style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg)' }}
+                className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
+                style={{ borderColor: suppInputError ? '#EF5350' : 'var(--color-border)', background: 'var(--color-bg)' }}
               />
 
-              {/* Suggestions Dropdown */}
-              {suppSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg border-2" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
-                  {suppSuggestions.map((sugg, idx) => (
-                    <button
-                      key={sugg.substance_id}
-                      onClick={() => addSupplement(sugg)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-purple-50 first:rounded-t-lg last:rounded-b-lg"
-                      style={{ background: idx === suppHighlighted ? '#f3e5f5' : 'transparent' }}
-                    >
-                      <div className="font-medium" style={{ color: 'var(--color-text)' }}>{sugg.display_name}</div>
-                      {sugg.aliases.length > 0 && (
-                        <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                          Also known as: {sugg.aliases.slice(0, 2).join(', ')}
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+              {renderSuggestionDropdown(suppSuggestions, suppFuzzy, suppHighlighted, addSupplement, suppLoading, suppInputError)}
             </div>
           </div>
         </div>
@@ -562,7 +704,6 @@ export default function StackBuilderChecker() {
       {/* Results */}
       {results && summary && !loading && (
         <div>
-          {/* Summary */}
           <div className="rounded-xl p-6 mb-6" style={{ background: 'var(--color-surface)', border: '2px solid var(--color-border)' }}>
             <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
               Check Complete
@@ -614,7 +755,6 @@ export default function StackBuilderChecker() {
             </div>
           </div>
 
-          {/* Grouped Results */}
           {(['avoid', 'caution', 'monitor', 'info'] as const).map(severity => {
             const items = groupedResults[severity];
             if (items.length === 0) return null;
@@ -657,7 +797,6 @@ export default function StackBuilderChecker() {
                           </button>
                         </div>
 
-                        {/* Expanded Details */}
                         {isExpanded && (
                           <div className="mt-4 pt-4 border-t space-y-3" style={{ borderColor: config.borderColor }}>
                             {interaction.mechanism && (

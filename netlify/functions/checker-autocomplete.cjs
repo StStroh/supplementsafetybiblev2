@@ -61,9 +61,9 @@ exports.handler = async (event) => {
     const qRaw = (event.queryStringParameters?.q || '').trim();
     const typeRaw = (event.queryStringParameters?.type || '').trim().toLowerCase(); // 'supplement' | 'drug'
 
-    // Guardrails: avoid DB spam
-    if (qRaw.length < 2) {
-      return json(200, { ok: true, q: qRaw, type: typeRaw, suggestions: [] });
+    // Guardrails: avoid DB spam (minimum 1 character)
+    if (qRaw.length < 1) {
+      return json(200, { ok: true, q: qRaw, type: typeRaw, results: [] });
     }
 
     // Normalize using DB function so behavior matches token constraints
@@ -156,7 +156,7 @@ exports.handler = async (event) => {
         type: itemType ? String(itemType).toLowerCase() : (typeRaw || 'supplement'),
       });
 
-      if (suggestions.length >= 10) break;
+      if (suggestions.length >= 8) break;
     }
 
     return json(200, { ok: true, q: qRaw, type: typeRaw, results: suggestions });
