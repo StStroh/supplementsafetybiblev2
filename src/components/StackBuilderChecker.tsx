@@ -229,14 +229,15 @@ export default function StackBuilderChecker() {
       const res = await fetch('/.netlify/functions/checker-get-interactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: allItems, mode })
+        body: JSON.stringify({ inputs: allItems })
       });
 
       if (!res.ok) {
         throw new Error(`Request failed: ${res.status}`);
       }
 
-      const data = await res.json();
+      const response = await res.json();
+      const data = response.data || {};
       setResults(data.results || []);
       setSummary(data.summary || null);
     } catch (err: any) {
