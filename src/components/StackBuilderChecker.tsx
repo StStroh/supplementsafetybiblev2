@@ -11,8 +11,16 @@ interface Substance {
 
 interface Interaction {
   interaction_id: string;
-  a_substance_id: string;
-  b_substance_id: string;
+  substance_a: {
+    id: string;
+    name: string;
+    type: 'drug' | 'supplement';
+  };
+  substance_b: {
+    id: string;
+    name: string;
+    type: 'drug' | 'supplement';
+  };
   interaction_type: string;
   severity: 'avoid' | 'caution' | 'monitor' | 'info';
   summary_short: string;
@@ -21,22 +29,16 @@ interface Interaction {
   management?: string;
   evidence_grade?: string;
   confidence?: string;
-  citations?: Array<{ source: string; title: string; url: string }>;
-}
-
-interface CheckResult {
-  a_substance_id: string;
-  b_substance_id: string;
-  found: boolean;
-  interaction: Interaction | null;
-  a_type?: string;
-  b_type?: string;
+  writeup_markdown?: string;
+  citations?: any;
 }
 
 interface CheckSummary {
-  total_pairs: number;
-  worst_severity: string;
-  by_severity: Record<string, number>;
+  total: number;
+  avoid: number;
+  caution: number;
+  monitor: number;
+  info: number;
 }
 
 type CheckerMode = 'supplements-drugs' | 'supplements-supplements';
@@ -94,7 +96,7 @@ export default function StackBuilderChecker() {
   const [medHighlighted, setMedHighlighted] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<CheckResult[] | null>(null);
+  const [results, setResults] = useState<Interaction[] | null>(null);
   const [summary, setSummary] = useState<CheckSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -237,9 +239,8 @@ export default function StackBuilderChecker() {
       }
 
       const response = await res.json();
-      const data = response.data || {};
-      setResults(data.results || []);
-      setSummary(data.summary || null);
+      setResults(response.results || []);
+      setSummary(response.summary || null);
     } catch (err: any) {
       setError(err.message || 'Failed to check interactions');
     } finally {
@@ -257,35 +258,21 @@ export default function StackBuilderChecker() {
     setExpandedResults(newSet);
   }
 
-  function getSubstanceName(id: string): string {
-    const supp = supplements.find(s => s.substance_id === id);
-    const med = medications.find(m => m.substance_id === id);
-    return supp?.display_name || med?.display_name || id;
-  }
-
-  function getSubstanceType(id: string): string {
-    const supp = supplements.find(s => s.substance_id === id);
-    const med = medications.find(m => m.substance_id === id);
-    return supp ? 'supplement' : (med ? 'drug' : 'unknown');
-  }
-
   // Validation for "Run Check" button
   const canCheck = mode === 'supplements-drugs'
     ? supplements.length > 0 && medications.length > 0
     : supplements.length >= 2;
 
   // Group results by severity
-  const groupedResults: Record<string, CheckResult[]> = {
+  const groupedResults: Record<string, Interaction[]> = {
     avoid: [],
     caution: [],
     monitor: [],
-    info: [],
-    none: []
+    info: []
   };
 
   (results || []).forEach(result => {
-    const severity = result.found ? result.interaction!.severity : 'none';
-    groupedResults[severity].push(result);
+    groupedResults[result.severity].push(result);
   });
 
   return (
@@ -565,26 +552,54 @@ export default function StackBuilderChecker() {
               Check Complete
             </h2>
             <p className="text-base mb-4" style={{ color: 'var(--color-text-muted)' }}>
-              Checked {summary.total_pairs} pair{summary.total_pairs !== 1 ? 's' : ''} in {mode === 'supplements-drugs' ? 'Supplements + Medicines mode' : 'Supplements + Supplements mode'}.
+              Found {summary.total} interaction{summary.total !== 1 ? 's' : ''} in {mode === 'supplements-drugs' ? 'Supplements + Medicines mode' : 'Supplements + Supplements mode'}.
             </p>
             <div className="flex flex-wrap gap-3">
-              {Object.entries(summary.by_severity).filter(([_, count]) => count > 0).map(([severity, count]) => {
-                const config = SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG];
-                const Icon = config.icon;
-                return (
-                  <div key={severity} className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: config.bgColor, border: `1px solid ${config.borderColor}` }}>
-                    <Icon className="w-4 h-4" style={{ color: config.textColor }} />
-                    <span className="font-semibold text-sm" style={{ color: config.textColor }}>
-                      {count} {config.label}
-                    </span>
-                  </div>
-                );
-              })}
+              {summary.avoid > 0 && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: SEVERITY_CONFIG.avoid.bgColor, border: `1px solid ${SEVERITY_CONFIG.avoid.borderColor}` }}>
+                  <AlertTriangle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.avoid.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.avoid.textColor }}>
+                    {summary.avoid} {SEVERITY_CONFIG.avoid.label}
+                  </span>
+                </div>
+              )}
+              {summary.caution > 0 && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: SEVERITY_CONFIG.caution.bgColor, border: `1px solid ${SEVERITY_CONFIG.caution.borderColor}` }}>
+                  <AlertCircle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.caution.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.caution.textColor }}>
+                    {summary.caution} {SEVERITY_CONFIG.caution.label}
+                  </span>
+                </div>
+              )}
+              {summary.monitor > 0 && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: SEVERITY_CONFIG.monitor.bgColor, border: `1px solid ${SEVERITY_CONFIG.monitor.borderColor}` }}>
+                  <Info className="w-4 h-4" style={{ color: SEVERITY_CONFIG.monitor.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.monitor.textColor }}>
+                    {summary.monitor} {SEVERITY_CONFIG.monitor.label}
+                  </span>
+                </div>
+              )}
+              {summary.info > 0 && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: SEVERITY_CONFIG.info.bgColor, border: `1px solid ${SEVERITY_CONFIG.info.borderColor}` }}>
+                  <Info className="w-4 h-4" style={{ color: SEVERITY_CONFIG.info.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.info.textColor }}>
+                    {summary.info} {SEVERITY_CONFIG.info.label}
+                  </span>
+                </div>
+              )}
+              {summary.total === 0 && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ background: SEVERITY_CONFIG.none.bgColor, border: `1px solid ${SEVERITY_CONFIG.none.borderColor}` }}>
+                  <CheckCircle2 className="w-4 h-4" style={{ color: SEVERITY_CONFIG.none.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.none.textColor }}>
+                    No Interactions Found
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Grouped Results */}
-          {(['avoid', 'caution', 'monitor', 'info', 'none'] as const).map(severity => {
+          {(['avoid', 'caution', 'monitor', 'info'] as const).map(severity => {
             const items = groupedResults[severity];
             if (items.length === 0) return null;
 
@@ -598,47 +613,36 @@ export default function StackBuilderChecker() {
                   {config.label} ({items.length})
                 </h3>
                 <div className="space-y-3">
-                  {items.map(result => {
-                    const resultKey = `${result.a_substance_id}-${result.b_substance_id}`;
+                  {items.map(interaction => {
+                    const resultKey = interaction.interaction_id;
                     const isExpanded = expandedResults.has(resultKey);
-                    const interaction = result.interaction;
-                    const aType = getSubstanceType(result.a_substance_id);
-                    const bType = getSubstanceType(result.b_substance_id);
 
                     return (
                       <div key={resultKey} className="rounded-lg p-5" style={{ background: config.bgColor, border: `2px solid ${config.borderColor}` }}>
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <h4 className="font-bold text-lg mb-1" style={{ color: config.textColor }}>
-                              {getSubstanceName(result.a_substance_id)} <span className="text-xs font-normal">({aType})</span> + {getSubstanceName(result.b_substance_id)} <span className="text-xs font-normal">({bType})</span>
+                              {interaction.substance_a.name} <span className="text-xs font-normal">({interaction.substance_a.type})</span> + {interaction.substance_b.name} <span className="text-xs font-normal">({interaction.substance_b.type})</span>
                             </h4>
-                            {result.found && interaction ? (
-                              <p className="text-base" style={{ color: config.textColor }}>
-                                {interaction.summary_short}
-                              </p>
-                            ) : (
-                              <p className="text-base" style={{ color: config.textColor }}>
-                                No known interactions found between these substances.
-                              </p>
-                            )}
+                            <p className="text-base" style={{ color: config.textColor }}>
+                              {interaction.summary_short}
+                            </p>
                           </div>
-                          {result.found && interaction && (
-                            <button
-                              onClick={() => toggleExpanded(resultKey)}
-                              className="flex-shrink-0 p-2 rounded-lg hover:bg-black/5 transition-colors"
-                              aria-label={isExpanded ? 'Collapse' : 'Expand'}
-                            >
-                              {isExpanded ? (
-                                <ChevronUp className="w-5 h-5" style={{ color: config.textColor }} />
-                              ) : (
-                                <ChevronDown className="w-5 h-5" style={{ color: config.textColor }} />
-                              )}
-                            </button>
-                          )}
+                          <button
+                            onClick={() => toggleExpanded(resultKey)}
+                            className="flex-shrink-0 p-2 rounded-lg hover:bg-black/5 transition-colors"
+                            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                          >
+                            {isExpanded ? (
+                              <ChevronUp className="w-5 h-5" style={{ color: config.textColor }} />
+                            ) : (
+                              <ChevronDown className="w-5 h-5" style={{ color: config.textColor }} />
+                            )}
+                          </button>
                         </div>
 
                         {/* Expanded Details */}
-                        {isExpanded && interaction && (
+                        {isExpanded && (
                           <div className="mt-4 pt-4 border-t space-y-3" style={{ borderColor: config.borderColor }}>
                             {interaction.mechanism && (
                               <div>
@@ -672,11 +676,11 @@ export default function StackBuilderChecker() {
                                 )}
                               </div>
                             )}
-                            {interaction.citations && interaction.citations.length > 0 && (
+                            {interaction.citations && Array.isArray(interaction.citations) && interaction.citations.length > 0 && (
                               <div>
                                 <h5 className="font-semibold mb-2" style={{ color: config.textColor }}>Citations:</h5>
                                 <div className="space-y-1">
-                                  {interaction.citations.map((citation, idx) => (
+                                  {interaction.citations.map((citation: any, idx: number) => (
                                     <a
                                       key={idx}
                                       href={citation.url}
