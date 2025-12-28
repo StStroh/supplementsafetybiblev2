@@ -359,6 +359,19 @@ export default function LandingCheckerHero() {
             </div>
           </div>
 
+          {/* Advanced Checker Link */}
+          <div className="mb-4">
+            <Link
+              to="/check"
+              className="inline-flex items-center justify-center gap-2 text-base font-semibold transition-all hover:gap-3"
+              style={{ color: 'var(--brand-purple)' }}
+            >
+              <Pill className="w-5 h-5" />
+              Check Multiple Supplements & Medications
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
           {/* Secondary action: See pricing */}
           <div className="mb-6">
             <Link

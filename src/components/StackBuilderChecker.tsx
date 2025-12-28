@@ -279,10 +279,13 @@ export default function StackBuilderChecker() {
     <div className="max-w-5xl mx-auto">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
-          Interaction Checker
+          Advanced Interaction Checker
         </h1>
-        <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>
-          Build your stack and check for interactions
+        <p className="text-lg mb-2" style={{ color: 'var(--color-text-muted)' }}>
+          Build your complete stack and check for all possible interactions
+        </p>
+        <p className="text-sm max-w-2xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
+          Add multiple supplements and medications to analyze all interaction pairs in one comprehensive check
         </p>
       </div>
 
@@ -322,6 +325,19 @@ export default function StackBuilderChecker() {
             Supplements + Supplements
           </button>
         </div>
+      </div>
+
+      {/* Mode Description */}
+      <div className="mb-6 max-w-3xl mx-auto text-center">
+        {mode === 'supplements-drugs' ? (
+          <p className="text-sm px-4 py-3 rounded-lg" style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
+            Check interactions between your supplements and prescription medications. Add as many as you like to see all possible interaction pairs.
+          </p>
+        ) : (
+          <p className="text-sm px-4 py-3 rounded-lg" style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
+            Check interactions between multiple supplements. Some supplements can interact with each other, affecting absorption or effectiveness.
+          </p>
+        )}
       </div>
 
       {/* Stack Builder */}
