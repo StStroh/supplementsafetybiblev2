@@ -16,13 +16,9 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
 const REQUIRED_COMPONENTS = {
-  'src/components/LandingCheckerHero.tsx': [
-    'data-testid="landing-hero-headline"',
-    'data-testid="landing-hero-checker"',
-    'data-testid="landing-hero-check-btn"',
-    'data-testid="landing-hero-pdf-btn"',
-    'Don\'t Mix Blind',
-    'evidence-based severity ratings',
+  'src/components/StackBuilderChecker.tsx': [
+    'StackBuilderChecker',
+    'Run Check',
   ],
   'src/components/HowItWorks.tsx': [
     'data-testid="how-title"',
@@ -32,10 +28,13 @@ const REQUIRED_COMPONENTS = {
     'How it works',
   ],
   'src/pages/Home.tsx': [
-    '<LandingCheckerHero />',
+    'data-testid="landing-hero-headline"',
+    'data-testid="landing-hero-checker"',
+    '<StackBuilderChecker />',
     '<HowItWorks />',
-    'import LandingCheckerHero from',
+    'import StackBuilderChecker from',
     'import HowItWorks from',
+    'Check Drug–Supplement Interactions Before You Take Them',
   ],
 };
 
