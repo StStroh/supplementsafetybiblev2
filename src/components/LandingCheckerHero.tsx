@@ -186,16 +186,39 @@ export default function LandingCheckerHero() {
             style={{ color: 'var(--color-text)' }}
             data-testid="landing-hero-headline"
           >
-            Don't Mix Blind™
+            Check Drug–Supplement Interactions Before You Take Them
           </h1>
+
+          {/* Database Coverage Line */}
+          <p
+            className="text-base sm:text-lg md:text-xl max-w-3xl mb-2 font-medium leading-snug"
+            style={{ color: 'var(--color-text)' }}
+          >
+            Over 3,000 supplements and medications analyzed across 30,000+ documented interaction pairs. Continuously updated.
+          </p>
+
+          {/* Optional Coverage Link */}
+          <div className="mb-6">
+            <button
+              type="button"
+              className="text-sm font-medium underline transition hover:no-underline"
+              style={{ color: 'var(--color-trial)' }}
+              onClick={() => {
+                // Placeholder for future modal
+                alert('Database coverage details coming soon');
+              }}
+            >
+              See database coverage
+            </button>
+          </div>
 
           {/* Subhead */}
           <p
-            className="text-lg sm:text-xl md:text-2xl max-w-3xl mb-8 leading-relaxed"
+            className="text-base sm:text-lg md:text-xl max-w-3xl mb-8 leading-relaxed"
             style={{ color: 'var(--color-text-muted)' }}
             data-testid="landing-hero-sub"
           >
-            Screen supplement–medication interactions with evidence-based severity ratings. Identify risks, understand mechanisms, and make safer, more informed decisions about your health regimen.
+            Evidence-based severity ratings help you identify risks, understand mechanisms, and make safer decisions about your health regimen.
           </p>
 
           {/* Primary action: Large search/selector input */}
