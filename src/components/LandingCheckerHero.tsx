@@ -8,12 +8,13 @@
  * - landing-hero-check-btn
  * - landing-hero-pdf-btn
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Download, ArrowRight, Lock, Shield, FlaskConical, FileText, Pill } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { isPaid } from '../lib/roles';
 import TypeaheadInput from './TypeaheadInput';
+import DatabaseCoverageModal from './DatabaseCoverageModal';
 import '../styles/logo.css';
 import Logo from './Logo';
 
@@ -34,6 +35,8 @@ export default function LandingCheckerHero() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Interaction[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showCoverageModal, setShowCoverageModal] = useState(false);
+  const checkerRef = useRef<HTMLDivElement>(null);
 
   const isUserPaid = isPaid(role);
   const canCheck = supplementName && medicationName;
@@ -166,6 +169,25 @@ export default function LandingCheckerHero() {
     setMedicationName(medication);
   }
 
+  function handleOpenCoverageModal() {
+    setShowCoverageModal(true);
+  }
+
+  function handleCloseCoverageModal() {
+    setShowCoverageModal(false);
+  }
+
+  function handleStartCheckFromModal() {
+    // Scroll to checker and focus first input
+    if (checkerRef.current) {
+      checkerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const firstInput = checkerRef.current.querySelector('input');
+      if (firstInput) {
+        setTimeout(() => firstInput.focus(), 300);
+      }
+    }
+  }
+
   return (
     <section
       className="relative w-full"
@@ -203,10 +225,7 @@ export default function LandingCheckerHero() {
               type="button"
               className="text-sm font-medium underline transition hover:no-underline"
               style={{ color: 'var(--color-trial)' }}
-              onClick={() => {
-                // Placeholder for future modal
-                alert('Database coverage details coming soon');
-              }}
+              onClick={handleOpenCoverageModal}
             >
               See database coverage
             </button>
@@ -218,11 +237,11 @@ export default function LandingCheckerHero() {
             style={{ color: 'var(--color-text-muted)' }}
             data-testid="landing-hero-sub"
           >
-            Evidence-based severity ratings help you identify risks, understand mechanisms, and make safer decisions about your health regimen.
+            evidence-based severity ratings help you identify risks, understand mechanisms, and make safer decisions about your health regimen.
           </p>
 
           {/* Primary action: Large search/selector input */}
-          <div className="w-full max-w-2xl mb-6">
+          <div className="w-full max-w-2xl mb-6" ref={checkerRef}>
             <div className="card p-6">
               <div className="grid gap-4 sm:grid-cols-2 mb-4">
                 <TypeaheadInput
@@ -469,6 +488,13 @@ export default function LandingCheckerHero() {
           </div>
         )}
       </div>
+
+      {/* Database Coverage Modal */}
+      <DatabaseCoverageModal
+        isOpen={showCoverageModal}
+        onClose={handleCloseCoverageModal}
+        onStartCheck={handleStartCheckFromModal}
+      />
     </section>
   );
 }
