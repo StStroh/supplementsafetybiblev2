@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile UX Fix Verification</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #7c3aed;
+    }
+    .status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .status.ready {
+      background: #d4edda;
+      color: #155724;
+    }
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 12px;
+      margin: 8px 0;
+      background: #f8f9fa;
+      border-left: 4px solid #7c3aed;
+      border-radius: 4px;
+    }
+    .checklist li:before {
+      content: '☐ ';
+      font-size: 20px;
+      margin-right: 8px;
+    }
+    .test-step {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 4px;
+    }
+    .success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .button-demo {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 12px 0;
+      display: block;
+      width: 100%;
+      cursor: pointer;
+    }
+    .button-demo:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .helper-text {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .inline-hint {
+      font-size: 12px;
+      color: #666;
+      padding: 8px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎯 Mobile UX Fix Verification</h1>
+    <div class="status ready">✅ READY TO TEST</div>
+    <p>Complete these tests on your mobile device or in Chrome DevTools mobile view.</p>
+  </div>
+
+  <div class="card">
+    <h2>📱 Test 1: Button Always Visible</h2>
+    <div class="test-step">
+      <strong>What to check:</strong> The "Run Check" button should NEVER disappear, only fade when disabled.
+    </div>
+
+    <button class="button-demo" disabled>Run Check</button>
+    <div class="helper-text">Select at least 1 supplement AND 1 medication</div>
+
+    <ul class="checklist">
+      <li>Load /check page on mobile</li>
+      <li>Button is visible (grayed out)</li>
+      <li>Add 1 supplement → button still visible</li>
+      <li>Add 1 medication → button becomes active</li>
+      <li>Remove items → button grays but stays visible</li>
+    </ul>
+
+    <div class="success">✅ Button never disappears at any point</div>
+  </div>
+
+  <div class="card">
+    <h2>⌨️ Test 2: Enter Key Auto-Select</h2>
+    <div class="test-step">
+      <strong>What to check:</strong> Pressing Enter should auto-select the top suggestion.
+    </div>
+
+    <div class="inline-hint">
+      💡 Pick a suggestion or press Enter to use the top match
+    </div>
+
+    <ul class="checklist">
+      <li>Type "Mag" in Supplements field</li>
+      <li>Suggestions appear (Magnesium, etc.)</li>
+      <li>Press Enter key</li>
+      <li>First suggestion auto-selected as chip</li>
+      <li>Input cleared, ready for next entry</li>
+    </ul>
+
+    <div class="success">✅ Enter key works = faster UX</div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Test 3: Dropdown Visibility</h2>
+    <div class="test-step">
+      <strong>What to check:</strong> Suggestions dropdown should appear on TOP of other content.
+    </div>
+
+    <ul class="checklist">
+      <li>Open in mobile viewport (375px width)</li>
+      <li>Type "Mag" in Supplements</li>
+      <li>Dropdown appears above other elements</li>
+      <li>No content hidden behind other divs</li>
+      <li>Can scroll if many results</li>
+      <li>Can easily tap suggestions</li>
+    </ul>
+
+    <div class="success">✅ z-index: 50 ensures visibility</div>
+  </div>
+
+  <div class="card">
+    <h2>⚠️ Test 4: No Match Flow</h2>
+    <div class="test-step">
+      <strong>What to check:</strong> Invalid input shows helpful message, doesn't block user.
+    </div>
+
+    <div class="inline-hint" style="color: #856404; background: #fff3cd;">
+      ⚠️ No match found. Try a different spelling.
+    </div>
+
+    <ul class="checklist">
+      <li>Type "XYZ123" in Supplements</li>
+      <li>Press Enter</li>
+      <li>Inline warning appears (not blocking error)</li>
+      <li>"Not Found" card shows below</li>
+      <li>Run Check button still visible</li>
+      <li>User can continue, not stuck</li>
+    </ul>
+
+    <div class="success">✅ No dead-end states</div>
+  </div>
+
+  <div class="card">
+    <h2>🎉 Complete Happy Path</h2>
+    <div class="test-step">
+      <strong>End-to-end test:</strong> Complete user flow from start to results.
+    </div>
+
+    <ol style="padding-left: 20px; line-height: 1.8;">
+      <li>Open /check page on mobile</li>
+      <li>Tap Supplements field</li>
+      <li>Type "Mag"</li>
+      <li>Press Enter → Magnesium chip appears</li>
+      <li>Tap Medications field</li>
+      <li>Type "Los"</li>
+      <li>Press Enter → Losartan chip appears</li>
+      <li>Tap "Run Check" button (now enabled)</li>
+      <li>Results load successfully</li>
+      <li>No errors in console</li>
+    </ol>
+
+    <div class="success">✅ Full flow works smoothly</div>
+  </div>
+
+  <div class="card">
+    <h2>✅ Success Criteria</h2>
+    <ul class="checklist">
+      <li>Button always visible (opacity changes, never hidden)</li>
+      <li>Enter key auto-selects top suggestion</li>
+      <li>Dropdown appears on mobile (z-50)</li>
+      <li>Inline hints helpful, not blocking</li>
+      <li>No console errors</li>
+      <li>Works on real mobile device</li>
+    </ul>
+
+    <div class="success" style="margin-top: 20px; font-size: 18px;">
+      🚀 ALL CRITERIA MET = DEPLOY APPROVED
+    </div>
+  </div>
+
+  <div class="card" style="background: #d4edda;">
+    <h2>📞 Quick Reference</h2>
+    <p><strong>Files Changed:</strong></p>
+    <ul style="padding-left: 20px; margin-top: 8px;">
+      <li><code>SubstanceCombobox.tsx</code> (Enter key + z-index + hints)</li>
+      <li><code>StackBuilderCheckerV3.tsx</code> (button helper text)</li>
+    </ul>
+
+    <p style="margin-top: 16px;"><strong>Deploy:</strong></p>
+    <code style="display: block; padding: 12px; background: white; margin-top: 8px;">
+      netlify deploy --prod
+    </code>
+
+    <p style="margin-top: 16px;"><strong>Docs:</strong> <code>MINIMAL_FIX_COMPLETE.md</code></p>
+  </div>
+</body>
+</html>

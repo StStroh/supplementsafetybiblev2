@@ -434,8 +434,8 @@ export default function StackBuilderCheckerV3() {
         {!canCheck && (
           <p className="text-sm mt-3 font-medium" style={{ color: 'var(--color-text-muted)' }}>
             {mode === 'supplements-drugs'
-              ? t('checker.minRequired')
-              : '🔒 Add at least 2 supplements to compare'}
+              ? 'Select at least 1 supplement AND 1 medication'
+              : 'Select at least 2 supplements to compare'}
           </p>
         )}
       </div>

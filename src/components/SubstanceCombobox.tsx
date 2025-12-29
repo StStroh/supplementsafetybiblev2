@@ -115,11 +115,15 @@ export default function SubstanceCombobox({
     if (e.key === 'Enter') {
       e.preventDefault();
 
-      if (suggestions.length > 0 && highlighted < suggestions.length) {
-        handleSelect(suggestions[highlighted]);
+      if (suggestions.length > 0) {
+        // Auto-select the highlighted suggestion (or first if none highlighted)
+        const toSelect = highlighted >= 0 && highlighted < suggestions.length
+          ? suggestions[highlighted]
+          : suggestions[0];
+        handleSelect(toSelect);
       } else if (input.trim().length > 0) {
-        // No match found - trigger "not found" flow
-        setError(t('checker.selectFromList'));
+        // No match found - show inline warning, trigger "not found" flow
+        setError('No match found. Try a different spelling.');
         setShowWarning(true);
 
         if (onNotFound) {
@@ -221,10 +225,12 @@ export default function SubstanceCombobox({
         {showDropdown && suggestions.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute z-10 w-full mt-1 rounded-lg shadow-lg border-2 overflow-hidden"
+            className="absolute z-50 w-full mt-1 rounded-lg shadow-lg border-2 overflow-hidden"
             style={{
               background: 'var(--color-bg)',
               borderColor: 'var(--color-border)',
+              maxHeight: '300px',
+              overflowY: 'auto',
             }}
           >
             {suggestions.map((suggestion, idx) => (
@@ -254,9 +260,9 @@ export default function SubstanceCombobox({
       {input.trim() && !loading && (
         <div className="mt-2 text-xs" style={{ color: '#666' }}>
           {suggestions.length > 0 ? (
-            <span>💡 {t('checker.selectSuggestion')}</span>
+            <span>💡 Pick a suggestion or press Enter to use the top match</span>
           ) : input.length >= 2 ? (
-            <span>💡 {t('checker.noMatchHint')}</span>
+            <span>⚠️ No match found. Try a different spelling.</span>
           ) : null}
         </div>
       )}
