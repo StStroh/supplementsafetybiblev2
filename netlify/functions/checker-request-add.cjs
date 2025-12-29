@@ -1,6 +1,7 @@
 /*
  * Handle requests to add missing substances
- * Stores user submissions in checker_missing_requests table
+ * Stores user submissions in interaction_requests table
+ * Uses smart duplicate detection and priority scoring
  */
 
 const { createClient } = require('@supabase/supabase-js');
@@ -62,9 +63,7 @@ exports.handler = async (event) => {
 
     const {
       raw_name,
-      kind = 'any',
-      locale,
-      page,
+      kind = 'unknown',
     } = body;
 
     // Validate required fields
@@ -75,85 +74,59 @@ exports.handler = async (event) => {
       });
     }
 
-    if (!['supplement', 'drug', 'any'].includes(kind)) {
-      return json(400, {
-        ok: false,
-        error: 'kind must be: supplement, drug, or any',
-      });
+    // Map old 'drug' to 'medication', normalize kind
+    let substanceType = kind;
+    if (kind === 'drug') substanceType = 'medication';
+    if (!['supplement', 'medication'].includes(substanceType)) {
+      substanceType = 'unknown';
     }
 
-    // Check for duplicate recent requests (past 7 days)
-    const { data: similar, error: similarError } = await supabase.rpc(
-      'checker_find_similar_requests',
-      {
-        search_name: raw_name.trim(),
-        search_kind: kind,
-        days_back: 7,
-      }
-    );
-
-    if (!similarError && similar && similar.length > 0) {
-      // Found a recent similar request
-      return json(200, {
-        ok: true,
-        duplicate: true,
-        message: 'This substance has already been requested recently',
-        existing_request: similar[0],
-      });
-    }
-
-    // Get user info if authenticated
-    let userEmail = null;
-    let userId = null;
-
+    // Get user auth context (will be used by RPC function automatically via auth.uid())
     const authHeader = event.headers.authorization || event.headers.Authorization;
+    let supabaseWithAuth = supabase;
+
     if (authHeader) {
       try {
         const token = authHeader.replace(/^Bearer\s+/i, '');
-        const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-        if (!userError && user) {
-          userEmail = user.email;
-          userId = user.id;
-        }
+        // Create authenticated client
+        supabaseWithAuth = createClient(supabaseUrl, serviceKey, {
+          auth: {
+            persistSession: false,
+          },
+          global: {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        });
       } catch (authError) {
-        // Continue without auth - anonymous submission allowed
-        console.log('[checker-request-add] Auth check failed, proceeding anonymously');
+        // Continue with service role client (anonymous submission)
+        console.log('[checker-request-add] Auth parse failed, proceeding anonymously');
       }
     }
 
-    // Extract user agent and other metadata
-    const userAgent = event.headers['user-agent'] || null;
+    // Call the smart RPC function that handles duplicates and priority
+    const { data: requestId, error: rpcError } = await supabaseWithAuth.rpc(
+      'handle_duplicate_interaction_request',
+      {
+        p_substance_name: raw_name.trim(),
+        p_interaction_with: null,
+      }
+    );
 
-    // Insert the request
-    const { data: inserted, error: insertError } = await supabase
-      .from('checker_missing_requests')
-      .insert({
-        raw_name: raw_name.trim(),
-        kind,
-        user_email: userEmail,
-        user_id: userId,
-        locale: locale || null,
-        user_agent: userAgent,
-        page: page || null,
-        status: 'pending',
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error('[checker-request-add] Insert error:', insertError);
+    if (rpcError) {
+      console.error('[checker-request-add] RPC error:', rpcError);
       return json(500, {
         ok: false,
         error: 'Failed to submit request',
-        details: insertError.message,
+        details: rpcError.message,
       });
     }
 
     return json(201, {
       ok: true,
-      message: 'Request submitted successfully',
-      request_id: inserted.id,
-      duplicate: false,
+      message: 'Request submitted successfully. We prioritize requests based on frequency and safety importance.',
+      request_id: requestId,
     });
 
   } catch (e) {

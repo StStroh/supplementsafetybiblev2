@@ -5,6 +5,7 @@ import NotFoundCard from './NotFoundCard';
 import ConfidenceBadge from './ConfidenceBadge';
 import GlobalTrustStatement from './GlobalTrustStatement';
 import ConfidenceMetadata from './ConfidenceMetadata';
+import InlineUpgradeCard from './InlineUpgradeCard';
 import { useTranslation } from '../lib/i18n';
 
 interface Substance {
@@ -733,6 +734,11 @@ export default function StackBuilderCheckerV3() {
               </div>
             );
           })}
+
+          {/* Premium Upsell - Non-Blocking */}
+          <div className="mt-8 mb-6">
+            <InlineUpgradeCard context="results" compact={false} />
+          </div>
         </div>
       )}
     </div>
