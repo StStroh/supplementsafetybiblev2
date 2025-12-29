@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, CheckCircle2, X } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Search, Loader2, CheckCircle2, X, Pill, Sparkles } from 'lucide-react';
+import { SearchCache } from '../lib/searchCache';
 
 interface Substance {
   substance_id: string;
@@ -10,6 +11,9 @@ interface Substance {
   match_score?: number;
 }
 
+// Singleton cache shared across all instances
+const searchCache = new SearchCache<Substance[]>(10, 60000);
+
 interface SubstanceComboboxProps {
   kind: 'supplement' | 'drug';
   label: string;
@@ -17,6 +21,27 @@ interface SubstanceComboboxProps {
   value: Substance | null;
   onChange: (value: Substance | null) => void;
   onNotFound?: (rawInput: string, kind: string, suggestions: Substance[]) => void;
+}
+
+// Helper: Highlight matched prefix in text
+function highlightMatch(text: string, query: string) {
+  if (!query.trim()) return <span>{text}</span>;
+
+  const lowerText = text.toLowerCase();
+  const lowerQuery = query.toLowerCase();
+  const index = lowerText.indexOf(lowerQuery);
+
+  if (index === -1) return <span>{text}</span>;
+
+  return (
+    <span>
+      {text.slice(0, index)}
+      <span style={{ background: '#fef3c7', fontWeight: 600 }}>
+        {text.slice(index, index + query.length)}
+      </span>
+      {text.slice(index + query.length)}
+    </span>
+  );
 }
 
 export default function SubstanceCombobox({
@@ -40,7 +65,7 @@ export default function SubstanceCombobox({
   const debounceTimerRef = useRef<NodeJS.Timeout>();
   const abortControllerRef = useRef<AbortController>();
 
-  // Fetch suggestions from API (instant at 1 char)
+  // Fetch suggestions from API with caching (150ms debounce)
   useEffect(() => {
     setError('');
     setShowWarning(false);
@@ -49,6 +74,18 @@ export default function SubstanceCombobox({
     if (input.trim().length < 1) {
       setSuggestions([]);
       setShowDropdown(false);
+      setLoading(false);
+      return;
+    }
+
+    // Check cache first
+    const cacheKey = `${kind}:${input.toLowerCase().trim()}`;
+    const cached = searchCache.get(cacheKey);
+
+    if (cached) {
+      setSuggestions(cached);
+      setShowDropdown(cached.length > 0);
+      setHighlighted(0);
       setLoading(false);
       return;
     }
@@ -81,6 +118,9 @@ export default function SubstanceCombobox({
 
         const data = await response.json();
         if (data.ok && Array.isArray(data.results)) {
+          // Cache successful results
+          searchCache.set(cacheKey, data.results);
+
           setSuggestions(data.results);
           setShowDropdown(data.results.length > 0);
           setHighlighted(0);
@@ -243,7 +283,7 @@ export default function SubstanceCombobox({
           }}
         />
 
-        {/* Dropdown - Instant suggestions */}
+        {/* Dropdown - Instant suggestions with type badges and highlighting */}
         {showDropdown && suggestions.length > 0 && (
           <div
             ref={dropdownRef}
@@ -260,25 +300,42 @@ export default function SubstanceCombobox({
               zIndex: 9999,
             }}
           >
-            {suggestions.map((suggestion, idx) => (
-              <button
-                key={suggestion.substance_id}
-                onClick={() => handleSelect(suggestion)}
-                className="w-full text-left px-4 py-2.5 hover:bg-purple-50 transition-colors"
-                style={{
-                  background: idx === highlighted ? '#f3e5f5' : 'transparent',
-                }}
-              >
-                <div className="font-medium" style={{ color: 'var(--color-text)' }}>
-                  {suggestion.display_name}
-                </div>
-                {suggestion.aliases.length > 0 && (
-                  <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                    Also known as: {suggestion.aliases.slice(0, 2).join(', ')}
+            {suggestions.map((suggestion, idx) => {
+              const isDrug = suggestion.type === 'drug';
+              const TypeIcon = isDrug ? Pill : Sparkles;
+
+              return (
+                <button
+                  key={suggestion.substance_id}
+                  onClick={() => handleSelect(suggestion)}
+                  className="w-full text-left px-4 py-2.5 hover:bg-purple-50 transition-colors"
+                  style={{
+                    background: idx === highlighted ? '#f3e5f5' : 'transparent',
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 font-medium" style={{ color: 'var(--color-text)' }}>
+                      {highlightMatch(suggestion.display_name, input)}
+                    </div>
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                      style={{
+                        background: isDrug ? '#e0f2fe' : '#f3e8ff',
+                        color: isDrug ? '#0891b2' : '#7c3aed',
+                      }}
+                    >
+                      <TypeIcon className="w-3 h-3" />
+                      {isDrug ? 'Drug' : 'Supplement'}
+                    </span>
                   </div>
-                )}
-              </button>
-            ))}
+                  {suggestion.aliases.length > 0 && (
+                    <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                      Also known as: {suggestion.aliases.slice(0, 2).join(', ')}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
