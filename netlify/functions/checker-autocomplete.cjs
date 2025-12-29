@@ -1,7 +1,12 @@
 /*
- * Production Autocomplete with Diagnostics
+ * Production Autocomplete with Diagnostics (FIXED)
  * Searches checker_substance_tokens for fast prefix matching
  * Query params: q (query), type (supplement|drug), limit (max results)
+ *
+ * Key fixes:
+ * - Use DB-normalized token prefix (strip non-alphanumerics) to match norm_token strategy
+ * - Query checker_substances using expected columns: type (not substance_type)
+ * - Do not select non-existent columns like aliases (aliases live in tokens table)
  */
 
 const { supabaseAdmin } = require('./_lib/supabaseAdmin.cjs');
@@ -21,6 +26,14 @@ function json(statusCode, body) {
     },
     body: JSON.stringify(body),
   };
+}
+
+// Match your DB normalization: lowercase + remove non-alphanumeric
+function normPrefix(input) {
+  return String(input || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
 }
 
 exports.handler = async (event) => {
@@ -46,15 +59,20 @@ exports.handler = async (event) => {
     }
 
     const supabase = supabaseAdmin();
-    const normalized = q.toLowerCase();
+    const normalized = normPrefix(q);
 
-    console.log(`[autocomplete] Query: "${q}", Type: ${type}, Limit: ${limit}`);
+    console.log(`[autocomplete] Query: "${q}", Normalized: "${normalized}", Type: ${type}, Limit: ${limit}`);
+
+    if (normalized.length < 2) {
+      // If user types only punctuation/spaces etc.
+      return json(200, { ok: true, q, type, results: [] });
+    }
 
     const { data: tokens, error: tokenError } = await supabase
       .from('checker_substance_tokens')
       .select('substance_id, token')
       .ilike('token', `${normalized}%`)
-      .limit(20);
+      .limit(30);
 
     if (tokenError) {
       console.error('[autocomplete] Token query error:', tokenError);
@@ -69,16 +87,18 @@ exports.handler = async (event) => {
       return json(200, { ok: true, q, type, results: [] });
     }
 
-    const substanceIds = [...new Set(tokens.map(t => t.substance_id))];
+    const substanceIds = [...new Set(tokens.map((t) => t.substance_id))];
 
+    // FIX: checker_substances uses `type`, not `substance_type`
+    // FIX: do not select `aliases` unless it truly exists
     let query = supabase
       .from('checker_substances')
-      .select('substance_id, display_name, canonical_name, substance_type, aliases')
+      .select('substance_id, display_name, canonical_name, type')
       .in('substance_id', substanceIds)
       .eq('is_active', true);
 
     if (type === 'supplement' || type === 'drug') {
-      query = query.eq('substance_type', type);
+      query = query.eq('type', type);
     }
 
     query = query.limit(limit);
@@ -94,12 +114,12 @@ exports.handler = async (event) => {
       });
     }
 
-    const results = (substances || []).map(s => ({
+    const results = (substances || []).map((s) => ({
       substance_id: s.substance_id,
       display_name: s.display_name,
       canonical_name: s.canonical_name,
-      type: s.substance_type,
-      aliases: Array.isArray(s.aliases) ? s.aliases : [],
+      type: s.type,
+      aliases: [], // keep for UI compatibility; tokens table is the source of aliases
     }));
 
     console.log(`[autocomplete] Found ${results.length} results`);
@@ -110,7 +130,6 @@ exports.handler = async (event) => {
       type,
       results,
     });
-
   } catch (err) {
     console.error('[autocomplete] Unexpected error:', err);
     return json(500, {
