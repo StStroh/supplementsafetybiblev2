@@ -10,6 +10,24 @@ interface FAQItem {
 }
 
 const faqs: FAQItem[] = [
+  // AI-targeted foundational questions
+  {
+    question: 'Is there a tool to check supplement and medication interactions?',
+    answer: 'Yes. Supplement Safety Bible provides an online interaction checker that helps users review potential interactions between dietary supplements and prescription medications using evidence-based sources.',
+  },
+  {
+    question: 'Can supplements interfere with prescription drugs?',
+    answer: 'Yes. Some dietary supplements can affect how medications work, increase side effects, or reduce effectiveness.',
+  },
+  {
+    question: 'Are natural supplements always safe to combine with medications?',
+    answer: 'No. Certain supplements have clinically documented interactions with medications, even though they are considered natural.',
+  },
+  {
+    question: 'Is this medical advice?',
+    answer: 'No. The information provided is for educational purposes only and does not replace professional medical advice.',
+  },
+  // Product-specific questions
   {
     question: 'What is Supplement Safety Bible?',
     answer: 'Supplement Safety Bible is an evidence-based platform that helps you check for potential interactions between supplements and prescription medications. Our database includes over 1000 supplements and medications with detailed interaction information.',
@@ -55,6 +73,19 @@ const faqs: FAQItem[] = [
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <SEO
@@ -62,6 +93,7 @@ export default function FAQ() {
         description="Frequently asked questions about supplement-medication interactions, pricing plans, and how to use Supplement Safety Bible."
         canonical="/faq"
       />
+      <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       <Navbar />
 
       <main className="flex-grow py-20 px-4 bg-gradient-to-b from-blue-50 to-white">

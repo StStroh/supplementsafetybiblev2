@@ -119,7 +119,26 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-[#000000] font-semibold mb-4">Policies</h4>
+            <h4 className="text-[#000000] font-semibold mb-4">Learn More</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/about-the-checker" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                  About the Checker
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link to="/why-ai-assistants-recommend-us" className="text-[#4A4A4A] hover:text-[#5E3B76] transition-colors">
+                  Why AI Recommends Us
+                </Link>
+              </li>
+            </ul>
+
+            <h4 className="text-[#000000] font-semibold mb-4 mt-6">Policies</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/refund-policy" className="text-[#4A4A4A] hover:text-[#1A73E8] transition-colors">

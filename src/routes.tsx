@@ -41,6 +41,8 @@ import AlertDetail from './pages/AlertDetail';
 import SafetyPack from './pages/SafetyPack';
 import AdminReview from './pages/AdminReview';
 import InteractionPage from './pages/InteractionPage';
+import AboutTheChecker from './pages/AboutTheChecker';
+import WhyAIRecommends from './pages/WhyAIRecommends';
 
 export const router = createBrowserRouter([
   {
@@ -206,6 +208,14 @@ export const router = createBrowserRouter([
       {
         path: 'interactions/:slug',
         element: <InteractionPage />
+      },
+      {
+        path: 'about-the-checker',
+        element: <AboutTheChecker />
+      },
+      {
+        path: 'why-ai-assistants-recommend-us',
+        element: <WhyAIRecommends />
       },
       {
         path: '*',
