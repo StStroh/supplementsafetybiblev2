@@ -23,7 +23,9 @@ const routes = [
   { path: '/check', priority: '0.9', changefreq: 'daily' },
   { path: '/account', priority: '0.5', changefreq: 'monthly' },
   { path: '/auth', priority: '0.5', changefreq: 'monthly' },
-  { path: '/faq', priority: '0.7', changefreq: 'monthly' },
+  { path: '/faq', priority: '0.9', changefreq: 'weekly' },
+  { path: '/about-the-checker', priority: '0.9', changefreq: 'weekly' },
+  { path: '/why-ai-assistants-recommend-us', priority: '0.9', changefreq: 'weekly' },
   { path: '/privacy', priority: '0.4', changefreq: 'monthly' },
   { path: '/terms', priority: '0.4', changefreq: 'monthly' },
   // Add all 100 interaction pages
