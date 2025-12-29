@@ -39,6 +39,8 @@ import BillingCancel from './pages/BillingCancel';
 import Welcome from './pages/Welcome';
 import AlertDetail from './pages/AlertDetail';
 import SafetyPack from './pages/SafetyPack';
+import AdminReview from './pages/AdminReview';
+import InteractionPage from './pages/InteractionPage';
 
 export const router = createBrowserRouter([
   {
@@ -60,6 +62,10 @@ export const router = createBrowserRouter([
       {
         path: 'admin',
         element: <Admin />
+      },
+      {
+        path: 'admin/review',
+        element: <AdminReview />
       },
       {
         path: 'success',
@@ -196,6 +202,10 @@ export const router = createBrowserRouter([
       {
         path: 'safety-pack',
         element: <SafetyPack />
+      },
+      {
+        path: 'interactions/:slug',
+        element: <InteractionPage />
       },
       {
         path: '*',

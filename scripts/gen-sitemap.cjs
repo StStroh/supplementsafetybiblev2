@@ -3,6 +3,16 @@ const path = require('path');
 
 const domain = 'https://supplementsafetybible.com';
 
+// Import interaction slugs
+const staticInteractionsPath = path.join(__dirname, '../src/data/staticInteractions.ts');
+const staticInteractionsContent = fs.readFileSync(staticInteractionsPath, 'utf8');
+
+// Extract slugs using regex
+const slugMatches = staticInteractionsContent.matchAll(/slug:\s*['"]([^'"]+)['"]/g);
+const interactionSlugs = Array.from(slugMatches, m => m[1]);
+
+console.log(`Found ${interactionSlugs.length} interaction pages to add to sitemap`);
+
 const routes = [
   { path: '/', priority: '1.0', changefreq: 'daily' },
   { path: '/search', priority: '0.9', changefreq: 'weekly' },
@@ -15,7 +25,13 @@ const routes = [
   { path: '/auth', priority: '0.5', changefreq: 'monthly' },
   { path: '/faq', priority: '0.7', changefreq: 'monthly' },
   { path: '/privacy', priority: '0.4', changefreq: 'monthly' },
-  { path: '/terms', priority: '0.4', changefreq: 'monthly' }
+  { path: '/terms', priority: '0.4', changefreq: 'monthly' },
+  // Add all 100 interaction pages
+  ...interactionSlugs.map(slug => ({
+    path: `/interactions/${slug}`,
+    priority: '0.8',
+    changefreq: 'monthly'
+  }))
 ];
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -30,4 +46,4 @@ ${routes.map(route => `  <url>
 
 const sitemapPath = path.join(__dirname, '../public/sitemap.xml');
 fs.writeFileSync(sitemapPath, sitemap, 'utf-8');
-console.log('✅ Sitemap generated at public/sitemap.xml');
+console.log(`✅ Sitemap generated at public/sitemap.xml with ${routes.length} pages (including ${interactionSlugs.length} interaction pages)`);
