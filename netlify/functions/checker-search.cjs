@@ -39,16 +39,21 @@ exports.handler = async (event) => {
     }
 
     const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !serviceKey) {
+    // Log Supabase URL for verification (first 40 chars only for security)
+    console.log('[checker-search] Supabase URL:', supabaseUrl?.substring(0, 40) + '...');
+    console.log('[checker-search] Using SUPABASE_ANON_KEY:', supabaseKey ? 'Present' : 'Missing');
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('[checker-search] Missing required env vars');
       return json(500, {
         ok: false,
         error: 'Supabase configuration missing',
       });
     }
 
-    const supabase = createClient(supabaseUrl, serviceKey, {
+    const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false },
     });
 
@@ -70,7 +75,12 @@ exports.handler = async (event) => {
       return json(400, { ok: false, error: 'Kind must be: any, supplement, or drug' });
     }
 
+    // Log query details for debugging
+    console.log(`[checker-search] Query: "${q}", Kind: ${kind}, Limit: ${limit}`);
+
     // Call the RPC function for fast search
+    // This queries checker_substance_tokens and JOINs checker_substances
+    // using prefix matching with ilike-equivalent normalization
     const { data, error } = await supabase.rpc('checker_search_substances', {
       q,
       kind,
@@ -83,6 +93,11 @@ exports.handler = async (event) => {
         ok: false,
         error: error.message || 'Search failed',
       });
+    }
+
+    console.log(`[checker-search] Found ${data?.length || 0} results for "${q}"`);
+    if (data && data.length > 0) {
+      console.log('[checker-search] Top result:', data[0].display_name, `(${data[0].substance_type})`);
     }
 
     // Transform results to match expected format
