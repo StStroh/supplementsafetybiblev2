@@ -76,6 +76,7 @@ export default function StackBuilderCheckerV3() {
   const [summary, setSummary] = useState<CheckSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
+  const [systemError, setSystemError] = useState<string | null>(null);
 
   // Handle supplement selection
   const handleSupplementChange = (substance: Substance | null) => {
@@ -196,6 +197,7 @@ export default function StackBuilderCheckerV3() {
     setError(null);
     setResults(null);
     setSummary(null);
+    setSystemError(null);
 
     try {
       const allNames = [
@@ -209,18 +211,37 @@ export default function StackBuilderCheckerV3() {
         body: JSON.stringify({ inputs: allNames }),
       });
 
+      // Check for HTML response (function not working)
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error('Checker function is not responding correctly. Please refresh and try again.');
+      }
+
       if (!res.ok) {
-        throw new Error(`Request failed: ${res.status}`);
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `Request failed: ${res.status}`);
       }
 
       const response = await res.json();
+
+      // Validate response structure
+      if (!response || typeof response !== 'object') {
+        throw new Error('Invalid response from checker. Please try again.');
+      }
+
       setResults(response.results || []);
       setSummary(response.summary || null);
 
       // Log this lookup asynchronously (fire-and-forget)
       logLookup(allNames, response);
     } catch (err: any) {
-      setError(err.message || 'Failed to check interactions');
+      const errorMsg = err.message || 'Failed to check interactions';
+      setError(errorMsg);
+
+      // Show system error banner if it's a configuration issue
+      if (errorMsg.includes('not responding') || errorMsg.includes('configuration')) {
+        setSystemError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
@@ -256,6 +277,30 @@ export default function StackBuilderCheckerV3() {
 
   return (
     <div className="max-w-5xl mx-auto">
+      {/* System Error Banner */}
+      {systemError && (
+        <div className="mb-6 rounded-xl p-6" style={{ background: '#FFF3E0', border: '2px solid #FFA726' }}>
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#E65100' }} />
+            <div>
+              <h3 className="font-bold mb-1" style={{ color: '#E65100' }}>
+                System Error
+              </h3>
+              <p className="text-sm mb-3" style={{ color: '#BF360C' }}>
+                {systemError}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 rounded-lg font-semibold text-sm"
+                style={{ background: '#FFA726', color: 'white' }}
+              >
+                Refresh Page
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>

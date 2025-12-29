@@ -94,6 +94,13 @@ export default function SubstanceCombobox({
           console.error('[SubstanceCombobox] Search error:', err);
           setSuggestions([]);
           setShowDropdown(false);
+
+          // Show error message for network/API failures
+          if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+            setError('Unable to load suggestions. Please check your connection.');
+          } else {
+            setError('Search failed. Please try again.');
+          }
         }
       } finally {
         setLoading(false);
