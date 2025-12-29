@@ -1,10 +1,15 @@
-const { createClient } = require('@supabase/supabase-js');
+/*
+ * Production Autocomplete with Diagnostics
+ * Searches checker_substance_tokens for fast prefix matching
+ * Query params: q (query), type (supplement|drug), limit (max results)
+ */
+
+const { supabaseAdmin } = require('./_lib/supabaseAdmin.cjs');
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type, authorization',
+  'Access-Control-Allow-Headers': 'content-type',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Max-Age': '86400',
 };
 
 function json(statusCode, body) {
@@ -18,150 +23,100 @@ function json(statusCode, body) {
   };
 }
 
-function titleize(s) {
-  return String(s || '')
-    .replace(/[_-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .split(' ')
-    .filter(Boolean)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
-
 exports.handler = async (event) => {
   try {
-    // CORS preflight
     if (event.httpMethod === 'OPTIONS') {
       return {
         statusCode: 204,
-        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' },
+        headers: CORS_HEADERS,
         body: '',
       };
     }
 
     if (event.httpMethod !== 'GET') {
-      return json(500, { ok: false, error: 'Method not allowed' });
+      return json(405, { ok: false, error: 'Method not allowed' });
     }
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    const q = (event.queryStringParameters?.q || '').trim();
+    const type = (event.queryStringParameters?.type || '').toLowerCase();
+    const limit = Math.min(parseInt(event.queryStringParameters?.limit || '10', 10), 50);
 
-    if (!supabaseUrl || !serviceKey) {
+    if (q.length < 2) {
+      return json(200, { ok: true, q, type, results: [] });
+    }
+
+    const supabase = supabaseAdmin();
+    const normalized = q.toLowerCase();
+
+    console.log(`[autocomplete] Query: "${q}", Type: ${type}, Limit: ${limit}`);
+
+    const { data: tokens, error: tokenError } = await supabase
+      .from('checker_substance_tokens')
+      .select('substance_id, token')
+      .ilike('token', `${normalized}%`)
+      .limit(20);
+
+    if (tokenError) {
+      console.error('[autocomplete] Token query error:', tokenError);
       return json(500, {
         ok: false,
-        error: 'Supabase env vars missing (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY/ANON_KEY)',
+        error: 'Token search failed',
+        detail: tokenError.message,
       });
     }
 
-    const supabase = createClient(supabaseUrl, serviceKey, {
-      auth: { persistSession: false },
-    });
-
-    const qRaw = (event.queryStringParameters?.q || '').trim();
-    const typeRaw = (event.queryStringParameters?.type || '').trim().toLowerCase(); // 'supplement' | 'drug'
-
-    // Guardrails: avoid DB spam (minimum 1 character)
-    if (qRaw.length < 1) {
-      return json(200, { ok: true, q: qRaw, type: typeRaw, results: [] });
+    if (!tokens || tokens.length === 0) {
+      return json(200, { ok: true, q, type, results: [] });
     }
 
-    // Normalize using DB function so behavior matches token constraints
-    // (Assumes norm_token(text) exists as you created earlier)
-    const { data: normData, error: normErr } = await supabase.rpc('norm_token', { input: qRaw }).catch(() => ({
-      data: null,
-      error: null,
+    const substanceIds = [...new Set(tokens.map(t => t.substance_id))];
+
+    let query = supabase
+      .from('checker_substances')
+      .select('substance_id, display_name, canonical_name, substance_type, aliases')
+      .in('substance_id', substanceIds)
+      .eq('is_active', true);
+
+    if (type === 'supplement' || type === 'drug') {
+      query = query.eq('substance_type', type);
+    }
+
+    query = query.limit(limit);
+
+    const { data: substances, error: substanceError } = await query;
+
+    if (substanceError) {
+      console.error('[autocomplete] Substance query error:', substanceError);
+      return json(500, {
+        ok: false,
+        error: 'Substance lookup failed',
+        detail: substanceError.message,
+      });
+    }
+
+    const results = (substances || []).map(s => ({
+      substance_id: s.substance_id,
+      display_name: s.display_name,
+      canonical_name: s.canonical_name,
+      type: s.substance_type,
+      aliases: Array.isArray(s.aliases) ? s.aliases : [],
     }));
 
-    // If norm_token is not exposed as RPC (depends how you defined it), fall back:
-    const qNorm =
-      typeof normData === 'string' && normData.length
-        ? normData
-        : qRaw.toLowerCase().replace(/[\s-]+/g, '');
+    console.log(`[autocomplete] Found ${results.length} results`);
 
-    // ---- Try "pretty" join if checker_substances exists ----
-    // We attempt a join; if it fails (table missing/column mismatch), we fall back to tokens-only.
-    // Expected:
-    // - checker_substance_tokens(substance_id, token)
-    // - checker_substances(substance_id, display_name, canonical_name, aliases, type)
-    const joinSelect =
-      'token, substance_id, checker_substances(display_name, canonical_name, aliases, type)';
+    return json(200, {
+      ok: true,
+      q,
+      type,
+      results,
+    });
 
-    let rows = null;
-
-    {
-      const { data, error } = await supabase
-        .from('checker_substance_tokens')
-        .select(joinSelect)
-        .ilike('token', `${qNorm}%`)
-        .limit(25);
-
-      if (!error) {
-        rows = data || [];
-      } else {
-        // fallback: tokens only (no join)
-        const fallback = await supabase
-          .from('checker_substance_tokens')
-          .select('token, substance_id')
-          .ilike('token', `${qNorm}%`)
-          .limit(25);
-
-        if (fallback.error) {
-          return json(500, { ok: false, error: fallback.error.message || String(fallback.error) });
-        }
-        rows = fallback.data || [];
-      }
-    }
-
-    // Build suggestions: unique by substance_id, prefer pretty name if available
-    const seen = new Set();
-    const suggestions = [];
-
-    for (const r of rows) {
-      const id = r.substance_id;
-      if (!id || seen.has(id)) continue;
-
-      // If join worked, r.checker_substances might be object OR array depending on relationship.
-      let displayName = null;
-      let canonicalName = null;
-      let aliases = [];
-      let itemType = null;
-
-      const cs = r.checker_substances;
-      if (cs) {
-        // sometimes it's an array
-        const cs0 = Array.isArray(cs) ? cs[0] : cs;
-        displayName = cs0?.display_name ?? null;
-        canonicalName = cs0?.canonical_name ?? null;
-        aliases = cs0?.aliases ?? [];
-        itemType = (cs0?.type ?? null);
-      }
-
-      // If type filter is present AND we have type on the record, enforce it.
-      if (typeRaw && itemType && String(itemType).toLowerCase() !== typeRaw) {
-        continue;
-      }
-
-      seen.add(id);
-
-      const label = displayName || titleize(r.token);
-      const canonical = canonicalName || label;
-
-      // Frontend expects: substance_id, display_name, canonical_name, aliases, type
-      suggestions.push({
-        substance_id: id,
-        display_name: label,
-        canonical_name: canonical,
-        aliases: Array.isArray(aliases) ? aliases : [],
-        type: itemType ? String(itemType).toLowerCase() : (typeRaw || 'supplement'),
-      });
-
-      if (suggestions.length >= 8) break;
-    }
-
-    return json(200, { ok: true, q: qRaw, type: typeRaw, results: suggestions });
-  } catch (e) {
-    return json(500, { ok: false, error: e?.message ? e.message : String(e) });
+  } catch (err) {
+    console.error('[autocomplete] Unexpected error:', err);
+    return json(500, {
+      ok: false,
+      error: 'Internal server error',
+      detail: err?.message || String(err),
+    });
   }
 };
-;

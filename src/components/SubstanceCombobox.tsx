@@ -108,12 +108,14 @@ export default function SubstanceCombobox({
         abortControllerRef.current = new AbortController();
 
         const response = await fetch(
-          `/.netlify/functions/checker-search?q=${encodeURIComponent(input)}&kind=${kind}&limit=12`,
+          `/.netlify/functions/checker-autocomplete?q=${encodeURIComponent(input)}&type=${kind}&limit=12`,
           { signal: abortControllerRef.current.signal }
         );
 
         if (!response.ok) {
-          throw new Error('Search failed');
+          const errorData = await response.json().catch(() => ({}));
+          const errorMsg = errorData.error || errorData.detail || 'Search failed';
+          throw new Error(`${response.status}: ${errorMsg}`);
         }
 
         const data = await response.json();
@@ -135,11 +137,15 @@ export default function SubstanceCombobox({
           setSuggestions([]);
           setShowDropdown(false);
 
-          // Show error message for network/API failures
+          // Show detailed error message for debugging
           if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
             setError('Unable to load suggestions. Please check your connection.');
+          } else if (err.message.includes('500')) {
+            setError(`Server error: ${err.message}`);
+          } else if (err.message.includes('404')) {
+            setError('Autocomplete endpoint not found. Check deployment.');
           } else {
-            setError('Search failed. Please try again.');
+            setError(`Error: ${err.message}`);
           }
         }
       } finally {

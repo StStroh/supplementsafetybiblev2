@@ -43,6 +43,7 @@ import AdminReview from './pages/AdminReview';
 import InteractionPage from './pages/InteractionPage';
 import AboutTheChecker from './pages/AboutTheChecker';
 import WhyAIRecommends from './pages/WhyAIRecommends';
+import Diagnostics from './pages/Diagnostics';
 
 export const router = createBrowserRouter([
   {
@@ -216,6 +217,10 @@ export const router = createBrowserRouter([
       {
         path: 'why-ai-assistants-recommend-us',
         element: <WhyAIRecommends />
+      },
+      {
+        path: 'diagnostics',
+        element: <Diagnostics />
       },
       {
         path: '*',

@@ -222,3 +222,62 @@ After setting all variables:
 - [ ] Verify redirect to Stripe works
 
 **If all variables show ✅ and checkout still fails, check the specific error message in function logs for next steps.**
+
+---
+
+## Autocomplete & Checker Functions
+
+The autocomplete and interaction checker require the same Supabase variables listed above.
+
+### Required Environment Variables
+
+```bash
+SUPABASE_URL                  # Used by server-side functions
+SUPABASE_SERVICE_ROLE_KEY     # Used by server-side functions for elevated access
+VITE_SUPABASE_URL            # Used by frontend
+VITE_SUPABASE_ANON_KEY       # Used by frontend
+```
+
+### Testing Autocomplete Configuration
+
+Visit the diagnostics page to test the configuration:
+
+```
+https://your-site.netlify.app/diagnostics
+```
+
+The diagnostics page will:
+- ✅ Test database connectivity
+- ✅ Verify environment variables are present
+- ✅ Run sample autocomplete query
+- ✅ Show exact error messages if something fails
+
+### Common Autocomplete Issues
+
+**"Missing environment variables" error**
+- Ensure all 4 Supabase variables are set in Netlify
+- Variable names are case-sensitive
+- Redeploy after setting variables
+
+**"Token search failed" or "Substance lookup failed"**
+- Verify database tables exist:
+  - `checker_substances`
+  - `checker_substance_tokens`
+- Check that tables have data
+- Verify RLS policies allow access with service role key
+
+**"Database query failed"**
+- Confirm SUPABASE_URL is correct
+- Check SUPABASE_SERVICE_ROLE_KEY is valid
+- Use diagnostics page to see detailed error
+
+### Endpoints
+
+The following Netlify functions handle autocomplete:
+
+- `/.netlify/functions/checker-autocomplete` - Main autocomplete endpoint
+  - Query params: `q` (search term), `type` (supplement|drug), `limit` (max results)
+  - Returns: `{ ok: true, q, type, results: [...] }`
+
+- `/.netlify/functions/checker-health` - Health check endpoint
+  - Returns: `{ ok: true, env: {...}, sample: {...} }`
