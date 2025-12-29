@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, Loader2, CheckCircle2, X } from 'lucide-react';
-import { useTranslation } from '../lib/i18n';
 
 interface Substance {
   substance_id: string;
@@ -28,7 +27,6 @@ export default function SubstanceCombobox({
   onChange,
   onNotFound,
 }: SubstanceComboboxProps) {
-  const t = useTranslation();
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<Substance[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,34 +38,41 @@ export default function SubstanceCombobox({
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const abortControllerRef = useRef<AbortController>();
 
-  // Fetch suggestions from API
+  // Fetch suggestions from API (instant at 1 char)
   useEffect(() => {
     setError('');
     setShowWarning(false);
 
-    if (input.length < 1) {
+    // Clear suggestions if input is empty
+    if (input.trim().length < 1) {
       setSuggestions([]);
       setShowDropdown(false);
       setLoading(false);
       return;
     }
 
-    if (input.length >= 2) {
-      setShowWarning(true);
-    }
-
     setLoading(true);
 
-    // Debounce API calls
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Debounce API calls (150ms for snappy feel)
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
     debounceTimerRef.current = setTimeout(async () => {
       try {
+        // Create new abort controller
+        abortControllerRef.current = new AbortController();
+
         const response = await fetch(
-          `/.netlify/functions/checker-search?q=${encodeURIComponent(input)}&kind=${kind}&limit=10`
+          `/.netlify/functions/checker-search?q=${encodeURIComponent(input)}&kind=${kind}&limit=12`,
+          { signal: abortControllerRef.current.signal }
         );
 
         if (!response.ok) {
@@ -83,18 +88,24 @@ export default function SubstanceCombobox({
           setSuggestions([]);
           setShowDropdown(false);
         }
-      } catch (err) {
-        console.error('[SubstanceCombobox] Search error:', err);
-        setSuggestions([]);
-        setShowDropdown(false);
+      } catch (err: any) {
+        // Ignore abort errors
+        if (err.name !== 'AbortError') {
+          console.error('[SubstanceCombobox] Search error:', err);
+          setSuggestions([]);
+          setShowDropdown(false);
+        }
       } finally {
         setLoading(false);
       }
-    }, 250);
+    }, 150);
 
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
   }, [input, kind]);
@@ -209,11 +220,15 @@ export default function SubstanceCombobox({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => {
+            // Show existing suggestions or trigger search if input exists
             if (suggestions.length > 0) {
               setShowDropdown(true);
+            } else if (input.trim().length >= 1) {
+              // Trigger search by updating state
+              setInput(input.trim());
             }
           }}
-          placeholder={placeholder || t('checker.supplement.placeholder')}
+          placeholder={placeholder || (kind === 'supplement' ? 'Type supplement name (e.g., Magnesium)' : 'Type medication name (e.g., Warfarin)')}
           className="w-full pl-10 pr-10 py-2.5 rounded-lg border-2 text-base"
           style={{
             borderColor: error ? '#EF5350' : 'var(--color-border)',
@@ -221,16 +236,21 @@ export default function SubstanceCombobox({
           }}
         />
 
-        {/* Dropdown */}
+        {/* Dropdown - Instant suggestions */}
         {showDropdown && suggestions.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute z-50 w-full mt-1 rounded-lg shadow-lg border-2 overflow-hidden"
+            className="absolute w-full mt-1 rounded-lg shadow-lg border-2 overflow-hidden"
             style={{
               background: 'var(--color-bg)',
               borderColor: 'var(--color-border)',
               maxHeight: '300px',
               overflowY: 'auto',
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              zIndex: 9999,
             }}
           >
             {suggestions.map((suggestion, idx) => (
