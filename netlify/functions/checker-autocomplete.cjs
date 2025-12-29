@@ -51,7 +51,13 @@ exports.handler = async (event) => {
     }
 
     const q = (event.queryStringParameters?.q || '').trim();
-    const type = (event.queryStringParameters?.type || '').toLowerCase();
+    const typeRaw = (event.queryStringParameters?.type || '').toLowerCase();
+
+const type =
+  typeRaw === 'medicine' || typeRaw === 'medication' || typeRaw === 'rx'
+    ? 'drug'
+    : typeRaw;
+
     const limit = Math.min(parseInt(event.queryStringParameters?.limit || '10', 10), 50);
 
     if (q.length < 2) {
