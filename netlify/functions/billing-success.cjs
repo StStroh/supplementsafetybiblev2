@@ -166,6 +166,30 @@ exports.handler = async (event) => {
 
     console.log('[billing-success] Existing profile:', existingProfile ? '✓ found' : '✗ not found');
 
+    // Check if webhook already provisioned access
+    const { data: webhookProvisioned } = await supabase
+      .from('profiles')
+      .select('id, provisioned_via, provisioned_by_checkout_session')
+      .eq('email', email)
+      .eq('provisioned_by_checkout_session', sessionId)
+      .maybeSingle();
+
+    if (webhookProvisioned && webhookProvisioned.provisioned_via === 'webhook') {
+      console.log('[billing-success] ✅ Already provisioned by webhook, returning existing data');
+
+      return json(200, {
+        ok: true,
+        email: email,
+        plan: planInfo.plan,
+        tier: planInfo.tier,
+        interval: planInfo.interval,
+        subscription_status: 'active',
+        customer_name: customerName,
+        provisioned_via: 'webhook',
+        note: 'Access already granted by webhook (failsafe provisioning)'
+      });
+    }
+
     const profileData = {
       email: email,
       tier: planInfo.tier,
@@ -173,6 +197,9 @@ exports.handler = async (event) => {
       subscription_status: checkoutSession.status === 'complete' ? 'active' : 'incomplete',
       stripe_customer_id: customerId || null,
       stripe_subscription_id: subscriptionId || null,
+      provisioned_by_checkout_session: sessionId,
+      provisioned_via: 'success_page',
+      last_provisioned_at: new Date().toISOString(),
     };
 
     if (customerName) {

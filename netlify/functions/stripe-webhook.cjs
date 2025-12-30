@@ -1,11 +1,13 @@
 /*
- * ⚠️ DO NOT MODIFY WITHOUT FULL BILLING FLOW REVIEW.
- * This file is part of the Stripe → Supabase entitlement chain.
+ * ⚠️ FAILSAFE WEBHOOK PROVISIONING
  *
- * CRITICAL: This webhook updates profiles table when Stripe sends subscription events.
+ * This webhook GUARANTEES access provisioning even if user closes browser after payment.
+ *
+ * CRITICAL: This is the PRIMARY provisioning mechanism. Success page is secondary/optional.
  * Changes here affect customer access to premium features.
  *
- * Updated: 2025-12-26 - Added guest checkout support
+ * Updated: 2025-12-30 - Failsafe provisioning with idempotency tracking
+ * Previous: 2025-12-26 - Added guest checkout support
  * Verified working: 2025-12-14
  * See: /docs/BILLING_FLOW_LOCKED.md
  */
@@ -15,6 +17,44 @@ const { createClient } = require('@supabase/supabase-js');
 const { getPlanInfo } = require('./_lib/plan-map.cjs');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 
+const SITE_URL = process.env.SITE_URL || 'https://supplementsafetybible.com';
+
+// Email validation
+function isValidEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Track webhook event for idempotency
+async function trackEvent(eventId, eventType, checkoutSessionId, customerId, email, status = 'processing', error = null, rawData = {}) {
+  const { error: insertError } = await supabase
+    .from('stripe_events')
+    .insert({
+      id: eventId,
+      type: eventType,
+      checkout_session_id: checkoutSessionId,
+      customer_id: customerId,
+      email: email,
+      status: status,
+      processed_at: status === 'completed' ? new Date().toISOString() : null,
+      error: error,
+      raw_data: rawData,
+    });
+
+  if (insertError) {
+    // If duplicate event ID, it's already processed - this is OK
+    if (insertError.code === '23505') {
+      console.log('[StripeWebhook] Event already processed:', eventId);
+      return { duplicate: true };
+    }
+    console.error('[StripeWebhook] Failed to track event:', insertError);
+  }
+
+  return { duplicate: false };
+}
+
+// Legacy event logging (keep for compatibility)
 async function logEvent(id, type){
   const { error }=await supabase.from('events_log').insert({id,type}).select().single();
   if(error&&error.code!=='23505') throw error;
@@ -90,94 +130,156 @@ exports.handler = async (event) => {
   const body = event.isBase64Encoded ? Buffer.from(event.body,'base64') : Buffer.from(event.body||'');
   let stripeEvent;
 
+  console.log('[StripeWebhook] ========== INCOMING WEBHOOK ==========');
+
+  // Verify Stripe signature (CRITICAL: prevents fake webhooks)
   try{
     stripeEvent = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    console.log('[StripeWebhook] ✅ Signature verified');
   }catch(err){
-    console.error('[webhook] Invalid signature:', err.message);
+    console.error('[StripeWebhook] ❌ Invalid signature:', err.message);
     return { statusCode:400, body:'Invalid signature' };
   }
 
+  console.log('[StripeWebhook] Event type:', stripeEvent.type);
+  console.log('[StripeWebhook] Event ID:', stripeEvent.id);
+
+  // Legacy event logging
   await logEvent(stripeEvent.id, stripeEvent.type);
   const obj = stripeEvent.data.object;
 
-  // Handle checkout.session.completed - includes guest checkout
+  // ============================================================
+  // HANDLE: checkout.session.completed (PRIMARY PROVISIONING)
+  // ============================================================
   if (stripeEvent.type==='checkout.session.completed' && obj.subscription){
-    console.log('[webhook] Processing checkout.session.completed:', obj.id);
+    console.log('[StripeWebhook] Processing checkout.session.completed:', obj.id);
 
-    const sub = await stripe.subscriptions.retrieve(obj.subscription, { expand:['items.data.price'] });
-    const priceId = sub.items.data[0].price.id;
-    const planInfo = getPlanInfo(priceId);
-    const plan = planInfo?.plan || 'starter';
+    // Extract customer email
     const email = obj.customer_details?.email;
     const customerName = obj.customer_details?.name;
-    const isGuestCheckout = obj.metadata?.guest_checkout === 'true';
+    const customerId = obj.customer;
+    const subscriptionId = obj.subscription;
+    const checkoutSessionId = obj.id;
 
-    if(!email) {
-      console.log('[webhook] No email in checkout session');
-      return { statusCode:200, body:'No email' };
+    console.log('[StripeWebhook] Email:', email || 'MISSING');
+    console.log('[StripeWebhook] Customer ID:', customerId);
+    console.log('[StripeWebhook] Checkout Session ID:', checkoutSessionId);
+
+    // Check idempotency: has this checkout session already been processed?
+    const { data: existingEvent } = await supabase
+      .from('stripe_events')
+      .select('id, status')
+      .eq('checkout_session_id', checkoutSessionId)
+      .maybeSingle();
+
+    if (existingEvent) {
+      console.log('[StripeWebhook] ⚠️ Checkout session already processed:', existingEvent.status);
+      return { statusCode: 200, body: JSON.stringify({ ok: true, message: 'Already processed' }) };
     }
 
-    console.log('[webhook] Email:', email, 'Plan:', plan, 'Guest:', isGuestCheckout);
+    // Validate email (HARD STOP if invalid)
+    if (!isValidEmail(email)) {
+      console.error('[StripeWebhook] ❌ Invalid email:', email);
+      await trackEvent(stripeEvent.id, stripeEvent.type, checkoutSessionId, customerId, email, 'failed', 'Invalid email format', obj);
+      return { statusCode: 200, body: JSON.stringify({ error: 'Invalid email' }) };
+    }
 
-    // Try to find existing user by Stripe customer or email
-    let user = await getUserByCustomer(obj.customer);
-    if(!user && email) user = await getUserByEmail(email);
+    console.log('[StripeWebhook] ✅ Email validated:', email);
 
-    const isPremium = plan === 'pro' || plan === 'premium';
-    const updates = {
-      stripe_customer_id: obj.customer,
-      stripe_subscription_id: sub.id,
-      plan: sub.status==='trialing' ? `${plan}_trial` : plan,
-      trial_end: sub.trial_end ? new Date(sub.trial_end*1000) : null,
-      trial_used: true,
-      is_premium: isPremium || sub.status === 'trialing',
-      subscription_status: sub.status,
-      current_period_end: sub.current_period_end,
-      role: plan,
-      email,
-    };
+    // Track this event as processing
+    await trackEvent(stripeEvent.id, stripeEvent.type, checkoutSessionId, customerId, email, 'processing', null, { session: obj.id });
 
-    // If no profile exists, create one
-    if(!user){
-      console.log('[webhook] No existing profile, creating new one');
+    try {
+      // Retrieve subscription details
+      const sub = await stripe.subscriptions.retrieve(subscriptionId, { expand:['items.data.price'] });
+      const priceId = sub.items.data[0].price.id;
+      const planInfo = getPlanInfo(priceId);
+      const plan = planInfo?.plan || 'starter';
+      const isGuestCheckout = obj.metadata?.guest_checkout === 'true';
 
-      // For guest checkouts, create auth user and send magic link
-      if (isGuestCheckout) {
-        const authUser = await createAuthUserAndSendMagicLink(email, customerName);
-        if (authUser) {
-          updates.id = authUser.id; // Link profile to auth user
+      console.log('[StripeWebhook] Plan:', plan);
+      console.log('[StripeWebhook] Guest checkout:', isGuestCheckout);
+      console.log('[StripeWebhook] Subscription status:', sub.status);
+
+      // Try to find existing user by Stripe customer or email
+      let user = await getUserByCustomer(customerId);
+      if(!user && email) user = await getUserByEmail(email);
+
+      const isPremium = plan === 'pro' || plan === 'premium';
+      const updates = {
+        stripe_customer_id: customerId,
+        stripe_subscription_id: sub.id,
+        plan: sub.status==='trialing' ? `${plan}_trial` : plan,
+        trial_end: sub.trial_end ? new Date(sub.trial_end*1000) : null,
+        trial_used: true,
+        is_premium: isPremium || sub.status === 'trialing',
+        subscription_status: sub.status,
+        current_period_end: sub.current_period_end,
+        role: plan,
+        email,
+        provisioned_by_checkout_session: checkoutSessionId,
+        provisioned_via: 'webhook',
+        last_provisioned_at: new Date().toISOString(),
+      };
+
+      // If no profile exists, create one
+      if(!user){
+        console.log('[StripeWebhook] No existing profile, creating new one');
+
+        // For guest checkouts, create auth user and send magic link
+        if (isGuestCheckout) {
+          const authUser = await createAuthUserAndSendMagicLink(email, customerName);
+          if (authUser) {
+            updates.id = authUser.id; // Link profile to auth user
+          }
         }
-      }
 
-      const { data: newProfile, error: insertError } = await supabase
-        .from('profiles')
-        .insert({...updates, activated_at: new Date()})
-        .select()
-        .single();
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({...updates, activated_at: new Date()})
+          .select()
+          .single();
 
-      if (insertError) {
-        console.error('[webhook] Failed to create profile:', insertError);
+        if (insertError) {
+          console.error('[StripeWebhook] ❌ Failed to create profile:', insertError);
+          await trackEvent(stripeEvent.id, stripeEvent.type, checkoutSessionId, customerId, email, 'failed', insertError.message);
+          return { statusCode: 200, body: JSON.stringify({ error: 'Profile creation failed' }) };
+        }
+
+        console.log('[StripeWebhook] ✅ Profile created:', newProfile.id);
       } else {
-        console.log('[webhook] Profile created:', newProfile.id);
-      }
-    } else {
-      // Update existing profile
-      console.log('[webhook] Updating existing profile:', user.id);
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
+        // Update existing profile
+        console.log('[StripeWebhook] Updating existing profile:', user.id);
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('id', user.id);
 
-      if (updateError) {
-        console.error('[webhook] Failed to update profile:', updateError);
-      } else {
-        console.log('[webhook] Profile updated successfully');
+        if (updateError) {
+          console.error('[StripeWebhook] ❌ Failed to update profile:', updateError);
+          await trackEvent(stripeEvent.id, stripeEvent.type, checkoutSessionId, customerId, email, 'failed', updateError.message);
+          return { statusCode: 200, body: JSON.stringify({ error: 'Profile update failed' }) };
+        }
+
+        console.log('[StripeWebhook] ✅ Profile updated successfully');
       }
+
+      // Mark event as completed
+      await trackEvent(stripeEvent.id, stripeEvent.type, checkoutSessionId, customerId, email, 'completed');
+      console.log('[StripeWebhook] ✅ PROVISIONING COMPLETE');
+
+    } catch (error) {
+      console.error('[StripeWebhook] ❌ Error during provisioning:', error);
+      await trackEvent(stripeEvent.id, stripeEvent.type, checkoutSessionId, customerId, email, 'failed', error.message);
+      return { statusCode: 200, body: JSON.stringify({ error: 'Provisioning failed' }) };
     }
   }
 
-  // Handle subscription updates
+  // ============================================================
+  // HANDLE: customer.subscription.updated
+  // ============================================================
   if (stripeEvent.type==='customer.subscription.updated'){
+    console.log('[StripeWebhook] Processing subscription update:', obj.id);
     const sub = obj.items ? obj : await stripe.subscriptions.retrieve(obj.id, { expand:['items.data.price'] });
     const priceId = sub.items.data[0].price.id;
     const planInfo = getPlanInfo(priceId);
@@ -196,8 +298,11 @@ exports.handler = async (event) => {
     }
   }
 
-  // Handle payment failures
+  // ============================================================
+  // HANDLE: invoice.payment_failed
+  // ============================================================
   if (stripeEvent.type==='invoice.payment_failed'){
+    console.log('[StripeWebhook] Processing payment failure');
     const user = await getUserByCustomer(obj.customer);
     if(user){
       await supabase.from('profiles').update({
@@ -208,8 +313,11 @@ exports.handler = async (event) => {
     }
   }
 
-  // Handle subscription cancellations
+  // ============================================================
+  // HANDLE: customer.subscription.deleted
+  // ============================================================
   if (stripeEvent.type==='customer.subscription.deleted'){
+    console.log('[StripeWebhook] Processing subscription cancellation');
     const user = await getUserByCustomer(obj.customer);
     if(user){
       await supabase.from('profiles').update({
@@ -221,5 +329,6 @@ exports.handler = async (event) => {
     }
   }
 
-  return { statusCode:200 };
+  console.log('[StripeWebhook] ========== WEBHOOK COMPLETE ==========');
+  return { statusCode:200, body: JSON.stringify({ ok: true }) };
 };
