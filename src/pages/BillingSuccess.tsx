@@ -24,6 +24,7 @@ export default function BillingSuccess() {
   const [state, setState] = useState<VerificationState>('loading');
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [resendDisabled, setResendDisabled] = useState(false);
   const [autoRedirectSeconds, setAutoRedirectSeconds] = useState(5);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ export default function BillingSuccess() {
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          emailRedirectTo: `${origin}/check`,
+          emailRedirectTo: `${origin}/auth/callback`,
         },
       });
 
@@ -112,6 +113,20 @@ export default function BillingSuccess() {
     } catch (err) {
       console.error('[BillingSuccess] Magic link send failed:', err);
     }
+  }
+
+  async function handleResendEmail() {
+    if (!sessionData?.email || resendDisabled) return;
+
+    console.log('[BillingSuccess] Resending magic link');
+    setResendDisabled(true);
+
+    await sendMagicLink(sessionData.email);
+
+    // Rate limit: disable for 60 seconds
+    setTimeout(() => {
+      setResendDisabled(false);
+    }, 60000);
   }
 
   if (state === 'loading') {
@@ -229,27 +244,46 @@ export default function BillingSuccess() {
               <CheckCircle className="w-16 h-16 text-emerald-600 mx-auto mb-6" />
 
               <h1 className="text-3xl font-bold text-gray-900 text-center mb-3">
-                Welcome to {planName}!
+                You're in. {planName} access is active.
               </h1>
 
               <p className="text-lg text-gray-700 text-center mb-8">
-                Your subscription is active, {displayName}. We've sent a secure login link to <strong>{sessionData?.email}</strong>
+                We sent a secure sign-in link to: <strong className="block mt-1">{sessionData?.email}</strong>
               </p>
 
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5 mb-6">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5 mb-4">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-emerald-900 mb-1">
                       Check your email
                     </p>
-                    <p className="text-sm text-emerald-800">
+                    <p className="text-sm text-emerald-800 mb-2">
                       Click the login link we sent to access your premium features instantly.
                       No password needed.
+                    </p>
+                    <p className="text-xs text-emerald-700 italic">
+                      Link expires soon for security.
                     </p>
                   </div>
                 </div>
               </div>
+
+              {magicLinkSent && (
+                <div className="text-center mb-4">
+                  <button
+                    onClick={handleResendEmail}
+                    disabled={resendDisabled}
+                    className={`text-sm font-medium ${
+                      resendDisabled
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'text-emerald-600 hover:text-emerald-700 underline'
+                    }`}
+                  >
+                    {resendDisabled ? 'Email sent (check spam folder)' : 'Resend email'}
+                  </button>
+                </div>
+              )}
 
               {magicLinkSent && autoRedirectSeconds > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">

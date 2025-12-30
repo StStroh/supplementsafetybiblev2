@@ -29,13 +29,25 @@ let supabase: Client;
 const { url, anon, ok } = getEnv();
 
 if (ok) {
+  // Extract project ref from URL for verification (safe to log)
+  const projectRef = url.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1] || 'unknown';
+  const storageRef = STORAGE_KEY.match(/sb-([^-]+)-/)?.[1] || 'unknown';
+
   if (globalThis.__ssb_supabase_client) {
     globalThis.__ssb_init_count++;
     console.warn(`[SSB] Reusing existing client (init attempt #${globalThis.__ssb_init_count})`);
     supabase = globalThis.__ssb_supabase_client;
   } else {
     globalThis.__ssb_init_count++;
-    console.log(`[SSB] Creating first client instance with storage key: ${STORAGE_KEY}`);
+    console.log(`[SSB] Creating first client instance`);
+    console.log(`[SSB] Project ref: ${projectRef.slice(-6)} | Storage ref: ${storageRef.slice(-6)}`);
+
+    if (projectRef !== storageRef) {
+      console.error(`[SSB] ⚠️ PROJECT MISMATCH! URL ref (${projectRef}) !== Storage ref (${storageRef})`);
+    } else {
+      console.log(`[SSB] ✅ Project refs match`);
+    }
+
     supabase = createClient(url, anon, {
       auth: {
         storageKey: STORAGE_KEY,
