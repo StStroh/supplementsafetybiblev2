@@ -600,23 +600,68 @@ export default function StackBuilderCheckerV3() {
             >
               <ConfidenceBadge level="none" showExplanation={true} />
               <div className="mt-4 p-4 rounded-lg" style={{ background: 'white', border: '1px solid ' + SEVERITY_CONFIG.none.borderColor }}>
-                <h4 className="font-semibold mb-2" style={{ color: SEVERITY_CONFIG.none.textColor }}>
-                  What this means:
+                <h4 className="font-semibold mb-3 text-base" style={{ color: SEVERITY_CONFIG.none.textColor }}>
+                  No interaction results found for this combination
                 </h4>
-                <ul className="space-y-2 text-sm" style={{ color: 'var(--color-text)' }}>
-                  <li className="flex items-start gap-2">
-                    <span style={{ color: SEVERITY_CONFIG.none.textColor }}>•</span>
-                    <span>All substances in your stack have been checked against our database</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span style={{ color: SEVERITY_CONFIG.none.textColor }}>•</span>
-                    <span>No documented interactions were found in medical literature</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span style={{ color: SEVERITY_CONFIG.none.textColor }}>•</span>
-                    <span>This does not guarantee complete safety — always consult your healthcare provider</span>
-                  </li>
-                </ul>
+                <p className="text-sm mb-3" style={{ color: 'var(--color-text)' }}>
+                  This can happen when a name doesn't match our database spelling, or when no clinically significant interaction has been documented in major reference sources.
+                </p>
+                <p className="text-sm mb-4 font-medium" style={{ color: SEVERITY_CONFIG.none.textColor }}>
+                  Tip: choose from the suggestions when possible for the most accurate matching.
+                </p>
+                <div className="flex gap-3 mb-4">
+                  <button
+                    onClick={() => {
+                      setResults(null);
+                      setSummary(null);
+                    }}
+                    className="px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+                    style={{
+                      background: 'white',
+                      border: `2px solid ${SEVERITY_CONFIG.none.borderColor}`,
+                      color: SEVERITY_CONFIG.none.textColor
+                    }}
+                  >
+                    Edit inputs
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const allNames = [
+                          ...supplements.map((s) => s.display_name),
+                          ...medications.map((m) => m.display_name),
+                        ];
+                        const response = await fetch('/.netlify/functions/checker-request-add', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            raw_name: allNames.join(' + '),
+                            kind: 'unknown'
+                          })
+                        });
+                        const result = await response.json();
+                        if (result.ok) {
+                          alert('Thank you! Your request has been submitted for review.');
+                        } else {
+                          alert('Unable to submit request. Please try again later.');
+                        }
+                      } catch {
+                        alert('Unable to submit request. Please try again later.');
+                      }
+                    }}
+                    className="px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+                    style={{
+                      background: SEVERITY_CONFIG.none.borderColor,
+                      color: 'white',
+                      border: `2px solid ${SEVERITY_CONFIG.none.borderColor}`
+                    }}
+                  >
+                    Request review
+                  </button>
+                </div>
+                <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                  This tool is for educational awareness only and does not replace professional medical advice.
+                </p>
               </div>
             </div>
           )}
