@@ -11,6 +11,10 @@ const { PRICE_TO_PLAN_MAP } = require('./_lib/plan-map.cjs');
 
 const SUPPORT_EMAIL = "support@supplementsafetybible.com";
 
+// Boot verification log (safe for production)
+const supabaseProjectRef = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.split('.')[0].split('//')[1].slice(-6) : 'none';
+console.log('[BillingSuccessFn] boot ok | supabase:', supabaseProjectRef);
+
 function json(statusCode, body) {
   return {
     statusCode,

@@ -19,6 +19,10 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SER
 
 const SITE_URL = process.env.SITE_URL || 'https://supplementsafetybible.com';
 
+// Boot verification log (safe for production)
+const supabaseProjectRef = process.env.SUPABASE_URL ? process.env.SUPABASE_URL.split('.')[0].split('//')[1].slice(-6) : 'none';
+console.log('[StripeWebhook] boot ok | supabase:', supabaseProjectRef);
+
 // Email validation
 function isValidEmail(email) {
   if (!email || typeof email !== 'string') return false;
