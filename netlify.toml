@@ -46,13 +46,8 @@
   targetPort = 5173
   framework = "#custom"
 
-# Ensure Netlify Functions are not intercepted
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
 # SPA Fallback (catch-all for client-side routing)
+# Note: /.netlify/functions/* are automatically accessible and should NOT have redirect rules
 [[redirects]]
   from = "/*"
   to = "/index.html"
