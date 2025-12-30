@@ -229,11 +229,11 @@ exports.handler = async (event) => {
 
     const origin = getOrigin(event);
 
-    // Use env vars with fallbacks - redirect to /billing/success with session_id
-    const successUrl = process.env.CHECKOUT_SUCCESS_URL ||
-      `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = process.env.CHECKOUT_CANCEL_URL ||
-      `${origin}/pricing?canceled=true`;
+    // ALWAYS derive URLs from origin - ignore env vars to prevent misconfiguration
+    const successUrl = `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${origin}/pricing?canceled=true`;
+
+    console.log('[create-checkout-session] URLs configured:', { successUrl, cancelUrl });
 
     // Check if user is authenticated (optional - guest checkout is fully supported)
     const authHeader = event.headers.authorization || event.headers.Authorization;

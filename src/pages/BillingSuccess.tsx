@@ -24,8 +24,8 @@ export default function BillingSuccess() {
     const sessionId = searchParams.get('session_id');
 
     if (!sessionId) {
-      setError('Missing session ID');
-      setLoading(false);
+      console.log('[BillingSuccess] No session_id in URL, will poll subscription status');
+      await pollSubscriptionStatus();
       return;
     }
 
@@ -56,6 +56,58 @@ export default function BillingSuccess() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function pollSubscriptionStatus() {
+    let attempts = 0;
+    const maxAttempts = 20;
+    const pollInterval = 2000;
+
+    while (attempts < maxAttempts) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          await new Promise(resolve => setTimeout(resolve, pollInterval));
+          attempts++;
+          continue;
+        }
+
+        setCurrentUser(user);
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('tier, subscription_status')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profile?.subscription_status === 'active' || profile?.subscription_status === 'trialing') {
+          setSessionData({
+            email: user.email,
+            tier: profile.tier || 'premium',
+            isTrialing: profile.subscription_status === 'trialing'
+          });
+          setLoading(false);
+
+          await supabase.auth.refreshSession();
+          setTimeout(() => {
+            navigate('/check');
+          }, 2000);
+          return;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+        attempts++;
+
+      } catch (err) {
+        console.error('[BillingSuccess] Poll error:', err);
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+        attempts++;
+      }
+    }
+
+    setLoading(false);
+    setSessionData({ email: currentUser?.email || 'your account', tier: 'premium', isTrialing: false });
   }
 
   async function sendMagicLink() {
