@@ -1,215 +1,187 @@
 /*
- * Stripe Session Verification and Recovery
- * Handles missing session_id in /welcome redirect by verifying payment status
- * and granting access accordingly
+ * Stripe Checkout Session Verification (Read-Only)
+ *
+ * Lightweight verification endpoint for /billing/success page.
+ * Returns session payment status and customer email for UI display.
+ *
+ * IMPORTANT: This is READ-ONLY. Access provisioning is handled by:
+ * 1) stripe-webhook.cjs (primary, failsafe)
+ * 2) billing-success.cjs (secondary, immediate)
+ *
+ * This endpoint only retrieves and returns Stripe session data.
+ * Multiple calls are safe (idempotent).
  */
-
-const Stripe = require('stripe');
-const { createClient } = require('@supabase/supabase-js');
-
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type, authorization',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Max-Age': '86400',
-};
+const Stripe = require("stripe");
 
 function json(statusCode, body) {
   return {
     statusCode,
     headers: {
-      ...CORS_HEADERS,
-      'Content-Type': 'application/json; charset=utf-8',
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
     },
     body: JSON.stringify(body),
   };
 }
 
+function isValidEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.trim());
+}
+
 exports.handler = async (event) => {
-  try {
-    // CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
-      return {
-        statusCode: 204,
-        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' },
-        body: '',
-      };
-    }
+  // Handle CORS preflight
+  if (event.httpMethod === "OPTIONS") {
+    return json(200, { ok: true });
+  }
 
-    if (event.httpMethod !== 'POST') {
-      return json(405, { ok: false, error: 'Method not allowed' });
-    }
-
-    // Validate environment
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return json(500, { ok: false, error: 'Stripe not configured' });
-    }
-
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return json(500, { ok: false, error: 'Supabase not configured' });
-    }
-
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
+  // Only allow GET
+  if (event.httpMethod !== "GET") {
+    return json(405, {
+      ok: false,
+      error: "Method not allowed. Use GET."
     });
+  }
 
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-      { auth: { persistSession: false } }
-    );
+  const params = event.queryStringParameters || {};
+  const sessionId = params.session_id;
 
-    // Parse request body
-    let body;
-    try {
-      body = JSON.parse(event.body || '{}');
-    } catch (parseError) {
-      return json(400, { ok: false, error: 'Invalid JSON' });
-    }
+  // Production-safe logging (no secrets, no PII)
+  const sessionPrefix = sessionId ? sessionId.substring(0, 8) : 'none';
+  console.log('[stripe-verify-session] Request:', { session_prefix: sessionPrefix });
 
-    const { session_id } = body;
-
-    if (!session_id || typeof session_id !== 'string') {
-      return json(400, {
-        ok: false,
-        error: 'session_id is required',
-      });
-    }
-
-    console.log('[stripe-verify-session] Verifying session:', session_id);
-
-    // Retrieve session from Stripe
-    let session;
-    try {
-      session = await stripe.checkout.sessions.retrieve(session_id);
-    } catch (stripeError) {
-      console.error('[stripe-verify-session] Stripe error:', stripeError.message);
-      return json(400, {
-        ok: false,
-        error: 'Invalid or expired session',
-        code: stripeError.code,
-      });
-    }
-
-    console.log('[stripe-verify-session] Session retrieved:', {
-      status: session.status,
-      payment_status: session.payment_status,
-      customer: session.customer,
-      subscription: session.subscription,
+  // Validate session_id parameter
+  if (!sessionId) {
+    console.error('[stripe-verify-session] Missing session_id');
+    return json(400, {
+      ok: false,
+      error: "Missing session_id"
     });
+  }
 
-    // Verify payment was successful
-    if (session.payment_status !== 'paid') {
-      return json(200, {
-        ok: false,
-        error: 'Payment not completed',
-        status: session.payment_status,
-      });
-    }
-
-    // Get customer email
-    const customerEmail = session.customer_details?.email || session.customer_email;
-    if (!customerEmail) {
-      return json(500, {
-        ok: false,
-        error: 'Customer email not found in session',
-      });
-    }
-
-    // Get subscription details
-    let subscription = null;
-    if (session.subscription) {
-      try {
-        subscription = await stripe.subscriptions.retrieve(session.subscription);
-      } catch (subError) {
-        console.error('[stripe-verify-session] Subscription retrieval error:', subError.message);
-      }
-    }
-
-    // Determine plan from subscription
-    let plan = 'free';
-    if (subscription && subscription.items?.data?.length > 0) {
-      const priceId = subscription.items.data[0].price.id;
-
-      // Map price IDs to plans
-      if (priceId === process.env.VITE_STRIPE_PRICE_PRO || priceId === process.env.VITE_STRIPE_PRICE_PRO_ANNUAL) {
-        plan = 'pro';
-      } else if (priceId === process.env.VITE_STRIPE_PRICE_PREMIUM || priceId === process.env.VITE_STRIPE_PRICE_PREMIUM_ANNUAL) {
-        plan = 'premium';
-      }
-    }
-
-    console.log('[stripe-verify-session] Determined plan:', plan);
-
-    // Update or create profile
-    const { data: existingProfile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id, email')
-      .eq('email', customerEmail)
-      .maybeSingle();
-
-    if (profileError) {
-      console.error('[stripe-verify-session] Profile query error:', profileError);
-    }
-
-    let profileId;
-    if (existingProfile) {
-      // Update existing profile
-      profileId = existingProfile.id;
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-          role: plan,
-          stripe_customer_id: session.customer,
-          subscription_status: subscription?.status || 'active',
-          subscription_id: session.subscription,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', profileId);
-
-      if (updateError) {
-        console.error('[stripe-verify-session] Profile update error:', updateError);
-      }
-    } else {
-      // Create new profile (guest checkout scenario)
-      const { data: newProfile, error: insertError } = await supabase
-        .from('profiles')
-        .insert({
-          email: customerEmail,
-          role: plan,
-          stripe_customer_id: session.customer,
-          subscription_status: subscription?.status || 'active',
-          subscription_id: session.subscription,
-        })
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error('[stripe-verify-session] Profile creation error:', insertError);
-        return json(500, {
-          ok: false,
-          error: 'Failed to create profile',
-        });
-      }
-
-      profileId = newProfile.id;
-    }
-
-    console.log('[stripe-verify-session] Profile updated:', profileId);
-
-    return json(200, {
-      ok: true,
-      verified: true,
-      plan,
-      customer_email: customerEmail,
-      subscription_status: subscription?.status || 'active',
-    });
-
-  } catch (e) {
-    console.error('[stripe-verify-session] Error:', e);
+  // Validate Stripe configuration
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('[stripe-verify-session] STRIPE_SECRET_KEY not configured');
     return json(500, {
       ok: false,
-      error: e?.message || 'Internal server error',
+      error: "Payment system not configured"
+    });
+  }
+
+  try {
+    // Detect key mode for validation (prevent test/live mismatch)
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const keyMode = stripeKey.startsWith('sk_test') ? 'test' :
+                   stripeKey.startsWith('sk_live') ? 'live' : 'unknown';
+    const sessionMode = sessionId.startsWith('cs_test_') ? 'test' :
+                       sessionId.startsWith('cs_live_') ? 'live' : 'unknown';
+
+    // Log mode check (production-safe)
+    console.log('[stripe-verify-session] Mode:', { key: keyMode, session: sessionMode });
+
+    // Validate mode match
+    if (keyMode !== 'unknown' && sessionMode !== 'unknown' && keyMode !== sessionMode) {
+      console.error('[stripe-verify-session] Mode mismatch');
+      return json(400, {
+        ok: false,
+        error: "Session mode mismatch with API key"
+      });
+    }
+
+    // Initialize Stripe
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: "2024-06-20",
+    });
+
+    // Retrieve session with expanded data
+    console.log('[stripe-verify-session] Retrieving:', sessionPrefix + '...');
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['subscription', 'customer'],
+    });
+
+    if (!session) {
+      console.error('[stripe-verify-session] Session not found');
+      return json(404, {
+        ok: false,
+        error: "Session not found"
+      });
+    }
+
+    // Extract session data
+    const email = session.customer_details?.email || null;
+    const paid = session.payment_status === 'paid';
+    const status = session.status;
+    const paymentStatus = session.payment_status;
+    const subscriptionStatus = typeof session.subscription === 'object'
+      ? session.subscription?.status
+      : null;
+
+    // Production-safe logging (no PII)
+    console.log('[stripe-verify-session] Result:', {
+      prefix: sessionPrefix + '...',
+      status,
+      payment_status: paymentStatus,
+      subscription_status: subscriptionStatus || 'none',
+      email_present: !!email,
+      paid,
+    });
+
+    // Validate email format if present
+    if (email && !isValidEmail(email)) {
+      console.warn('[stripe-verify-session] Invalid email format');
+      // Return null email if invalid format
+      return json(200, {
+        ok: true,
+        paid,
+        email: null,
+        status,
+        payment_status: paymentStatus,
+        subscription_status: subscriptionStatus,
+      });
+    }
+
+    // Return verification result (read-only, no side effects)
+    return json(200, {
+      ok: true,
+      paid,
+      email,
+      status,
+      payment_status: paymentStatus,
+      subscription_status: subscriptionStatus,
+    });
+
+  } catch (error) {
+    // Log error without exposing sensitive data
+    console.error('[stripe-verify-session] Error:', {
+      message: error.message,
+      type: error.type || error.constructor?.name,
+      code: error.code,
+    });
+
+    // Handle Stripe-specific errors
+    if (error.type === 'StripeInvalidRequestError') {
+      return json(400, {
+        ok: false,
+        error: "Invalid session ID"
+      });
+    }
+
+    if (error.type === 'StripeAuthenticationError') {
+      return json(500, {
+        ok: false,
+        error: "Payment system authentication error"
+      });
+    }
+
+    // Generic error response
+    return json(500, {
+      ok: false,
+      error: error.message || "Verification failed"
     });
   }
 };
