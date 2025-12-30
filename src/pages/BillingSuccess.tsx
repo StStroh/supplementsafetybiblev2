@@ -1,175 +1,168 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle, Mail, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
 
+type VerificationState = 'loading' | 'success' | 'error' | 'missing_session';
+
+interface SessionData {
+  email: string;
+  plan: string;
+  tier: string;
+  interval: string;
+  subscription_status: string;
+  customer_name?: string;
+  isTrialing?: boolean;
+}
+
 export default function BillingSuccess() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [sessionData, setSessionData] = useState<any>(null);
-  const [sendingLink, setSendingLink] = useState(false);
-  const [linkSent, setLinkSent] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [state, setState] = useState<VerificationState>('loading');
+  const [sessionData, setSessionData] = useState<SessionData | null>(null);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [autoRedirectSeconds, setAutoRedirectSeconds] = useState(5);
 
   useEffect(() => {
-    checkSession();
+    verifyAndProvision();
   }, []);
 
-  async function checkSession() {
+  useEffect(() => {
+    if (state === 'success' && magicLinkSent && autoRedirectSeconds > 0) {
+      const timer = setTimeout(() => {
+        setAutoRedirectSeconds(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+
+    if (autoRedirectSeconds === 0) {
+      navigate('/check');
+    }
+  }, [state, magicLinkSent, autoRedirectSeconds, navigate]);
+
+  async function verifyAndProvision() {
     const sessionId = searchParams.get('session_id');
 
+    console.log('[BillingSuccess] Verification started');
+    console.log('[BillingSuccess] session_id:', sessionId ? 'present' : 'MISSING');
+
     if (!sessionId) {
-      console.log('[BillingSuccess] No session_id in URL, will poll subscription status');
-      await pollSubscriptionStatus();
+      console.error('[BillingSuccess] ❌ No session_id in URL');
+      setState('missing_session');
       return;
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUser(user);
+      console.log('[BillingSuccess] Calling backend verification...');
+      const res = await fetch(`/.netlify/functions/billing-success?session_id=${sessionId}`);
 
-      const res = await fetch(`/.netlify/functions/verify-checkout-session?session_id=${sessionId}`);
+      console.log('[BillingSuccess] Response status:', res.status);
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to verify checkout');
+        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('[BillingSuccess] Backend error:', errorData);
+        throw new Error(errorData.error || `HTTP ${res.status}`);
       }
 
-      const data = await res.json();
+      const data: SessionData = await res.json();
+      console.log('[BillingSuccess] ✅ Verification successful:', {
+        email: data.email,
+        plan: data.plan,
+        tier: data.tier,
+      });
+
+      if (!data.email || !data.email.includes('@')) {
+        throw new Error('Invalid email returned from server');
+      }
+
       setSessionData(data);
+      setState('success');
 
-      if (user && user.email === data.email) {
-        await supabase.auth.refreshSession();
-        setTimeout(() => {
-          navigate('/check');
-        }, 2000);
-      }
+      await sendMagicLink(data.email);
 
     } catch (err: any) {
-      console.error('[BillingSuccess] Error:', err);
-      setError(err.message || 'Failed to verify checkout');
-    } finally {
-      setLoading(false);
+      console.error('[BillingSuccess] ❌ Verification failed:', err);
+      setState('error');
     }
   }
 
-  async function pollSubscriptionStatus() {
-    let attempts = 0;
-    const maxAttempts = 20;
-    const pollInterval = 2000;
+  async function sendMagicLink(email: string) {
+    console.log('[BillingSuccess] Sending magic link to:', email);
 
-    while (attempts < maxAttempts) {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-          await new Promise(resolve => setTimeout(resolve, pollInterval));
-          attempts++;
-          continue;
-        }
-
-        setCurrentUser(user);
-
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('tier, subscription_status')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        if (profile?.subscription_status === 'active' || profile?.subscription_status === 'trialing') {
-          setSessionData({
-            email: user.email,
-            tier: profile.tier || 'premium',
-            isTrialing: profile.subscription_status === 'trialing'
-          });
-          setLoading(false);
-
-          await supabase.auth.refreshSession();
-          setTimeout(() => {
-            navigate('/check');
-          }, 2000);
-          return;
-        }
-
-        await new Promise(resolve => setTimeout(resolve, pollInterval));
-        attempts++;
-
-      } catch (err) {
-        console.error('[BillingSuccess] Poll error:', err);
-        await new Promise(resolve => setTimeout(resolve, pollInterval));
-        attempts++;
-      }
-    }
-
-    setLoading(false);
-    setSessionData({ email: currentUser?.email || 'your account', tier: 'premium', isTrialing: false });
-  }
-
-  async function sendMagicLink() {
-    if (!sessionData?.email) return;
-
-    setSendingLink(true);
     try {
       const origin = window.location.origin;
       const { error } = await supabase.auth.signInWithOtp({
-        email: sessionData.email,
+        email: email,
         options: {
-          emailRedirectTo: `${origin}/auth/callback`,
+          emailRedirectTo: `${origin}/check`,
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[BillingSuccess] Magic link error:', error);
+        return;
+      }
 
-      setLinkSent(true);
-    } catch (err: any) {
-      console.error('[BillingSuccess] Magic link error:', err);
-      alert(err.message || 'Failed to send login link');
-    } finally {
-      setSendingLink(false);
+      console.log('[BillingSuccess] ✅ Magic link sent');
+      setMagicLinkSent(true);
+
+    } catch (err) {
+      console.error('[BillingSuccess] Magic link send failed:', err);
     }
   }
 
-  const isOutlook = sessionData?.email?.match(/@(outlook|hotmail|msn|live)\./i);
-
-  if (loading) {
+  if (state === 'loading') {
     return (
       <>
         <SEO title="Processing Payment" />
         <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 flex flex-col">
           <Navbar />
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center px-4">
             <div className="text-center">
               <Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
-              <p className="text-lg text-gray-600">Verifying your payment...</p>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Confirming your subscription
+              </h1>
+              <p className="text-gray-600">This will only take a moment...</p>
             </div>
           </div>
+          <Footer />
         </div>
       </>
     );
   }
 
-  if (error) {
+  if (state === 'missing_session') {
     return (
       <>
-        <SEO title="Payment Error" />
-        <div className="min-h-screen bg-gradient-to-b from-red-50 via-white to-orange-50 flex flex-col">
+        <SEO title="Session Required" />
+        <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-yellow-50 flex flex-col">
           <Navbar />
           <div className="flex-1 flex items-center justify-center px-4">
-            <div className="max-w-md w-full text-center">
-              <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Error</h1>
-              <p className="text-lg text-gray-600 mb-8">{error}</p>
+            <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
+              <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+              <h1 className="text-2xl font-bold text-gray-900 text-center mb-4">
+                Session Not Found
+              </h1>
+              <p className="text-gray-600 text-center mb-6">
+                This page requires a valid checkout session. If you just completed a payment,
+                please return to the pricing page and try again.
+              </p>
               <button
                 onClick={() => navigate('/pricing')}
-                className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                className="w-full px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
               >
                 Return to Pricing
               </button>
+              <p className="text-xs text-gray-500 text-center mt-6">
+                Need help? Email{' '}
+                <a href="mailto:support@supplementsafetybible.com" className="text-emerald-600 hover:underline">
+                  support@supplementsafetybible.com
+                </a>
+              </p>
             </div>
           </div>
           <Footer />
@@ -178,21 +171,42 @@ export default function BillingSuccess() {
     );
   }
 
-  if (currentUser && currentUser.email === sessionData?.email) {
+  if (state === 'error') {
     return (
       <>
-        <SEO title="Payment Successful" />
-        <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 flex flex-col">
+        <SEO title="Verification Error" />
+        <div className="min-h-screen bg-gradient-to-b from-red-50 via-white to-orange-50 flex flex-col">
           <Navbar />
           <div className="flex-1 flex items-center justify-center px-4">
-            <div className="max-w-md w-full text-center">
-              <CheckCircle className="w-16 h-16 text-emerald-600 mx-auto mb-4" />
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
-              <p className="text-lg text-gray-600 mb-4">
-                Your {sessionData.tier} subscription is now active.
-                {sessionData.isTrialing && <span className="block mt-2">You have a 14-day free trial.</span>}
+            <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h1 className="text-2xl font-bold text-gray-900 text-center mb-4">
+                Verification Error
+              </h1>
+              <p className="text-gray-600 text-center mb-6">
+                We couldn't verify your checkout session. Your payment may still have been processed.
+                Please check your email or contact support for assistance.
               </p>
-              <p className="text-sm text-gray-500">Redirecting to your dashboard...</p>
+              <div className="space-y-3">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="w-full px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+                >
+                  Try Again
+                </button>
+                <button
+                  onClick={() => navigate('/auth')}
+                  className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Sign In
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 text-center mt-6">
+                Need help? Email{' '}
+                <a href="mailto:support@supplementsafetybible.com" className="text-emerald-600 hover:underline">
+                  support@supplementsafetybible.com
+                </a>
+              </p>
             </div>
           </div>
           <Footer />
@@ -200,103 +214,90 @@ export default function BillingSuccess() {
       </>
     );
   }
+
+  const displayName = sessionData?.customer_name || 'there';
+  const planName = sessionData?.tier === 'premium' ? 'Premium' : 'Pro';
 
   return (
     <>
-      <SEO title="Complete Your Setup" />
+      <SEO title="Welcome to Supplement Safety Bible" />
       <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center px-4 py-12">
           <div className="max-w-lg w-full">
-            <div className="bg-white rounded-2xl shadow-lg p-8">
+            <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
               <CheckCircle className="w-16 h-16 text-emerald-600 mx-auto mb-6" />
 
-              <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">
-                Payment Successful!
+              <h1 className="text-3xl font-bold text-gray-900 text-center mb-3">
+                Welcome to {planName}!
               </h1>
 
-              <div className="bg-emerald-50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-emerald-900 mb-1">
-                  <strong>Plan:</strong> {sessionData?.tier?.toUpperCase()}
-                </p>
-                <p className="text-sm text-emerald-900 mb-1">
-                  <strong>Email:</strong> {sessionData?.email}
-                </p>
-                {sessionData?.isTrialing && (
-                  <p className="text-sm text-emerald-900">
-                    <strong>Trial:</strong> 14 days free
-                  </p>
-                )}
-              </div>
+              <p className="text-lg text-gray-700 text-center mb-8">
+                Your subscription is active, {displayName}. We've sent a secure login link to <strong>{sessionData?.email}</strong>
+              </p>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <p className="text-sm text-blue-900 mb-3">
-                  Your access is active for <strong>{sessionData?.email}</strong>.
-                  Sign in to start using your premium features.
-                </p>
-              </div>
-
-              {linkSent ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-green-900 font-medium mb-2">
-                    Check your email!
-                  </p>
-                  <p className="text-sm text-green-800">
-                    We sent a login link to <strong>{sessionData?.email}</strong>
-                  </p>
-                  {isOutlook && (
-                    <p className="text-xs text-orange-700 mt-3 bg-orange-50 p-2 rounded">
-                      Using Outlook/Hotmail? Check your spam/junk folder.
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5 mb-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-emerald-900 mb-1">
+                      Check your email
                     </p>
-                  )}
+                    <p className="text-sm text-emerald-800">
+                      Click the login link we sent to access your premium features instantly.
+                      No password needed.
+                    </p>
+                  </div>
                 </div>
-              ) : (
-                <button
-                  onClick={sendMagicLink}
-                  disabled={sendingLink}
-                  className="w-full px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
-                >
-                  {sendingLink ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Mail className="w-5 h-5" />
-                      Send me a login link
-                    </>
-                  )}
-                </button>
-              )}
-
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-3">Already have an account?</p>
-                <button
-                  onClick={() => navigate('/auth')}
-                  className="text-emerald-600 hover:text-emerald-700 font-medium text-sm"
-                >
-                  Sign in with password
-                </button>
               </div>
 
-              {isOutlook && !linkSent && (
-                <div className="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
-                  <p className="text-xs text-orange-900">
-                    <strong>Note:</strong> Outlook/Hotmail users may experience email delays.
-                    Please check your spam/junk folder if you don't receive the email within 5 minutes.
+              {magicLinkSent && autoRedirectSeconds > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-blue-900 text-center">
+                    Auto-redirecting to dashboard in <strong>{autoRedirectSeconds}</strong> seconds...
                   </p>
                 </div>
               )}
 
-              <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-                <p className="text-xs text-gray-500 mb-2">Need help?</p>
-                <a
-                  href="mailto:support@supplementsafetybible.com"
-                  className="text-xs text-emerald-600 hover:text-emerald-700"
-                >
-                  support@supplementsafetybible.com
-                </a>
+              <button
+                onClick={() => navigate('/check')}
+                className="w-full px-6 py-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold text-lg flex items-center justify-center gap-2 mb-4"
+              >
+                Go to My Dashboard
+                <ArrowRight className="w-5 h-5" />
+              </button>
+
+              <button
+                onClick={() => navigate('/auth')}
+                className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Sign in with password
+              </button>
+
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="text-center space-y-2">
+                  <p className="text-sm font-semibold text-gray-900">
+                    Your {planName} Plan Includes:
+                  </p>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>✓ Unlimited interaction checks</li>
+                    <li>✓ Detailed safety reports</li>
+                    <li>✓ Evidence-based recommendations</li>
+                    <li>✓ Priority support</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-6 text-center">
+                <p className="text-xs text-gray-500">
+                  Questions? Email{' '}
+                  <a
+                    href="mailto:support@supplementsafetybible.com"
+                    className="text-emerald-600 hover:underline font-medium"
+                  >
+                    support@supplementsafetybible.com
+                  </a>
+                </p>
               </div>
             </div>
           </div>
