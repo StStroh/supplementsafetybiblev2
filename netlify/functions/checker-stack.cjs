@@ -139,13 +139,14 @@ exports.handler = async (event) => {
     const severityCounts = { avoid: 0, caution: 0, monitor: 0, info: 0, none: 0 };
     let worstSeverity = 'none';
 
-    // Build OR conditions for all pairs
-    const orConditions = filteredPairs.map(pair =>
-      `and(substance_a_id.eq.${pair.a},substance_b_id.eq.${pair.b})`
-    ).join(',');
+    // Build OR conditions for all pairs - check BOTH directions (A+B and B+A)
+    const orConditions = filteredPairs.flatMap(pair => [
+      `and(substance_a_id.eq.${pair.a},substance_b_id.eq.${pair.b})`,
+      `and(substance_a_id.eq.${pair.b},substance_b_id.eq.${pair.a})`
+    ]).join(',');
 
     const { data: interactions, error: interactionsError } = await supabase
-      .from('checker_interactions_enriched_v1')
+      .from('checker_interactions_enriched_v2')
       .select('*')
       .or(orConditions);
 
@@ -158,11 +159,13 @@ exports.handler = async (event) => {
       };
     }
 
-    // Create interaction map for fast lookup
+    // Create interaction map for fast lookup - store both directions
     const interactionMap = new Map();
     (interactions || []).forEach(interaction => {
-      const key = `${interaction.substance_a_id}|${interaction.substance_b_id}`;
-      interactionMap.set(key, interaction);
+      const keyAB = `${interaction.substance_a_id}|${interaction.substance_b_id}`;
+      const keyBA = `${interaction.substance_b_id}|${interaction.substance_a_id}`;
+      interactionMap.set(keyAB, interaction);
+      interactionMap.set(keyBA, interaction);
     });
 
     console.log('[CheckStack] Found', interactions.length, 'interactions out of', filteredPairs.length, 'pairs');
