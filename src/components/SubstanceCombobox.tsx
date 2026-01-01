@@ -23,23 +23,27 @@ interface SubstanceComboboxProps {
   onNotFound?: (rawInput: string, kind: string, suggestions: Substance[]) => void;
 }
 
-// Helper: Highlight matched prefix in text
+// Helper: Highlight matched prefix in text (React-safe with stable structure)
 function highlightMatch(text: string, query: string) {
-  if (!query.trim()) return <span>{text}</span>;
+  if (!query.trim()) return <span key="text-only">{text}</span>;
 
   const lowerText = text.toLowerCase();
   const lowerQuery = query.toLowerCase();
   const index = lowerText.indexOf(lowerQuery);
 
-  if (index === -1) return <span>{text}</span>;
+  if (index === -1) return <span key="text-only">{text}</span>;
+
+  const before = text.slice(0, index);
+  const match = text.slice(index, index + query.length);
+  const after = text.slice(index + query.length);
 
   return (
-    <span>
-      {text.slice(0, index)}
-      <span style={{ background: '#fef3c7', fontWeight: 600 }}>
-        {text.slice(index, index + query.length)}
+    <span key="highlighted">
+      {before && <span key="before">{before}</span>}
+      <span key="match" style={{ background: '#fef3c7', fontWeight: 600 }}>
+        {match}
       </span>
-      {text.slice(index + query.length)}
+      {after && <span key="after">{after}</span>}
     </span>
   );
 }

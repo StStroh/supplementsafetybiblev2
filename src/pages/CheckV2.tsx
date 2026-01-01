@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import StackBuilderChecker from '../components/StackBuilderChecker';
+import StackBuilderCheckerV3 from '../components/StackBuilderCheckerV3';
+import CheckerErrorBoundary from '../components/CheckerErrorBoundary';
 
 export default function CheckV2() {
   return (
@@ -14,7 +15,9 @@ export default function CheckV2() {
       <Navbar />
 
       <main className="flex-1 py-12 px-4 sm:px-6">
-        <StackBuilderChecker />
+        <CheckerErrorBoundary>
+          <StackBuilderCheckerV3 />
+        </CheckerErrorBoundary>
       </main>
 
       <Footer />

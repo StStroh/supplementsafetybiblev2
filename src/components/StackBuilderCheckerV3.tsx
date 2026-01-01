@@ -749,18 +749,21 @@ export default function StackBuilderCheckerV3() {
                                   Citations:
                                 </h5>
                                 <div className="space-y-1">
-                                  {interaction.citations.map((citation: any, idx: number) => (
-                                    <a
-                                      key={idx}
-                                      href={citation.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="block text-sm hover:underline"
-                                      style={{ color: config.textColor }}
-                                    >
-                                      • {citation.source}: {citation.title}
-                                    </a>
-                                  ))}
+                                  {interaction.citations.map((citation: any, idx: number) => {
+                                    const citationKey = citation.url || `${citation.source}-${citation.title}-${idx}`;
+                                    return (
+                                      <a
+                                        key={citationKey}
+                                        href={citation.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block text-sm hover:underline"
+                                        style={{ color: config.textColor }}
+                                      >
+                                        • {citation.source}: {citation.title}
+                                      </a>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             )}
