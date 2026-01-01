@@ -236,12 +236,19 @@ export default function Admin() {
           </h2>
           <div className="flex items-center space-x-4 mb-4">
             <button
+              onClick={() => navigate('/admin/import')}
+              className="btn-cta flex items-center space-x-2"
+            >
+              <Upload className="w-5 h-5" />
+              <span>CSV Importer (New)</span>
+            </button>
+            <button
               onClick={() => runImport(false)}
               disabled={importing}
               className="btn-cta flex items-center space-x-2 disabled:opacity-50"
             >
               <Upload className="w-5 h-5" />
-              <span>{importing ? 'Importing...' : 'Import CSV'}</span>
+              <span>{importing ? 'Importing...' : 'Import CSV (Legacy)'}</span>
             </button>
             <button
               onClick={() => runImport(true)}

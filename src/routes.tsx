@@ -40,6 +40,7 @@ import Welcome from './pages/Welcome';
 import AlertDetail from './pages/AlertDetail';
 import SafetyPack from './pages/SafetyPack';
 import AdminReview from './pages/AdminReview';
+import AdminImport from './pages/AdminImport';
 import InteractionPage from './pages/InteractionPage';
 import AboutTheChecker from './pages/AboutTheChecker';
 import WhyAIRecommends from './pages/WhyAIRecommends';
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
       {
         path: 'admin/review',
         element: <AdminReview />
+      },
+      {
+        path: 'admin/import',
+        element: <AdminImport />
       },
       {
         path: 'success',
