@@ -45,6 +45,7 @@ import InteractionPage from './pages/InteractionPage';
 import AboutTheChecker from './pages/AboutTheChecker';
 import WhyAIRecommends from './pages/WhyAIRecommends';
 import Diagnostics from './pages/Diagnostics';
+import DemoOmega3 from './pages/DemoOmega3';
 
 export const router = createBrowserRouter([
   {
@@ -226,6 +227,10 @@ export const router = createBrowserRouter([
       {
         path: 'diagnostics',
         element: <Diagnostics />
+      },
+      {
+        path: 'demo/omega-3',
+        element: <DemoOmega3 />
       },
       {
         path: '*',
