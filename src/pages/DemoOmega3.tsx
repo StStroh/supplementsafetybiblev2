@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
-import { ExternalLink, AlertCircle } from 'lucide-react';
+import { ExternalLink, AlertCircle, Download } from 'lucide-react';
+import { useState } from 'react';
 import demoData from '../data/demo/omega3.json';
 
 const severityConfig = {
@@ -26,6 +27,12 @@ const severityConfig = {
 export default function DemoOmega3() {
   const interaction = demoData.interactions[0];
   const severityStyle = severityConfig[interaction.severity as keyof typeof severityConfig];
+  const [showToast, setShowToast] = useState(false);
+
+  const handleDownload = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   return (
     <>
@@ -153,6 +160,17 @@ export default function DemoOmega3() {
             </div>
           </div>
 
+          {/* PDF Download CTA */}
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={handleDownload}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+            >
+              <Download className="w-5 h-5" />
+              Download Omega-3 Safety Report (PDF)
+            </button>
+          </div>
+
           {/* Disclaimer */}
           <div className="mt-8 p-6 bg-gray-100 border border-gray-300 rounded-lg">
             <p className="text-sm text-gray-700 leading-relaxed">
@@ -160,6 +178,14 @@ export default function DemoOmega3() {
             </p>
           </div>
         </div>
+
+        {/* Toast Notification */}
+        {showToast && (
+          <div className="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
+            <AlertCircle className="w-5 h-5" />
+            <span>PDF download coming soon</span>
+          </div>
+        )}
       </div>
     </>
   );
