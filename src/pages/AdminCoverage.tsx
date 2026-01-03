@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { AlertCircle, TrendingUp, Database, FileQuestion, Filter, Plus } from 'lucide-react';
+import { AlertCircle, TrendingUp, Database, FileQuestion, Filter, Plus, HelpCircle } from 'lucide-react';
 
 interface MissingToken {
   token: string;
@@ -186,6 +186,35 @@ export default function AdminCoverage() {
     return type === 'drug'
       ? 'bg-blue-100 text-blue-700'
       : 'bg-green-100 text-green-700';
+  };
+
+  const getPriorityLevel = (score: number | null | undefined): 'High' | 'Medium' | 'Low' => {
+    if (score === null || score === undefined) return 'Low';
+    if (score >= 1.0) return 'High';
+    if (score >= 0.5) return 'Medium';
+    return 'Low';
+  };
+
+  const getPriorityBadgeColor = (level: 'High' | 'Medium' | 'Low') => {
+    switch (level) {
+      case 'High':
+        return 'bg-blue-100 text-blue-800 border border-blue-300';
+      case 'Medium':
+        return 'bg-amber-100 text-amber-800 border border-amber-300';
+      case 'Low':
+        return 'bg-slate-100 text-slate-700 border border-slate-300';
+    }
+  };
+
+  const getPriorityRowStyle = (level: 'High' | 'Medium' | 'Low') => {
+    switch (level) {
+      case 'High':
+        return 'bg-blue-50 hover:bg-blue-100';
+      case 'Medium':
+        return 'bg-amber-50/50 hover:bg-amber-100/50';
+      case 'Low':
+        return 'hover:bg-slate-50';
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -393,6 +422,14 @@ export default function AdminCoverage() {
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-5 h-5 text-blue-700" />
                 <h2 className="text-xl font-semibold text-slate-900">Priority Queue (What to add next)</h2>
+                <div className="group relative">
+                  <HelpCircle className="w-4 h-4 text-slate-400 hover:text-slate-600 cursor-help" />
+                  <div className="absolute left-0 top-6 w-80 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                    <p className="font-medium mb-1">Priority Calculation:</p>
+                    <p>Priority = requests ÷ max(interactions, 1)</p>
+                    <p className="mt-2 text-slate-300">Higher means users request it often and coverage is low.</p>
+                  </div>
+                </div>
               </div>
               <p className="mt-1 text-sm text-slate-600">
                 Ranked by demand vs coverage — high requests with low interactions rise to the top
@@ -410,6 +447,9 @@ export default function AdminCoverage() {
                 <table className="w-full">
                   <thead className="bg-slate-50">
                     <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Priority
+                      </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                         Display Name
                       </th>
@@ -432,14 +472,23 @@ export default function AdminCoverage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-slate-200">
                     {priorityQueue.map((item) => {
-                      const isHighPriority = item.priority_score >= 5;
+                      const priorityLevel = getPriorityLevel(item.priority_score);
+                      const rowStyle = getPriorityRowStyle(priorityLevel);
+                      const badgeColor = getPriorityBadgeColor(priorityLevel);
+                      const isHighPriority = priorityLevel === 'High';
+
                       return (
                         <tr
                           key={item.substance_id}
-                          className={`hover:bg-slate-50 ${isHighPriority ? 'bg-blue-50' : ''}`}
+                          className={rowStyle}
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-slate-900">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-md ${badgeColor}`}>
+                              {priorityLevel}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className={`text-sm text-slate-900 ${isHighPriority ? 'font-bold' : 'font-medium'}`}>
                               {item.display_name}
                             </div>
                             <div className="text-xs text-slate-500">
@@ -457,7 +506,7 @@ export default function AdminCoverage() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <span className={item.interaction_count === 0 ? 'text-red-600 font-semibold' : 'text-slate-900'}>
+                            <span className={item.interaction_count === 0 ? 'text-orange-600 font-semibold' : 'text-slate-900'}>
                               {item.interaction_count}
                             </span>
                           </td>
