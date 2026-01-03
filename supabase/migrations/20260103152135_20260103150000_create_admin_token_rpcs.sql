@@ -24,7 +24,7 @@
 
 CREATE OR REPLACE FUNCTION public.rpc_search_substances(
   q text,
-  limit_n integer DEFAULT 50
+  limit_n integer DEFAULT 20
 )
 RETURNS TABLE (
   substance_id text,

@@ -173,6 +173,21 @@ import AdminTokens from './pages/AdminTokens';
 
 **URL:** `https://yourdomain.com/admin/tokens`
 
+### 4. Navbar Integration ✅
+
+**File:** `src/components/Navbar.tsx`
+
+**Added:**
+- Admin mode detection: `const isAdminMode = import.meta.env.VITE_ADMIN_MODE === 'true'`
+- Desktop nav link: "Admin" appears after "For Brands" when admin mode enabled
+- Mobile nav link: "Admin" appears in mobile menu when admin mode enabled
+
+**Behavior:**
+- Link only visible when `VITE_ADMIN_MODE === "true"`
+- Navigates to `/admin/tokens`
+- Uses consistent brand styling (`var(--brand-purple)`)
+- Closes mobile menu on click
+
 ## User Flow
 
 ### Typical Usage Scenario
@@ -567,7 +582,7 @@ checker_substance_tokens (
 ## Files Changed
 
 1. **`supabase/migrations/20260103150000_create_admin_token_rpcs.sql`** (NEW)
-   - Created `rpc_search_substances` function
+   - Created `rpc_search_substances` function (limit: 20)
    - Created `rpc_add_alias_token` function
    - Added permissions and documentation
 
@@ -576,10 +591,16 @@ checker_substance_tokens (
    - Two-panel layout
    - Search, select, add, view tokens
    - Environment gate
+   - Search limit: 20 results
 
-3. **`src/routes.tsx`**
+3. **`src/routes.tsx`** (MODIFIED)
    - Added import for AdminTokens
    - Added route: `admin/tokens`
+
+4. **`src/components/Navbar.tsx`** (MODIFIED)
+   - Added admin mode detection
+   - Added "Admin" link in desktop nav (when VITE_ADMIN_MODE === "true")
+   - Added "Admin" link in mobile menu (when VITE_ADMIN_MODE === "true")
 
 ## Usage Examples
 
@@ -662,9 +683,9 @@ vite v5.4.21 building for production...
 
 dist/index.html                     1.82 kB │ gzip:   0.70 kB
 dist/assets/index-BSlUtIBq.css     70.74 kB │ gzip:  12.35 kB
-dist/assets/index-Bt6pFxqJ.js   1,961.11 kB │ gzip: 579.09 kB
+dist/assets/index-HmzBsctW.js   1,961.12 kB │ gzip: 579.10 kB
 
-✓ built in 14.68s
+✓ built in 17.29s
 ```
 
 **Status:** ✅ All TypeScript checks passed, no errors
@@ -674,7 +695,7 @@ dist/assets/index-Bt6pFxqJ.js   1,961.11 kB │ gzip: 579.09 kB
 Successfully implemented a complete admin token management interface with:
 
 ✅ **Database Layer:**
-- Two RPC functions for search and token addition
+- Two RPC functions for search (limit 20) and token addition
 - Proper security with service_role restriction
 - Intelligent conflict detection and handling
 
@@ -685,11 +706,16 @@ Successfully implemented a complete admin token management interface with:
 - Copy-to-clipboard functionality
 - Environment-based access control
 
+✅ **Navigation:**
+- "Admin" link in navbar (desktop and mobile)
+- Only visible when `VITE_ADMIN_MODE === "true"`
+- Seamlessly integrated with existing nav
+
 ✅ **User Experience:**
 - Mobile-responsive layout
 - Loading and empty states
 - Clear success/warning/error messages
-- Keyboard support
+- Keyboard support (Enter to add token)
 - Accessibility features
 
 ✅ **Code Quality:**

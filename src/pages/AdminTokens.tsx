@@ -67,7 +67,7 @@ export default function AdminTokens() {
       try {
         const { data, error } = await supabase.rpc('rpc_search_substances', {
           q: searchQuery,
-          limit_n: 50
+          limit_n: 20
         });
 
         if (error) throw error;

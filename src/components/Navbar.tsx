@@ -8,6 +8,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [plan, setPlan] = useState<string | null>(null);
+  const isAdminMode = import.meta.env.VITE_ADMIN_MODE === 'true';
 
   useEffect(() => {
     (async () => {
@@ -67,6 +68,12 @@ export default function Navbar() {
           <a href="/safety-pack" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
             For Brands
           </a>
+
+          {isAdminMode && (
+            <a href="/admin/tokens" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+              Admin
+            </a>
+          )}
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
@@ -146,6 +153,17 @@ export default function Navbar() {
             >
               For Brands
             </a>
+
+            {isAdminMode && (
+              <a
+                href="/admin/tokens"
+                className="font-medium transition-colors"
+                style={{ color: 'var(--brand-purple)' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Admin
+              </a>
+            )}
 
             {isLoggedIn ? (
               <div>
