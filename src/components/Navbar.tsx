@@ -74,6 +74,9 @@ export default function Navbar() {
               <a href="/admin/tokens" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
                 Tokens
               </a>
+              <a href="/admin/token-packs" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+                Token Packs
+              </a>
               <a href="/admin/coverage" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
                 Coverage
               </a>
@@ -168,6 +171,14 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Tokens
+                </a>
+                <a
+                  href="/admin/token-packs"
+                  className="font-medium transition-colors"
+                  style={{ color: 'var(--brand-purple)' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Token Packs
                 </a>
                 <a
                   href="/admin/coverage"

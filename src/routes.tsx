@@ -50,6 +50,7 @@ import Browse from './pages/Browse';
 import AdminTokens from './pages/AdminTokens';
 import AdminCoverage from './pages/AdminCoverage';
 import AdminAliasPacks from './pages/AdminAliasPacks';
+import AdminTokenPacks from './pages/AdminTokenPacks';
 import StackMode from './pages/StackMode';
 
 export const router = createBrowserRouter([
@@ -92,6 +93,10 @@ export const router = createBrowserRouter([
       {
         path: 'admin/alias-packs',
         element: <AdminAliasPacks />
+      },
+      {
+        path: 'admin/token-packs',
+        element: <AdminTokenPacks />
       },
       {
         path: 'success',
