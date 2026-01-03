@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { AlertCircle, TrendingUp, Database, FileQuestion, Filter } from 'lucide-react';
+import { AlertCircle, TrendingUp, Database, FileQuestion, Filter, Plus } from 'lucide-react';
+
+interface MissingToken {
+  token: string;
+  cnt: number;
+}
 
 interface RequestedInteraction {
   token: string;
@@ -32,10 +37,12 @@ export default function AdminCoverage() {
   const navigate = useNavigate();
   const isAdminMode = import.meta.env.VITE_ADMIN_MODE === 'true';
 
+  const [missingTokens, setMissingTokens] = useState<MissingToken[]>([]);
   const [requestedInteractions, setRequestedInteractions] = useState<RequestedInteraction[]>([]);
   const [lowCoverageSubstances, setLowCoverageSubstances] = useState<SubstanceCount[]>([]);
   const [zeroCoverageSubstances, setZeroCoverageSubstances] = useState<ZeroCoverageSubstance[]>([]);
 
+  const [loadingMissingTokens, setLoadingMissingTokens] = useState(true);
   const [loadingRequested, setLoadingRequested] = useState(true);
   const [loadingLowCoverage, setLoadingLowCoverage] = useState(true);
   const [loadingZeroCoverage, setLoadingZeroCoverage] = useState(true);
@@ -49,10 +56,29 @@ export default function AdminCoverage() {
       return;
     }
 
+    fetchMissingTokens();
     fetchRequestedInteractions();
     fetchLowCoverageSubstances();
     fetchZeroCoverageSubstances();
   }, [isAdminMode, navigate, typeFilter, coverageFilter]);
+
+  const fetchMissingTokens = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('v_requested_tokens_missing')
+        .select('*')
+        .order('cnt', { ascending: false })
+        .order('token', { ascending: true })
+        .limit(50);
+
+      if (error) throw error;
+      setMissingTokens(data || []);
+    } catch (error) {
+      console.error('Error fetching missing tokens:', error);
+    } finally {
+      setLoadingMissingTokens(false);
+    }
+  };
 
   const fetchRequestedInteractions = async () => {
     try {
@@ -151,6 +177,11 @@ export default function AdminCoverage() {
   const handleAddInteractionClick = (substanceName: string) => {
     // Navigate to admin tokens with search prefilled
     navigate(`/admin/tokens?q=${encodeURIComponent(substanceName)}`);
+  };
+
+  const handleCreateTokenClick = (token: string) => {
+    // Navigate to admin tokens with search prefilled
+    navigate(`/admin/tokens?q=${encodeURIComponent(token)}`);
   };
 
   const handleFilterChange = () => {
@@ -262,6 +293,66 @@ export default function AdminCoverage() {
         </div>
 
         <div className="space-y-8">
+          {/* Section 0: Missing Requested Tokens */}
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <div className="flex items-center gap-3">
+                <FileQuestion className="w-5 h-5 text-red-600" />
+                <h2 className="text-xl font-semibold text-slate-900">Requested tokens missing from database</h2>
+              </div>
+              <p className="mt-1 text-sm text-slate-600">
+                Tokens users searched for that don't exist in the database yet
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              {loadingMissingTokens ? (
+                <div className="p-8 text-center text-slate-500">Loading...</div>
+              ) : missingTokens.length === 0 ? (
+                <div className="p-8 text-center text-green-600">
+                  <p className="font-medium">No missing tokens right now. Good sign — requests are matching known tokens.</p>
+                </div>
+              ) : (
+                <table className="w-full">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Token
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Requests
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-slate-200">
+                    {missingTokens.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                          {item.token}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                          <span className="font-semibold text-red-600">{item.cnt}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <button
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium transition-colors"
+                            onClick={() => handleCreateTokenClick(item.token)}
+                          >
+                            <Plus className="w-4 h-4" />
+                            Create token
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
           {/* Section 1: Most Requested Interactions */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200">
             <div className="px-6 py-4 border-b border-slate-200">
