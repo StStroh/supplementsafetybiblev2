@@ -606,23 +606,43 @@ export default function StackBuilderCheckerV3() {
               className="rounded-xl p-6 mb-6"
               style={{ background: SEVERITY_CONFIG.none.bgColor, border: '2px solid ' + SEVERITY_CONFIG.none.borderColor }}
             >
-              <div className="p-4 rounded-lg" style={{ background: 'white', border: '1px solid ' + SEVERITY_CONFIG.none.borderColor }}>
-                <h4 className="font-semibold mb-3 text-base" style={{ color: SEVERITY_CONFIG.none.textColor }}>
+              <div className="p-5 rounded-lg" style={{ background: 'white', border: '1px solid ' + SEVERITY_CONFIG.none.borderColor }}>
+                <h4 className="font-bold mb-4 text-lg" style={{ color: SEVERITY_CONFIG.none.textColor }}>
                   No interaction results found for this combination
                 </h4>
-                <p className="text-sm mb-3" style={{ color: 'var(--color-text)' }}>
-                  This can happen when a name doesn't match our database spelling, or when no clinically significant interaction has been documented in major reference sources.
+
+                <div className="mb-4 space-y-2">
+                  <p className="text-sm" style={{ color: 'var(--color-text)' }}>
+                    This can happen for several reasons:
+                  </p>
+                  <ul className="text-sm space-y-1.5 ml-5" style={{ color: 'var(--color-text)', listStyleType: 'disc' }}>
+                    <li>The combination is not yet in our database</li>
+                    <li>The names you entered use different spelling or aliases than what we have on file</li>
+                    <li>The interaction is still being researched or hasn't been documented in major clinical sources</li>
+                  </ul>
+                </div>
+
+                <p className="text-sm mb-4 font-medium px-3 py-2 rounded" style={{
+                  color: SEVERITY_CONFIG.none.textColor,
+                  background: SEVERITY_CONFIG.none.bgColor
+                }}>
+                  💡 Tip: Try alternative spellings or choose a suggested match.
                 </p>
-                <p className="text-sm mb-4 font-medium" style={{ color: SEVERITY_CONFIG.none.textColor }}>
-                  Tip: choose from the suggestions when possible for the most accurate matching.
-                </p>
+
                 <div className="flex gap-3 mb-4">
                   <button
                     onClick={() => {
                       setResults(null);
                       setSummary(null);
+                      // Focus first input after a short delay
+                      setTimeout(() => {
+                        const firstInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+                        if (firstInput) {
+                          firstInput.focus();
+                        }
+                      }, 100);
                     }}
-                    className="px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80"
                     style={{
                       background: 'white',
                       border: `2px solid ${SEVERITY_CONFIG.none.borderColor}`,
@@ -656,7 +676,7 @@ export default function StackBuilderCheckerV3() {
                         alert('Unable to submit request. Please try again later.');
                       }
                     }}
-                    className="px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-90"
                     style={{
                       background: SEVERITY_CONFIG.none.borderColor,
                       color: 'white',
@@ -666,8 +686,12 @@ export default function StackBuilderCheckerV3() {
                     Request review
                   </button>
                 </div>
-                <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                  This tool is for educational awareness only and does not replace professional medical advice.
+
+                <p className="text-xs pt-3 border-t" style={{
+                  color: 'var(--color-text-secondary)',
+                  borderColor: SEVERITY_CONFIG.none.borderColor
+                }}>
+                  Educational use only. Not medical advice.
                 </p>
               </div>
             </div>
