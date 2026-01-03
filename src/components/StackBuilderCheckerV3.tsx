@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye } from 'lucide-react';
+import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X } from 'lucide-react';
 import SubstanceCombobox from './SubstanceCombobox';
 import NotFoundCard from './NotFoundCard';
 import GlobalTrustStatement from './GlobalTrustStatement';
@@ -7,6 +7,7 @@ import InlineUpgradeCard from './InlineUpgradeCard';
 import InteractionResultCard from './check/InteractionResultCard';
 import { useTranslation } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
+import { useAuthUser } from '../hooks/useAuthUser';
 
 interface Substance {
   substance_id: string;
@@ -52,7 +53,14 @@ interface NotFoundItem {
   suggestions: Substance[];
 }
 
-type CheckerMode = 'supplements-drugs' | 'supplements-supplements';
+interface PairCheck {
+  tokenA: string;
+  tokenB: string;
+  substanceA: Substance;
+  substanceB: Substance;
+}
+
+type CheckerMode = 'supplements-drugs' | 'supplements-supplements' | 'stack';
 
 const SEVERITY_CONFIG = {
   major: { label: 'Major', bgColor: '#FEF2F2', borderColor: '#FCA5A5', textColor: '#991B1B', icon: AlertTriangle },
@@ -62,17 +70,34 @@ const SEVERITY_CONFIG = {
   none: { label: 'No Interaction', bgColor: '#E8F5E9', borderColor: '#66BB6A', textColor: '#2E7D32', icon: CheckCircle2 },
 };
 
+const SEVERITY_ORDER: { [key: string]: number } = {
+  major: 1,
+  moderate: 2,
+  minor: 3,
+  monitor: 4,
+};
+
+const CONFIDENCE_ORDER: { [key: string]: number } = {
+  high: 1,
+  moderate: 2,
+  medium: 2,
+  low: 3,
+};
+
 export default function StackBuilderCheckerV3() {
   const t = useTranslation();
+  const { profile } = useAuthUser();
   const [mode, setMode] = useState<CheckerMode>('supplements-drugs');
 
   // Selected substances
   const [supplements, setSupplements] = useState<Substance[]>([]);
   const [medications, setMedications] = useState<Substance[]>([]);
+  const [stack, setStack] = useState<Substance[]>([]);
 
   // Current combobox values
   const [currentSupplement, setCurrentSupplement] = useState<Substance | null>(null);
   const [currentMedication, setCurrentMedication] = useState<Substance | null>(null);
+  const [currentStack, setCurrentStack] = useState<Substance | null>(null);
 
   // Not found items
   const [notFoundItems, setNotFoundItems] = useState<NotFoundItem[]>([]);
@@ -81,17 +106,35 @@ export default function StackBuilderCheckerV3() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Interaction[] | null>(null);
   const [summary, setSummary] = useState<CheckSummary | null>(null);
+  const [pairCount, setPairCount] = useState(0);
+  const [topConcern, setTopConcern] = useState<Interaction | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
   const [systemError, setSystemError] = useState<string | null>(null);
   const [submittingRequest, setSubmittingRequest] = useState(false);
+  const [showLimitWarning, setShowLimitWarning] = useState(false);
+
+  // Get tier-based limits
+  const getMaxSubstances = () => {
+    if (!profile || profile.plan === 'free' || profile.plan === 'starter_free') {
+      return 2;
+    }
+    return 4; // Pro, Premium, Clinical
+  };
+
+  const getPlanName = () => {
+    if (!profile || profile.plan === 'free' || profile.plan === 'starter_free') {
+      return 'free';
+    }
+    return profile.plan;
+  };
 
   // Handle supplement selection
   const handleSupplementChange = (substance: Substance | null) => {
     setCurrentSupplement(substance);
     if (substance && !supplements.find((s) => s.substance_id === substance.substance_id)) {
       setSupplements([...supplements, substance]);
-      setCurrentSupplement(null); // Clear for next entry
+      setCurrentSupplement(null);
     }
   };
 
@@ -100,8 +143,32 @@ export default function StackBuilderCheckerV3() {
     setCurrentMedication(substance);
     if (substance && !medications.find((m) => m.substance_id === substance.substance_id)) {
       setMedications([...medications, substance]);
-      setCurrentMedication(null); // Clear for next entry
+      setCurrentMedication(null);
     }
+  };
+
+  // Handle stack selection
+  const handleStackChange = (substance: Substance | null) => {
+    setCurrentStack(substance);
+    const maxSubstances = getMaxSubstances();
+
+    if (substance && !stack.find((s) => s.substance_id === substance.substance_id)) {
+      if (stack.length >= maxSubstances) {
+        setShowLimitWarning(true);
+        setTimeout(() => setShowLimitWarning(false), 3000);
+        return;
+      }
+      setStack([...stack, substance]);
+      setCurrentStack(null);
+    }
+  };
+
+  // Remove from stack
+  const removeFromStack = (substanceId: string) => {
+    setStack(stack.filter((s) => s.substance_id !== substanceId));
+    setResults(null);
+    setTopConcern(null);
+    setPairCount(0);
   };
 
   // Handle not found
@@ -123,7 +190,13 @@ export default function StackBuilderCheckerV3() {
   // Handle suggestion selection from NotFoundCard
   const handleSelectSuggestion = (id: string, substance: Substance) => {
     removeNotFound(id);
-    if (substance.type === 'supplement' || substance.type === 'drug') {
+    if (mode === 'stack') {
+      if (!stack.find((s) => s.substance_id === substance.substance_id)) {
+        if (stack.length < getMaxSubstances()) {
+          setStack([...stack, substance]);
+        }
+      }
+    } else if (substance.type === 'supplement' || substance.type === 'drug') {
       if (substance.type === 'supplement') {
         if (!supplements.find((s) => s.substance_id === substance.substance_id)) {
           setSupplements([...supplements, substance]);
@@ -145,14 +218,32 @@ export default function StackBuilderCheckerV3() {
       .replace(/\s+/g, ' ');
   };
 
+  // Generate all unique pairs
+  const generatePairs = (substances: Substance[]): PairCheck[] => {
+    const pairs: PairCheck[] = [];
+    for (let i = 0; i < substances.length; i++) {
+      for (let j = i + 1; j < substances.length; j++) {
+        pairs.push({
+          tokenA: normalizeToken(substances[i].canonical_name),
+          tokenB: normalizeToken(substances[j].canonical_name),
+          substanceA: substances[i],
+          substanceB: substances[j],
+        });
+      }
+    }
+    return pairs;
+  };
+
   // Log lookup event asynchronously (fire-and-forget)
   const logLookup = (inputs: string[], response: any) => {
     try {
       const normalized_inputs = inputs.map(normalizeToken);
-      const resolved_substance_ids = [
-        ...supplements.map(s => s.substance_id),
-        ...medications.map(s => s.substance_id)
-      ];
+      const resolved_substance_ids = mode === 'stack'
+        ? stack.map(s => s.substance_id)
+        : [
+            ...supplements.map(s => s.substance_id),
+            ...medications.map(s => s.substance_id)
+          ];
       const unresolved_inputs = notFoundItems.map(item => item.rawName);
 
       const results_summary = response.summary || { total: 0, major: 0, moderate: 0, minor: 0, monitor: 0 };
@@ -162,10 +253,10 @@ export default function StackBuilderCheckerV3() {
         path: window.location.pathname,
         ref: document.referrer || undefined,
         ua: navigator.userAgent,
-        plan: 'free' // TODO: Get from auth context
+        plan: getPlanName(),
+        mode: mode
       };
 
-      // Fire-and-forget (don't await, ignore errors)
       fetch('/.netlify/functions/checker-log-lookup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -178,15 +269,90 @@ export default function StackBuilderCheckerV3() {
           has_results,
           client_meta
         })
-      }).catch(() => {
-        // Silently ignore logging errors
+      }).catch(() => {});
+    } catch {}
+  };
+
+  // Run check for stack mode (pair-wise)
+  const runStackCheck = async () => {
+    if (stack.length < 2) {
+      setError('Add at least 2 substances to check.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setResults(null);
+    setTopConcern(null);
+    setSystemError(null);
+
+    try {
+      const pairs = generatePairs(stack);
+      setPairCount(pairs.length);
+
+      const allInteractions: Interaction[] = [];
+      const seenIds = new Set<string>();
+
+      for (const pair of pairs) {
+        const { data, error: rpcError } = await supabase.rpc('rpc_get_interaction_by_tokens', {
+          token_a: pair.tokenA,
+          token_b: pair.tokenB,
+        });
+
+        if (rpcError) {
+          console.error('RPC error for pair:', pair, rpcError);
+          continue;
+        }
+
+        if (data && Array.isArray(data)) {
+          for (const interaction of data) {
+            if (!seenIds.has(interaction.interaction_id)) {
+              seenIds.add(interaction.interaction_id);
+              allInteractions.push(interaction);
+            }
+          }
+        }
+      }
+
+      // Sort by severity then confidence
+      const sortedInteractions = allInteractions.sort((a, b) => {
+        const severityA = SEVERITY_ORDER[a.severity_norm?.toLowerCase() || 'monitor'] || 999;
+        const severityB = SEVERITY_ORDER[b.severity_norm?.toLowerCase() || 'monitor'] || 999;
+
+        if (severityA !== severityB) {
+          return severityA - severityB;
+        }
+
+        const confidenceA = CONFIDENCE_ORDER[a.confidence?.toLowerCase() || 'low'] || 999;
+        const confidenceB = CONFIDENCE_ORDER[b.confidence?.toLowerCase() || 'low'] || 999;
+
+        return confidenceA - confidenceB;
       });
-    } catch {
-      // Silently ignore any logging errors
+
+      // Calculate summary
+      const newSummary: CheckSummary = {
+        total: sortedInteractions.length,
+        major: sortedInteractions.filter(i => i.severity_norm?.toLowerCase() === 'major').length,
+        moderate: sortedInteractions.filter(i => i.severity_norm?.toLowerCase() === 'moderate').length,
+        minor: sortedInteractions.filter(i => i.severity_norm?.toLowerCase() === 'minor').length,
+        monitor: sortedInteractions.filter(i => i.severity_norm?.toLowerCase() === 'monitor').length,
+      };
+
+      setResults(sortedInteractions);
+      setSummary(newSummary);
+      setTopConcern(sortedInteractions[0] || null);
+
+      // Log lookup
+      logLookup(stack.map(s => s.display_name), { results: sortedInteractions, summary: newSummary });
+    } catch (err) {
+      console.error('Stack check error:', err);
+      setError('Failed to check interactions. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Run check
+  // Run check for traditional mode
   const runCheck = async () => {
     // Validation
     if (mode === 'supplements-drugs') {
@@ -194,11 +360,14 @@ export default function StackBuilderCheckerV3() {
         setError(t('checker.minRequired'));
         return;
       }
-    } else {
+    } else if (mode === 'supplements-supplements') {
       if (supplements.length < 2) {
         setError('Add at least 2 supplements to compare');
         return;
       }
+    } else if (mode === 'stack') {
+      runStackCheck();
+      return;
     }
 
     setLoading(true);
@@ -219,7 +388,6 @@ export default function StackBuilderCheckerV3() {
         body: JSON.stringify({ inputs: allNames }),
       });
 
-      // Check for HTML response (function not working)
       const contentType = res.headers.get('content-type');
       if (contentType && contentType.includes('text/html')) {
         throw new Error('Checker function is not responding correctly. Please refresh and try again.');
@@ -232,7 +400,6 @@ export default function StackBuilderCheckerV3() {
 
       const response = await res.json();
 
-      // Validate response structure
       if (!response || typeof response !== 'object') {
         throw new Error('Invalid response from checker. Please try again.');
       }
@@ -240,13 +407,11 @@ export default function StackBuilderCheckerV3() {
       setResults(response.results || []);
       setSummary(response.summary || null);
 
-      // Log this lookup asynchronously (fire-and-forget)
       logLookup(allNames, response);
     } catch (err: any) {
       const errorMsg = err.message || 'Failed to check interactions';
       setError(errorMsg);
 
-      // Show system error banner if it's a configuration issue
       if (errorMsg.includes('not responding') || errorMsg.includes('configuration')) {
         setSystemError(errorMsg);
       }
@@ -255,519 +420,334 @@ export default function StackBuilderCheckerV3() {
     }
   };
 
-  // Can run check?
-  const canCheck =
-    mode === 'supplements-drugs'
-      ? supplements.length > 0 && medications.length > 0
-      : supplements.length >= 2;
-
-  // Group results by normalized severity
-  const groupedResults: Record<string, Interaction[]> = {
-    major: [],
-    moderate: [],
-    minor: [],
-    monitor: [],
-  };
-
-  (results || []).forEach((result) => {
-    const key = result.severity_norm || 'monitor';
-    if (groupedResults[key]) {
-      groupedResults[key].push(result);
-    }
-  });
-
-  // Sort each severity group by confidence descending (nulls last)
-  Object.keys(groupedResults).forEach((severity) => {
-    groupedResults[severity].sort((a, b) => {
-      const confA = a.confidence ? parseFloat(a.confidence) : -Infinity;
-      const confB = b.confidence ? parseFloat(b.confidence) : -Infinity;
-      return confB - confA;
-    });
-  });
-
-  const toggleExpanded = (resultKey: string) => {
-    const newSet = new Set(expandedResults);
-    if (newSet.has(resultKey)) {
-      newSet.delete(resultKey);
+  const toggleExpanded = (id: string) => {
+    const newExpanded = new Set(expandedResults);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
     } else {
-      newSet.add(resultKey);
+      newExpanded.add(id);
     }
-    setExpandedResults(newSet);
+    setExpandedResults(newExpanded);
   };
+
+  const handleRequestAddition = async (substanceName: string) => {
+    if (submittingRequest) return;
+
+    setSubmittingRequest(true);
+    try {
+      const response = await fetch('/.netlify/functions/checker-request-add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          substance_name: substanceName,
+          user_agent: navigator.userAgent,
+          referrer: document.referrer
+        })
+      });
+
+      if (response.ok) {
+        console.log('Request submitted successfully');
+      }
+    } catch (err) {
+      console.error('Failed to submit request:', err);
+    } finally {
+      setSubmittingRequest(false);
+    }
+  };
+
+  const getSeverityColor = (severity?: string) => {
+    const norm = severity?.toLowerCase();
+    if (norm === 'major') return 'text-red-700';
+    if (norm === 'moderate') return 'text-amber-700';
+    if (norm === 'minor') return 'text-blue-700';
+    return 'text-slate-700';
+  };
+
+  const maxSubstances = getMaxSubstances();
+  const planName = getPlanName();
 
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* System Error Banner */}
-      {systemError && (
-        <div className="mb-6 rounded-xl p-6" style={{ background: '#FFF3E0', border: '2px solid #FFA726' }}>
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#E65100' }} />
-            <div>
-              <h3 className="font-bold mb-1" style={{ color: '#E65100' }}>
-                System Error
-              </h3>
-              <p className="text-sm mb-3" style={{ color: '#BF360C' }}>
-                {systemError}
-              </p>
-              <button
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 rounded-lg font-semibold text-sm"
-                style={{ background: '#FFA726', color: 'white' }}
-              >
-                Refresh Page
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
-          Advanced Interaction Checker
-        </h1>
-        <p className="text-lg mb-2" style={{ color: 'var(--color-text-muted)' }}>
-          Build your complete stack and check for all possible interactions
-        </p>
-      </div>
-
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Mode Selector */}
-      <div className="mb-6 flex gap-3 justify-center">
+      <div className="mb-6 flex flex-wrap gap-2">
         <button
-          onClick={() => setMode('supplements-drugs')}
-          className={`px-6 py-2.5 rounded-lg font-semibold transition-all ${
+          onClick={() => {
+            setMode('supplements-drugs');
+            setStack([]);
+            setResults(null);
+          }}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             mode === 'supplements-drugs'
-              ? 'bg-purple-600 text-white shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
           }`}
         >
-          Supplements + Medicines
+          Supplements + Medications
         </button>
         <button
-          onClick={() => setMode('supplements-supplements')}
-          className={`px-6 py-2.5 rounded-lg font-semibold transition-all ${
+          onClick={() => {
+            setMode('supplements-supplements');
+            setStack([]);
+            setResults(null);
+          }}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             mode === 'supplements-supplements'
-              ? 'bg-purple-600 text-white shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
           }`}
         >
-          Supplements + Supplements
+          Supplements Only
         </button>
-      </div>
-
-      {/* Input Section */}
-      {mode === 'supplements-drugs' ? (
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div
-            className="rounded-xl p-6"
-            style={{ background: 'var(--color-surface)', border: '2px solid var(--color-border)' }}
-          >
-            <SubstanceCombobox
-              kind="supplement"
-              label={t('checker.supplement.label')}
-              placeholder={t('checker.supplement.placeholder')}
-              value={currentSupplement}
-              onChange={handleSupplementChange}
-              onNotFound={(raw, kind, sugg) => handleNotFound(raw, 'supplement', sugg)}
-            />
-
-            {/* Selected supplements pills */}
-            {supplements.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {supplements.map((supp) => (
-                  <div
-                    key={supp.substance_id}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
-                    style={{ background: '#7c3aed', color: 'white' }}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    {supp.display_name}
-                    <button
-                      onClick={() => setSupplements(supplements.filter((s) => s.substance_id !== supp.substance_id))}
-                      className="hover:bg-white/20 rounded-full p-0.5"
-                      aria-label={`Remove ${supp.display_name}`}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div
-            className="rounded-xl p-6"
-            style={{ background: 'var(--color-surface)', border: '2px solid var(--color-border)' }}
-          >
-            <SubstanceCombobox
-              kind="drug"
-              label={t('checker.medication.label')}
-              placeholder={t('checker.medication.placeholder')}
-              value={currentMedication}
-              onChange={handleMedicationChange}
-              onNotFound={(raw, kind, sugg) => handleNotFound(raw, 'drug', sugg)}
-            />
-
-            {/* Selected medications pills */}
-            {medications.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {medications.map((med) => (
-                  <div
-                    key={med.substance_id}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
-                    style={{ background: '#0891b2', color: 'white' }}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    {med.display_name}
-                    <button
-                      onClick={() => setMedications(medications.filter((m) => m.substance_id !== med.substance_id))}
-                      className="hover:bg-white/20 rounded-full p-0.5"
-                      aria-label={`Remove ${med.display_name}`}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="mb-6">
-          <div
-            className="rounded-xl p-6 max-w-2xl mx-auto"
-            style={{ background: 'var(--color-surface)', border: '2px solid var(--color-border)' }}
-          >
-            <SubstanceCombobox
-              kind="supplement"
-              label={t('checker.supplement.label')}
-              placeholder={t('checker.supplement.placeholder')}
-              value={currentSupplement}
-              onChange={handleSupplementChange}
-              onNotFound={(raw, kind, sugg) => handleNotFound(raw, 'supplement', sugg)}
-            />
-
-            {/* Selected supplements pills */}
-            {supplements.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {supplements.map((supp) => (
-                  <div
-                    key={supp.substance_id}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
-                    style={{ background: '#7c3aed', color: 'white' }}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    {supp.display_name}
-                    <button
-                      onClick={() => setSupplements(supplements.filter((s) => s.substance_id !== supp.substance_id))}
-                      className="hover:bg-white/20 rounded-full p-0.5"
-                      aria-label={`Remove ${supp.display_name}`}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Not Found Cards */}
-      {notFoundItems.map((item) => (
-        <NotFoundCard
-          key={item.id}
-          rawName={item.rawName}
-          kind={item.kind}
-          suggestions={item.suggestions}
-          onRemove={() => removeNotFound(item.id)}
-          onSelectSuggestion={(substance) => handleSelectSuggestion(item.id, substance)}
-        />
-      ))}
-
-      {/* Run Check Button - ALWAYS VISIBLE */}
-      <div className="text-center mb-8">
         <button
-          onClick={runCheck}
-          disabled={!canCheck || loading}
-          className="btn-primary inline-flex items-center gap-2 px-8 py-3 rounded-lg font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
-          style={{ minWidth: '200px' }}
+          onClick={() => {
+            setMode('stack');
+            setSupplements([]);
+            setMedications([]);
+            setResults(null);
+          }}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            mode === 'stack'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
         >
-          {loading && <Loader2 className="w-5 h-5 animate-spin" />}
-          {loading ? t('checker.checking') : t('checker.runCheck')}
+          Stack Mode (2-{maxSubstances})
         </button>
-        {!canCheck && (
-          <p className="text-sm mt-3 font-medium" style={{ color: 'var(--color-text-muted)' }}>
-            {mode === 'supplements-drugs'
-              ? 'Select at least 1 supplement AND 1 medication'
-              : 'Select at least 2 supplements to compare'}
-          </p>
-        )}
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="rounded-xl p-8 text-center" style={{ background: '#E3F2FD', border: '2px solid #64B5F6' }}>
-          <Loader2 className="w-10 h-10 animate-spin mx-auto mb-3" style={{ color: '#1976D2' }} />
-          <p className="font-semibold text-lg" style={{ color: '#1565C0' }}>
-            {t('checker.checking')}
+      {/* Stack Mode UI */}
+      {mode === 'stack' && (
+        <div className="mb-6 bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+          <h3 className="text-lg font-bold text-slate-900 mb-2">
+            Check Multiple Substances
+          </h3>
+          <p className="text-sm text-slate-600 mb-4">
+            Add {planName === 'free' ? '2' : '2-4'} substances to check all possible pair-wise interactions. Results sorted by severity and confidence.
           </p>
-        </div>
-      )}
 
-      {/* Error State */}
-      {error && !loading && (
-        <div className="rounded-xl p-6" style={{ background: '#FFEBEE', border: '2px solid #EF5350' }}>
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#C62828' }} />
-            <div>
-              <h3 className="font-bold mb-1" style={{ color: '#C62828' }}>
-                {t('common.error')}
-              </h3>
-              <p className="text-sm" style={{ color: '#B71C1C' }}>
-                {error}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Add Substance ({stack.length}/{maxSubstances})
+            </label>
+            <SubstanceCombobox
+              label=""
+              value={currentStack}
+              onChange={handleStackChange}
+              onNotFound={handleNotFound}
+              placeholder="Type to search medications or supplements..."
+              disabled={stack.length >= maxSubstances}
+            />
+          </div>
+
+          {showLimitWarning && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                <strong>Limit reached.</strong> {planName === 'free' ? (
+                  <>Free plan allows 2 substances. <a href="/pricing" className="underline font-medium">Upgrade to Pro</a> to check up to 4 substances.</>
+                ) : (
+                  <>Maximum 4 substances allowed.</>
+                )}
               </p>
-              <button onClick={runCheck} className="btn-outline mt-3">
-                {t('common.retry')}
-              </button>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* Results */}
-      {results && summary && !loading && (
-        <div>
-          <GlobalTrustStatement />
-
-          {/* Summary */}
-          <div
-            className="rounded-xl p-6 mb-6"
-            style={{ background: 'var(--color-surface)', border: '2px solid var(--color-border)' }}
-          >
-            <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
-              Check Complete
-            </h2>
-            <p className="text-base mb-4" style={{ color: 'var(--color-text-muted)' }}>
-              Found {summary.total} interaction{summary.total !== 1 ? 's' : ''} in{' '}
-              {mode === 'supplements-drugs' ? 'Supplements + Medicines mode' : 'Supplements + Supplements mode'}.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {(summary.major || 0) > 0 && (
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.major.bgColor, border: `1px solid ${SEVERITY_CONFIG.major.borderColor}` }}
-                >
-                  <AlertTriangle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.major.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.major.textColor }}>
-                    {summary.major} {SEVERITY_CONFIG.major.label}
-                  </span>
-                </div>
-              )}
-              {(summary.moderate || 0) > 0 && (
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.moderate.bgColor, border: `1px solid ${SEVERITY_CONFIG.moderate.borderColor}` }}
-                >
-                  <AlertCircle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.moderate.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.moderate.textColor }}>
-                    {summary.moderate} {SEVERITY_CONFIG.moderate.label}
-                  </span>
-                </div>
-              )}
-              {(summary.minor || 0) > 0 && (
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.minor.bgColor, border: `1px solid ${SEVERITY_CONFIG.minor.borderColor}` }}
-                >
-                  <Info className="w-4 h-4" style={{ color: SEVERITY_CONFIG.minor.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.minor.textColor }}>
-                    {summary.minor} {SEVERITY_CONFIG.minor.label}
-                  </span>
-                </div>
-              )}
-              {(summary.monitor || 0) > 0 && (
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.monitor.bgColor, border: `1px solid ${SEVERITY_CONFIG.monitor.borderColor}` }}
-                >
-                  <Eye className="w-4 h-4" style={{ color: SEVERITY_CONFIG.monitor.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.monitor.textColor }}>
-                    {summary.monitor} {SEVERITY_CONFIG.monitor.label}
-                  </span>
-                </div>
-              )}
-              {summary.total === 0 && (
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.none.bgColor, border: `1px solid ${SEVERITY_CONFIG.none.borderColor}` }}
-                >
-                  <CheckCircle2 className="w-4 h-4" style={{ color: SEVERITY_CONFIG.none.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.none.textColor }}>
-                    No Known Interactions
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* No Interactions - Detailed */}
-          {summary.total === 0 && (
-            <div
-              className="rounded-xl p-6 mb-6"
-              style={{ background: SEVERITY_CONFIG.none.bgColor, border: '2px solid ' + SEVERITY_CONFIG.none.borderColor }}
-            >
-              <div className="p-5 rounded-lg" style={{ background: 'white', border: '1px solid ' + SEVERITY_CONFIG.none.borderColor }}>
-                <h4 className="font-bold mb-4 text-lg" style={{ color: SEVERITY_CONFIG.none.textColor }}>
-                  No interaction results found for this combination
-                </h4>
-
-                <div className="mb-4 space-y-2">
-                  <p className="text-sm" style={{ color: 'var(--color-text)' }}>
-                    This can happen for several reasons:
-                  </p>
-                  <ul className="text-sm space-y-1.5 ml-5" style={{ color: 'var(--color-text)', listStyleType: 'disc' }}>
-                    <li>The combination is not yet in our database</li>
-                    <li>The names you entered use different spelling or aliases than what we have on file</li>
-                    <li>The interaction is still being researched or hasn't been documented in major clinical sources</li>
-                  </ul>
-                </div>
-
-                <p className="text-sm mb-4 font-medium px-3 py-2 rounded" style={{
-                  color: SEVERITY_CONFIG.none.textColor,
-                  background: SEVERITY_CONFIG.none.bgColor
-                }}>
-                  💡 Tip: Try selecting a suggestion from the dropdown to improve matching.
-                </p>
-
-                <div className="flex gap-3 mb-4">
-                  <button
-                    onClick={() => {
-                      setResults(null);
-                      setSummary(null);
-                      // Focus first input after a short delay
-                      setTimeout(() => {
-                        const firstInput = document.querySelector('input[type="text"]') as HTMLInputElement;
-                        if (firstInput) {
-                          firstInput.focus();
-                        }
-                      }, 100);
-                    }}
-                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-80"
-                    style={{
-                      background: 'white',
-                      border: `2px solid ${SEVERITY_CONFIG.none.borderColor}`,
-                      color: SEVERITY_CONFIG.none.textColor
-                    }}
+          {stack.length > 0 && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Current Stack
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {stack.map((substance) => (
+                  <div
+                    key={substance.substance_id}
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm"
                   >
-                    Edit inputs
-                  </button>
-                  <button
-                    onClick={async () => {
-                      if (submittingRequest) return;
-
-                      setSubmittingRequest(true);
-                      try {
-                        // Collect all substance names as entered by user
-                        const allNames = [
-                          ...supplements.map((s) => s.display_name),
-                          ...medications.map((m) => m.display_name),
-                        ];
-
-                        if (allNames.length === 0) {
-                          alert('Submitted. If you don\'t see updates soon, try again later.');
-                          return;
-                        }
-
-                        // Use first substance as token_a, rest joined as token_b
-                        const token_a = allNames[0];
-                        const token_b = allNames.length > 1 ? allNames.slice(1).join(' + ') : null;
-
-                        // Insert into interaction_requests table
-                        const { error } = await supabase
-                          .from('interaction_requests')
-                          .insert({
-                            substance_name: token_a,
-                            interaction_with: token_b,
-                            notes: 'Submitted from no-results state',
-                            status: 'pending'
-                          });
-
-                        // Handle duplicate constraint gracefully
-                        if (error) {
-                          // PostgreSQL unique constraint violation code is 23505
-                          if (error.code === '23505') {
-                            // Duplicate - still show success message
-                            alert('Thank you! Your request has been submitted for review.');
-                          } else {
-                            // Other error - show calm fallback
-                            console.error('Request submission error:', error);
-                            alert('Submitted. If you don\'t see updates soon, try again later.');
-                          }
-                        } else {
-                          // Success
-                          alert('Thank you! Your request has been submitted for review.');
-                        }
-                      } catch (err) {
-                        // Network or other error - show calm fallback
-                        console.error('Request submission exception:', err);
-                        alert('Submitted. If you don\'t see updates soon, try again later.');
-                      } finally {
-                        setSubmittingRequest(false);
-                      }
-                    }}
-                    disabled={submittingRequest}
-                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    style={{
-                      background: SEVERITY_CONFIG.none.borderColor,
-                      color: 'white',
-                      border: `2px solid ${SEVERITY_CONFIG.none.borderColor}`
-                    }}
-                  >
-                    {submittingRequest && <Loader2 className="w-4 h-4 animate-spin" />}
-                    Request review
-                  </button>
-                </div>
-
-                <p className="text-xs pt-3 border-t" style={{
-                  color: 'var(--color-text-secondary)',
-                  borderColor: SEVERITY_CONFIG.none.borderColor
-                }}>
-                  Educational use only. Not medical advice.
-                </p>
+                    <span className="font-medium text-slate-900">{substance.display_name}</span>
+                    <span className="text-xs text-slate-500 px-2 py-0.5 bg-white rounded">
+                      {substance.type}
+                    </span>
+                    <button
+                      onClick={() => removeFromStack(substance.substance_id)}
+                      className="text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
-          {/* Interaction Results by Severity */}
-          {(['major', 'moderate', 'minor', 'monitor'] as const).map((severity) => {
-            const items = groupedResults[severity];
-            if (items.length === 0) return null;
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs text-slate-700">
+              <strong>Screening tool only.</strong> This checks documented interactions from clinical sources. It may miss interactions. Always review each pair and discuss your complete regimen with a healthcare provider.
+            </p>
+          </div>
 
-            const config = SEVERITY_CONFIG[severity];
-            const Icon = config.icon;
+          <button
+            onClick={runCheck}
+            disabled={stack.length < 2 || loading}
+            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Checking {pairCount} Pairs...
+              </>
+            ) : (
+              `Check ${stack.length} Substances`
+            )}
+          </button>
+        </div>
+      )}
 
-            return (
-              <div key={severity} className="mb-6">
-                <h3 className="text-xl font-bold mb-3 flex items-center gap-2" style={{ color: config.textColor }}>
-                  <Icon className="w-6 h-6" />
-                  {config.label} ({items.length})
-                </h3>
-                <div className="space-y-3">
-                  {items.map((interaction) => (
-                    <InteractionResultCard key={interaction.interaction_id} interaction={interaction} />
+      {/* Traditional Mode UI */}
+      {mode !== 'stack' && (
+        <>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+              <SubstanceCombobox
+                kind="supplement"
+                label={mode === 'supplements-supplements' ? 'Add Supplements' : 'Add Supplement'}
+                value={currentSupplement}
+                onChange={handleSupplementChange}
+                onNotFound={handleNotFound}
+                placeholder="Search supplements..."
+              />
+              {supplements.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {supplements.map((s) => (
+                    <span key={s.substance_id} className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 border border-green-200 rounded-lg text-sm">
+                      {s.display_name}
+                      <button onClick={() => setSupplements(supplements.filter(x => x.substance_id !== s.substance_id))} className="text-slate-400 hover:text-slate-600">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
                   ))}
                 </div>
-              </div>
-            );
-          })}
+              )}
+            </div>
 
-          {/* Premium Upsell - Non-Blocking */}
-          <div className="mt-8 mb-6">
-            <InlineUpgradeCard context="results" compact={false} />
+            {mode === 'supplements-drugs' && (
+              <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                <SubstanceCombobox
+                  kind="drug"
+                  label="Add Medication"
+                  value={currentMedication}
+                  onChange={handleMedicationChange}
+                  onNotFound={handleNotFound}
+                  placeholder="Search medications..."
+                />
+                {medications.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {medications.map((m) => (
+                      <span key={m.substance_id} className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                        {m.display_name}
+                        <button onClick={() => setMedications(medications.filter(x => x.substance_id !== m.substance_id))} className="text-slate-400 hover:text-slate-600">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={runCheck}
+            disabled={loading || (mode === 'supplements-drugs' ? supplements.length === 0 || medications.length === 0 : supplements.length < 2)}
+            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-6"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Checking...
+              </>
+            ) : (
+              'Check Interactions'
+            )}
+          </button>
+        </>
+      )}
+
+      {/* Not Found Items */}
+      {notFoundItems.length > 0 && (
+        <div className="mb-6 space-y-3">
+          {notFoundItems.map((item) => (
+            <NotFoundCard
+              key={item.id}
+              rawName={item.rawName}
+              kind={item.kind}
+              suggestions={item.suggestions}
+              onSelectSuggestion={(substance) => handleSelectSuggestion(item.id, substance)}
+              onDismiss={() => removeNotFound(item.id)}
+              onRequestAddition={handleRequestAddition}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Error Display */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* Results Summary (Stack Mode) */}
+      {mode === 'stack' && results && results.length > 0 && (
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm font-semibold text-slate-900">
+            {stack.length} items → {pairCount} pair {pairCount === 1 ? 'check' : 'checks'}
+          </p>
+          {topConcern && (
+            <p className="text-sm text-slate-700 mt-1">
+              <span className="font-medium">Top concern:</span>{' '}
+              <span className={getSeverityColor(topConcern.severity_norm)}>
+                {topConcern.severity_norm || 'Monitor'}
+              </span>
+              {' - '}
+              {topConcern.user_action || topConcern.summary_short}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Results Display */}
+      {results && results.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-6">
+          <div className="px-6 py-4 border-b border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900">
+              Found {results.length} {results.length === 1 ? 'Interaction' : 'Interactions'}
+            </h3>
+          </div>
+          <div className="divide-y divide-slate-200">
+            {results.map((interaction) => (
+              <InteractionResultCard
+                key={interaction.interaction_id}
+                interaction={interaction}
+                isExpanded={expandedResults.has(interaction.interaction_id)}
+                onToggleExpand={() => toggleExpanded(interaction.interaction_id)}
+              />
+            ))}
           </div>
         </div>
       )}
+
+      {/* No Results Message */}
+      {!loading && results && results.length === 0 && (
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 text-center mb-6">
+          <p className="text-slate-700 font-medium">No documented interactions found</p>
+          <p className="text-sm text-slate-600 mt-2">
+            While no interactions were found in our database, this doesn't guarantee absence of risk.
+            Always consult your healthcare provider about your specific combination.
+          </p>
+        </div>
+      )}
+
+      {/* Global Trust Statement */}
+      {results !== null && <GlobalTrustStatement />}
     </div>
   );
 }

@@ -15,12 +15,13 @@ interface Substance {
 const searchCache = new SearchCache<Substance[]>(10, 60000);
 
 interface SubstanceComboboxProps {
-  kind: 'supplement' | 'drug';
+  kind?: 'supplement' | 'drug';
   label: string;
   placeholder?: string;
   value: Substance | null;
   onChange: (value: Substance | null) => void;
   onNotFound?: (rawInput: string, kind: string, suggestions: Substance[]) => void;
+  disabled?: boolean;
 }
 
 // Helper: Highlight matched prefix in text (React-safe with stable structure)
@@ -55,6 +56,7 @@ export default function SubstanceCombobox({
   value,
   onChange,
   onNotFound,
+  disabled,
 }: SubstanceComboboxProps) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<Substance[]>([]);
@@ -111,8 +113,9 @@ export default function SubstanceCombobox({
         // Create new abort controller
         abortControllerRef.current = new AbortController();
 
+        const typeParam = kind ? `&type=${kind}` : '';
         const response = await fetch(
-          `/.netlify/functions/checker-autocomplete?q=${encodeURIComponent(input)}&type=${kind}&limit=12`,
+          `/.netlify/functions/checker-autocomplete?q=${encodeURIComponent(input)}${typeParam}&limit=12`,
           { signal: abortControllerRef.current.signal }
         );
 
@@ -195,7 +198,7 @@ export default function SubstanceCombobox({
         setShowWarning(true);
 
         if (onNotFound) {
-          onNotFound(input.trim(), kind, suggestions);
+          onNotFound(input.trim(), kind || 'substance', suggestions);
         }
       }
     } else if (e.key === 'ArrowDown') {
@@ -276,6 +279,7 @@ export default function SubstanceCombobox({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          disabled={disabled}
           onFocus={() => {
             // Show existing suggestions or trigger search if input exists
             if (suggestions.length > 0) {
