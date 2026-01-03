@@ -34,7 +34,7 @@ const REQUIRED_COMPONENTS = {
     '<HowItWorks />',
     'import StackBuilderCheckerV3 from',
     'import HowItWorks from',
-    'Check Drug–Supplement Interactions Before You Take Them',
+    'Check supplement–drug interactions before you take them.',
   ],
 };
 

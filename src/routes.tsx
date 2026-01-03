@@ -46,6 +46,7 @@ import AboutTheChecker from './pages/AboutTheChecker';
 import WhyAIRecommends from './pages/WhyAIRecommends';
 import Diagnostics from './pages/Diagnostics';
 import DemoOmega3 from './pages/DemoOmega3';
+import Browse from './pages/Browse';
 
 export const router = createBrowserRouter([
   {
@@ -155,6 +156,10 @@ export const router = createBrowserRouter([
       {
         path: 'refund-policy',
         element: <RefundPolicy />
+      },
+      {
+        path: 'browse',
+        element: <Browse />
       },
       {
         path: 'supplements',

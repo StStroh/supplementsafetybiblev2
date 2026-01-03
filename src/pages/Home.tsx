@@ -82,36 +82,42 @@ export default function Home() {
               <Logo variant="dark" className="logo--hero" />
             </div>
 
-            {/* H1: Don't Mix Blind™ */}
+            {/* H1: Clear and Direct */}
             <h1
               className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 max-w-4xl leading-tight"
               style={{ color: 'var(--color-text)' }}
               data-testid="landing-hero-headline"
             >
-              Check Drug–Supplement Interactions Before You Take Them
+              Check supplement–drug interactions before you take them.
             </h1>
 
-            {/* Database Coverage Line */}
+            {/* Disclaimer */}
             <p
-              className="text-base sm:text-lg md:text-xl max-w-3xl mb-2 font-medium leading-snug"
-              style={{ color: 'var(--color-text)' }}
-            >
-              Over 3,000 supplements and medications analyzed across 30,000+ documented interaction pairs. Continuously updated.
-            </p>
-
-            {/* Subhead */}
-            <p
-              className="text-base sm:text-lg md:text-xl max-w-3xl mb-8 leading-relaxed"
+              className="text-base sm:text-lg max-w-2xl mb-8"
               style={{ color: 'var(--color-text-muted)' }}
               data-testid="landing-hero-sub"
             >
-              evidence-based severity ratings help you identify risks, understand mechanisms, and make safer decisions about your health regimen.
+              Evidence-based and educational. Not medical advice.
             </p>
           </div>
 
           {/* Modern Interaction Checker */}
           <div data-testid="landing-hero-checker">
             <StackBuilderCheckerV3 />
+          </div>
+
+          {/* Secondary Navigation */}
+          <div className="text-center mt-6">
+            <a
+              href="/browse"
+              className="inline-flex items-center gap-2 text-sm font-medium hover:underline transition-all"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              Browse interactions by substance
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
           </div>
 
           {/* Trust strip */}
