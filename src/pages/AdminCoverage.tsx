@@ -8,6 +8,16 @@ interface MissingToken {
   cnt: number;
 }
 
+interface PriorityItem {
+  substance_id: string;
+  display_name: string;
+  type: string;
+  canonical_name: string;
+  request_count: number;
+  interaction_count: number;
+  priority_score: number;
+}
+
 interface RequestedInteraction {
   token: string;
   raw_input_sample: string;
@@ -38,11 +48,13 @@ export default function AdminCoverage() {
   const isAdminMode = import.meta.env.VITE_ADMIN_MODE === 'true';
 
   const [missingTokens, setMissingTokens] = useState<MissingToken[]>([]);
+  const [priorityQueue, setPriorityQueue] = useState<PriorityItem[]>([]);
   const [requestedInteractions, setRequestedInteractions] = useState<RequestedInteraction[]>([]);
   const [lowCoverageSubstances, setLowCoverageSubstances] = useState<SubstanceCount[]>([]);
   const [zeroCoverageSubstances, setZeroCoverageSubstances] = useState<ZeroCoverageSubstance[]>([]);
 
   const [loadingMissingTokens, setLoadingMissingTokens] = useState(true);
+  const [loadingPriority, setLoadingPriority] = useState(true);
   const [loadingRequested, setLoadingRequested] = useState(true);
   const [loadingLowCoverage, setLoadingLowCoverage] = useState(true);
   const [loadingZeroCoverage, setLoadingZeroCoverage] = useState(true);
@@ -57,6 +69,7 @@ export default function AdminCoverage() {
     }
 
     fetchMissingTokens();
+    fetchPriorityQueue();
     fetchRequestedInteractions();
     fetchLowCoverageSubstances();
     fetchZeroCoverageSubstances();
@@ -77,6 +90,22 @@ export default function AdminCoverage() {
       console.error('Error fetching missing tokens:', error);
     } finally {
       setLoadingMissingTokens(false);
+    }
+  };
+
+  const fetchPriorityQueue = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('v_coverage_priority')
+        .select('*')
+        .limit(50);
+
+      if (error) throw error;
+      setPriorityQueue(data || []);
+    } catch (error) {
+      console.error('Error fetching priority queue:', error);
+    } finally {
+      setLoadingPriority(false);
     }
   };
 
@@ -182,6 +211,11 @@ export default function AdminCoverage() {
   const handleCreateTokenClick = (token: string) => {
     // Navigate to admin tokens with search prefilled
     navigate(`/admin/tokens?q=${encodeURIComponent(token)}`);
+  };
+
+  const handleReviewPriorityClick = (displayName: string) => {
+    // Navigate to browse page with token prefilled
+    navigate(`/browse?token=${encodeURIComponent(displayName)}`);
   };
 
   const handleFilterChange = () => {
@@ -353,7 +387,103 @@ export default function AdminCoverage() {
             </div>
           </div>
 
-          {/* Section 1: Most Requested Interactions */}
+          {/* Section 1: Priority Queue */}
+          <div className="bg-white rounded-lg shadow-sm border border-blue-200">
+            <div className="px-6 py-4 border-b border-blue-200 bg-blue-50">
+              <div className="flex items-center gap-3">
+                <TrendingUp className="w-5 h-5 text-blue-700" />
+                <h2 className="text-xl font-semibold text-slate-900">Priority Queue (What to add next)</h2>
+              </div>
+              <p className="mt-1 text-sm text-slate-600">
+                Ranked by demand vs coverage — high requests with low interactions rise to the top
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              {loadingPriority ? (
+                <div className="p-8 text-center text-slate-500">Loading...</div>
+              ) : priorityQueue.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <p className="font-medium">No prioritized items yet. Requests will appear here as users search.</p>
+                </div>
+              ) : (
+                <table className="w-full">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Display Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Requests
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Interactions
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Priority Score
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-slate-200">
+                    {priorityQueue.map((item) => {
+                      const isHighPriority = item.priority_score >= 5;
+                      return (
+                        <tr
+                          key={item.substance_id}
+                          className={`hover:bg-slate-50 ${isHighPriority ? 'bg-blue-50' : ''}`}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-slate-900">
+                              {item.display_name}
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              {item.canonical_name}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getTypeBadgeColor(item.type)}`}>
+                              {item.type}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className="font-semibold text-blue-600">
+                              {item.request_count}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className={item.interaction_count === 0 ? 'text-red-600 font-semibold' : 'text-slate-900'}>
+                              {item.interaction_count}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className={`font-semibold ${isHighPriority ? 'text-blue-700' : 'text-slate-700'}`}>
+                              {item.priority_score.toFixed(2)}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <button
+                              className="text-blue-600 hover:text-blue-700 font-medium"
+                              onClick={() => handleReviewPriorityClick(item.display_name)}
+                            >
+                              Review
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+          {/* Section 2: Most Requested Substances */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200">
             <div className="px-6 py-4 border-b border-slate-200">
               <div className="flex items-center gap-3">
@@ -424,7 +554,7 @@ export default function AdminCoverage() {
             </div>
           </div>
 
-          {/* Section 2: Low Coverage Substances */}
+          {/* Section 3: Low Coverage Substances */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200">
             <div className="px-6 py-4 border-b border-slate-200">
               <div className="flex items-center gap-3">
@@ -487,7 +617,7 @@ export default function AdminCoverage() {
             </div>
           </div>
 
-          {/* Section 3: Zero Coverage Substances */}
+          {/* Section 4: Zero Coverage Substances */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200">
             <div className="px-6 py-4 border-b border-slate-200">
               <div className="flex items-center gap-3">
