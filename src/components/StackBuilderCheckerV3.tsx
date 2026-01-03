@@ -9,6 +9,7 @@ import InteractionResultCard from './check/InteractionResultCard';
 import { useTranslation } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
 import { useAuthUser } from '../hooks/useAuthUser';
+import { ContextFlags } from '../utils/contextKeywords';
 
 interface Substance {
   substance_id: string;
@@ -124,6 +125,15 @@ export default function StackBuilderCheckerV3() {
   const [minConfidence, setMinConfidence] = useState<number>(0);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Context flags
+  const [contextFlags, setContextFlags] = useState<ContextFlags>({
+    bloodThinners: false,
+    pregnancy: false,
+    surgery: false,
+    bloodPressure: false,
+  });
+  const [showContextFlags, setShowContextFlags] = useState(false);
+
   // Initialize filters from URL on mount
   useEffect(() => {
     const sevParam = searchParams.get('sev');
@@ -238,6 +248,21 @@ export default function StackBuilderCheckerV3() {
 
   // Check if any filters are active
   const hasActiveFilters = selectedSeverities.size > 0 || minConfidence > 0;
+
+  // Handle context flag changes
+  const toggleContextFlag = (flag: keyof ContextFlags) => {
+    setContextFlags((prev) => ({
+      ...prev,
+      [flag]: !prev[flag],
+    }));
+  };
+
+  // Check if any context flags are active
+  const hasActiveContextFlags =
+    contextFlags.bloodThinners ||
+    contextFlags.pregnancy ||
+    contextFlags.surgery ||
+    contextFlags.bloodPressure;
 
   // Handle supplement selection
   const handleSupplementChange = (substance: Substance | null) => {
@@ -932,6 +957,88 @@ export default function StackBuilderCheckerV3() {
         </div>
       )}
 
+      {/* Context Flags Panel */}
+      {results && results.length > 0 && (
+        <div className="mb-6">
+          <button
+            onClick={() => setShowContextFlags(!showContextFlags)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors"
+          >
+            <Info className="w-4 h-4" />
+            {showContextFlags ? 'Hide Context' : 'Add Context'}
+            {hasActiveContextFlags && (
+              <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                {Object.values(contextFlags).filter(Boolean).length}
+              </span>
+            )}
+          </button>
+
+          {showContextFlags && (
+            <div className="mt-3 bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+              <p className="text-sm text-slate-700 mb-4">
+                Select any that apply to see relevant notes on major and moderate interactions.
+              </p>
+
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={contextFlags.bloodThinners}
+                    onChange={() => toggleContextFlag('bloodThinners')}
+                    className="mt-0.5 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span className="text-sm text-slate-700 group-hover:text-slate-900">
+                    I take blood thinners
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={contextFlags.pregnancy}
+                    onChange={() => toggleContextFlag('pregnancy')}
+                    className="mt-0.5 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span className="text-sm text-slate-700 group-hover:text-slate-900">
+                    I'm pregnant or trying to conceive
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={contextFlags.surgery}
+                    onChange={() => toggleContextFlag('surgery')}
+                    className="mt-0.5 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span className="text-sm text-slate-700 group-hover:text-slate-900">
+                    I have surgery coming up
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={contextFlags.bloodPressure}
+                    onChange={() => toggleContextFlag('bloodPressure')}
+                    className="mt-0.5 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span className="text-sm text-slate-700 group-hover:text-slate-900">
+                    I'm managing blood pressure
+                  </span>
+                </label>
+              </div>
+
+              <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                <p className="text-xs text-slate-600">
+                  Context flags help highlight relevant concerns. They do not alter interaction data or provide medical advice.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Results Display */}
       {results && results.length > 0 && filteredResults && (
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-6">
@@ -955,6 +1062,7 @@ export default function StackBuilderCheckerV3() {
                 <InteractionResultCard
                   key={interaction.interaction_id}
                   interaction={interaction}
+                  contextFlags={contextFlags}
                 />
               ))
             ) : (

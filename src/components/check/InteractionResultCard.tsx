@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, Info, Eye, ExternalLink, FileText, Award, Database } from 'lucide-react';
+import { ContextFlags, getRelevantContextNotes } from '../../utils/contextKeywords';
 
 interface InteractionResultCardProps {
   interaction: {
@@ -19,6 +20,7 @@ interface InteractionResultCardProps {
     created_at?: string;
     updated_at?: string;
   };
+  contextFlags?: ContextFlags;
 }
 
 const SEVERITY_CONFIG = {
@@ -69,12 +71,29 @@ const SEVERITY_CONFIG = {
   },
 };
 
-export default function InteractionResultCard({ interaction }: InteractionResultCardProps) {
+export default function InteractionResultCard({ interaction, contextFlags }: InteractionResultCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const severityKey = (interaction.severity_norm?.toLowerCase() || 'unknown') as keyof typeof SEVERITY_CONFIG;
   const config = SEVERITY_CONFIG[severityKey] || SEVERITY_CONFIG.unknown;
   const Icon = config.icon;
+
+  // Get relevant context notes
+  const contextNotes = contextFlags
+    ? getRelevantContextNotes(
+        [
+          interaction.summary_short,
+          interaction.mechanism,
+          interaction.clinical_effect,
+          interaction.management,
+          interaction.user_action,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        contextFlags,
+        interaction.severity_norm
+      )
+    : [];
 
   // Parse citations
   let citationUrls: string[] = [];
@@ -179,10 +198,32 @@ export default function InteractionResultCard({ interaction }: InteractionResult
           )}
         </div>
 
+        {/* Context Notes - Only shown if relevant */}
+        {contextNotes.length > 0 && (
+          <div
+            className="mt-3 p-3 rounded-md border-l-4"
+            style={{
+              background: 'rgba(59, 130, 246, 0.05)',
+              borderColor: '#3B82F6',
+            }}
+          >
+            <h4 className="text-xs font-bold uppercase tracking-wide mb-2 text-blue-900">
+              Context Note
+            </h4>
+            <div className="space-y-2">
+              {contextNotes.map((note, index) => (
+                <p key={index} className="text-sm text-blue-900">
+                  {note.message}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Toggle Details Button */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="inline-flex items-center gap-2 text-sm font-semibold hover:underline transition-all"
+          className="inline-flex items-center gap-2 text-sm font-semibold hover:underline transition-all mt-3"
           style={{ color: config.textColor }}
         >
           {isExpanded ? (
