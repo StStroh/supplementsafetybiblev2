@@ -70,9 +70,14 @@ export default function Navbar() {
           </a>
 
           {isAdminMode && (
-            <a href="/admin/tokens" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
-              Admin
-            </a>
+            <>
+              <a href="/admin/tokens" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+                Tokens
+              </a>
+              <a href="/admin/coverage" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+                Coverage
+              </a>
+            </>
           )}
 
           {isLoggedIn ? (
@@ -155,14 +160,24 @@ export default function Navbar() {
             </a>
 
             {isAdminMode && (
-              <a
-                href="/admin/tokens"
-                className="font-medium transition-colors"
-                style={{ color: 'var(--brand-purple)' }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Admin
-              </a>
+              <>
+                <a
+                  href="/admin/tokens"
+                  className="font-medium transition-colors"
+                  style={{ color: 'var(--brand-purple)' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Tokens
+                </a>
+                <a
+                  href="/admin/coverage"
+                  className="font-medium transition-colors"
+                  style={{ color: 'var(--brand-purple)' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Coverage
+                </a>
+              </>
             )}
 
             {isLoggedIn ? (

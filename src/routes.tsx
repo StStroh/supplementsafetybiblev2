@@ -48,6 +48,7 @@ import Diagnostics from './pages/Diagnostics';
 import DemoOmega3 from './pages/DemoOmega3';
 import Browse from './pages/Browse';
 import AdminTokens from './pages/AdminTokens';
+import AdminCoverage from './pages/AdminCoverage';
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +82,10 @@ export const router = createBrowserRouter([
       {
         path: 'admin/tokens',
         element: <AdminTokens />
+      },
+      {
+        path: 'admin/coverage',
+        element: <AdminCoverage />
       },
       {
         path: 'success',
