@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X, Filter, Crown } from 'lucide-react';
 import SubstanceCombobox from './SubstanceCombobox';
 import NotFoundCard from './NotFoundCard';
 import GlobalTrustStatement from './GlobalTrustStatement';
@@ -69,6 +70,7 @@ const SEVERITY_CONFIG = {
   moderate: { label: 'Moderate', bgColor: '#FEF3C7', borderColor: '#FCD34D', textColor: '#92400E', icon: AlertCircle },
   minor: { label: 'Minor', bgColor: '#EFF6FF', borderColor: '#93C5FD', textColor: '#1E40AF', icon: Info },
   monitor: { label: 'Monitor', bgColor: '#F0F9FF', borderColor: '#7DD3FC', textColor: '#0C4A6E', icon: Eye },
+  unknown: { label: 'Unknown', bgColor: '#F9FAFB', borderColor: '#D1D5DB', textColor: '#374151', icon: Info },
   none: { label: 'No Interaction', bgColor: '#E8F5E9', borderColor: '#66BB6A', textColor: '#2E7D32', icon: CheckCircle2 },
 };
 
@@ -89,6 +91,7 @@ const CONFIDENCE_ORDER: { [key: string]: number } = {
 export default function StackBuilderCheckerV3() {
   const t = useTranslation();
   const { profile } = useAuthUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [mode, setMode] = useState<CheckerMode>('supplements-drugs');
 
   // Selected substances
@@ -116,6 +119,52 @@ export default function StackBuilderCheckerV3() {
   const [submittingRequest, setSubmittingRequest] = useState(false);
   const [showLimitWarning, setShowLimitWarning] = useState(false);
 
+  // Filters
+  const [selectedSeverities, setSelectedSeverities] = useState<Set<string>>(new Set());
+  const [minConfidence, setMinConfidence] = useState<number>(0);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Initialize filters from URL on mount
+  useEffect(() => {
+    const sevParam = searchParams.get('sev');
+    const confParam = searchParams.get('minConf');
+
+    if (sevParam) {
+      const severities = sevParam.split(',').filter(Boolean);
+      setSelectedSeverities(new Set(severities));
+      setShowFilters(true);
+    }
+
+    if (confParam) {
+      const conf = parseInt(confParam, 10);
+      if (!isNaN(conf) && conf >= 0 && conf <= 100) {
+        setMinConfidence(conf);
+        setShowFilters(true);
+      }
+    }
+  }, []);
+
+  // Update URL when filters change
+  useEffect(() => {
+    if (results === null) return;
+
+    const params = new URLSearchParams(searchParams);
+
+    if (selectedSeverities.size > 0) {
+      params.set('sev', Array.from(selectedSeverities).join(','));
+    } else {
+      params.delete('sev');
+    }
+
+    if (minConfidence > 0) {
+      params.set('minConf', minConfidence.toString());
+    } else {
+      params.delete('minConf');
+    }
+
+    setSearchParams(params, { replace: true });
+  }, [selectedSeverities, minConfidence, results]);
+
   // Get tier-based limits
   const getMaxSubstances = () => {
     if (!profile || profile.plan === 'free' || profile.plan === 'starter_free') {
@@ -130,6 +179,65 @@ export default function StackBuilderCheckerV3() {
     }
     return profile.plan;
   };
+
+  const isPremiumUser = () => {
+    return profile && profile.plan !== 'free' && profile.plan !== 'starter_free';
+  };
+
+  // Apply filters to results
+  const filteredResults = useMemo(() => {
+    if (!results) return null;
+
+    let filtered = results;
+
+    // Apply severity filter
+    if (selectedSeverities.size > 0) {
+      filtered = filtered.filter((interaction) => {
+        const severity = interaction.severity_norm?.toLowerCase() || 'unknown';
+        return selectedSeverities.has(severity);
+      });
+    }
+
+    // Apply confidence filter
+    if (minConfidence > 0) {
+      filtered = filtered.filter((interaction) => {
+        if (!interaction.confidence) return false;
+        const confidence = parseFloat(interaction.confidence);
+        return !isNaN(confidence) && confidence >= minConfidence;
+      });
+    }
+
+    return filtered;
+  }, [results, selectedSeverities, minConfidence]);
+
+  // Toggle severity filter
+  const toggleSeverity = (severity: string) => {
+    if (!isPremiumUser()) return;
+
+    const newSet = new Set(selectedSeverities);
+    if (newSet.has(severity)) {
+      newSet.delete(severity);
+    } else {
+      newSet.add(severity);
+    }
+    setSelectedSeverities(newSet);
+  };
+
+  // Handle confidence slider
+  const handleConfidenceChange = (value: number) => {
+    if (!isPremiumUser()) return;
+    setMinConfidence(value);
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    if (!isPremiumUser()) return;
+    setSelectedSeverities(new Set());
+    setMinConfidence(0);
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = selectedSeverities.size > 0 || minConfidence > 0;
 
   // Handle supplement selection
   const handleSupplementChange = (substance: Substance | null) => {
@@ -716,23 +824,151 @@ export default function StackBuilderCheckerV3() {
         </div>
       )}
 
-      {/* Results Display */}
+      {/* Filter Panel */}
       {results && results.length > 0 && (
+        <div className="mb-6">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors"
+          >
+            <Filter className="w-4 h-4" />
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+            {hasActiveFilters && (
+              <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                Active
+              </span>
+            )}
+          </button>
+
+          {showFilters && (
+            <div className="mt-3 bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+              {!isPremiumUser() && (
+                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+                  <Crown className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-amber-900 font-medium">
+                      Filters available on Pro and Clinical plans
+                    </p>
+                    <p className="text-xs text-amber-800 mt-1">
+                      <a href="/pricing" className="underline hover:no-underline">
+                        Upgrade now
+                      </a>{' '}
+                      to filter results by severity and confidence.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className={!isPremiumUser() ? 'opacity-50 pointer-events-none' : ''}>
+                {/* Severity Multi-Select */}
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-slate-900 mb-3">
+                    Severity
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {['major', 'moderate', 'minor', 'monitor', 'unknown'].map((severity) => {
+                      const isSelected = selectedSeverities.has(severity);
+                      const config = SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG];
+
+                      return (
+                        <button
+                          key={severity}
+                          onClick={() => toggleSeverity(severity)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                            isSelected
+                              ? 'border-blue-500 bg-blue-50 text-blue-900'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                          }`}
+                          style={
+                            isSelected
+                              ? {
+                                  borderColor: config?.borderColor || '#3B82F6',
+                                  backgroundColor: config?.bgColor || '#EFF6FF',
+                                  color: config?.textColor || '#1E40AF',
+                                }
+                              : undefined
+                          }
+                        >
+                          {severity.charAt(0).toUpperCase() + severity.slice(1)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Minimum Confidence Slider */}
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-slate-900 mb-3">
+                    Minimum Confidence: {minConfidence}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value={minConfidence}
+                    onChange={(e) => handleConfidenceChange(parseInt(e.target.value, 10))}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  />
+                  <div className="flex justify-between text-xs text-slate-500 mt-1">
+                    <span>0%</span>
+                    <span>50%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
+
+                {/* Clear Filters */}
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                  >
+                    Clear all filters
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Results Display */}
+      {results && results.length > 0 && filteredResults && (
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-6">
           <div className="px-6 py-4 border-b border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900">
-              Found {results.length} {results.length === 1 ? 'Interaction' : 'Interactions'}
+              {hasActiveFilters ? (
+                <>
+                  Showing {filteredResults.length} of {results.length}{' '}
+                  {results.length === 1 ? 'Interaction' : 'Interactions'}
+                </>
+              ) : (
+                <>
+                  Found {results.length} {results.length === 1 ? 'Interaction' : 'Interactions'}
+                </>
+              )}
             </h3>
           </div>
           <div className="divide-y divide-slate-200">
-            {results.map((interaction) => (
-              <InteractionResultCard
-                key={interaction.interaction_id}
-                interaction={interaction}
-                isExpanded={expandedResults.has(interaction.interaction_id)}
-                onToggleExpand={() => toggleExpanded(interaction.interaction_id)}
-              />
-            ))}
+            {filteredResults.length > 0 ? (
+              filteredResults.map((interaction) => (
+                <InteractionResultCard
+                  key={interaction.interaction_id}
+                  interaction={interaction}
+                />
+              ))
+            ) : (
+              <div className="p-6 text-center">
+                <p className="text-slate-600">No interactions match your filters.</p>
+                <button
+                  onClick={clearFilters}
+                  className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                  disabled={!isPremiumUser()}
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
