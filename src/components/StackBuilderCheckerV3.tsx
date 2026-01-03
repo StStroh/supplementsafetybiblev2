@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X, Filter, Crown } from 'lucide-react';
+import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X, Filter, Crown, MessageSquare } from 'lucide-react';
 import SubstanceCombobox from './SubstanceCombobox';
 import NotFoundCard from './NotFoundCard';
 import GlobalTrustStatement from './GlobalTrustStatement';
 import InlineUpgradeCard from './InlineUpgradeCard';
 import InteractionResultCard from './check/InteractionResultCard';
+import RequestReviewModal from './check/RequestReviewModal';
 import { useTranslation } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
 import { useAuthUser } from '../hooks/useAuthUser';
@@ -133,6 +134,13 @@ export default function StackBuilderCheckerV3() {
     bloodPressure: false,
   });
   const [showContextFlags, setShowContextFlags] = useState(false);
+
+  // Request review modal
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewModalSubstances, setReviewModalSubstances] = useState<{
+    substanceName: string;
+    interactionWith: string;
+  }>({ substanceName: '', interactionWith: '' });
 
   // Initialize filters from URL on mount
   useEffect(() => {
@@ -263,6 +271,20 @@ export default function StackBuilderCheckerV3() {
     contextFlags.pregnancy ||
     contextFlags.surgery ||
     contextFlags.bloodPressure;
+
+  // Get user tier for request priority
+  const getUserTier = (): string => {
+    if (!profile) return 'free';
+    if (profile.plan_tier === 'clinical') return 'clinical';
+    if (profile.plan_tier === 'pro' || profile.plan_tier === 'premium') return 'pro';
+    return 'free';
+  };
+
+  // Handle request review modal
+  const openReviewModal = (substanceName: string, interactionWith: string) => {
+    setReviewModalSubstances({ substanceName, interactionWith });
+    setShowReviewModal(true);
+  };
 
   // Handle supplement selection
   const handleSupplementChange = (substance: Substance | null) => {
@@ -1043,18 +1065,38 @@ export default function StackBuilderCheckerV3() {
       {results && results.length > 0 && filteredResults && (
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-6">
           <div className="px-6 py-4 border-b border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900">
-              {hasActiveFilters ? (
-                <>
-                  Showing {filteredResults.length} of {results.length}{' '}
-                  {results.length === 1 ? 'Interaction' : 'Interactions'}
-                </>
-              ) : (
-                <>
-                  Found {results.length} {results.length === 1 ? 'Interaction' : 'Interactions'}
-                </>
-              )}
-            </h3>
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                {hasActiveFilters ? (
+                  <>
+                    Showing {filteredResults.length} of {results.length}{' '}
+                    {results.length === 1 ? 'Interaction' : 'Interactions'}
+                  </>
+                ) : (
+                  <>
+                    Found {results.length} {results.length === 1 ? 'Interaction' : 'Interactions'}
+                  </>
+                )}
+              </h3>
+              <button
+                onClick={() => {
+                  const substancesChecked =
+                    mode === 'stack'
+                      ? stack.map((s) => s.display_name).join(', ')
+                      : mode === 'supplements-drugs'
+                      ? [...supplements, ...medications].map((s) => s.display_name).join(', ')
+                      : [...supplements].map((s) => s.display_name).join(', ');
+                  openReviewModal(
+                    substancesChecked.split(', ')[0] || 'Unknown',
+                    substancesChecked.split(', ').slice(1).join(', ') || 'stack'
+                  );
+                }}
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors border border-slate-300"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Request Review
+              </button>
+            </div>
           </div>
           <div className="divide-y divide-slate-200">
             {filteredResults.length > 0 ? (
@@ -1085,15 +1127,43 @@ export default function StackBuilderCheckerV3() {
       {!loading && results && results.length === 0 && (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 text-center mb-6">
           <p className="text-slate-700 font-medium">No documented interactions found</p>
-          <p className="text-sm text-slate-600 mt-2">
+          <p className="text-sm text-slate-600 mt-2 mb-4">
             While no interactions were found in our database, this doesn't guarantee absence of risk.
             Always consult your healthcare provider about your specific combination.
           </p>
+          <button
+            onClick={() => {
+              const substancesChecked =
+                mode === 'stack'
+                  ? stack.map((s) => s.display_name).join(', ')
+                  : mode === 'supplements-drugs'
+                  ? [...supplements, ...medications].map((s) => s.display_name).join(', ')
+                  : [...supplements].map((s) => s.display_name).join(', ');
+              openReviewModal(
+                substancesChecked.split(', ')[0] || 'Unknown',
+                substancesChecked.split(', ').slice(1).join(', ') || 'stack'
+              );
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Request Review
+          </button>
         </div>
       )}
 
       {/* Global Trust Statement */}
       {results !== null && <GlobalTrustStatement />}
+
+      {/* Request Review Modal */}
+      <RequestReviewModal
+        isOpen={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        substanceName={reviewModalSubstances.substanceName}
+        interactionWith={reviewModalSubstances.interactionWith}
+        userTier={getUserTier()}
+        userId={profile?.id}
+      />
     </div>
   );
 }
