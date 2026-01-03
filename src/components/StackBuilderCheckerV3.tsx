@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2 } from 'lucide-react';
+import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye } from 'lucide-react';
 import SubstanceCombobox from './SubstanceCombobox';
 import NotFoundCard from './NotFoundCard';
-import ConfidenceBadge from './ConfidenceBadge';
 import GlobalTrustStatement from './GlobalTrustStatement';
-import ConfidenceMetadata from './ConfidenceMetadata';
 import InlineUpgradeCard from './InlineUpgradeCard';
+import InteractionResultCard from './check/InteractionResultCard';
 import { useTranslation } from '../lib/i18n';
 
 interface Substance {
@@ -21,7 +20,10 @@ interface Interaction {
   substance_a: { id: string; name: string; type: string };
   substance_b: { id: string; name: string; type: string };
   interaction_type: string;
-  severity: 'avoid' | 'caution' | 'monitor' | 'info';
+  severity_norm?: string;
+  severity_raw?: string;
+  user_action?: string;
+  severity?: 'avoid' | 'caution' | 'monitor' | 'info';
   summary_short: string;
   mechanism?: string;
   clinical_effect?: string;
@@ -33,10 +35,13 @@ interface Interaction {
 
 interface CheckSummary {
   total: number;
-  avoid: number;
-  caution: number;
-  monitor: number;
-  info: number;
+  major?: number;
+  moderate?: number;
+  minor?: number;
+  monitor?: number;
+  avoid?: number;
+  caution?: number;
+  info?: number;
 }
 
 interface NotFoundItem {
@@ -49,10 +54,10 @@ interface NotFoundItem {
 type CheckerMode = 'supplements-drugs' | 'supplements-supplements';
 
 const SEVERITY_CONFIG = {
-  avoid: { label: 'Avoid', bgColor: '#FFEBEE', borderColor: '#EF5350', textColor: '#C62828', icon: AlertTriangle },
-  caution: { label: 'Caution', bgColor: '#FFF3E0', borderColor: '#FFA726', textColor: '#E65100', icon: AlertCircle },
-  monitor: { label: 'Monitor', bgColor: '#E3F2FD', borderColor: '#64B5F6', textColor: '#1565C0', icon: Info },
-  info: { label: 'Info', bgColor: '#F3E5F5', borderColor: '#BA68C8', textColor: '#6A1B9A', icon: Info },
+  major: { label: 'Major', bgColor: '#FEF2F2', borderColor: '#FCA5A5', textColor: '#991B1B', icon: AlertTriangle },
+  moderate: { label: 'Moderate', bgColor: '#FEF3C7', borderColor: '#FCD34D', textColor: '#92400E', icon: AlertCircle },
+  minor: { label: 'Minor', bgColor: '#EFF6FF', borderColor: '#93C5FD', textColor: '#1E40AF', icon: Info },
+  monitor: { label: 'Monitor', bgColor: '#F0F9FF', borderColor: '#7DD3FC', textColor: '#0C4A6E', icon: Eye },
   none: { label: 'No Interaction', bgColor: '#E8F5E9', borderColor: '#66BB6A', textColor: '#2E7D32', icon: CheckCircle2 },
 };
 
@@ -148,7 +153,7 @@ export default function StackBuilderCheckerV3() {
       ];
       const unresolved_inputs = notFoundItems.map(item => item.rawName);
 
-      const results_summary = response.summary || { total: 0, avoid: 0, caution: 0, monitor: 0, info: 0 };
+      const results_summary = response.summary || { total: 0, major: 0, moderate: 0, minor: 0, monitor: 0 };
       const has_results = (response.results || []).length > 0;
 
       const client_meta = {
@@ -254,16 +259,19 @@ export default function StackBuilderCheckerV3() {
       ? supplements.length > 0 && medications.length > 0
       : supplements.length >= 2;
 
-  // Group results by severity
+  // Group results by normalized severity
   const groupedResults: Record<string, Interaction[]> = {
-    avoid: [],
-    caution: [],
+    major: [],
+    moderate: [],
+    minor: [],
     monitor: [],
-    info: [],
   };
 
   (results || []).forEach((result) => {
-    groupedResults[result.severity].push(result);
+    const key = result.severity_norm || 'monitor';
+    if (groupedResults[key]) {
+      groupedResults[key].push(result);
+    }
   });
 
   const toggleExpanded = (resultKey: string) => {
@@ -534,47 +542,47 @@ export default function StackBuilderCheckerV3() {
               {mode === 'supplements-drugs' ? 'Supplements + Medicines mode' : 'Supplements + Supplements mode'}.
             </p>
             <div className="flex flex-wrap gap-3">
-              {summary.avoid > 0 && (
+              {(summary.major || 0) > 0 && (
                 <div
                   className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.avoid.bgColor, border: `1px solid ${SEVERITY_CONFIG.avoid.borderColor}` }}
+                  style={{ background: SEVERITY_CONFIG.major.bgColor, border: `1px solid ${SEVERITY_CONFIG.major.borderColor}` }}
                 >
-                  <AlertTriangle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.avoid.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.avoid.textColor }}>
-                    {summary.avoid} {SEVERITY_CONFIG.avoid.label}
+                  <AlertTriangle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.major.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.major.textColor }}>
+                    {summary.major} {SEVERITY_CONFIG.major.label}
                   </span>
                 </div>
               )}
-              {summary.caution > 0 && (
+              {(summary.moderate || 0) > 0 && (
                 <div
                   className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.caution.bgColor, border: `1px solid ${SEVERITY_CONFIG.caution.borderColor}` }}
+                  style={{ background: SEVERITY_CONFIG.moderate.bgColor, border: `1px solid ${SEVERITY_CONFIG.moderate.borderColor}` }}
                 >
-                  <AlertCircle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.caution.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.caution.textColor }}>
-                    {summary.caution} {SEVERITY_CONFIG.caution.label}
+                  <AlertCircle className="w-4 h-4" style={{ color: SEVERITY_CONFIG.moderate.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.moderate.textColor }}>
+                    {summary.moderate} {SEVERITY_CONFIG.moderate.label}
                   </span>
                 </div>
               )}
-              {summary.monitor > 0 && (
+              {(summary.minor || 0) > 0 && (
+                <div
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg"
+                  style={{ background: SEVERITY_CONFIG.minor.bgColor, border: `1px solid ${SEVERITY_CONFIG.minor.borderColor}` }}
+                >
+                  <Info className="w-4 h-4" style={{ color: SEVERITY_CONFIG.minor.textColor }} />
+                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.minor.textColor }}>
+                    {summary.minor} {SEVERITY_CONFIG.minor.label}
+                  </span>
+                </div>
+              )}
+              {(summary.monitor || 0) > 0 && (
                 <div
                   className="flex items-center gap-2 px-4 py-2 rounded-lg"
                   style={{ background: SEVERITY_CONFIG.monitor.bgColor, border: `1px solid ${SEVERITY_CONFIG.monitor.borderColor}` }}
                 >
-                  <Info className="w-4 h-4" style={{ color: SEVERITY_CONFIG.monitor.textColor }} />
+                  <Eye className="w-4 h-4" style={{ color: SEVERITY_CONFIG.monitor.textColor }} />
                   <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.monitor.textColor }}>
                     {summary.monitor} {SEVERITY_CONFIG.monitor.label}
-                  </span>
-                </div>
-              )}
-              {summary.info > 0 && (
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg"
-                  style={{ background: SEVERITY_CONFIG.info.bgColor, border: `1px solid ${SEVERITY_CONFIG.info.borderColor}` }}
-                >
-                  <Info className="w-4 h-4" style={{ color: SEVERITY_CONFIG.info.textColor }} />
-                  <span className="font-semibold text-sm" style={{ color: SEVERITY_CONFIG.info.textColor }}>
-                    {summary.info} {SEVERITY_CONFIG.info.label}
                   </span>
                 </div>
               )}
@@ -598,8 +606,7 @@ export default function StackBuilderCheckerV3() {
               className="rounded-xl p-6 mb-6"
               style={{ background: SEVERITY_CONFIG.none.bgColor, border: '2px solid ' + SEVERITY_CONFIG.none.borderColor }}
             >
-              <ConfidenceBadge level="none" showExplanation={true} />
-              <div className="mt-4 p-4 rounded-lg" style={{ background: 'white', border: '1px solid ' + SEVERITY_CONFIG.none.borderColor }}>
+              <div className="p-4 rounded-lg" style={{ background: 'white', border: '1px solid ' + SEVERITY_CONFIG.none.borderColor }}>
                 <h4 className="font-semibold mb-3 text-base" style={{ color: SEVERITY_CONFIG.none.textColor }}>
                   No interaction results found for this combination
                 </h4>
@@ -667,7 +674,7 @@ export default function StackBuilderCheckerV3() {
           )}
 
           {/* Interaction Results by Severity */}
-          {(['avoid', 'caution', 'monitor', 'info'] as const).map((severity) => {
+          {(['major', 'moderate', 'minor', 'monitor'] as const).map((severity) => {
             const items = groupedResults[severity];
             if (items.length === 0) return null;
 
@@ -681,103 +688,9 @@ export default function StackBuilderCheckerV3() {
                   {config.label} ({items.length})
                 </h3>
                 <div className="space-y-3">
-                  {items.map((interaction) => {
-                    const resultKey = interaction.interaction_id;
-                    const isExpanded = expandedResults.has(resultKey);
-
-                    return (
-                      <div
-                        key={resultKey}
-                        className="rounded-lg p-5"
-                        style={{ background: config.bgColor, border: `2px solid ${config.borderColor}` }}
-                      >
-                        <ConfidenceBadge level={severity} showExplanation={false} />
-
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <h4 className="font-bold text-lg mb-1" style={{ color: config.textColor }}>
-                              {interaction.substance_a.name} + {interaction.substance_b.name}
-                            </h4>
-                            <p className="text-base" style={{ color: config.textColor }}>
-                              {interaction.summary_short}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => toggleExpanded(resultKey)}
-                            className="flex-shrink-0 p-2 rounded-lg hover:bg-black/5 transition-colors"
-                            aria-label={isExpanded ? 'Collapse' : 'Expand'}
-                          >
-                            {isExpanded ? '▲' : '▼'}
-                          </button>
-                        </div>
-
-                        {isExpanded && (
-                          <div className="mt-4 pt-4 border-t space-y-3" style={{ borderColor: config.borderColor }}>
-                            {interaction.mechanism && (
-                              <div>
-                                <h5 className="font-semibold mb-1" style={{ color: config.textColor }}>
-                                  Mechanism:
-                                </h5>
-                                <p className="text-sm" style={{ color: config.textColor }}>
-                                  {interaction.mechanism}
-                                </p>
-                              </div>
-                            )}
-                            {interaction.clinical_effect && (
-                              <div>
-                                <h5 className="font-semibold mb-1" style={{ color: config.textColor }}>
-                                  Clinical Effect:
-                                </h5>
-                                <p className="text-sm" style={{ color: config.textColor }}>
-                                  {interaction.clinical_effect}
-                                </p>
-                              </div>
-                            )}
-                            {interaction.management && (
-                              <div>
-                                <h5 className="font-semibold mb-1" style={{ color: config.textColor }}>
-                                  Management:
-                                </h5>
-                                <p className="text-sm" style={{ color: config.textColor }}>
-                                  {interaction.management}
-                                </p>
-                              </div>
-                            )}
-                            {interaction.citations && Array.isArray(interaction.citations) && interaction.citations.length > 0 && (
-                              <div>
-                                <h5 className="font-semibold mb-2" style={{ color: config.textColor }}>
-                                  Citations:
-                                </h5>
-                                <div className="space-y-1">
-                                  {interaction.citations.map((citation: any, idx: number) => {
-                                    const citationKey = citation.url || `${citation.source}-${citation.title}-${idx}`;
-                                    return (
-                                      <a
-                                        key={citationKey}
-                                        href={citation.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block text-sm hover:underline"
-                                        style={{ color: config.textColor }}
-                                      >
-                                        • {citation.source}: {citation.title}
-                                      </a>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            )}
-
-                            <ConfidenceMetadata
-                              evidenceGrade={interaction.evidence_grade}
-                              confidence={interaction.confidence}
-                              severity={severity}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {items.map((interaction) => (
+                    <InteractionResultCard key={interaction.interaction_id} interaction={interaction} />
+                  ))}
                 </div>
               </div>
             );
