@@ -47,11 +47,21 @@ export default function AdminTokens() {
     text: string;
   } | null>(null);
 
-  // Check admin mode flag
+  // Check admin mode flag and read query param
   useEffect(() => {
     const adminMode = import.meta.env.VITE_ADMIN_MODE;
     if (adminMode !== 'true') {
       navigate('/');
+      return;
+    }
+
+    // Auto-fill search from query param
+    const params = new URLSearchParams(window.location.search);
+    const qParam = params.get('q');
+    if (qParam) {
+      setSearchQuery(qParam);
+      // Clear param from URL
+      window.history.replaceState({}, '', '/admin/tokens');
     }
   }, [navigate]);
 

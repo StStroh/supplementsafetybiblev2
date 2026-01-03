@@ -106,6 +106,19 @@ export default function Check() {
 
   useEffect(() => {
     const resumeCheck = searchParams.get('resumeCheck');
+    const paramA = searchParams.get('a');
+    const paramB = searchParams.get('b');
+
+    // Prefill from URL params (a=supplement, b=medication)
+    if (paramA || paramB) {
+      if (paramA) setSelSup(paramA);
+      if (paramB) setSelMed(paramB);
+      // Clear params after reading
+      searchParams.delete('a');
+      searchParams.delete('b');
+      setSearchParams(searchParams, { replace: true });
+      return;
+    }
 
     if (resumeCheck === 'true' && isAuthenticated) {
       const payload = loadLastPayload();

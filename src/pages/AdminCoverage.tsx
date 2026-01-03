@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { AlertCircle, TrendingUp, Database, FileQuestion } from 'lucide-react';
+import { AlertCircle, TrendingUp, Database, FileQuestion, Filter } from 'lucide-react';
 
 interface RequestedInteraction {
   token: string;
@@ -25,6 +25,9 @@ interface ZeroCoverageSubstance {
   canonical_name: string;
 }
 
+type TypeFilter = 'all' | 'supplement' | 'drug';
+type CoverageFilter = 'all' | 'zero' | 'low';
+
 export default function AdminCoverage() {
   const navigate = useNavigate();
   const isAdminMode = import.meta.env.VITE_ADMIN_MODE === 'true';
@@ -37,6 +40,9 @@ export default function AdminCoverage() {
   const [loadingLowCoverage, setLoadingLowCoverage] = useState(true);
   const [loadingZeroCoverage, setLoadingZeroCoverage] = useState(true);
 
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [coverageFilter, setCoverageFilter] = useState<CoverageFilter>('all');
+
   useEffect(() => {
     if (!isAdminMode) {
       navigate('/');
@@ -46,7 +52,7 @@ export default function AdminCoverage() {
     fetchRequestedInteractions();
     fetchLowCoverageSubstances();
     fetchZeroCoverageSubstances();
-  }, [isAdminMode, navigate]);
+  }, [isAdminMode, navigate, typeFilter, coverageFilter]);
 
   const fetchRequestedInteractions = async () => {
     try {
@@ -66,11 +72,27 @@ export default function AdminCoverage() {
 
   const fetchLowCoverageSubstances = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('v_substance_interaction_counts')
-        .select('*')
-        .lte('interaction_count', 2)
-        .limit(100);
+        .select('*');
+
+      // Apply type filter
+      if (typeFilter !== 'all') {
+        query = query.eq('type', typeFilter);
+      }
+
+      // Apply coverage filter
+      if (coverageFilter === 'zero') {
+        query = query.eq('interaction_count', 0);
+      } else if (coverageFilter === 'low') {
+        query = query.lte('interaction_count', 2).gt('interaction_count', 0);
+      } else {
+        query = query.lte('interaction_count', 2);
+      }
+
+      query = query.limit(100);
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setLowCoverageSubstances(data || []);
@@ -83,10 +105,18 @@ export default function AdminCoverage() {
 
   const fetchZeroCoverageSubstances = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('v_zero_coverage_substances')
-        .select('*')
-        .limit(100);
+        .select('*');
+
+      // Apply type filter
+      if (typeFilter !== 'all') {
+        query = query.eq('type', typeFilter);
+      }
+
+      query = query.limit(100);
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setZeroCoverageSubstances(data || []);
@@ -113,6 +143,22 @@ export default function AdminCoverage() {
     });
   };
 
+  const handleReviewClick = (token: string) => {
+    // Navigate to checker with token prefilled in both fields
+    navigate(`/check?a=${encodeURIComponent(token)}&b=${encodeURIComponent(token)}`);
+  };
+
+  const handleAddInteractionClick = (substanceName: string) => {
+    // Navigate to admin tokens with search prefilled
+    navigate(`/admin/tokens?q=${encodeURIComponent(substanceName)}`);
+  };
+
+  const handleFilterChange = () => {
+    // Trigger re-fetch by resetting loading states
+    setLoadingLowCoverage(true);
+    setLoadingZeroCoverage(true);
+  };
+
   if (!isAdminMode) {
     return null;
   }
@@ -125,6 +171,94 @@ export default function AdminCoverage() {
           <p className="mt-2 text-slate-600">
             Monitor database coverage and identify gaps in interaction data
           </p>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <Filter className="w-5 h-5 text-slate-600" />
+            <h2 className="text-lg font-semibold text-slate-900">Filters</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Substance Type
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setTypeFilter('all'); handleFilterChange(); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    typeFilter === 'all'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => { setTypeFilter('supplement'); handleFilterChange(); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    typeFilter === 'supplement'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  Supplements
+                </button>
+                <button
+                  onClick={() => { setTypeFilter('drug'); handleFilterChange(); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    typeFilter === 'drug'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  Drugs
+                </button>
+              </div>
+            </div>
+
+            {/* Coverage Filter */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Coverage Level
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setCoverageFilter('all'); handleFilterChange(); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    coverageFilter === 'all'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => { setCoverageFilter('zero'); handleFilterChange(); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    coverageFilter === 'zero'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  Zero
+                </button>
+                <button
+                  onClick={() => { setCoverageFilter('low'); handleFilterChange(); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    coverageFilter === 'low'
+                      ? 'bg-amber-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  Low (1-2)
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-8">
@@ -186,7 +320,7 @@ export default function AdminCoverage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <button
                             className="text-blue-600 hover:text-blue-700 font-medium"
-                            onClick={() => {}}
+                            onClick={() => handleReviewClick(item.token)}
                           >
                             Review
                           </button>
@@ -316,7 +450,7 @@ export default function AdminCoverage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <button
                             className="text-blue-600 hover:text-blue-700 font-medium"
-                            onClick={() => {}}
+                            onClick={() => handleAddInteractionClick(substance.display_name)}
                           >
                             Add Interaction
                           </button>
