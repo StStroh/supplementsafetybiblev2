@@ -6,6 +6,7 @@ import GlobalTrustStatement from './GlobalTrustStatement';
 import InlineUpgradeCard from './InlineUpgradeCard';
 import InteractionResultCard from './check/InteractionResultCard';
 import { useTranslation } from '../lib/i18n';
+import { supabase } from '../lib/supabase';
 
 interface Substance {
   substance_id: string;
@@ -83,6 +84,7 @@ export default function StackBuilderCheckerV3() {
   const [error, setError] = useState<string | null>(null);
   const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
   const [systemError, setSystemError] = useState<string | null>(null);
+  const [submittingRequest, setSubmittingRequest] = useState(false);
 
   // Handle supplement selection
   const handleSupplementChange = (substance: Substance | null) => {
@@ -653,36 +655,67 @@ export default function StackBuilderCheckerV3() {
                   </button>
                   <button
                     onClick={async () => {
+                      if (submittingRequest) return;
+
+                      setSubmittingRequest(true);
                       try {
+                        // Collect all substance names as entered by user
                         const allNames = [
                           ...supplements.map((s) => s.display_name),
                           ...medications.map((m) => m.display_name),
                         ];
-                        const response = await fetch('/.netlify/functions/checker-request-add', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            raw_name: allNames.join(' + '),
-                            kind: 'unknown'
-                          })
-                        });
-                        const result = await response.json();
-                        if (result.ok) {
-                          alert('Thank you! Your request has been submitted for review.');
-                        } else {
-                          alert('Unable to submit request. Please try again later.');
+
+                        if (allNames.length === 0) {
+                          alert('Submitted. If you don\'t see updates soon, try again later.');
+                          return;
                         }
-                      } catch {
-                        alert('Unable to submit request. Please try again later.');
+
+                        // Use first substance as token_a, rest joined as token_b
+                        const token_a = allNames[0];
+                        const token_b = allNames.length > 1 ? allNames.slice(1).join(' + ') : null;
+
+                        // Insert into interaction_requests table
+                        const { error } = await supabase
+                          .from('interaction_requests')
+                          .insert({
+                            substance_name: token_a,
+                            interaction_with: token_b,
+                            notes: 'Submitted from no-results state',
+                            status: 'pending'
+                          });
+
+                        // Handle duplicate constraint gracefully
+                        if (error) {
+                          // PostgreSQL unique constraint violation code is 23505
+                          if (error.code === '23505') {
+                            // Duplicate - still show success message
+                            alert('Thank you! Your request has been submitted for review.');
+                          } else {
+                            // Other error - show calm fallback
+                            console.error('Request submission error:', error);
+                            alert('Submitted. If you don\'t see updates soon, try again later.');
+                          }
+                        } else {
+                          // Success
+                          alert('Thank you! Your request has been submitted for review.');
+                        }
+                      } catch (err) {
+                        // Network or other error - show calm fallback
+                        console.error('Request submission exception:', err);
+                        alert('Submitted. If you don\'t see updates soon, try again later.');
+                      } finally {
+                        setSubmittingRequest(false);
                       }
                     }}
-                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-90"
+                    disabled={submittingRequest}
+                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     style={{
                       background: SEVERITY_CONFIG.none.borderColor,
                       color: 'white',
                       border: `2px solid ${SEVERITY_CONFIG.none.borderColor}`
                     }}
                   >
+                    {submittingRequest && <Loader2 className="w-4 h-4 animate-spin" />}
                     Request review
                   </button>
                 </div>

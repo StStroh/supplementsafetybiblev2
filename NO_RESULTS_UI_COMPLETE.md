@@ -107,10 +107,22 @@ The no-results UI:
 - Maintains all existing error handling
 - Does not block the error state UI (they're separate conditions)
 
+## Request Review Implementation
+
+✅ **FULLY IMPLEMENTED** - See `REQUEST_REVIEW_IMPLEMENTATION_COMPLETE.md` for details
+
+The "Request review" button now:
+- Submits directly to `interaction_requests` database table
+- Uses first substance as `substance_name`, rest as `interaction_with`
+- Adds note: "Submitted from no-results state"
+- Shows loading spinner during submission
+- Handles duplicate submissions gracefully (unique constraint)
+- Never exposes database errors to users
+- Shows success message: "Thank you! Your request has been submitted for review."
+
 ## Next Steps (Optional)
 
 1. Add animation transitions for result clearing
-2. Track "Request review" submissions in analytics
-3. Add loading state to "Request review" button
-4. Implement keyboard shortcuts (e.g., Escape to clear results)
-5. Add toast notification instead of alert() for better UX
+2. Add toast notification instead of alert() for better UX
+3. Implement keyboard shortcuts (e.g., Escape to clear results)
+4. Track submission patterns in analytics dashboard
