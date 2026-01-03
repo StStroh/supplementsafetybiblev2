@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, Info, Eye, ExternalLink } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertTriangle, AlertCircle, Info, Eye, ExternalLink, FileText, Award, Database } from 'lucide-react';
 
 interface InteractionResultCardProps {
   interaction: {
@@ -16,6 +16,8 @@ interface InteractionResultCardProps {
     evidence_grade?: string;
     confidence?: string;
     citations?: string | any[];
+    created_at?: string;
+    updated_at?: string;
   };
 }
 
@@ -70,8 +72,8 @@ const SEVERITY_CONFIG = {
 export default function InteractionResultCard({ interaction }: InteractionResultCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const severityKey = (interaction.severity_norm || 'unknown') as keyof typeof SEVERITY_CONFIG;
-  const config = SEVERITY_CONFIG[severityKey];
+  const severityKey = (interaction.severity_norm?.toLowerCase() || 'unknown') as keyof typeof SEVERITY_CONFIG;
+  const config = SEVERITY_CONFIG[severityKey] || SEVERITY_CONFIG.unknown;
   const Icon = config.icon;
 
   // Parse citations
@@ -89,6 +91,22 @@ export default function InteractionResultCard({ interaction }: InteractionResult
         .filter(Boolean);
     }
   }
+
+  // Format date as YYYY-MM-DD
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
+    } catch {
+      return '';
+    }
+  };
+
+  const lastUpdated = formatDate(interaction.updated_at || interaction.created_at);
+
+  // Parse confidence as number
+  const confidenceNum = interaction.confidence ? parseFloat(interaction.confidence) : null;
 
   return (
     <div
@@ -135,24 +153,31 @@ export default function InteractionResultCard({ interaction }: InteractionResult
         )}
 
         {/* Summary */}
-        <p className="text-base mb-2" style={{ color: config.textColor }}>
+        <p className="text-base mb-3" style={{ color: config.textColor }}>
           {interaction.summary_short}
         </p>
 
-        {/* Confidence Phrasing */}
-        {interaction.confidence && (() => {
-          const conf = parseFloat(interaction.confidence);
-          let phrase = '';
-          if (conf >= 90) phrase = 'High confidence evidence';
-          else if (conf >= 70) phrase = 'Moderate evidence';
-          else if (conf < 70) phrase = 'Limited evidence';
-
-          return phrase ? (
-            <p className="text-xs mb-3 font-medium" style={{ color: config.textColor, opacity: 0.75 }}>
-              {phrase}
-            </p>
-          ) : null;
-        })()}
+        {/* Evidence Line - Compact */}
+        <div className="mb-3 flex flex-wrap items-center gap-3 text-xs" style={{ color: config.textColor, opacity: 0.85 }}>
+          {interaction.evidence_grade && (
+            <div className="flex items-center gap-1.5">
+              <Award className="w-3.5 h-3.5" />
+              <span className="font-medium">Evidence: Grade {interaction.evidence_grade}</span>
+            </div>
+          )}
+          {confidenceNum !== null && (
+            <div className="flex items-center gap-1.5">
+              <Database className="w-3.5 h-3.5" />
+              <span className="font-medium">Confidence: {confidenceNum}%</span>
+            </div>
+          )}
+          {citationUrls.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <FileText className="w-3.5 h-3.5" />
+              <span className="font-medium">{citationUrls.length} {citationUrls.length === 1 ? 'Source' : 'Sources'}</span>
+            </div>
+          )}
+        </div>
 
         {/* Toggle Details Button */}
         <button
@@ -231,15 +256,15 @@ export default function InteractionResultCard({ interaction }: InteractionResult
             </div>
           )}
 
-          {/* Footer: Confidence + Evidence Grade */}
+          {/* Evidence Details Grid */}
           <div className="grid grid-cols-2 gap-4 pt-3 border-t" style={{ borderColor: config.borderColor }}>
-            {interaction.confidence && (
+            {confidenceNum !== null && (
               <div>
                 <div className="text-xs font-medium mb-1" style={{ color: config.textColor, opacity: 0.8 }}>
                   Confidence
                 </div>
                 <div className="text-lg font-bold" style={{ color: config.textColor }}>
-                  {interaction.confidence}%
+                  {confidenceNum}%
                 </div>
               </div>
             )}
@@ -255,26 +280,39 @@ export default function InteractionResultCard({ interaction }: InteractionResult
             )}
           </div>
 
-          {/* Sources/Citations */}
+          {/* Sources/Citations - Chip Style */}
           {citationUrls.length > 0 && (
             <div className="pt-3 border-t" style={{ borderColor: config.borderColor }}>
               <h4 className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: config.textColor }}>
                 Sources
               </h4>
-              <div className="space-y-1">
+              <div className="flex flex-wrap gap-2">
                 {citationUrls.map((url, index) => (
                   <a
                     key={index}
                     href={url}
                     target="_blank"
-                    rel="noreferrer noopener"
-                    className="flex items-center gap-2 text-sm hover:underline"
-                    style={{ color: config.textColor }}
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium hover:opacity-80 transition-opacity"
+                    style={{
+                      background: 'white',
+                      border: `1px solid ${config.borderColor}`,
+                      color: config.textColor,
+                    }}
                   >
-                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
                     Source {index + 1}
                   </a>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Last Updated */}
+          {lastUpdated && (
+            <div className="pt-3 border-t" style={{ borderColor: config.borderColor }}>
+              <div className="text-xs" style={{ color: config.textColor, opacity: 0.7 }}>
+                Last updated: {lastUpdated}
               </div>
             </div>
           )}

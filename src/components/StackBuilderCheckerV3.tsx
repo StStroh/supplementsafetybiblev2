@@ -33,6 +33,8 @@ interface Interaction {
   evidence_grade?: string;
   confidence?: string;
   citations?: any;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface CheckSummary {
