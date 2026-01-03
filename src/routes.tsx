@@ -49,6 +49,8 @@ import DemoOmega3 from './pages/DemoOmega3';
 import Browse from './pages/Browse';
 import AdminTokens from './pages/AdminTokens';
 import AdminCoverage from './pages/AdminCoverage';
+import AdminAliasPacks from './pages/AdminAliasPacks';
+import StackMode from './pages/StackMode';
 
 export const router = createBrowserRouter([
   {
@@ -86,6 +88,10 @@ export const router = createBrowserRouter([
       {
         path: 'admin/coverage',
         element: <AdminCoverage />
+      },
+      {
+        path: 'admin/alias-packs',
+        element: <AdminAliasPacks />
       },
       {
         path: 'success',
@@ -126,6 +132,10 @@ export const router = createBrowserRouter([
       {
         path: 'check-old',
         element: <Check />
+      },
+      {
+        path: 'stack-mode',
+        element: <StackMode />
       },
       {
         path: 'account',

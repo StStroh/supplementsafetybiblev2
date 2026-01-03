@@ -1,10 +1,11 @@
 /*
- * Production Autocomplete with Diagnostics (FIXED)
- * Searches checker_substance_tokens for fast prefix matching
+ * Production Autocomplete with Brand Name Aliases
+ * Searches checker_substance_tokens AND alias_packs for fast prefix matching
  * Query params: q (query), type (supplement|drug), limit (max results)
  *
- * Key fixes:
+ * Key features:
  * - Use DB-normalized token prefix (strip non-alphanumerics) to match norm_token strategy
+ * - Search alias_packs for brand names (e.g., "Tylenol" → "acetaminophen")
  * - Query checker_substances using expected columns: type (not substance_type)
  * - Do not select non-existent columns like aliases (aliases live in tokens table)
  */
@@ -74,26 +75,46 @@ const type =
       return json(200, { ok: true, q, type, results: [] });
     }
 
-    const { data: tokens, error: tokenError } = await supabase
-      .from('checker_substance_tokens')
-      .select('substance_id, token')
-      .ilike('token', `${normalized}%`)
-      .limit(30);
+    // Search both tokens and alias packs in parallel
+    const [tokensResult, aliasResult] = await Promise.all([
+      supabase
+        .from('checker_substance_tokens')
+        .select('substance_id, token')
+        .ilike('token', `${normalized}%`)
+        .limit(30),
+      supabase
+        .from('alias_packs')
+        .select('substance_id, brand_name')
+        .ilike('brand_name', `${q}%`)
+        .eq('is_active', true)
+        .limit(20)
+    ]);
 
-    if (tokenError) {
-      console.error('[autocomplete] Token query error:', tokenError);
+    if (tokensResult.error) {
+      console.error('[autocomplete] Token query error:', tokensResult.error);
       return json(500, {
         ok: false,
         error: 'Token search failed',
-        detail: tokenError.message,
+        detail: tokensResult.error.message,
       });
     }
 
-    if (!tokens || tokens.length === 0) {
-      return json(200, { ok: true, q, type, results: [] });
+    if (aliasResult.error) {
+      console.error('[autocomplete] Alias query error:', aliasResult.error);
     }
 
-    const substanceIds = [...new Set(tokens.map((t) => t.substance_id))];
+    const tokens = tokensResult.data || [];
+    const aliases = aliasResult.data || [];
+
+    console.log(`[autocomplete] Found ${tokens.length} token matches, ${aliases.length} alias matches`);
+
+    const tokenSubstanceIds = tokens.map((t) => t.substance_id);
+    const aliasSubstanceIds = aliases.map((a) => a.substance_id);
+    const substanceIds = [...new Set([...tokenSubstanceIds, ...aliasSubstanceIds])];
+
+    if (substanceIds.length === 0) {
+      return json(200, { ok: true, q, type, results: [] });
+    }
 
     // FIX: checker_substances uses `type`, not `substance_type`
     // FIX: do not select `aliases` unless it truly exists
