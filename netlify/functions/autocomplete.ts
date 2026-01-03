@@ -28,35 +28,47 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    const searchTerm = q.toLowerCase();
+    // Use the new RPC function for token suggestions
+    const { data: tokens, error } = await supabase
+      .rpc('rpc_suggest_tokens', {
+        prefix: q.trim(),
+        limit_n: 10
+      });
 
-    const { data: suppData } = await supabase
-      .from('v_supp_keys')
-      .select('key, canonical')
-      .ilike('key', `%${searchTerm}%`)
-      .limit(5);
+    if (error) {
+      console.error('RPC error:', error);
+      return {
+        statusCode: 200,
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ suggestions: [] })
+      };
+    }
 
-    const { data: medData } = await supabase
-      .from('v_med_keys')
-      .select('key, canonical')
-      .ilike('key', `%${searchTerm}%`)
-      .limit(5);
+    // Get substance details to determine type (supplement vs drug)
+    const substanceIds = [...new Set((tokens || []).map((t: any) => t.substance_id))];
 
-    const suppSuggestions = [...new Set((suppData || []).map(s => s.canonical))]
-      .slice(0, 5)
-      .map(name => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1),
-        type: 'supplement' as const
-      }));
+    const { data: substances } = await supabase
+      .from('checker_substances')
+      .select('substance_id, display_name, type')
+      .in('substance_id', substanceIds);
 
-    const medSuggestions = [...new Set((medData || []).map(m => m.canonical))]
-      .slice(0, 5)
-      .map(name => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1),
-        type: 'medication' as const
-      }));
+    const substanceMap = new Map(
+      (substances || []).map((s: any) => [s.substance_id, s])
+    );
 
-    const suggestions = [...suppSuggestions, ...medSuggestions].slice(0, 10);
+    // Build suggestions with proper type and display name
+    const suggestions = (tokens || [])
+      .map((t: any) => {
+        const substance = substanceMap.get(t.substance_id);
+        if (!substance) return null;
+
+        return {
+          name: substance.display_name,
+          type: substance.type === 'drug' ? 'medication' : 'supplement'
+        };
+      })
+      .filter((s: any) => s !== null)
+      .slice(0, 10);
 
     return {
       statusCode: 200,

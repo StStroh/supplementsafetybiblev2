@@ -317,6 +317,12 @@ export default function PrimaryInteractionChecker() {
                     </div>
                   )}
 
+                  {supplement.length >= 2 && suppSuggestions.length === 0 && !showSuppDropdown && (
+                    <div className="mt-2 text-sm text-amber-600 flex items-center gap-1.5">
+                      <span className="font-medium">⚠️ No matches. Try a different spelling.</span>
+                    </div>
+                  )}
+
                   <div className="flex flex-wrap gap-2 mt-3">
                     {SUPPLEMENT_PRESETS.map((preset) => (
                       <button
@@ -407,6 +413,12 @@ export default function PrimaryInteractionChecker() {
                           </span>
                         </button>
                       ))}
+                    </div>
+                  )}
+
+                  {medication.length >= 2 && medSuggestions.length === 0 && !showMedDropdown && (
+                    <div className="mt-2 text-sm text-amber-600 flex items-center gap-1.5">
+                      <span className="font-medium">⚠️ No matches. Try a different spelling.</span>
                     </div>
                   )}
 
