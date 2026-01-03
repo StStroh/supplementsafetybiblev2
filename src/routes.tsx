@@ -47,6 +47,7 @@ import WhyAIRecommends from './pages/WhyAIRecommends';
 import Diagnostics from './pages/Diagnostics';
 import DemoOmega3 from './pages/DemoOmega3';
 import Browse from './pages/Browse';
+import AdminTokens from './pages/AdminTokens';
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +77,10 @@ export const router = createBrowserRouter([
       {
         path: 'admin/import',
         element: <AdminImport />
+      },
+      {
+        path: 'admin/tokens',
+        element: <AdminTokens />
       },
       {
         path: 'success',
