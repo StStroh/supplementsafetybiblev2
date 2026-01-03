@@ -276,6 +276,15 @@ export default function StackBuilderCheckerV3() {
     }
   });
 
+  // Sort each severity group by confidence descending (nulls last)
+  Object.keys(groupedResults).forEach((severity) => {
+    groupedResults[severity].sort((a, b) => {
+      const confA = a.confidence ? parseFloat(a.confidence) : -Infinity;
+      const confB = b.confidence ? parseFloat(b.confidence) : -Infinity;
+      return confB - confA;
+    });
+  });
+
   const toggleExpanded = (resultKey: string) => {
     const newSet = new Set(expandedResults);
     if (newSet.has(resultKey)) {
@@ -628,7 +637,7 @@ export default function StackBuilderCheckerV3() {
                   color: SEVERITY_CONFIG.none.textColor,
                   background: SEVERITY_CONFIG.none.bgColor
                 }}>
-                  💡 Tip: Try alternative spellings or choose a suggested match.
+                  💡 Tip: Try selecting a suggestion from the dropdown to improve matching.
                 </p>
 
                 <div className="flex gap-3 mb-4">

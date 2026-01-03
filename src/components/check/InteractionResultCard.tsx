@@ -135,9 +135,24 @@ export default function InteractionResultCard({ interaction }: InteractionResult
         )}
 
         {/* Summary */}
-        <p className="text-base mb-3" style={{ color: config.textColor }}>
+        <p className="text-base mb-2" style={{ color: config.textColor }}>
           {interaction.summary_short}
         </p>
+
+        {/* Confidence Phrasing */}
+        {interaction.confidence && (() => {
+          const conf = parseFloat(interaction.confidence);
+          let phrase = '';
+          if (conf >= 90) phrase = 'High confidence evidence';
+          else if (conf >= 70) phrase = 'Moderate evidence';
+          else if (conf < 70) phrase = 'Limited evidence';
+
+          return phrase ? (
+            <p className="text-xs mb-3 font-medium" style={{ color: config.textColor, opacity: 0.75 }}>
+              {phrase}
+            </p>
+          ) : null;
+        })()}
 
         {/* Toggle Details Button */}
         <button
@@ -252,7 +267,7 @@ export default function InteractionResultCard({ interaction }: InteractionResult
                     key={index}
                     href={url}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noreferrer noopener"
                     className="flex items-center gap-2 text-sm hover:underline"
                     style={{ color: config.textColor }}
                   >
