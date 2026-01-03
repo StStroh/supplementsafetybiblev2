@@ -5,6 +5,7 @@ import SubstanceCombobox from './SubstanceCombobox';
 import NotFoundCard from './NotFoundCard';
 import GlobalTrustStatement from './GlobalTrustStatement';
 import InlineUpgradeCard from './InlineUpgradeCard';
+import FeatureGateUpsell from './FeatureGateUpsell';
 import InteractionResultCard from './check/InteractionResultCard';
 import RequestReviewModal from './check/RequestReviewModal';
 import { useTranslation } from '../lib/i18n';
@@ -696,14 +697,16 @@ export default function StackBuilderCheckerV3() {
             />
           </div>
 
-          {showLimitWarning && (
-            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800">
-                <strong>Limit reached.</strong> {planName === 'free' ? (
-                  <>Free plan allows 2 substances. <a href="/pricing" className="underline font-medium">Upgrade to Pro</a> to check up to 4 substances.</>
-                ) : (
-                  <>Maximum 4 substances allowed.</>
-                )}
+          {showLimitWarning && planName === 'free' && (
+            <div className="mb-4">
+              <FeatureGateUpsell feature="stack-limit" currentTier="free" compact />
+            </div>
+          )}
+
+          {showLimitWarning && planName !== 'free' && (
+            <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+              <p className="text-sm text-slate-700">
+                Maximum 4 substances allowed.
               </p>
             </div>
           )}
@@ -890,19 +893,8 @@ export default function StackBuilderCheckerV3() {
           {showFilters && (
             <div className="mt-3 bg-white rounded-lg shadow-sm border border-slate-200 p-5">
               {!isPremiumUser() && (
-                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                  <Crown className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm text-amber-900 font-medium">
-                      Filters available on Pro and Clinical plans
-                    </p>
-                    <p className="text-xs text-amber-800 mt-1">
-                      <a href="/pricing" className="underline hover:no-underline">
-                        Upgrade now
-                      </a>{' '}
-                      to filter results by severity and confidence.
-                    </p>
-                  </div>
+                <div className="mb-4">
+                  <FeatureGateUpsell feature="filters" currentTier="free" compact />
                 </div>
               )}
 

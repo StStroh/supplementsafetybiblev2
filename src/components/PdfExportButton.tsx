@@ -16,7 +16,7 @@ export default function PdfExportButton({ result, userPlan, onUpgradeClick }: Pd
   const [progress, setProgress] = useState<ProgressStep>('idle');
   const [error, setError] = useState<string | null>(null);
 
-  const isPaid = ['pro', 'premium'].includes(userPlan);
+  const isPaid = ['pro', 'premium', 'clinical'].includes(userPlan);
 
   const generatePDF = async () => {
     if (!result || !result.ok) return;
@@ -114,7 +114,7 @@ export default function PdfExportButton({ result, userPlan, onUpgradeClick }: Pd
                 onClick={onUpgradeClick}
                 className="px-4 py-2 rounded-lg font-semibold bg-black text-white hover:bg-gray-800 transition-colors text-sm"
               >
-                Upgrade to Pro
+                Upgrade to Clinical
               </button>
               <button
                 onClick={() => {}}

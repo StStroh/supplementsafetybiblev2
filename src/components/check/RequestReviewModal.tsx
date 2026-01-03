@@ -91,8 +91,9 @@ export default function RequestReviewModal({
               Request Submitted
             </h3>
             <p className="text-center text-slate-600 text-sm">
-              Thanks — your request was submitted for review. This tool is educational and not medical
-              advice.
+              {isPriority
+                ? "Your request has been submitted with priority status and will be reviewed soon."
+                : "Your request has been submitted and will be reviewed."}
             </p>
           </div>
         ) : (

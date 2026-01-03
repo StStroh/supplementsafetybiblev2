@@ -5,8 +5,16 @@ import { supabase } from '../lib/supabase';
 interface Profile {
   id: string;
   plan: string;
+  plan_tier?: string;
   stripe_customer_id?: string;
   stripe_subscription_id?: string;
+}
+
+function getTierFromPlan(plan: string): string {
+  if (!plan || plan === 'free' || plan === 'starter_free') return 'free';
+  if (plan === 'clinical') return 'clinical';
+  if (plan === 'pro' || plan === 'premium') return 'pro';
+  return 'free';
 }
 
 interface UseAuthUserReturn {
@@ -43,8 +51,12 @@ export function useAuthUser(): UseAuthUserReturn {
             .eq('id', currentUser.id)
             .maybeSingle();
 
-          if (mounted) {
-            setProfile(profileData);
+          if (mounted && profileData) {
+            const enrichedProfile = {
+              ...profileData,
+              plan_tier: getTierFromPlan(profileData.plan),
+            };
+            setProfile(enrichedProfile);
           }
         }
       } catch (error) {
@@ -70,8 +82,14 @@ export function useAuthUser(): UseAuthUserReturn {
           .eq('id', session.user.id)
           .maybeSingle()
           .then(({ data }) => {
-            if (mounted) {
-              setProfile(data);
+            if (mounted && data) {
+              const enrichedProfile = {
+                ...data,
+                plan_tier: getTierFromPlan(data.plan),
+              };
+              setProfile(enrichedProfile);
+            } else if (mounted) {
+              setProfile(null);
             }
           });
       } else {

@@ -20,8 +20,8 @@ export default function ReportVault({ userPlan, onUpgradeClick }: ReportVaultPro
   const [emailingId, setEmailingId] = useState<string | null>(null);
   const [emailSuccess, setEmailSuccess] = useState<string | null>(null);
 
-  const isPaid = ['pro', 'premium'].includes(userPlan);
-  const isPremium = userPlan === 'premium';
+  const isPaid = ['pro', 'premium', 'clinical'].includes(userPlan);
+  const isPremium = userPlan === 'premium' || userPlan === 'clinical';
 
   useEffect(() => {
     if (isPaid) {
