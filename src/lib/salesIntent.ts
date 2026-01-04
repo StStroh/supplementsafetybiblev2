@@ -44,10 +44,10 @@ interface IntentResponse {
 }
 
 function getSessionId(): string {
-  let sessionId = sessionStorage.getItem('sales_session_id');
+  let sessionId = localStorage.getItem('ssb_session_id');
   if (!sessionId) {
-    sessionId = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    sessionStorage.setItem('sales_session_id', sessionId);
+    sessionId = crypto.randomUUID();
+    localStorage.setItem('ssb_session_id', sessionId);
   }
   return sessionId;
 }

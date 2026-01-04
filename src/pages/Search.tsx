@@ -7,6 +7,7 @@ import EmptyState from '../components/EmptyState';
 import SeverityBadge from '../components/check/SeverityBadge';
 import { useIsPremium } from '../lib/useAuth';
 import { SEO } from '../lib/seo';
+import { trackBehavior } from '../lib/salesIntent';
 
 interface Interaction {
   id: number;
@@ -72,6 +73,11 @@ export default function Search() {
       if (!isPremium) {
         setSearchCount(prev => prev + 1);
       }
+
+      trackBehavior({
+        event_type: 'search',
+        search_terms: [searchQuery]
+      }).catch(() => {});
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
     } finally {

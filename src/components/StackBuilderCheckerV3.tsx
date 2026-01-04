@@ -13,6 +13,7 @@ import { supabase } from '../lib/supabase';
 import { useAuthUser } from '../hooks/useAuthUser';
 import { ContextFlags } from '../utils/contextKeywords';
 import { trackBehavior } from '../lib/salesIntent';
+import SalesMessageBox from './SalesMessageBox';
 
 interface Substance {
   substance_id: string;
@@ -1125,6 +1126,9 @@ export default function StackBuilderCheckerV3() {
           </div>
         </div>
       )}
+
+      {/* Sales Message Box */}
+      {results && <SalesMessageBox />}
 
       {/* No Results Message */}
       {!loading && results && results.length === 0 && (
