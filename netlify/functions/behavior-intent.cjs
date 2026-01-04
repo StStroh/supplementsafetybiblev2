@@ -36,6 +36,23 @@ exports.handler = async (event) => {
       };
     }
 
+    if (!payload.event_type) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'event_type required' })
+      };
+    }
+
+    const validEventTypes = ['search', 'checker_run', 'page_view'];
+    if (!validEventTypes.includes(payload.event_type)) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'event_type must be one of: search, checker_run, page_view' })
+      };
+    }
+
     // Run sales intent agent
     const analysis = analyzeSalesIntent(payload);
 
@@ -45,7 +62,7 @@ exports.handler = async (event) => {
       .insert({
         session_id: payload.session_id,
         user_id: payload.user_id || null,
-        event_type: payload.event_type || 'page_view',
+        event_type: payload.event_type,
         page_path: payload.page_path || null,
         search_terms: payload.search_terms || null,
         checker_items: payload.checker_items || null,
