@@ -27,13 +27,13 @@ export default function SalesMessageBox() {
       <p className="text-sm text-gray-700 mb-3">{intent.sales_message}</p>
       <div className="flex flex-wrap gap-2">
         <a
-          href="/contact?intent=quote"
+          href="/pricing"
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
         >
           Request quote
         </a>
         <a
-          href="mailto:sales@safetybible.com?subject=Sales Inquiry"
+          href="mailto:sales@certifiednutralabs.com?subject=Sales Inquiry"
           className="inline-flex items-center px-4 py-2 bg-white text-blue-600 text-sm font-medium rounded-md border border-blue-600 hover:bg-blue-50 transition-colors"
         >
           Talk to sales
