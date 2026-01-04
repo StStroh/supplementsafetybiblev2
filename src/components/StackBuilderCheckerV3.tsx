@@ -12,6 +12,7 @@ import { useTranslation } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
 import { useAuthUser } from '../hooks/useAuthUser';
 import { ContextFlags } from '../utils/contextKeywords';
+import { trackBehavior } from '../lib/salesIntent';
 
 interface Substance {
   substance_id: string;
@@ -566,6 +567,16 @@ export default function StackBuilderCheckerV3() {
       setSummary(response.summary || null);
 
       logLookup(allNames, response);
+
+      // Track behavior for sales intent
+      trackBehavior({
+        event_type: 'checker_run',
+        checker_items: allNames
+      }).then(() => {
+        window.dispatchEvent(new Event('sales-intent-updated'));
+      }).catch(() => {
+        // Silent fail
+      });
     } catch (err: any) {
       const errorMsg = err.message || 'Failed to check interactions';
       setError(errorMsg);

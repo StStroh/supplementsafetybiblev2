@@ -11,6 +11,7 @@ import { SEO } from '../lib/seo';
 import Logo from '../components/Logo';
 import { BRAND_NAME_FULL } from '../lib/brand';
 import PricingPageChecker from '../components/PricingPageChecker';
+import { trackBehavior, resetPageTimer } from '../lib/salesIntent';
 
 type BillingInterval = 'monthly' | 'annual';
 
@@ -66,6 +67,17 @@ export default function Pricing() {
     if (params.get('cancelled') === '1') {
       setShowCancelledAlert(true);
     }
+
+    // Track page view for sales intent
+    resetPageTimer();
+    trackBehavior({
+      event_type: 'page_view',
+      page_path: '/pricing'
+    }).then(() => {
+      window.dispatchEvent(new Event('sales-intent-updated'));
+    }).catch(() => {
+      // Silent fail
+    });
   }, []);
 
   async function loadUser() {
