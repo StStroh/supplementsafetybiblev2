@@ -44,16 +44,22 @@ exports.handler = async (event) => {
       .from('lead_signals')
       .insert({
         session_id: payload.session_id,
+        user_id: payload.user_id || null,
+        event_type: payload.event_type || 'page_view',
+        page_path: payload.page_path || null,
+        search_terms: payload.search_terms || null,
+        checker_items: payload.checker_items || null,
+        repeat_count: payload.repeat_count || null,
+        time_on_page_seconds: payload.time_on_page_seconds || null,
         intent_level: analysis.intent.level,
         confidence: analysis.intent.confidence,
         urgency: analysis.intent.urgency,
-        product_type: analysis.customer_need.product_type,
-        buyer_type: analysis.customer_need.buyer_type,
         offer: analysis.offer.recommended,
         cta: analysis.sales_action.cta,
         sales_message: analysis.sales_message,
         lead_score: analysis.internal_signal.lead_score,
         follow_up: analysis.internal_signal.follow_up,
+        timing: analysis.internal_signal.timing,
         raw_payload: payload
       });
 
