@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Filter, Shield, ChevronLeft, Search as SearchIcon, Lock } from 'lucide-react';
+import { Filter, Shield, ChevronLeft, Search as SearchIcon, Lock, AlertCircle, ArrowRight } from 'lucide-react';
 import Autocomplete from '../components/Autocomplete';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
@@ -8,6 +8,7 @@ import SeverityBadge from '../components/check/SeverityBadge';
 import { useIsPremium } from '../lib/useAuth';
 import { SEO } from '../lib/seo';
 import { trackBehavior } from '../lib/salesIntent';
+import { matchIntent } from '../lib/intentMatcher';
 
 interface Interaction {
   id: number;
@@ -21,7 +22,7 @@ interface Interaction {
 export default function Search() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const initialQuery = searchParams.get('q') || '';
+  const initialQuery = searchParams.get('q') || searchParams.get('query') || searchParams.get('term') || searchParams.get('s') || '';
 
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [severityFilter, setSeverityFilter] = useState<string>('all');
@@ -29,11 +30,67 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchCount, setSearchCount] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const [intentMatch, setIntentMatch] = useState<ReturnType<typeof matchIntent> | null>(null);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const redirectTimer = useRef<NodeJS.Timeout | null>(null);
   const isPremium = useIsPremium();
 
   const FREE_SEARCH_LIMIT = 3;
   const FREE_RESULTS_PREVIEW = 3;
+
+  useEffect(() => {
+    const handleInteraction = () => setUserInteracted(true);
+
+    window.addEventListener('mousemove', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+    window.addEventListener('click', handleInteraction);
+
+    return () => {
+      window.removeEventListener('mousemove', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (initialQuery) {
+      const match = matchIntent(initialQuery);
+      setIntentMatch(match);
+
+      if (match.intent === 'epo_seizure_caution') {
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', 'intent_match', {
+            intent: match.intent,
+            score: match.score,
+            matched_terms_count: match.matched.length,
+            query_length: initialQuery.length,
+          });
+        } else if (process.env.NODE_ENV === 'development') {
+          console.log('[Intent Match]', {
+            intent: match.intent,
+            score: match.score,
+            matched: match.matched,
+            query: initialQuery,
+          });
+        }
+
+        if (!userInteracted) {
+          redirectTimer.current = setTimeout(() => {
+            if (!userInteracted) {
+              navigate(`/evening-primrose-oil-seizure-risk-epilepsy-phenothiazines?from=search&q=${encodeURIComponent(initialQuery)}`);
+            }
+          }, 800);
+        }
+      }
+    }
+
+    return () => {
+      if (redirectTimer.current) {
+        clearTimeout(redirectTimer.current);
+      }
+    };
+  }, [initialQuery, userInteracted, navigate]);
 
   useEffect(() => {
     if (debounceTimer.current) {
@@ -102,12 +159,28 @@ export default function Search() {
     ? filteredInteractions.slice(0, FREE_RESULTS_PREVIEW)
     : filteredInteractions;
 
+  const handleContinueToSafetyPage = () => {
+    if (redirectTimer.current) {
+      clearTimeout(redirectTimer.current);
+    }
+    navigate(`/evening-primrose-oil-seizure-risk-epilepsy-phenothiazines?from=search&q=${encodeURIComponent(initialQuery)}`);
+  };
+
+  const handleDismissIntent = () => {
+    if (redirectTimer.current) {
+      clearTimeout(redirectTimer.current);
+    }
+    setIntentMatch(null);
+    setUserInteracted(true);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <SEO
         title="Search Interactions | Supplement Safety Bible"
         description="Search our database of 2,500+ supplement-medication interactions. Get instant safety information and recommendations."
         canonical="/search"
+        noindex={true}
       />
       <nav className="bg-white border-b border-[#DCE3ED] sticky top-0 z-10" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.04)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -128,6 +201,39 @@ export default function Search() {
           </div>
         </div>
       </nav>
+
+      {intentMatch?.intent === 'epo_seizure_caution' && (
+        <div className="bg-blue-50 border-b border-blue-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-start gap-4">
+              <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Related Safety Topic Found
+                </h3>
+                <p className="text-gray-700 mb-4">
+                  We found a dedicated safety page related to your search: <span className="font-medium">"{initialQuery}"</span>
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={handleContinueToSafetyPage}
+                    className="inline-flex items-center px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                  >
+                    View Safety Page
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </button>
+                  <button
+                    onClick={handleDismissIntent}
+                    className="px-5 py-2 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+                  >
+                    See All Results
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">

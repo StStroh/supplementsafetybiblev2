@@ -18,7 +18,7 @@ export function SEO({ title, description, canonical, ogImage = '/logosafetybible
       <meta name="description" content={description} />
       <link rel="canonical" href={fullUrl} />
 
-      {noindex && <meta name="robots" content="noindex,nofollow" />}
+      {noindex && <meta name="robots" content="noindex,follow" />}
 
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />

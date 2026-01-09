@@ -274,6 +274,36 @@ export default function EveningPrimroseSeizureRisk() {
                 </div>
               </section>
 
+              <section className="mb-10">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Related Safety Topics</h2>
+                <div className="grid gap-3">
+                  <a
+                    href="/search?q=evening%20primrose%20oil%20seizure%20threshold"
+                    className="block p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition"
+                  >
+                    <span className="text-blue-600 font-medium">Evening Primrose Oil and Seizure Threshold</span>
+                  </a>
+                  <a
+                    href="/search?q=GLA%20epilepsy%20caution"
+                    className="block p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition"
+                  >
+                    <span className="text-blue-600 font-medium">GLA and Epilepsy Caution</span>
+                  </a>
+                  <a
+                    href="/search?q=phenothiazines%20seizure%20risk"
+                    className="block p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition"
+                  >
+                    <span className="text-blue-600 font-medium">Phenothiazines Seizure Risk</span>
+                  </a>
+                  <a
+                    href="/search?q=antipsychotic%20supplements%20interaction"
+                    className="block p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition"
+                  >
+                    <span className="text-blue-600 font-medium">Antipsychotic Supplements Interaction</span>
+                  </a>
+                </div>
+              </section>
+
               <section className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 text-center">
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
                   Screen Your Supplements for Safety
