@@ -53,6 +53,7 @@ import AdminAliasPacks from './pages/AdminAliasPacks';
 import AdminTokenPacks from './pages/AdminTokenPacks';
 import AdminLeads from './pages/AdminLeads';
 import StackMode from './pages/StackMode';
+import EveningPrimroseSeizureRisk from './pages/EveningPrimroseSeizureRisk';
 
 export const router = createBrowserRouter([
   {
@@ -218,6 +219,10 @@ export const router = createBrowserRouter([
       {
         path: 'pregnancy-lactation-safety',
         element: <PregnancyLactation />
+      },
+      {
+        path: 'evening-primrose-oil-seizure-risk-epilepsy-phenothiazines',
+        element: <EveningPrimroseSeizureRisk />
       },
       {
         path: 'checkout/cancel',
