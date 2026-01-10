@@ -14,11 +14,14 @@ import Check from './pages/Check';
 import Free from './pages/Free';
 import EnvWarning from './components/EnvWarning';
 import AlertBanner from './components/AlertBanner';
+import { DebugFooter } from './components/DebugFooter';
 import { AlertProvider, useAlert } from './state/AlertProvider';
+import { useDebugMode } from './hooks/useDebugMode';
 
 function AppContent() {
   const path = window.location.pathname;
   const { alert, clearAlert } = useAlert();
+  const isDebug = useDebugMode();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -50,6 +53,8 @@ function AppContent() {
         {path === '/' && <Home />}
         {!['/auth', '/auth/callback', '/free', '/faq', '/privacy', '/terms', '/success', '/account', '/premium/thanks', '/premium/dashboard', '/premium', '/pricing', '/search', '/check', '/checkout/cancel', '/'].includes(path) && <div style={{padding: 16}}>Page not found.</div>}
       </div>
+
+      {isDebug && <DebugFooter />}
     </div>
   );
 }
