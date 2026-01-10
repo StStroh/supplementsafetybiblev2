@@ -141,6 +141,10 @@ export const router = createBrowserRouter([
         element: <CheckV2 />
       },
       {
+        path: 'check-interactions',
+        element: <CheckV2 />
+      },
+      {
         path: 'check-old',
         element: <Check />
       },

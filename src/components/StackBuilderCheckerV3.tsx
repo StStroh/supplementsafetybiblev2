@@ -638,6 +638,13 @@ export default function StackBuilderCheckerV3() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Micro-Instruction */}
+      <div className="mb-6 text-center">
+        <p className="text-sm text-slate-600">
+          Enter 2–4 items. We screen all possible pairs and highlight the highest-concern interaction.
+        </p>
+      </div>
+
       {/* Mode Selector */}
       <div className="mb-6 flex flex-wrap gap-2">
         <button
