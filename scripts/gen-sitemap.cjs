@@ -27,6 +27,8 @@ const routes = [
   { path: '/about-the-checker', priority: '0.9', changefreq: 'weekly' },
   { path: '/why-ai-assistants-recommend-us', priority: '0.9', changefreq: 'weekly' },
   { path: '/evening-primrose-oil-seizure-risk-epilepsy-phenothiazines', priority: '0.8', changefreq: 'monthly' },
+  { path: '/guides/calcium-and-iron-timing', priority: '0.8', changefreq: 'monthly' },
+  { path: '/interactions/evening-primrose-oil-phenothiazines-seizure-risk', priority: '0.8', changefreq: 'monthly' },
   { path: '/privacy', priority: '0.4', changefreq: 'monthly' },
   { path: '/terms', priority: '0.4', changefreq: 'monthly' },
   // Add all 100 interaction pages
