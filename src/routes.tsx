@@ -55,6 +55,8 @@ import AdminLeads from './pages/AdminLeads';
 import AdminReviewQueue from './pages/AdminReviewQueue';
 import StackMode from './pages/StackMode';
 import EveningPrimroseSeizureRisk from './pages/EveningPrimroseSeizureRisk';
+import CalciumIronTiming from './pages/CalciumIronTiming';
+import EveningPrimrosePhenothiazines from './pages/EveningPrimrosePhenothiazines';
 
 export const router = createBrowserRouter([
   {
@@ -232,6 +234,14 @@ export const router = createBrowserRouter([
       {
         path: 'evening-primrose-oil-seizure-risk-epilepsy-phenothiazines',
         element: <EveningPrimroseSeizureRisk />
+      },
+      {
+        path: 'guides/calcium-and-iron-timing',
+        element: <CalciumIronTiming />
+      },
+      {
+        path: 'interactions/evening-primrose-oil-phenothiazines-seizure-risk',
+        element: <EveningPrimrosePhenothiazines />
       },
       {
         path: 'checkout/cancel',

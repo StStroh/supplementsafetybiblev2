@@ -1169,6 +1169,27 @@ export default function StackBuilderCheckerV3() {
       {/* Global Trust Statement */}
       {results !== null && <GlobalTrustStatement />}
 
+      {/* Common Questions Links */}
+      {results !== null && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">Common Questions</h3>
+          <div className="space-y-2">
+            <a
+              href="/guides/calcium-and-iron-timing"
+              className="block p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition text-sm text-gray-700 hover:text-blue-600"
+            >
+              <span className="font-medium">How far apart to take calcium and iron supplements?</span>
+            </a>
+            <a
+              href="/interactions/evening-primrose-oil-phenothiazines-seizure-risk"
+              className="block p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition text-sm text-gray-700 hover:text-blue-600"
+            >
+              <span className="font-medium">Evening primrose oil and phenothiazines seizure risk</span>
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Request Review Modal */}
       <RequestReviewModal
         isOpen={showReviewModal}
