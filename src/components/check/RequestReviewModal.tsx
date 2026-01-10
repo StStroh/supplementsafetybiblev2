@@ -29,6 +29,13 @@ export default function RequestReviewModal({
 
   const isPriority = userTier === 'pro' || userTier === 'clinical';
 
+  const normalizeToken = (token: string): string => {
+    return token
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, ' ');
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     setError(null);
@@ -36,15 +43,22 @@ export default function RequestReviewModal({
     try {
       const status = isPriority ? 'priority_new' : 'new';
 
-      const { error: insertError } = await supabase.from('interaction_requests').insert({
-        substance_name: substanceName,
-        interaction_with: interactionWith,
-        reason,
-        note: note.trim() || null,
+      const payload: any = {
+        token_a: substanceName,
+        token_b: interactionWith,
+        token_a_norm: normalizeToken(substanceName),
+        token_b_norm: interactionWith ? normalizeToken(interactionWith) : null,
         status,
+        note: note.trim() || '',
         user_tier: userTier,
         user_id: userId || null,
-      });
+      };
+
+      if (reason) {
+        payload.reason = reason;
+      }
+
+      const { error: insertError } = await supabase.from('interaction_requests').insert(payload);
 
       if (insertError) {
         throw insertError;
@@ -88,12 +102,12 @@ export default function RequestReviewModal({
               </div>
             </div>
             <h3 className="text-xl font-bold text-center text-slate-900 mb-2">
-              Request Submitted
+              Thank you!
             </h3>
             <p className="text-center text-slate-600 text-sm">
               {isPriority
                 ? "Your request has been submitted with priority status and will be reviewed soon."
-                : "Your request has been submitted and will be reviewed."}
+                : "Your request has been submitted for review."}
             </p>
           </div>
         ) : (
