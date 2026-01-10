@@ -52,6 +52,7 @@ import AdminCoverage from './pages/AdminCoverage';
 import AdminAliasPacks from './pages/AdminAliasPacks';
 import AdminTokenPacks from './pages/AdminTokenPacks';
 import AdminLeads from './pages/AdminLeads';
+import AdminReviewQueue from './pages/AdminReviewQueue';
 import StackMode from './pages/StackMode';
 import EveningPrimroseSeizureRisk from './pages/EveningPrimroseSeizureRisk';
 
@@ -103,6 +104,10 @@ export const router = createBrowserRouter([
       {
         path: 'admin/leads',
         element: <AdminLeads />
+      },
+      {
+        path: 'admin/review-queue',
+        element: <AdminReviewQueue />
       },
       {
         path: 'success',
