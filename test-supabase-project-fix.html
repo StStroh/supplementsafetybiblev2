@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Project Fix Verification</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.6;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1a1a1a;
+      margin-top: 0;
+    }
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #f9f9f9;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #1a1a1a;
+      font-size: 18px;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 5px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    button.danger {
+      background: #ef4444;
+    }
+    button.danger:hover {
+      background: #dc2626;
+    }
+    button.success {
+      background: #10b981;
+    }
+    button.success:hover {
+      background: #059669;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #1a1a1a;
+      color: #0f0;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .info {
+      background: #dbeafe;
+      border-left-color: #3b82f6;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    .success {
+      background: #d1fae5;
+      border-left: 4px solid #10b981;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    code {
+      background: #e5e7eb;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Supabase Project Fix Verification</h1>
+
+    <div class="info">
+      <strong>Purpose:</strong> This page helps verify the Supabase project mismatch fix is working correctly.
+    </div>
+
+    <div class="test-section">
+      <h2>1. Check Current State</h2>
+      <p>View current Supabase auth keys in localStorage</p>
+      <button onclick="checkCurrentState()">Check Current State</button>
+    </div>
+
+    <div class="test-section">
+      <h2>2. Simulate Stale Keys</h2>
+      <p>Add fake auth keys from old project <code>cyxfxjoadzxhxwxjqkez</code></p>
+      <button class="warning" onclick="addStaleKeys()">Add Stale Keys</button>
+    </div>
+
+    <div class="test-section">
+      <h2>3. Test Cleanup Function</h2>
+      <p>Manually run the cleanup logic to verify it removes stale keys</p>
+      <button class="success" onclick="testCleanup()">Run Cleanup Test</button>
+    </div>
+
+    <div class="test-section">
+      <h2>4. Clear All Auth</h2>
+      <p>Remove all Supabase auth keys (simulates fresh start)</p>
+      <button class="danger" onclick="clearAllAuth()">Clear All Auth Keys</button>
+    </div>
+
+    <div class="test-section">
+      <h2>5. Show All localStorage</h2>
+      <p>View everything stored in localStorage</p>
+      <button onclick="showAllStorage()">Show All Storage</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const output = document.getElementById('output');
+
+    function log(message, color = '#0f0') {
+      const timestamp = new Date().toLocaleTimeString();
+      output.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clear() {
+      output.innerHTML = '';
+    }
+
+    function checkCurrentState() {
+      clear();
+      log('=== CURRENT SUPABASE AUTH STATE ===', '#fff');
+      log('');
+
+      const supabaseKeys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+          supabaseKeys.push(key);
+        }
+      }
+
+      if (supabaseKeys.length === 0) {
+        log('✓ No Supabase auth keys found', '#10b981');
+      } else {
+        log(`Found ${supabaseKeys.length} Supabase key(s):`, '#f59e0b');
+        supabaseKeys.forEach(key => {
+          const value = localStorage.getItem(key);
+          const preview = value ? value.substring(0, 50) + '...' : 'null';
+          log(`  • ${key}`, '#3b82f6');
+          log(`    Value: ${preview}`, '#6b7280');
+        });
+      }
+
+      log('');
+      log('Expected key pattern: sb-sbkmon-auth-token', '#fff');
+      log('Any other sb-* keys are from old projects', '#fff');
+    }
+
+    function addStaleKeys() {
+      clear();
+      log('=== ADDING STALE KEYS ===', '#fff');
+      log('');
+
+      // Add keys from old project
+      const staleKeys = {
+        'sb-cyxfxjoadzxhxwxjqkez-auth-token': JSON.stringify({
+          access_token: 'old_fake_token_123',
+          refresh_token: 'old_fake_refresh_456',
+          expires_at: Date.now() + 3600000
+        }),
+        'sb-auth-token-cyxfxjoadzxhxwxjqkez': JSON.stringify({
+          user: { id: 'old-user-id', email: 'old@example.com' }
+        })
+      };
+
+      Object.entries(staleKeys).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+        log(`✓ Added: ${key}`, '#f59e0b');
+      });
+
+      log('');
+      log('Stale keys have been added!', '#10b981');
+      log('Now reload the page to see if cleanup runs automatically', '#fff');
+      log('Or click "Run Cleanup Test" to test manually', '#fff');
+    }
+
+    function testCleanup() {
+      clear();
+      log('=== TESTING CLEANUP FUNCTION ===', '#fff');
+      log('');
+
+      // This simulates the cleanupStaleSupabaseAuth function
+      const currentProjectRef = 'sbkmon'; // Should match VITE_SUPABASE_URL
+      const keysToRemove = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+
+        const isSupabaseAuthKey = key.startsWith('sb-') && (
+          key.includes('-auth-token') ||
+          key.startsWith('sb-auth-')
+        );
+
+        if (isSupabaseAuthKey) {
+          const keyProjectRef = key.match(/sb-([^-]+)-/)?.[1] ||
+                               key.match(/sb-auth-([^-]+)/)?.[1];
+
+          log(`Checking: ${key}`, '#6b7280');
+          log(`  Project ref in key: ${keyProjectRef || 'none'}`, '#6b7280');
+
+          if (keyProjectRef && keyProjectRef !== currentProjectRef) {
+            keysToRemove.push(key);
+            log(`  ❌ STALE - Will remove`, '#ef4444');
+          } else if (keyProjectRef === currentProjectRef) {
+            log(`  ✓ CURRENT - Keep`, '#10b981');
+          }
+          log('');
+        }
+      }
+
+      if (keysToRemove.length > 0) {
+        log(`🧹 Cleaning up ${keysToRemove.length} stale key(s):`, '#f59e0b');
+        keysToRemove.forEach(key => {
+          const maskedKey = key.replace(/sb-([^-]+)-/, 'sb-***-');
+          log(`  Removing: ${maskedKey}`, '#ef4444');
+          localStorage.removeItem(key);
+        });
+        log('');
+        log('✓ Cleanup complete!', '#10b981');
+      } else {
+        log('✓ No stale keys found - nothing to clean up', '#10b981');
+      }
+
+      log('');
+      log('Current project ref: ' + currentProjectRef, '#fff');
+    }
+
+    function clearAllAuth() {
+      clear();
+      log('=== CLEARING ALL AUTH KEYS ===', '#fff');
+      log('');
+
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+          keysToRemove.push(key);
+        }
+      }
+
+      if (keysToRemove.length === 0) {
+        log('No Supabase keys to remove', '#6b7280');
+      } else {
+        log(`Removing ${keysToRemove.length} key(s):`, '#f59e0b');
+        keysToRemove.forEach(key => {
+          log(`  • ${key}`, '#ef4444');
+          localStorage.removeItem(key);
+        });
+      }
+
+      log('');
+      log('✓ All Supabase auth keys cleared!', '#10b981');
+      log('Users will need to log in again', '#fff');
+    }
+
+    function showAllStorage() {
+      clear();
+      log('=== ALL LOCALSTORAGE KEYS ===', '#fff');
+      log('');
+
+      if (localStorage.length === 0) {
+        log('localStorage is empty', '#6b7280');
+        return;
+      }
+
+      log(`Total keys: ${localStorage.length}`, '#fff');
+      log('');
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+
+        const value = localStorage.getItem(key);
+        const isSupabase = key.startsWith('sb-') || key.includes('supabase');
+        const color = isSupabase ? '#3b82f6' : '#6b7280';
+
+        log(`${i + 1}. ${key}`, color);
+
+        if (value) {
+          const preview = value.length > 100
+            ? value.substring(0, 100) + '...'
+            : value;
+          log(`   ${preview}`, '#6b7280');
+        }
+        log('');
+      }
+    }
+
+    // Auto-run on load
+    window.addEventListener('load', () => {
+      log('=== SUPABASE PROJECT FIX VERIFICATION ===', '#fff');
+      log('Use the buttons above to test the fix', '#fff');
+      log('');
+      setTimeout(checkCurrentState, 500);
+    });
+  </script>
+</body>
+</html>
