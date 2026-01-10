@@ -13,7 +13,7 @@ import { supabase } from '../lib/supabase';
 import { useAuthUser } from '../hooks/useAuthUser';
 import { ContextFlags } from '../utils/contextKeywords';
 import { trackBehavior } from '../lib/salesIntent';
-import SalesMessageBox from './SalesMessageBox';
+import ForBrandsCta from './ForBrandsCta';
 
 interface Substance {
   substance_id: string;
@@ -1134,8 +1134,8 @@ export default function StackBuilderCheckerV3() {
         </div>
       )}
 
-      {/* Sales Message Box */}
-      {results && <SalesMessageBox />}
+      {/* For Brands CTA - only shows after results */}
+      {results && <ForBrandsCta className="mb-6" />}
 
       {/* No Results Message */}
       {!loading && results && results.length === 0 && (
