@@ -10,11 +10,13 @@ Successfully created an internal Admin Review Queue page to triage user-submitte
 
 **Route**: `/admin/review-queue`
 
-**Access Control**:
-- ✅ Checks `profiles.role = 'admin'`
-- ✅ Shows "Not Authorized" page for non-admin users
-- ✅ No environment password gate (uses database role)
-- ✅ Fully protected at the database level
+**Access Control** (Multi-layered):
+1. **Primary**: Checks `profiles.role = 'admin'`
+2. **Fallback**: Password gate using `VITE_ADMIN_PASSWORD` env var
+   - Stores unlock in sessionStorage for session duration
+   - UI: Clean password input with "Unlock" button
+3. Shows "Not Authorized" page for completely unauthorized users
+4. Fully protected at the database level with RLS
 
 ---
 
@@ -34,7 +36,7 @@ Successfully created an internal Admin Review Queue page to triage user-submitte
 
 ### 3. Request List
 Each row displays:
-- **Created date/time**: Formatted as locale string
+- **Created date/time**: Relative time (e.g., "2h ago", "3d ago") with exact timestamp on hover
 - **Pair**: `token_a + token_b` (if token_b exists)
 - **Status badge**: Visual badge with icon (Crown for priority, Clock for new, etc.)
 - **Reason**: If present (missing_token, missing_interaction, unclear_result)
@@ -47,6 +49,13 @@ Each row displays:
 - **Dismiss** (✗): Updates status to 'dismissed' (only for new/priority_new)
 
 All actions use **optimistic updates** for instant UI feedback.
+
+**Toast Notifications**:
+- Success toast: "Updated" (green)
+- Error toast: Shows error message (red)
+- Copy toast: "Copied to clipboard" (green)
+- Auto-dismisses after 5 seconds
+- Manual dismiss with X button
 
 ### 5. Intelligent Sorting
 Requests are sorted by:
@@ -129,9 +138,11 @@ Uses existing `interaction_requests` table with fields:
 - ✅ Graceful fallbacks for missing data
 
 ### Component Structure
-- ✅ Single file component (560 lines, manageable)
+- ✅ Single file component (605 lines, manageable)
 - ✅ Clear separation of concerns
-- ✅ Reusable helper functions
+- ✅ Reusable helper functions (getRelativeTime, getStatusBadge)
+- ✅ Toast notification system integrated
+- ✅ Password fallback for emergency access
 - ✅ Clean JSX structure
 
 ---
@@ -178,7 +189,8 @@ Uses existing `interaction_requests` table with fields:
 ### Build Status
 - ✅ TypeScript compilation: PASS
 - ✅ 2846 modules transformed
-- ✅ Bundle size: 2,044.31 kB
+- ✅ Bundle size: 2,046.21 kB
+- ✅ Build time: 15.05s
 - ✅ No errors or warnings
 
 ---

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Loading from '../components/Loading';
+import Toast from '../components/Toast';
 
 interface InteractionRequest {
   id: string;
@@ -36,11 +37,14 @@ export default function AdminReviewQueue() {
   const [filteredRequests, setFilteredRequests] = useState<InteractionRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [showPasswordGate, setShowPasswordGate] = useState(false);
+  const [password, setPassword] = useState('');
   const [stats, setStats] = useState<Stats>({ new: 0, priority_new: 0, reviewed: 0, dismissed: 0 });
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sortNewest, setSortNewest] = useState(true);
   const [actioningId, setActioningId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
     checkAuth();
@@ -58,10 +62,19 @@ export default function AdminReviewQueue() {
 
   const checkAuth = async () => {
     try {
+      // Check sessionStorage for password unlock
+      if (sessionStorage.getItem('admin_unlocked') === 'true') {
+        setAuthorized(true);
+        setLoading(false);
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
+        setShowPasswordGate(true);
         setAuthorized(false);
+        setLoading(false);
         return;
       }
 
@@ -74,12 +87,36 @@ export default function AdminReviewQueue() {
 
       if (profile?.role === 'admin') {
         setAuthorized(true);
+        setLoading(false);
       } else {
+        setShowPasswordGate(true);
         setAuthorized(false);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      setShowPasswordGate(true);
       setAuthorized(false);
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordUnlock = () => {
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      setToast({ message: 'Admin password not configured', type: 'error' });
+      return;
+    }
+
+    if (password === adminPassword) {
+      sessionStorage.setItem('admin_unlocked', 'true');
+      setAuthorized(true);
+      setShowPasswordGate(false);
+      setToast({ message: 'Access granted', type: 'success' });
+    } else {
+      setToast({ message: 'Incorrect password', type: 'error' });
+      setPassword('');
     }
   };
 
@@ -160,6 +197,12 @@ export default function AdminReviewQueue() {
 
   const updateStatus = async (id: string, newStatus: 'reviewed' | 'dismissed') => {
     setActioningId(id);
+
+    // Optimistic update
+    const updatedRequests = requests.map(r => r.id === id ? { ...r, status: newStatus } : r);
+    setRequests(updatedRequests);
+    calculateStats(updatedRequests);
+
     try {
       const { error } = await supabase
         .from('interaction_requests')
@@ -168,14 +211,16 @@ export default function AdminReviewQueue() {
 
       if (error) throw error;
 
-      // Optimistic update
-      setRequests(prev =>
-        prev.map(r => r.id === id ? { ...r, status: newStatus } : r)
-      );
-      calculateStats(requests.map(r => r.id === id ? { ...r, status: newStatus } : r));
+      setToast({ message: 'Updated', type: 'success' });
     } catch (error) {
       console.error('Failed to update status:', error);
-      alert('Failed to update status. Please try again.');
+
+      // Revert optimistic update
+      setRequests(requests);
+      calculateStats(requests);
+
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update status';
+      setToast({ message: errorMessage, type: 'error' });
     } finally {
       setActioningId(null);
     }
@@ -189,7 +234,7 @@ User Tier: ${request.user_tier || 'N/A'}
 Created: ${new Date(request.created_at).toLocaleString()}`;
 
     navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
+    setToast({ message: 'Copied to clipboard', type: 'success' });
   };
 
   const exportToCSV = () => {
@@ -216,6 +261,23 @@ Created: ${new Date(request.created_at).toLocaleString()}`;
     a.download = `review-queue-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const getRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+    return `${Math.floor(diffDays / 365)}y ago`;
   };
 
   const getStatusBadge = (status: string) => {
@@ -257,8 +319,47 @@ Created: ${new Date(request.created_at).toLocaleString()}`;
     }
   };
 
-  if (loading || authorized === null) {
+  if (loading) {
     return <Loading message="Checking authorization..." />;
+  }
+
+  if (authorized === false && showPasswordGate) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+          <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">Admin Access</h1>
+          <p className="text-gray-600 mb-6 text-center">Enter admin password to continue</p>
+
+          <div className="space-y-4">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePasswordUnlock()}
+              placeholder="Admin password"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              autoFocus
+            />
+
+            <div className="flex space-x-3">
+              <button
+                onClick={handlePasswordUnlock}
+                className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+              >
+                Unlock
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (authorized === false) {
@@ -421,7 +522,9 @@ Created: ${new Date(request.created_at).toLocaleString()}`;
                       <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-gray-600 mb-2">
                         <div className="flex items-center space-x-1">
                           <Clock className="w-4 h-4" />
-                          <span>{new Date(request.created_at).toLocaleString()}</span>
+                          <span title={new Date(request.created_at).toLocaleString()}>
+                            {getRelativeTime(request.created_at)}
+                          </span>
                         </div>
 
                         {request.reason && (
@@ -488,6 +591,14 @@ Created: ${new Date(request.created_at).toLocaleString()}`;
           )}
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
