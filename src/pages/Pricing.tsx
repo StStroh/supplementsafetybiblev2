@@ -12,6 +12,7 @@ import Logo from '../components/Logo';
 import { BRAND_NAME_FULL } from '../lib/brand';
 import PricingPageChecker from '../components/PricingPageChecker';
 import { trackBehavior, resetPageTimer } from '../lib/salesIntent';
+import { trackInitiateCheckout } from '../lib/tiktok';
 
 type BillingInterval = 'monthly' | 'annual';
 
@@ -94,10 +95,14 @@ export default function Pricing() {
   }
 
   function handleSelectPro() {
+    // Track TikTok InitiateCheckout event
+    trackInitiateCheckout('Subscription', 'pricing');
     startCheckout('pro', interval, (msg) => showAlert(msg, 'error'));
   }
 
   function handleSelectPremium() {
+    // Track TikTok InitiateCheckout event
+    trackInitiateCheckout('Subscription', 'pricing');
     startCheckout('premium', interval, (msg) => showAlert(msg, 'error'));
   }
 
