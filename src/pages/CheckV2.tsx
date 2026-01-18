@@ -1,11 +1,18 @@
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import StackBuilderCheckerV3 from '../components/StackBuilderCheckerV3';
 import CheckerErrorBoundary from '../components/CheckerErrorBoundary';
 import CheckerTopBlock from '../components/CheckerTopBlock';
+import { trackViewContent } from '../lib/tiktok';
 
 export default function CheckV2() {
+  // Track ViewContent when user lands on interaction checker
+  useEffect(() => {
+    trackViewContent('Interaction Checker', 'tool');
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-bg)' }}>
       <Helmet>
