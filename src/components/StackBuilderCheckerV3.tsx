@@ -14,7 +14,6 @@ import { useAuthUser } from '../hooks/useAuthUser';
 import { ContextFlags } from '../utils/contextKeywords';
 import { trackBehavior } from '../lib/salesIntent';
 import { getSubstanceLabel } from '../utils/substanceHelpers';
-import ForBrandsCta from './ForBrandsCta';
 
 interface Substance {
   substance_id: string;
@@ -1142,9 +1141,6 @@ export default function StackBuilderCheckerV3() {
           </div>
         </div>
       )}
-
-      {/* For Brands CTA - only shows after results */}
-      {results && <ForBrandsCta className="mb-6" />}
 
       {/* No Results Message */}
       {!loading && results && results.length === 0 && (
