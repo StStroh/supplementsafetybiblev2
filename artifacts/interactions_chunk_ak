@@ -1,0 +1,31 @@
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 236'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 38'),
+        'low',
+        'Additive effect (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 618'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 113'),
+        'low',
+        'Unknown (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 366'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 33'),
+        'severe',
+        'Absorption reduction (Evidence: B)',
+        'Auto-generated interaction'
+      ),
+  (
+        (SELECT id FROM temp_supplement_map WHERE name = 'Supplement 74'),
+        (SELECT id FROM temp_medication_map WHERE name = 'Medication 110'),
+        'moderate',
+        'Metabolism inhibition (Evidence: A)',
+        'Auto-generated interaction'
+      )
+) AS v(supplement_id, medication_id, severity, description, recommendation)
+WHERE v.supplement_id IS NOT NULL AND v.medication_id IS NOT NULL;

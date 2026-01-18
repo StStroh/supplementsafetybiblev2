@@ -1,0 +1,326 @@
+/* Multi-select autocomplete styles */
+.multi-ac {
+  position: relative;
+  width: 100%;
+}
+
+.multi-ac__labelRow,
+.multi-ac__hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.multi-ac__label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text, #1a1a1a);
+}
+
+.multi-ac__counter {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  font-weight: 500;
+  color: var(--color-text-muted, #666);
+}
+
+.multi-ac__control {
+  position: relative;
+  min-height: 48px;
+  padding: 6px 12px;
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  background: var(--color-surface, #fff);
+  cursor: text;
+  transition: border-color 0.2s ease;
+}
+
+.multi-ac__control:focus-within {
+  border-color: var(--color-accent, #0ea5e9);
+  outline: none;
+}
+
+.multi-ac__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 0.875rem;
+  transition: background-color 0.15s ease;
+}
+
+.chip:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.chip__text {
+  line-height: 1.2;
+  color: var(--color-text, #1a1a1a);
+}
+
+.chip__x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted, #666);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.chip__x:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--color-text, #1a1a1a);
+}
+
+.chip__x:focus-visible {
+  outline: 2px solid var(--color-focus, #3b82f6);
+  outline-offset: 2px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0ea5e9;
+  white-space: nowrap;
+}
+
+.badge--ghost {
+  background: rgba(0, 0, 0, 0.06);
+  color: inherit;
+  opacity: 0.7;
+}
+
+.multi-ac__input {
+  flex: 1;
+  min-width: 120px;
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.875rem;
+  color: var(--color-text, #1a1a1a);
+}
+
+.multi-ac__input::placeholder {
+  color: var(--color-text-muted, #999);
+}
+
+.multi-ac__input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.multi-ac__list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 9999;
+  max-height: min(60vh, 320px);
+  overflow: auto;
+  background: var(--color-surface, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.multi-ac__item {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.multi-ac__item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.multi-ac__item.is-active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.multi-ac__item:active {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.multi-ac__itemMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.multi-ac__labelText {
+  font-weight: 500;
+  color: var(--color-text, #1a1a1a);
+}
+
+.multi-ac__hintRow {
+  margin-top: 6px;
+  min-height: 20px;
+}
+
+.multi-ac__hint {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #666);
+  font-style: italic;
+}
+
+/* Prevent underlying CTAs from stealing taps while dropdown is open */
+.form.is-menu-open .multi-ac__list ~ button,
+.form.is-menu-open .multi-ac__list ~ .cta,
+.form.is-menu-open .multi-ac__list ~ .btn-cta {
+  pointer-events: none;
+}
+
+/* Ensure parents don't clip the dropdown */
+.multi-ac,
+.multi-ac__control {
+  overflow: visible !important;
+}
+
+/* Scrollbar styling */
+.multi-ac__list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.multi-ac__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.multi-ac__list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.multi-ac__list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .multi-ac__control {
+    background: var(--color-surface-950, #1a1a1a);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .chip {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .chip:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .chip__text {
+    color: var(--color-text, #e5e5e5);
+  }
+
+  .badge {
+    background: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+  }
+
+  .badge--ghost {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .multi-ac__list {
+    background: var(--color-surface-950, #1a1a1a);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .multi-ac__item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .multi-ac__item.is-active {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .multi-ac__item:active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .multi-ac__list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .multi-ac__list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .multi-ac__control,
+  .multi-ac__item,
+  .chip,
+  .chip__x {
+    transition: none;
+  }
+}
+
+/* Touch target sizing for mobile */
+@media (max-width: 768px) {
+  .multi-ac__item {
+    min-height: 48px;
+    padding: 12px 16px;
+  }
+
+  .chip__x {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 420px) {
+  .multi-ac__chips {
+    gap: 4px;
+  }
+
+  .chip {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+  }
+
+  .badge {
+    padding: 0 6px;
+    font-size: 0.7rem;
+  }
+}

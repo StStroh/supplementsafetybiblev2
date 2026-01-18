@@ -1,0 +1,119 @@
+🚀 SEED IMPORT STARTING
+📅 2025-11-23T20:08:25.663Z
+📁 15 files to process
+
+============================================================
+📄 01_supplements_batch_2.sql
+✓ Read 10.6KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 01_supplements_batch_3.sql
+✓ Read 10.6KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 01_supplements_batch_4.sql
+✓ Read 10.6KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 02_medications_batch_1.sql
+✓ Read 6.2KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_01.sql
+✓ Read 0.4KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_02.sql
+✓ Read 63.6KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_03.sql
+✓ Read 63.7KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_04.sql
+✓ Read 63.7KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_05.sql
+✓ Read 63.8KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_06.sql
+✓ Read 63.8KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_07.sql
+✓ Read 63.9KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_08.sql
+✓ Read 63.9KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_09.sql
+✓ Read 63.8KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_10.sql
+✓ Read 63.6KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📄 03_interactions_batch_11.sql
+✓ Read 63.6KB
+❌ Error: {"code":"PGRST202","details":"Searched for the function public.exec_sql with parameter sql_query or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":n
+
+============================================================
+📈 SUMMARY
+============================================================
+✓ Success: 0/15
+✗ Failed: 15/15
+⏱ Total: 7.2s
+
+Failed files:
+  - 01_supplements_batch_2.sql
+  - 01_supplements_batch_3.sql
+  - 01_supplements_batch_4.sql
+  - 02_medications_batch_1.sql
+  - 03_interactions_batch_01.sql
+  - 03_interactions_batch_02.sql
+  - 03_interactions_batch_03.sql
+  - 03_interactions_batch_04.sql
+  - 03_interactions_batch_05.sql
+  - 03_interactions_batch_06.sql
+  - 03_interactions_batch_07.sql
+  - 03_interactions_batch_08.sql
+  - 03_interactions_batch_09.sql
+  - 03_interactions_batch_10.sql
+  - 03_interactions_batch_11.sql
+
+============================================================
+📊 TABLE COUNTS
+============================================================
+✓ supplements: 0 rows
+✓ medications: 0 rows
+✓ interactions: 0 rows
+
+============================================================
+📋 SAMPLE ROWS (5 each)
+============================================================
+
+supplements:
+
+medications:
+
+interactions:

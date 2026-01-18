@@ -1,0 +1,6 @@
+id,supplement_id,medication_id,severity,mechanism,evidence_grade,summary,recommendation
+int-001,sup-002,med-009,Major,Increases bleeding risk,A,Omega-3 fatty acids can increase bleeding risk when combined with warfarin,Monitor INR closely and consider dose adjustment
+int-002,sup-009,med-009,Moderate,May affect coagulation,B,CoQ10 may reduce warfarin effectiveness,Monitor INR and adjust warfarin dose as needed
+int-003,sup-010,med-001,Moderate,Additive antiplatelet effects,B,Turmeric may increase bleeding risk with aspirin,Use with caution and monitor for bleeding
+int-004,sup-003,med-004,Minor,May affect absorption,C,Magnesium may reduce metformin absorption,Separate administration by 2 hours
+int-005,sup-004,med-006,Minor,No significant interaction,C,No major interaction expected between Vitamin C and atorvastatin,Generally safe to use together

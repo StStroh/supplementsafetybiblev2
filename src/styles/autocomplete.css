@@ -1,0 +1,159 @@
+/* Autocomplete global styles */
+.autocomplete {
+  position: relative;
+  z-index: 40;
+}
+
+.ac__label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.ac__input {
+  width: 100%;
+}
+
+.ac__list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 9999;
+  background: var(--color-surface, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+  max-height: min(50vh, 360px);
+  overflow: auto;
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ac__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ac__item:active {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.ac__item.is-active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ac__item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.ac__labelText {
+  font-weight: 500;
+}
+
+.ac__meta {
+  opacity: 0.75;
+  font-size: 0.875em;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* Prevent underlying CTAs from stealing taps while dropdown is open */
+.form.is-menu-open button,
+.form.is-menu-open .cta,
+.form.is-menu-open .btn-cta {
+  pointer-events: none;
+}
+
+/* Ensure sticky bars and fixed footers are below autocomplete suggestions */
+.sticky-free-bar,
+.sticky-free-bar * {
+  z-index: 50 !important;
+}
+
+/* Autocomplete dropdowns must be above everything */
+.ac__list,
+.multi-ac__list {
+  z-index: 9999 !important;
+}
+
+/* Ensure parents don't clip the dropdown */
+.card,
+.section,
+.form {
+  overflow: visible !important;
+}
+
+/* Ensure input wrapper doesn't clip */
+.autocomplete > div {
+  overflow: visible !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .ac__list {
+    background: var(--color-surface-950, #1a1a1a);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .ac__item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .ac__item.is-active {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .ac__item:active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ac__item {
+    transition: none;
+  }
+}
+
+/* Touch target sizing for mobile */
+@media (max-width: 768px) {
+  .ac__item {
+    min-height: 48px;
+    padding: 14px 16px;
+  }
+}
+
+/* Scrollbar styling */
+.ac__list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ac__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ac__list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.ac__list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ac__list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .ac__list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}

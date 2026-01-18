@@ -1,0 +1,167 @@
+═══════════════════════════════════════════════════════════════
+          PRICING ALIGNMENT COMPLETE - READY TO DEPLOY
+═══════════════════════════════════════════════════════════════
+
+AUDIT SUMMARY
+─────────────────────────────────────────────────────────────
+
+ISSUE FOUND:
+  ❌ $14.99 button was opening $24.99 Stripe checkout
+  ❌ Backend only handled PREMIUM tier
+  ❌ Frontend sent { tier: 'pro_monthly' }
+  ❌ Backend expected { interval: 'month' }
+  ❌ Complete parameter mismatch
+
+ROOT CAUSE:
+  - Frontend: src/components/Pricing.tsx sends tier strings
+  - Backend: netlify/functions/create-checkout-session.cjs 
+    ignored tier, hardcoded PREMIUM
+
+═══════════════════════════════════════════════════════════════
+                    CHANGES APPLIED
+═══════════════════════════════════════════════════════════════
+
+FILE MODIFIED: netlify/functions/create-checkout-session.cjs
+(Only 1 file changed - minimal edits as requested)
+
+CHANGES:
+1. Accept { tier } parameter instead of { interval }
+2. Map tier strings to correct price IDs:
+   - 'pro_monthly' → PRO_MONTHLY ($14.99)
+   - 'pro_annual' → PRO_YEARLY ($149)
+   - 'premium_monthly' → PREMIUM_MONTHLY ($24.99)
+   - 'premium_annual' → PREMIUM_YEARLY ($249)
+
+3. Added sanity guard:
+   - Fetches price from Stripe before checkout
+   - Verifies unit_amount matches expected
+   - Returns 400 error if mismatch with details
+
+═══════════════════════════════════════════════════════════════
+                    BUTTON → TIER → PRICE MAPPING
+═══════════════════════════════════════════════════════════════
+
+Frontend (src/components/Pricing.tsx):
+  ✅ $14.99/mo button → calls handleCheckout('pro_monthly')
+  ✅ $149/yr button → calls handleCheckout('pro_annual')
+  ✅ $24.99/mo button → calls handleCheckout('premium_monthly')
+  ✅ $249/yr button → calls handleCheckout('premium_annual')
+
+Backend (netlify/functions/create-checkout-session.cjs):
+  ✅ 'pro_monthly' → price_1SSERBLSpIuKqlsUsWSDz8n6
+  ✅ 'pro_annual' → price_1SSEW2LSpIuKqlsUKw2UAglX
+  ✅ 'premium_monthly' → price_1SSb9jLSpIuKqlsUMRo6AxHg
+  ✅ 'premium_annual' → price_1SSbB0LSpIuKqlsUCJP8sL8q
+
+Price IDs (from plan-map.cjs):
+  ✅ PRO_MONTHLY: price_1SSERBLSpIuKqlsUsWSDz8n6
+  ✅ PRO_YEARLY: price_1SSEW2LSpIuKqlsUKw2UAglX
+  ✅ PREMIUM_MONTHLY: price_1SSb9jLSpIuKqlsUMRo6AxHg
+  ✅ PREMIUM_YEARLY: price_1SSbB0LSpIuKqlsUCJP8sL8q
+
+═══════════════════════════════════════════════════════════════
+                    BUILD STATUS
+═══════════════════════════════════════════════════════════════
+
+✅ Build successful - no errors
+✅ All price IDs validated
+✅ Sanity guard in place
+✅ Ready to deploy
+
+═══════════════════════════════════════════════════════════════
+                    DEPLOY INSTRUCTIONS
+═══════════════════════════════════════════════════════════════
+
+1. Go to: https://app.netlify.com
+2. Site: supplementsafetybible.com
+3. Click: Deploys → "Clear cache and deploy site"
+4. Wait: 2-3 minutes
+
+═══════════════════════════════════════════════════════════════
+                    POST-DEPLOY TESTS
+═══════════════════════════════════════════════════════════════
+
+Test 1: Verify function accepts tier parameter
+curl -s -X POST \
+  "https://supplementsafetybible.com/.netlify/functions/create-checkout-session" \
+  -H "Content-Type: application/json" \
+  -d '{"tier":"pro_monthly"}'
+
+Expected: {"sessionId":"cs_...","url":"https://checkout.stripe.com/..."}
+
+Test 2: Verify price validation (should succeed)
+curl -s -X POST \
+  "https://supplementsafetybible.com/.netlify/functions/create-checkout-session" \
+  -H "Content-Type: application/json" \
+  -d '{"tier":"premium_annual"}'
+
+Expected: {"sessionId":"cs_..."}
+
+Test 3: Verify invalid tier fails
+curl -s -X POST \
+  "https://supplementsafetybible.com/.netlify/functions/create-checkout-session" \
+  -H "Content-Type: application/json" \
+  -d '{"tier":"invalid"}'
+
+Expected: {"error":{"message":"Invalid tier: \"invalid\"..."}}
+
+Test 4: Browser test
+1. Visit: https://supplementsafetybible.com/#pricing
+2. Click: "$14.99 / mo" button (Pro Monthly)
+3. Should redirect to: Stripe Checkout
+4. Verify: Price shown is $14.99/month
+5. DO NOT COMPLETE CHECKOUT (just verify price)
+
+═══════════════════════════════════════════════════════════════
+                    WHAT'S FIXED
+═══════════════════════════════════════════════════════════════
+
+BEFORE DEPLOY:
+  ❌ $14.99 button → $24.99 checkout (WRONG!)
+  ❌ All buttons opened Premium checkout
+  ❌ No price validation
+  ❌ Silent misconfiguration risk
+
+AFTER DEPLOY:
+  ✅ $14.99 button → $14.99 checkout (CORRECT!)
+  ✅ Each button opens correct tier checkout
+  ✅ Price amounts verified before checkout
+  ✅ Clear error if price mismatch
+
+═══════════════════════════════════════════════════════════════
+                    SANITY GUARD PROTECTION
+═══════════════════════════════════════════════════════════════
+
+If in the future:
+  - Price IDs get mixed up in env vars
+  - Stripe prices change without code update
+  - Wrong price ID gets set
+
+The function will:
+  1. Detect the mismatch
+  2. Return 400 error
+  3. Show expected vs actual amounts
+  4. Prevent wrong charge
+  5. Log details for debugging
+
+Example error if $14.99 price becomes $24.99:
+{
+  "error": {
+    "message": "Price mismatch for 'pro_monthly': expected 1499 
+    cents but price ID price_1SSERBLSpIuKqlsUsWSDz8n6 is 2499 
+    cents",
+    "tier": "pro_monthly",
+    "priceId": "price_1SSERBLSpIuKqlsUsWSDz8n6",
+    "amount": 2499
+  }
+}
+
+═══════════════════════════════════════════════════════════════
+                    NO ENV CHANGES NEEDED
+═══════════════════════════════════════════════════════════════
+
+✅ All price IDs already set correctly in Netlify
+✅ No manual env updates required
+✅ Just deploy and test
+
+═══════════════════════════════════════════════════════════════

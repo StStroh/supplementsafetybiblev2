@@ -1,0 +1,111 @@
+substance_id,type,display_name,canonical_name,aliases_json,tags_json,is_active
+D_ALPRAZOLAM,drug,"Alprazolam","alprazolam","[""alprazolam"",""xanax""]","[]",true
+D_FLUOXETINE,drug,"Fluoxetine","fluoxetine","[""fluoxetine"",""prozac""]","[]",true
+D_LEVOTHYROXINE,drug,"Levothyroxine","levothyroxine","[""levothyroxine"",""synthroid"",""levoxyl""]","[]",true
+D_WARFARIN,drug,"Warfarin","warfarin","[""warfarin"",""coumadin""]","[]",true
+D_LOSARTAN,drug,"Losartan","losartan","[""losartan"",""cozaar""]","[]",true
+D_METFORMIN,drug,"Metformin","metformin","[""metformin"",""glucophage""]","[]",true
+D_ATORVASTATIN,drug,"Atorvastatin","atorvastatin","[""atorvastatin"",""lipitor""]","[]",true
+D_LISINOPRIL,drug,"Lisinopril","lisinopril","[""lisinopril"",""prinivil"",""zestril""]","[]",true
+D_AMLODIPINE,drug,"Amlodipine","amlodipine","[""amlodipine"",""norvasc""]","[]",true
+D_METOPROLOL,drug,"Metoprolol","metoprolol","[""metoprolol"",""lopressor"",""toprol""]","[]",true
+D_OMEPRAZOLE,drug,"Omeprazole","omeprazole","[""omeprazole"",""prilosec""]","[]",true
+D_SERTRALINE,drug,"Sertraline","sertraline","[""sertraline"",""zoloft""]","[]",true
+D_ESCITALOPRAM,drug,"Escitalopram","escitalopram","[""escitalopram"",""lexapro""]","[]",true
+D_CITALOPRAM,drug,"Citalopram","citalopram","[""citalopram"",""celexa""]","[]",true
+D_PAROXETINE,drug,"Paroxetine","paroxetine","[""paroxetine"",""paxil""]","[]",true
+D_VENLAFAXINE,drug,"Venlafaxine","venlafaxine","[""venlafaxine"",""effexor""]","[]",true
+D_DULOXETINE,drug,"Duloxetine","duloxetine","[""duloxetine"",""cymbalta""]","[]",true
+D_SIMVASTATIN,drug,"Simvastatin","simvastatin","[""simvastatin"",""zocor""]","[]",true
+D_ROSUVASTATIN,drug,"Rosuvastatin","rosuvastatin","[""rosuvastatin"",""crestor""]","[]",true
+D_PRAVASTATIN,drug,"Pravastatin","pravastatin","[""pravastatin"",""pravachol""]","[]",true
+D_ASPIRIN,drug,"Aspirin","aspirin","[""aspirin"",""acetylsalicylic acid""]","[]",true
+D_CLOPIDOGREL,drug,"Clopidogrel","clopidogrel","[""clopidogrel"",""plavix""]","[]",true
+D_FUROSEMIDE,drug,"Furosemide","furosemide","[""furosemide"",""lasix""]","[]",true
+D_HYDROCHLOROTHIAZIDE,drug,"Hydrochlorothiazide","hydrochlorothiazide","[""hydrochlorothiazide"",""hctz"",""microzide""]","[]",true
+D_SPIRONOLACTONE,drug,"Spironolactone","spironolactone","[""spironolactone"",""aldactone""]","[]",true
+D_GABAPENTIN,drug,"Gabapentin","gabapentin","[""gabapentin"",""neurontin""]","[]",true
+D_PREGABALIN,drug,"Pregabalin","pregabalin","[""pregabalin"",""lyrica""]","[]",true
+D_TRAMADOL,drug,"Tramadol","tramadol","[""tramadol"",""ultram""]","[]",true
+D_CLONAZEPAM,drug,"Clonazepam","clonazepam","[""clonazepam"",""klonopin""]","[]",true
+D_LORAZEPAM,drug,"Lorazepam","lorazepam","[""lorazepam"",""ativan""]","[]",true
+D_DIAZEPAM,drug,"Diazepam","diazepam","[""diazepam"",""valium""]","[]",true
+D_PREDNISONE,drug,"Prednisone","prednisone","[""prednisone""]","[]",true
+D_METHYLPREDNISOLONE,drug,"Methylprednisolone","methylprednisolone","[""methylprednisolone"",""medrol""]","[]",true
+D_ALBUTEROL,drug,"Albuterol","albuterol","[""albuterol"",""ventolin"",""proventil""]","[]",true
+D_MONTELUKAST,drug,"Montelukast","montelukast","[""montelukast"",""singulair""]","[]",true
+D_INSULIN,drug,"Insulin","insulin","[""insulin""]","[]",true
+D_GLIPIZIDE,drug,"Glipizide","glipizide","[""glipizide"",""glucotrol""]","[]",true
+D_GLYBURIDE,drug,"Glyburide","glyburide","[""glyburide"",""diabeta"",""micronase""]","[]",true
+D_SITAGLIPTIN,drug,"Sitagliptin","sitagliptin","[""sitagliptin"",""januvia""]","[]",true
+D_DIGOXIN,drug,"Digoxin","digoxin","[""digoxin"",""lanoxin""]","[]",true
+D_LEVOTHYROXINE_SODIUM,drug,"Levothyroxine Sodium","levothyroxine sodium","[""levothyroxine sodium"",""synthroid""]","[]",true
+D_AMOXICILLIN,drug,"Amoxicillin","amoxicillin","[""amoxicillin"",""amoxil""]","[]",true
+D_AZITHROMYCIN,drug,"Azithromycin","azithromycin","[""azithromycin"",""zithromax"",""z-pak""]","[]",true
+D_CIPROFLOXACIN,drug,"Ciprofloxacin","ciprofloxacin","[""ciprofloxacin"",""cipro""]","[]",true
+D_DOXYCYCLINE,drug,"Doxycycline","doxycycline","[""doxycycline"",""vibramycin""]","[]",true
+D_TAMSULOSIN,drug,"Tamsulosin","tamsulosin","[""tamsulosin"",""flomax""]","[]",true
+D_FINASTERIDE,drug,"Finasteride","finasteride","[""finasteride"",""propecia"",""proscar""]","[]",true
+D_SILDENAFIL,drug,"Sildenafil","sildenafil","[""sildenafil"",""viagra""]","[]",true
+D_TADALAFIL,drug,"Tadalafil","tadalafil","[""tadalafil"",""cialis""]","[]",true
+D_PANTOPRAZOLE,drug,"Pantoprazole","pantoprazole","[""pantoprazole"",""protonix""]","[]",true
+D_ESOMEPRAZOLE,drug,"Esomeprazole","esomeprazole","[""esomeprazole"",""nexium""]","[]",true
+D_RANITIDINE,drug,"Ranitidine","ranitidine","[""ranitidine"",""zantac""]","[]",true
+D_FAMOTIDINE,drug,"Famotidine","famotidine","[""famotidine"",""pepcid""]","[]",true
+S_CALCIUM,supplement,"Calcium","calcium","[""calcium"",""calcium carbonate"",""calcium citrate""]","[]",true
+S_FISH_OIL,supplement,"Fish Oil","fish oil","[""fish oil"",""omega-3"",""omega 3"",""dha"",""epa""]","[]",true
+S_GARLIC,supplement,"Garlic","garlic","[""garlic"",""allium sativum""]","[]",true
+S_GINKGO,supplement,"Ginkgo","ginkgo","[""ginkgo"",""ginkgo biloba""]","[]",true
+S_GINSENG,supplement,"Ginseng","ginseng","[""ginseng"",""panax ginseng""]","[]",true
+S_IRON,supplement,"Iron","iron","[""iron"",""ferrous sulfate"",""ferrous gluconate""]","[]",true
+S_MAGNESIUM,supplement,"Magnesium","magnesium","[""magnesium"",""magnesium citrate"",""magnesium oxide"",""magnesium glycinate""]","[]",true
+S_MELATONIN,supplement,"Melatonin","melatonin","[""melatonin""]","[]",true
+S_ST_JOHNS_WORT,supplement,"St. John's Wort","st. john's wort","[""st. john's wort"",""st johns wort"",""st. johns wort"",""hypericum""]","[]",true
+S_VITAMIN_A,supplement,"Vitamin A","vitamin a","[""vitamin a"",""retinol"",""beta carotene"",""beta-carotene""]","[]",true
+S_VITAMIN_B1,supplement,"Vitamin B1","vitamin b1","[""vitamin b1"",""thiamine"",""thiamin""]","[]",true
+S_VITAMIN_B2,supplement,"Vitamin B2","vitamin b2","[""vitamin b2"",""riboflavin""]","[]",true
+S_VITAMIN_B3,supplement,"Vitamin B3","vitamin b3","[""vitamin b3"",""niacin"",""nicotinic acid""]","[]",true
+S_VITAMIN_B5,supplement,"Vitamin B5","vitamin b5","[""vitamin b5"",""pantothenic acid""]","[]",true
+S_VITAMIN_B6,supplement,"Vitamin B6","vitamin b6","[""vitamin b6"",""pyridoxine""]","[]",true
+S_VITAMIN_B7,supplement,"Vitamin B7","vitamin b7","[""vitamin b7"",""biotin""]","[]",true
+S_VITAMIN_B9,supplement,"Vitamin B9","vitamin b9","[""vitamin b9"",""folate"",""folic acid""]","[]",true
+S_VITAMIN_B12,supplement,"Vitamin B12","vitamin b12","[""vitamin b12"",""cobalamin"",""methylcobalamin"",""cyanocobalamin""]","[]",true
+S_VITAMIN_C,supplement,"Vitamin C","vitamin c","[""vitamin c"",""ascorbic acid""]","[]",true
+S_VITAMIN_D,supplement,"Vitamin D","vitamin d","[""vitamin d"",""vitamin d3"",""cholecalciferol"",""vitamin d2"",""ergocalciferol""]","[]",true
+S_VITAMIN_E,supplement,"Vitamin E","vitamin e","[""vitamin e"",""tocopherol"",""alpha-tocopherol""]","[]",true
+S_VITAMIN_K,supplement,"Vitamin K","vitamin k","[""vitamin k"",""vitamin k1"",""phylloquinone"",""vitamin k2"",""menaquinone""]","[]",true
+S_ZINC,supplement,"Zinc","zinc","[""zinc"",""zinc gluconate"",""zinc picolinate""]","[]",true
+S_SELENIUM,supplement,"Selenium","selenium","[""selenium"",""selenomethionine""]","[]",true
+S_COPPER,supplement,"Copper","copper","[""copper"",""copper gluconate""]","[]",true
+S_CHROMIUM,supplement,"Chromium","chromium","[""chromium"",""chromium picolinate""]","[]",true
+S_POTASSIUM,supplement,"Potassium","potassium","[""potassium"",""potassium chloride"",""potassium citrate""]","[]",true
+S_IODINE,supplement,"Iodine","iodine","[""iodine"",""iodide"",""potassium iodide""]","[]",true
+S_MANGANESE,supplement,"Manganese","manganese","[""manganese""]","[]",true
+S_MOLYBDENUM,supplement,"Molybdenum","molybdenum","[""molybdenum""]","[]",true
+S_COQ10,supplement,"CoQ10","coq10","[""coq10"",""coenzyme q10"",""ubiquinone"",""ubiquinol""]","[]",true
+S_TURMERIC,supplement,"Turmeric","turmeric","[""turmeric"",""curcumin""]","[]",true
+S_PROBIOTICS,supplement,"Probiotics","probiotics","[""probiotics"",""lactobacillus"",""bifidobacterium""]","[]",true
+S_GLUCOSAMINE,supplement,"Glucosamine","glucosamine","[""glucosamine"",""glucosamine sulfate""]","[]",true
+S_CHONDROITIN,supplement,"Chondroitin","chondroitin","[""chondroitin"",""chondroitin sulfate""]","[]",true
+S_SAM_E,supplement,"SAM-e","sam-e","[""sam-e"",""s-adenosyl methionine"",""s-adenosylmethionine""]","[]",true
+S_ALPHA_LIPOIC_ACID,supplement,"Alpha Lipoic Acid","alpha lipoic acid","[""alpha lipoic acid"",""ala"",""lipoic acid""]","[]",true
+S_GREEN_TEA,supplement,"Green Tea","green tea","[""green tea"",""green tea extract"",""egcg""]","[]",true
+S_ASHWAGANDHA,supplement,"Ashwagandha","ashwagandha","[""ashwagandha"",""withania somnifera""]","[]",true
+S_RHODIOLA,supplement,"Rhodiola","rhodiola","[""rhodiola"",""rhodiola rosea""]","[]",true
+S_VALERIAN,supplement,"Valerian","valerian","[""valerian"",""valerian root""]","[]",true
+S_KAVA,supplement,"Kava","kava","[""kava"",""kava kava""]","[]",true
+S_ECHINACEA,supplement,"Echinacea","echinacea","[""echinacea""]","[]",true
+S_MILK_THISTLE,supplement,"Milk Thistle","milk thistle","[""milk thistle"",""silymarin""]","[]",true
+S_SAW_PALMETTO,supplement,"Saw Palmetto","saw palmetto","[""saw palmetto""]","[]",true
+S_CRANBERRY,supplement,"Cranberry","cranberry","[""cranberry""]","[]",true
+S_GRAPE_SEED,supplement,"Grape Seed Extract","grape seed extract","[""grape seed extract"",""grape seed"",""gse""]","[]",true
+S_RESVERATROL,supplement,"Resveratrol","resveratrol","[""resveratrol""]","[]",true
+S_QUERCETIN,supplement,"Quercetin","quercetin","[""quercetin""]","[]",true
+S_LUTEIN,supplement,"Lutein","lutein","[""lutein""]","[]",true
+S_ZEAXANTHIN,supplement,"Zeaxanthin","zeaxanthin","[""zeaxanthin""]","[]",true
+S_L_THEANINE,supplement,"L-Theanine","l-theanine","[""l-theanine"",""theanine""]","[]",true
+S_5_HTP,supplement,"5-HTP","5-htp","[""5-htp"",""5-hydroxytryptophan""]","[]",true
+S_CREATINE,supplement,"Creatine","creatine","[""creatine"",""creatine monohydrate""]","[]",true
+S_BCAA,supplement,"BCAA","bcaa","[""bcaa"",""branched chain amino acids"",""leucine"",""isoleucine"",""valine""]","[]",true
+S_PROTEIN_POWDER,supplement,"Protein Powder","protein powder","[""protein powder"",""whey protein"",""casein protein""]","[]",true
+S_COLLAGEN,supplement,"Collagen","collagen","[""collagen"",""collagen peptides""]","[]",true

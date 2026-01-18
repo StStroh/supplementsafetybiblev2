@@ -1,0 +1,142 @@
+/* Interaction Checker Styles */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: left;
+  color: #111;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.field-label:hover {
+  color: #0066CC;
+}
+
+.field-label:active {
+  color: #004A99;
+}
+
+.interaction-hero-overlay {
+  pointer-events: none;
+}
+
+.interaction-input,
+.chip,
+.autocomplete,
+.ac__list,
+.ac__item,
+.field-label {
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.chip {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.field-label {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.field-label:focus-visible {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ensure form containers don't block clicks */
+form,
+.form-container {
+  pointer-events: auto;
+}
+
+/* Prevent background overlays from stealing clicks */
+section > .absolute {
+  pointer-events: none;
+}
+
+/* Ensure interactive elements are always clickable */
+button,
+input,
+select,
+textarea,
+a {
+  pointer-events: auto;
+}
+
+/* Mobile touch optimization */
+@media (max-width: 768px) {
+  .chip {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
+  }
+
+  .field-label {
+    min-height: 44px;
+  }
+
+  .interaction-input {
+    font-size: 16px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .chip:active {
+    transform: none;
+  }
+}
+
+/* Z-index stacking order */
+header,
+.navbar,
+.site-header {
+  z-index: 30;
+}
+
+.cta-sticky,
+.sticky-cta {
+  z-index: 20;
+}
+
+.autocomplete {
+  z-index: 40;
+}
+
+.ac__list {
+  z-index: 9999 !important;
+}
+
+/* Form spacing above sticky CTA */
+.interaction-form {
+  padding-bottom: 72px;
+}
+
+/* Prevent hero overlays from stealing clicks */
+.hero-overlay,
+.top-strip,
+.header-shadow,
+section > .absolute {
+  pointer-events: none !important;
+}

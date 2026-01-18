@@ -1,0 +1,2501 @@
+supplement_id,medication_id,severity,mechanism,evidence,notes
+194,99,High,Absorption reduction,C,Auto-generated interaction
+436,112,Moderate,Absorption reduction,C,Auto-generated interaction
+784,27,High,Absorption reduction,C,Auto-generated interaction
+776,125,Moderate,Additive effect,B,Auto-generated interaction
+100,98,Severe,Unknown,B,Auto-generated interaction
+265,60,High,Absorption reduction,C,Auto-generated interaction
+755,88,High,Metabolism inhibition,A,Auto-generated interaction
+922,37,Low,Metabolism inhibition,C,Auto-generated interaction
+761,84,Low,Unknown,C,Auto-generated interaction
+977,80,High,Additive effect,B,Auto-generated interaction
+213,111,Moderate,Unknown,B,Auto-generated interaction
+922,139,Low,Absorption reduction,B,Auto-generated interaction
+496,86,High,Additive effect,A,Auto-generated interaction
+660,76,Moderate,Unknown,A,Auto-generated interaction
+525,65,High,Unknown,C,Auto-generated interaction
+258,138,High,Additive effect,B,Auto-generated interaction
+122,65,Moderate,Additive effect,A,Auto-generated interaction
+188,122,High,Unknown,B,Auto-generated interaction
+408,38,Low,Metabolism inhibition,A,Auto-generated interaction
+310,122,Low,Absorption reduction,C,Auto-generated interaction
+431,16,Severe,Metabolism inhibition,B,Auto-generated interaction
+866,65,Moderate,Metabolism inhibition,B,Auto-generated interaction
+635,132,High,Unknown,A,Auto-generated interaction
+625,103,Low,Additive effect,C,Auto-generated interaction
+51,6,High,Unknown,A,Auto-generated interaction
+978,74,High,Additive effect,B,Auto-generated interaction
+302,107,Severe,Absorption reduction,B,Auto-generated interaction
+66,28,Low,Metabolism inhibition,C,Auto-generated interaction
+481,103,Moderate,Unknown,C,Auto-generated interaction
+964,9,High,Additive effect,C,Auto-generated interaction
+566,78,High,Absorption reduction,B,Auto-generated interaction
+846,143,Low,Absorption reduction,B,Auto-generated interaction
+43,63,Severe,Additive effect,B,Auto-generated interaction
+164,132,High,Additive effect,B,Auto-generated interaction
+581,137,Low,Additive effect,B,Auto-generated interaction
+465,25,Severe,Absorption reduction,C,Auto-generated interaction
+687,18,Severe,Absorption reduction,C,Auto-generated interaction
+340,94,Moderate,Metabolism inhibition,A,Auto-generated interaction
+284,141,Moderate,Absorption reduction,B,Auto-generated interaction
+693,3,Severe,Metabolism inhibition,A,Auto-generated interaction
+553,93,Low,Unknown,A,Auto-generated interaction
+801,75,Low,Unknown,B,Auto-generated interaction
+523,101,High,Unknown,C,Auto-generated interaction
+964,49,Moderate,Additive effect,A,Auto-generated interaction
+616,94,Severe,Metabolism inhibition,C,Auto-generated interaction
+692,120,High,Absorption reduction,C,Auto-generated interaction
+137,89,Moderate,Metabolism inhibition,B,Auto-generated interaction
+23,81,Moderate,Additive effect,A,Auto-generated interaction
+439,103,Moderate,Metabolism inhibition,A,Auto-generated interaction
+600,119,Severe,Absorption reduction,A,Auto-generated interaction
+117,63,Low,Additive effect,C,Auto-generated interaction
+63,4,Low,Unknown,B,Auto-generated interaction
+404,56,High,Additive effect,C,Auto-generated interaction
+882,41,Low,Unknown,C,Auto-generated interaction
+348,60,Moderate,Unknown,C,Auto-generated interaction
+858,6,High,Absorption reduction,B,Auto-generated interaction
+224,71,Moderate,Additive effect,B,Auto-generated interaction
+649,112,Moderate,Unknown,B,Auto-generated interaction
+749,18,Low,Absorption reduction,B,Auto-generated interaction
+250,80,High,Additive effect,B,Auto-generated interaction
+339,37,High,Absorption reduction,C,Auto-generated interaction
+285,51,Low,Metabolism inhibition,A,Auto-generated interaction
+776,119,High,Absorption reduction,C,Auto-generated interaction
+376,110,High,Absorption reduction,B,Auto-generated interaction
+581,28,Low,Metabolism inhibition,A,Auto-generated interaction
+825,94,Low,Additive effect,A,Auto-generated interaction
+551,77,Moderate,Unknown,B,Auto-generated interaction
+182,116,High,Metabolism inhibition,C,Auto-generated interaction
+832,139,Moderate,Unknown,C,Auto-generated interaction
+383,89,High,Additive effect,C,Auto-generated interaction
+464,110,High,Additive effect,C,Auto-generated interaction
+278,54,Low,Absorption reduction,B,Auto-generated interaction
+307,44,High,Unknown,B,Auto-generated interaction
+821,77,Moderate,Absorption reduction,C,Auto-generated interaction
+723,81,High,Additive effect,A,Auto-generated interaction
+902,145,Moderate,Metabolism inhibition,C,Auto-generated interaction
+372,107,High,Additive effect,C,Auto-generated interaction
+908,82,High,Absorption reduction,C,Auto-generated interaction
+138,56,Severe,Unknown,C,Auto-generated interaction
+369,1,Low,Absorption reduction,C,Auto-generated interaction
+477,122,Moderate,Additive effect,C,Auto-generated interaction
+160,59,Severe,Unknown,B,Auto-generated interaction
+354,56,Severe,Additive effect,A,Auto-generated interaction
+44,103,Moderate,Additive effect,B,Auto-generated interaction
+709,104,Moderate,Absorption reduction,B,Auto-generated interaction
+789,116,High,Metabolism inhibition,A,Auto-generated interaction
+571,25,Moderate,Unknown,B,Auto-generated interaction
+526,72,Low,Unknown,B,Auto-generated interaction
+687,28,Moderate,Additive effect,C,Auto-generated interaction
+167,27,Low,Unknown,B,Auto-generated interaction
+198,150,High,Metabolism inhibition,B,Auto-generated interaction
+628,84,Severe,Additive effect,B,Auto-generated interaction
+785,14,Severe,Additive effect,A,Auto-generated interaction
+428,73,High,Additive effect,A,Auto-generated interaction
+846,146,Severe,Unknown,C,Auto-generated interaction
+371,149,Low,Unknown,B,Auto-generated interaction
+101,38,High,Additive effect,A,Auto-generated interaction
+255,14,Low,Absorption reduction,A,Auto-generated interaction
+385,125,Low,Additive effect,B,Auto-generated interaction
+257,137,Severe,Unknown,A,Auto-generated interaction
+44,93,Low,Metabolism inhibition,B,Auto-generated interaction
+63,125,High,Additive effect,C,Auto-generated interaction
+937,80,High,Additive effect,A,Auto-generated interaction
+582,122,High,Absorption reduction,B,Auto-generated interaction
+292,120,Low,Metabolism inhibition,B,Auto-generated interaction
+801,16,Severe,Metabolism inhibition,B,Auto-generated interaction
+731,27,High,Metabolism inhibition,A,Auto-generated interaction
+27,75,High,Unknown,C,Auto-generated interaction
+650,83,Moderate,Unknown,C,Auto-generated interaction
+542,25,High,Unknown,A,Auto-generated interaction
+156,148,Moderate,Additive effect,A,Auto-generated interaction
+578,130,High,Additive effect,A,Auto-generated interaction
+747,144,Severe,Absorption reduction,C,Auto-generated interaction
+672,51,High,Metabolism inhibition,C,Auto-generated interaction
+871,49,Low,Metabolism inhibition,A,Auto-generated interaction
+374,49,Moderate,Metabolism inhibition,C,Auto-generated interaction
+315,102,Low,Additive effect,A,Auto-generated interaction
+757,93,Severe,Absorption reduction,A,Auto-generated interaction
+35,79,Moderate,Absorption reduction,A,Auto-generated interaction
+328,109,Severe,Additive effect,C,Auto-generated interaction
+535,55,Moderate,Unknown,B,Auto-generated interaction
+51,78,Severe,Unknown,B,Auto-generated interaction
+56,13,High,Metabolism inhibition,B,Auto-generated interaction
+482,4,Low,Absorption reduction,A,Auto-generated interaction
+97,78,Severe,Additive effect,B,Auto-generated interaction
+603,9,Severe,Unknown,A,Auto-generated interaction
+552,90,High,Metabolism inhibition,A,Auto-generated interaction
+788,88,Moderate,Additive effect,B,Auto-generated interaction
+933,135,Moderate,Unknown,C,Auto-generated interaction
+889,25,Low,Absorption reduction,B,Auto-generated interaction
+674,72,High,Additive effect,C,Auto-generated interaction
+863,9,High,Unknown,C,Auto-generated interaction
+12,45,Moderate,Metabolism inhibition,A,Auto-generated interaction
+647,76,Severe,Unknown,C,Auto-generated interaction
+53,123,High,Unknown,A,Auto-generated interaction
+39,102,High,Additive effect,B,Auto-generated interaction
+470,2,Severe,Additive effect,C,Auto-generated interaction
+269,35,Severe,Absorption reduction,B,Auto-generated interaction
+874,77,Low,Unknown,C,Auto-generated interaction
+251,136,High,Unknown,B,Auto-generated interaction
+504,142,High,Metabolism inhibition,C,Auto-generated interaction
+719,88,Low,Unknown,A,Auto-generated interaction
+749,128,High,Absorption reduction,C,Auto-generated interaction
+882,85,Moderate,Additive effect,B,Auto-generated interaction
+271,10,Severe,Unknown,B,Auto-generated interaction
+60,130,High,Unknown,B,Auto-generated interaction
+447,79,Moderate,Absorption reduction,B,Auto-generated interaction
+384,13,High,Absorption reduction,C,Auto-generated interaction
+239,5,Moderate,Metabolism inhibition,A,Auto-generated interaction
+829,101,High,Unknown,A,Auto-generated interaction
+105,58,Moderate,Unknown,C,Auto-generated interaction
+85,12,Moderate,Metabolism inhibition,B,Auto-generated interaction
+509,105,Severe,Additive effect,B,Auto-generated interaction
+368,142,High,Absorption reduction,C,Auto-generated interaction
+413,27,Moderate,Absorption reduction,A,Auto-generated interaction
+181,143,Severe,Absorption reduction,B,Auto-generated interaction
+712,47,High,Additive effect,C,Auto-generated interaction
+301,35,Low,Unknown,C,Auto-generated interaction
+32,89,Moderate,Unknown,A,Auto-generated interaction
+406,73,Moderate,Absorption reduction,A,Auto-generated interaction
+673,51,Moderate,Additive effect,A,Auto-generated interaction
+921,41,Moderate,Absorption reduction,C,Auto-generated interaction
+903,114,High,Unknown,B,Auto-generated interaction
+621,64,Low,Unknown,B,Auto-generated interaction
+340,120,Low,Unknown,B,Auto-generated interaction
+896,34,High,Additive effect,B,Auto-generated interaction
+717,75,Low,Additive effect,B,Auto-generated interaction
+169,133,Low,Metabolism inhibition,A,Auto-generated interaction
+914,136,Severe,Absorption reduction,B,Auto-generated interaction
+638,4,Moderate,Absorption reduction,A,Auto-generated interaction
+938,10,Moderate,Metabolism inhibition,B,Auto-generated interaction
+470,59,High,Unknown,B,Auto-generated interaction
+598,113,High,Additive effect,B,Auto-generated interaction
+481,110,Severe,Unknown,A,Auto-generated interaction
+677,132,Low,Metabolism inhibition,B,Auto-generated interaction
+444,52,High,Absorption reduction,A,Auto-generated interaction
+942,54,Low,Metabolism inhibition,B,Auto-generated interaction
+860,111,Moderate,Unknown,A,Auto-generated interaction
+990,37,Moderate,Absorption reduction,C,Auto-generated interaction
+784,66,Low,Absorption reduction,B,Auto-generated interaction
+520,112,High,Metabolism inhibition,C,Auto-generated interaction
+142,142,Moderate,Absorption reduction,A,Auto-generated interaction
+965,24,Low,Metabolism inhibition,A,Auto-generated interaction
+161,32,Moderate,Additive effect,C,Auto-generated interaction
+233,44,Moderate,Metabolism inhibition,C,Auto-generated interaction
+803,120,Severe,Metabolism inhibition,A,Auto-generated interaction
+226,129,Severe,Unknown,A,Auto-generated interaction
+383,71,High,Additive effect,B,Auto-generated interaction
+869,86,Moderate,Unknown,C,Auto-generated interaction
+122,55,Low,Metabolism inhibition,C,Auto-generated interaction
+563,127,High,Metabolism inhibition,A,Auto-generated interaction
+98,140,High,Unknown,A,Auto-generated interaction
+38,28,Moderate,Unknown,A,Auto-generated interaction
+980,4,High,Metabolism inhibition,B,Auto-generated interaction
+733,21,High,Absorption reduction,C,Auto-generated interaction
+783,76,Low,Additive effect,C,Auto-generated interaction
+291,141,Moderate,Unknown,B,Auto-generated interaction
+491,42,Low,Additive effect,C,Auto-generated interaction
+692,136,High,Unknown,C,Auto-generated interaction
+506,72,Low,Metabolism inhibition,C,Auto-generated interaction
+1000,98,Moderate,Absorption reduction,C,Auto-generated interaction
+930,33,Severe,Absorption reduction,C,Auto-generated interaction
+847,88,Low,Metabolism inhibition,C,Auto-generated interaction
+397,102,Low,Absorption reduction,B,Auto-generated interaction
+292,37,Severe,Additive effect,A,Auto-generated interaction
+559,103,Severe,Additive effect,C,Auto-generated interaction
+841,111,Moderate,Additive effect,C,Auto-generated interaction
+8,36,Severe,Absorption reduction,B,Auto-generated interaction
+9,34,Low,Unknown,B,Auto-generated interaction
+874,36,Severe,Additive effect,B,Auto-generated interaction
+291,141,Moderate,Unknown,C,Auto-generated interaction
+292,3,High,Metabolism inhibition,B,Auto-generated interaction
+481,100,Moderate,Absorption reduction,A,Auto-generated interaction
+55,67,Low,Absorption reduction,B,Auto-generated interaction
+16,78,Moderate,Unknown,A,Auto-generated interaction
+446,30,Moderate,Metabolism inhibition,C,Auto-generated interaction
+975,122,High,Additive effect,C,Auto-generated interaction
+728,85,High,Unknown,B,Auto-generated interaction
+736,69,High,Unknown,A,Auto-generated interaction
+961,116,Severe,Absorption reduction,C,Auto-generated interaction
+748,132,Severe,Metabolism inhibition,B,Auto-generated interaction
+126,72,Low,Additive effect,A,Auto-generated interaction
+278,129,Moderate,Unknown,A,Auto-generated interaction
+939,4,Low,Unknown,B,Auto-generated interaction
+876,90,Severe,Unknown,C,Auto-generated interaction
+943,79,Severe,Metabolism inhibition,A,Auto-generated interaction
+513,9,High,Absorption reduction,A,Auto-generated interaction
+202,93,High,Additive effect,C,Auto-generated interaction
+130,114,Moderate,Absorption reduction,B,Auto-generated interaction
+638,93,Severe,Unknown,B,Auto-generated interaction
+233,137,Low,Metabolism inhibition,C,Auto-generated interaction
+472,45,Low,Absorption reduction,C,Auto-generated interaction
+44,77,Low,Absorption reduction,C,Auto-generated interaction
+594,95,High,Metabolism inhibition,A,Auto-generated interaction
+804,106,Moderate,Absorption reduction,B,Auto-generated interaction
+481,120,High,Additive effect,B,Auto-generated interaction
+607,80,Low,Absorption reduction,A,Auto-generated interaction
+69,131,Low,Metabolism inhibition,C,Auto-generated interaction
+185,72,Low,Unknown,C,Auto-generated interaction
+843,2,High,Additive effect,C,Auto-generated interaction
+80,38,Moderate,Unknown,B,Auto-generated interaction
+706,142,High,Absorption reduction,C,Auto-generated interaction
+640,66,Moderate,Absorption reduction,B,Auto-generated interaction
+160,128,Severe,Metabolism inhibition,C,Auto-generated interaction
+736,12,Moderate,Metabolism inhibition,B,Auto-generated interaction
+100,138,Low,Metabolism inhibition,C,Auto-generated interaction
+734,4,Low,Metabolism inhibition,A,Auto-generated interaction
+652,106,Low,Unknown,B,Auto-generated interaction
+83,38,Moderate,Absorption reduction,B,Auto-generated interaction
+96,99,Moderate,Unknown,A,Auto-generated interaction
+444,99,High,Additive effect,A,Auto-generated interaction
+984,92,Low,Additive effect,B,Auto-generated interaction
+683,30,Moderate,Absorption reduction,C,Auto-generated interaction
+160,19,Moderate,Unknown,B,Auto-generated interaction
+426,107,Low,Unknown,C,Auto-generated interaction
+358,113,High,Additive effect,A,Auto-generated interaction
+271,95,Severe,Metabolism inhibition,B,Auto-generated interaction
+243,50,Moderate,Additive effect,A,Auto-generated interaction
+326,146,Severe,Additive effect,C,Auto-generated interaction
+645,126,Moderate,Unknown,C,Auto-generated interaction
+570,121,Severe,Unknown,A,Auto-generated interaction
+8,80,Severe,Absorption reduction,C,Auto-generated interaction
+780,145,Severe,Unknown,B,Auto-generated interaction
+705,20,Severe,Unknown,C,Auto-generated interaction
+627,12,Moderate,Metabolism inhibition,A,Auto-generated interaction
+759,23,Low,Additive effect,B,Auto-generated interaction
+291,59,Low,Additive effect,C,Auto-generated interaction
+92,95,High,Metabolism inhibition,B,Auto-generated interaction
+496,53,Severe,Absorption reduction,C,Auto-generated interaction
+474,31,Severe,Additive effect,B,Auto-generated interaction
+608,138,Low,Additive effect,C,Auto-generated interaction
+744,90,High,Metabolism inhibition,C,Auto-generated interaction
+534,95,High,Unknown,B,Auto-generated interaction
+146,74,Severe,Absorption reduction,A,Auto-generated interaction
+362,145,Moderate,Absorption reduction,A,Auto-generated interaction
+815,137,Moderate,Metabolism inhibition,C,Auto-generated interaction
+257,133,Moderate,Absorption reduction,A,Auto-generated interaction
+481,5,Moderate,Absorption reduction,A,Auto-generated interaction
+791,98,Severe,Additive effect,C,Auto-generated interaction
+68,84,High,Metabolism inhibition,B,Auto-generated interaction
+349,44,Severe,Metabolism inhibition,C,Auto-generated interaction
+72,139,High,Unknown,A,Auto-generated interaction
+912,53,Moderate,Metabolism inhibition,B,Auto-generated interaction
+679,89,Severe,Metabolism inhibition,C,Auto-generated interaction
+537,29,Severe,Additive effect,B,Auto-generated interaction
+492,124,Moderate,Additive effect,C,Auto-generated interaction
+456,25,Severe,Metabolism inhibition,A,Auto-generated interaction
+211,96,Low,Additive effect,A,Auto-generated interaction
+769,4,High,Unknown,B,Auto-generated interaction
+102,17,High,Absorption reduction,A,Auto-generated interaction
+472,80,Low,Additive effect,A,Auto-generated interaction
+903,143,Severe,Additive effect,A,Auto-generated interaction
+918,6,High,Absorption reduction,B,Auto-generated interaction
+79,137,High,Absorption reduction,C,Auto-generated interaction
+515,104,Low,Unknown,B,Auto-generated interaction
+408,98,Severe,Metabolism inhibition,C,Auto-generated interaction
+312,78,Low,Unknown,B,Auto-generated interaction
+442,116,Moderate,Unknown,A,Auto-generated interaction
+8,129,Low,Additive effect,C,Auto-generated interaction
+887,3,Moderate,Absorption reduction,B,Auto-generated interaction
+619,61,Low,Metabolism inhibition,A,Auto-generated interaction
+139,116,High,Absorption reduction,A,Auto-generated interaction
+267,74,Moderate,Metabolism inhibition,A,Auto-generated interaction
+104,68,High,Unknown,B,Auto-generated interaction
+179,49,Severe,Unknown,B,Auto-generated interaction
+993,10,Low,Unknown,B,Auto-generated interaction
+575,79,Severe,Additive effect,A,Auto-generated interaction
+426,61,Severe,Additive effect,C,Auto-generated interaction
+564,35,Moderate,Absorption reduction,C,Auto-generated interaction
+818,96,Low,Absorption reduction,A,Auto-generated interaction
+19,109,Severe,Metabolism inhibition,A,Auto-generated interaction
+575,73,Low,Metabolism inhibition,C,Auto-generated interaction
+36,58,High,Absorption reduction,A,Auto-generated interaction
+731,146,High,Absorption reduction,B,Auto-generated interaction
+835,68,Low,Absorption reduction,B,Auto-generated interaction
+375,116,High,Metabolism inhibition,B,Auto-generated interaction
+500,66,Low,Additive effect,B,Auto-generated interaction
+797,39,Moderate,Additive effect,A,Auto-generated interaction
+456,129,High,Additive effect,A,Auto-generated interaction
+167,27,High,Unknown,B,Auto-generated interaction
+725,40,Severe,Metabolism inhibition,C,Auto-generated interaction
+532,68,Low,Additive effect,B,Auto-generated interaction
+915,98,Severe,Metabolism inhibition,B,Auto-generated interaction
+785,8,Moderate,Metabolism inhibition,B,Auto-generated interaction
+851,53,Moderate,Unknown,A,Auto-generated interaction
+875,37,Severe,Absorption reduction,C,Auto-generated interaction
+143,94,Severe,Absorption reduction,C,Auto-generated interaction
+657,111,High,Absorption reduction,A,Auto-generated interaction
+887,44,High,Metabolism inhibition,C,Auto-generated interaction
+963,18,High,Unknown,B,Auto-generated interaction
+230,41,Severe,Additive effect,B,Auto-generated interaction
+449,119,High,Metabolism inhibition,A,Auto-generated interaction
+553,29,Moderate,Unknown,C,Auto-generated interaction
+690,133,Moderate,Additive effect,A,Auto-generated interaction
+2,38,Low,Unknown,B,Auto-generated interaction
+796,1,Low,Unknown,A,Auto-generated interaction
+445,47,High,Additive effect,C,Auto-generated interaction
+975,1,High,Unknown,B,Auto-generated interaction
+326,97,Moderate,Metabolism inhibition,A,Auto-generated interaction
+975,111,Low,Additive effect,B,Auto-generated interaction
+625,56,Severe,Unknown,B,Auto-generated interaction
+629,8,Moderate,Unknown,B,Auto-generated interaction
+584,31,Low,Metabolism inhibition,B,Auto-generated interaction
+374,40,Moderate,Metabolism inhibition,A,Auto-generated interaction
+432,4,Severe,Metabolism inhibition,A,Auto-generated interaction
+228,1,High,Additive effect,C,Auto-generated interaction
+20,149,Severe,Absorption reduction,B,Auto-generated interaction
+701,131,Severe,Unknown,B,Auto-generated interaction
+397,93,Low,Absorption reduction,C,Auto-generated interaction
+313,84,Severe,Absorption reduction,A,Auto-generated interaction
+527,26,Severe,Unknown,A,Auto-generated interaction
+418,65,Severe,Metabolism inhibition,B,Auto-generated interaction
+733,11,Severe,Metabolism inhibition,C,Auto-generated interaction
+503,39,Moderate,Metabolism inhibition,C,Auto-generated interaction
+207,148,High,Absorption reduction,B,Auto-generated interaction
+104,68,Moderate,Unknown,C,Auto-generated interaction
+976,12,Moderate,Metabolism inhibition,C,Auto-generated interaction
+584,123,High,Unknown,A,Auto-generated interaction
+135,28,Moderate,Additive effect,A,Auto-generated interaction
+18,56,High,Additive effect,A,Auto-generated interaction
+302,5,Moderate,Additive effect,A,Auto-generated interaction
+672,144,High,Unknown,A,Auto-generated interaction
+650,109,Severe,Unknown,C,Auto-generated interaction
+617,4,Low,Unknown,A,Auto-generated interaction
+434,32,Moderate,Additive effect,C,Auto-generated interaction
+354,58,Severe,Unknown,C,Auto-generated interaction
+774,3,High,Metabolism inhibition,A,Auto-generated interaction
+456,140,Severe,Metabolism inhibition,C,Auto-generated interaction
+907,119,Moderate,Additive effect,A,Auto-generated interaction
+82,84,Severe,Additive effect,A,Auto-generated interaction
+405,82,Severe,Metabolism inhibition,B,Auto-generated interaction
+886,43,Low,Additive effect,A,Auto-generated interaction
+478,148,Severe,Metabolism inhibition,B,Auto-generated interaction
+746,77,Severe,Additive effect,B,Auto-generated interaction
+557,147,High,Additive effect,A,Auto-generated interaction
+596,121,Low,Absorption reduction,C,Auto-generated interaction
+648,67,High,Metabolism inhibition,B,Auto-generated interaction
+91,125,Severe,Absorption reduction,A,Auto-generated interaction
+848,3,Low,Unknown,A,Auto-generated interaction
+957,78,Moderate,Unknown,A,Auto-generated interaction
+756,98,Severe,Additive effect,A,Auto-generated interaction
+340,144,Severe,Additive effect,B,Auto-generated interaction
+624,11,Moderate,Metabolism inhibition,A,Auto-generated interaction
+498,71,Low,Additive effect,C,Auto-generated interaction
+271,142,Low,Metabolism inhibition,B,Auto-generated interaction
+56,54,High,Unknown,A,Auto-generated interaction
+465,139,High,Absorption reduction,B,Auto-generated interaction
+127,115,High,Additive effect,A,Auto-generated interaction
+9,118,High,Unknown,A,Auto-generated interaction
+13,43,Severe,Metabolism inhibition,B,Auto-generated interaction
+237,115,Severe,Unknown,C,Auto-generated interaction
+529,23,High,Absorption reduction,A,Auto-generated interaction
+133,52,High,Additive effect,A,Auto-generated interaction
+124,74,Low,Unknown,C,Auto-generated interaction
+862,24,High,Additive effect,C,Auto-generated interaction
+758,99,Moderate,Metabolism inhibition,A,Auto-generated interaction
+771,96,High,Unknown,A,Auto-generated interaction
+155,56,Moderate,Absorption reduction,C,Auto-generated interaction
+980,104,Moderate,Additive effect,B,Auto-generated interaction
+448,62,Severe,Metabolism inhibition,C,Auto-generated interaction
+859,43,Moderate,Additive effect,A,Auto-generated interaction
+655,25,Severe,Absorption reduction,B,Auto-generated interaction
+631,29,High,Additive effect,A,Auto-generated interaction
+590,49,High,Unknown,A,Auto-generated interaction
+565,97,High,Absorption reduction,A,Auto-generated interaction
+900,26,Moderate,Additive effect,A,Auto-generated interaction
+149,129,Severe,Additive effect,C,Auto-generated interaction
+708,132,High,Unknown,C,Auto-generated interaction
+117,46,Moderate,Metabolism inhibition,B,Auto-generated interaction
+934,127,Moderate,Unknown,C,Auto-generated interaction
+518,86,Low,Additive effect,A,Auto-generated interaction
+566,85,High,Additive effect,A,Auto-generated interaction
+822,92,Low,Unknown,B,Auto-generated interaction
+861,58,High,Unknown,B,Auto-generated interaction
+565,15,Low,Unknown,B,Auto-generated interaction
+360,108,Severe,Absorption reduction,C,Auto-generated interaction
+600,74,Severe,Unknown,B,Auto-generated interaction
+757,134,Severe,Absorption reduction,A,Auto-generated interaction
+685,35,Low,Unknown,C,Auto-generated interaction
+959,41,Severe,Additive effect,C,Auto-generated interaction
+779,46,Low,Additive effect,B,Auto-generated interaction
+453,82,Severe,Absorption reduction,B,Auto-generated interaction
+879,145,Severe,Absorption reduction,A,Auto-generated interaction
+546,80,Severe,Absorption reduction,A,Auto-generated interaction
+754,122,High,Metabolism inhibition,B,Auto-generated interaction
+299,135,Moderate,Additive effect,B,Auto-generated interaction
+434,66,Severe,Absorption reduction,C,Auto-generated interaction
+451,105,Moderate,Absorption reduction,B,Auto-generated interaction
+650,18,Low,Unknown,A,Auto-generated interaction
+23,20,Severe,Additive effect,B,Auto-generated interaction
+735,79,High,Unknown,A,Auto-generated interaction
+528,61,Low,Unknown,C,Auto-generated interaction
+922,11,Moderate,Absorption reduction,B,Auto-generated interaction
+558,98,Low,Metabolism inhibition,A,Auto-generated interaction
+244,91,High,Unknown,A,Auto-generated interaction
+644,72,Severe,Additive effect,B,Auto-generated interaction
+88,95,Low,Metabolism inhibition,B,Auto-generated interaction
+179,89,Severe,Absorption reduction,B,Auto-generated interaction
+150,94,Severe,Additive effect,B,Auto-generated interaction
+810,124,High,Additive effect,C,Auto-generated interaction
+613,43,High,Additive effect,C,Auto-generated interaction
+105,42,Severe,Unknown,C,Auto-generated interaction
+93,134,High,Unknown,B,Auto-generated interaction
+382,24,High,Additive effect,B,Auto-generated interaction
+748,109,Severe,Unknown,B,Auto-generated interaction
+350,51,Low,Absorption reduction,B,Auto-generated interaction
+144,91,High,Additive effect,C,Auto-generated interaction
+287,87,Moderate,Absorption reduction,A,Auto-generated interaction
+381,103,Low,Unknown,C,Auto-generated interaction
+898,129,Low,Absorption reduction,B,Auto-generated interaction
+966,19,Severe,Metabolism inhibition,B,Auto-generated interaction
+548,146,Moderate,Metabolism inhibition,B,Auto-generated interaction
+576,40,Moderate,Additive effect,C,Auto-generated interaction
+33,126,High,Metabolism inhibition,C,Auto-generated interaction
+756,51,Moderate,Additive effect,B,Auto-generated interaction
+564,97,Severe,Absorption reduction,A,Auto-generated interaction
+165,101,Moderate,Additive effect,A,Auto-generated interaction
+105,109,Moderate,Metabolism inhibition,B,Auto-generated interaction
+439,68,High,Unknown,C,Auto-generated interaction
+93,55,Severe,Additive effect,A,Auto-generated interaction
+401,116,Severe,Unknown,A,Auto-generated interaction
+872,145,Severe,Metabolism inhibition,C,Auto-generated interaction
+514,138,Severe,Metabolism inhibition,A,Auto-generated interaction
+128,105,Low,Additive effect,A,Auto-generated interaction
+672,49,Severe,Unknown,B,Auto-generated interaction
+735,131,Moderate,Absorption reduction,C,Auto-generated interaction
+138,139,Low,Metabolism inhibition,A,Auto-generated interaction
+170,78,Low,Absorption reduction,A,Auto-generated interaction
+136,31,Moderate,Absorption reduction,B,Auto-generated interaction
+610,137,Low,Unknown,A,Auto-generated interaction
+228,61,High,Additive effect,C,Auto-generated interaction
+957,76,Low,Metabolism inhibition,A,Auto-generated interaction
+937,119,Severe,Unknown,B,Auto-generated interaction
+696,129,Low,Absorption reduction,A,Auto-generated interaction
+978,39,High,Additive effect,B,Auto-generated interaction
+107,112,High,Absorption reduction,A,Auto-generated interaction
+597,99,Low,Metabolism inhibition,B,Auto-generated interaction
+176,10,High,Additive effect,A,Auto-generated interaction
+679,51,Low,Additive effect,A,Auto-generated interaction
+292,20,Low,Additive effect,C,Auto-generated interaction
+59,74,Severe,Metabolism inhibition,C,Auto-generated interaction
+470,38,Moderate,Additive effect,B,Auto-generated interaction
+923,90,High,Additive effect,B,Auto-generated interaction
+672,102,Severe,Unknown,A,Auto-generated interaction
+45,39,Low,Absorption reduction,A,Auto-generated interaction
+461,130,High,Unknown,A,Auto-generated interaction
+682,10,Severe,Absorption reduction,A,Auto-generated interaction
+703,107,High,Unknown,B,Auto-generated interaction
+265,35,Severe,Unknown,B,Auto-generated interaction
+637,107,High,Metabolism inhibition,C,Auto-generated interaction
+777,53,Low,Metabolism inhibition,C,Auto-generated interaction
+991,12,Low,Metabolism inhibition,B,Auto-generated interaction
+88,22,Severe,Metabolism inhibition,B,Auto-generated interaction
+836,138,Severe,Absorption reduction,C,Auto-generated interaction
+800,87,Moderate,Additive effect,C,Auto-generated interaction
+645,126,Severe,Absorption reduction,C,Auto-generated interaction
+431,83,Severe,Unknown,B,Auto-generated interaction
+369,15,Moderate,Unknown,B,Auto-generated interaction
+851,47,Severe,Unknown,A,Auto-generated interaction
+247,115,Low,Metabolism inhibition,A,Auto-generated interaction
+355,10,High,Absorption reduction,A,Auto-generated interaction
+886,131,Severe,Unknown,C,Auto-generated interaction
+261,2,Moderate,Unknown,A,Auto-generated interaction
+999,16,High,Metabolism inhibition,B,Auto-generated interaction
+479,139,Moderate,Absorption reduction,A,Auto-generated interaction
+843,100,Moderate,Metabolism inhibition,C,Auto-generated interaction
+960,79,High,Metabolism inhibition,B,Auto-generated interaction
+767,133,Low,Absorption reduction,B,Auto-generated interaction
+573,124,Low,Unknown,C,Auto-generated interaction
+821,46,Low,Absorption reduction,B,Auto-generated interaction
+286,94,Moderate,Absorption reduction,B,Auto-generated interaction
+66,100,Severe,Unknown,B,Auto-generated interaction
+577,133,Low,Absorption reduction,A,Auto-generated interaction
+797,14,Severe,Absorption reduction,A,Auto-generated interaction
+912,90,High,Absorption reduction,A,Auto-generated interaction
+183,99,Moderate,Additive effect,B,Auto-generated interaction
+904,137,High,Unknown,C,Auto-generated interaction
+253,37,Severe,Additive effect,A,Auto-generated interaction
+142,23,High,Metabolism inhibition,C,Auto-generated interaction
+11,1,Severe,Unknown,C,Auto-generated interaction
+53,147,Low,Unknown,C,Auto-generated interaction
+535,106,Severe,Additive effect,A,Auto-generated interaction
+851,123,Low,Additive effect,C,Auto-generated interaction
+952,43,Severe,Metabolism inhibition,B,Auto-generated interaction
+182,149,High,Unknown,C,Auto-generated interaction
+975,41,High,Absorption reduction,B,Auto-generated interaction
+48,110,Low,Additive effect,B,Auto-generated interaction
+395,16,Low,Absorption reduction,B,Auto-generated interaction
+785,86,Moderate,Unknown,B,Auto-generated interaction
+948,71,Severe,Unknown,C,Auto-generated interaction
+80,1,Severe,Absorption reduction,A,Auto-generated interaction
+50,19,Moderate,Unknown,A,Auto-generated interaction
+134,40,Severe,Unknown,A,Auto-generated interaction
+516,39,High,Additive effect,B,Auto-generated interaction
+311,115,Severe,Additive effect,B,Auto-generated interaction
+369,46,Severe,Metabolism inhibition,A,Auto-generated interaction
+987,12,High,Absorption reduction,C,Auto-generated interaction
+750,19,Moderate,Absorption reduction,A,Auto-generated interaction
+30,29,Severe,Additive effect,A,Auto-generated interaction
+35,20,Moderate,Unknown,C,Auto-generated interaction
+792,17,High,Additive effect,C,Auto-generated interaction
+302,120,High,Unknown,B,Auto-generated interaction
+886,104,High,Metabolism inhibition,C,Auto-generated interaction
+851,14,Moderate,Additive effect,B,Auto-generated interaction
+254,121,Moderate,Absorption reduction,C,Auto-generated interaction
+501,138,High,Additive effect,B,Auto-generated interaction
+348,13,Moderate,Unknown,B,Auto-generated interaction
+430,8,High,Additive effect,B,Auto-generated interaction
+934,5,Moderate,Metabolism inhibition,B,Auto-generated interaction
+700,107,Moderate,Absorption reduction,A,Auto-generated interaction
+58,143,Moderate,Additive effect,C,Auto-generated interaction
+577,99,Severe,Unknown,A,Auto-generated interaction
+390,58,High,Additive effect,C,Auto-generated interaction
+553,71,Severe,Unknown,B,Auto-generated interaction
+114,18,Low,Absorption reduction,A,Auto-generated interaction
+905,15,Low,Absorption reduction,A,Auto-generated interaction
+610,70,Low,Absorption reduction,C,Auto-generated interaction
+223,68,High,Unknown,A,Auto-generated interaction
+833,42,High,Metabolism inhibition,A,Auto-generated interaction
+707,11,Moderate,Additive effect,B,Auto-generated interaction
+410,44,Moderate,Unknown,B,Auto-generated interaction
+519,57,Low,Unknown,C,Auto-generated interaction
+121,29,High,Absorption reduction,A,Auto-generated interaction
+233,117,High,Absorption reduction,A,Auto-generated interaction
+467,34,Low,Additive effect,B,Auto-generated interaction
+852,40,Low,Unknown,B,Auto-generated interaction
+670,106,Low,Additive effect,A,Auto-generated interaction
+680,114,Moderate,Metabolism inhibition,C,Auto-generated interaction
+159,62,Severe,Metabolism inhibition,B,Auto-generated interaction
+113,134,Severe,Metabolism inhibition,C,Auto-generated interaction
+390,105,Low,Absorption reduction,B,Auto-generated interaction
+816,77,High,Metabolism inhibition,B,Auto-generated interaction
+771,108,Moderate,Absorption reduction,B,Auto-generated interaction
+807,121,Low,Unknown,A,Auto-generated interaction
+84,45,Low,Additive effect,A,Auto-generated interaction
+709,30,Low,Absorption reduction,A,Auto-generated interaction
+975,96,Severe,Additive effect,B,Auto-generated interaction
+155,110,High,Additive effect,B,Auto-generated interaction
+31,59,High,Absorption reduction,C,Auto-generated interaction
+206,91,High,Additive effect,C,Auto-generated interaction
+178,130,Moderate,Additive effect,A,Auto-generated interaction
+868,110,Severe,Absorption reduction,B,Auto-generated interaction
+344,89,High,Absorption reduction,A,Auto-generated interaction
+160,47,High,Additive effect,C,Auto-generated interaction
+71,124,High,Absorption reduction,B,Auto-generated interaction
+770,65,Severe,Metabolism inhibition,A,Auto-generated interaction
+604,88,Moderate,Metabolism inhibition,C,Auto-generated interaction
+563,146,Low,Absorption reduction,B,Auto-generated interaction
+40,57,Low,Unknown,C,Auto-generated interaction
+807,105,Low,Absorption reduction,A,Auto-generated interaction
+426,77,High,Unknown,C,Auto-generated interaction
+168,123,High,Absorption reduction,C,Auto-generated interaction
+460,99,Low,Unknown,A,Auto-generated interaction
+414,121,Severe,Metabolism inhibition,A,Auto-generated interaction
+671,30,Low,Additive effect,C,Auto-generated interaction
+123,72,Low,Additive effect,B,Auto-generated interaction
+226,38,High,Additive effect,B,Auto-generated interaction
+424,103,Moderate,Unknown,C,Auto-generated interaction
+61,59,High,Absorption reduction,B,Auto-generated interaction
+111,24,High,Unknown,A,Auto-generated interaction
+20,66,Low,Additive effect,C,Auto-generated interaction
+108,142,Moderate,Metabolism inhibition,B,Auto-generated interaction
+779,137,High,Additive effect,B,Auto-generated interaction
+485,29,High,Unknown,B,Auto-generated interaction
+773,30,High,Absorption reduction,A,Auto-generated interaction
+343,75,High,Additive effect,A,Auto-generated interaction
+480,144,High,Additive effect,A,Auto-generated interaction
+317,22,Moderate,Unknown,B,Auto-generated interaction
+952,46,Low,Absorption reduction,B,Auto-generated interaction
+342,117,Low,Metabolism inhibition,C,Auto-generated interaction
+984,60,Moderate,Metabolism inhibition,C,Auto-generated interaction
+106,92,Low,Additive effect,B,Auto-generated interaction
+783,49,High,Unknown,B,Auto-generated interaction
+194,129,Moderate,Metabolism inhibition,C,Auto-generated interaction
+652,133,Severe,Unknown,C,Auto-generated interaction
+108,6,Moderate,Unknown,C,Auto-generated interaction
+885,92,Severe,Metabolism inhibition,B,Auto-generated interaction
+382,146,Low,Additive effect,C,Auto-generated interaction
+538,130,Severe,Additive effect,A,Auto-generated interaction
+560,71,Moderate,Absorption reduction,A,Auto-generated interaction
+383,5,Low,Unknown,A,Auto-generated interaction
+446,95,Severe,Additive effect,C,Auto-generated interaction
+378,88,High,Absorption reduction,C,Auto-generated interaction
+252,75,Severe,Additive effect,C,Auto-generated interaction
+470,4,Low,Additive effect,A,Auto-generated interaction
+679,100,Severe,Absorption reduction,A,Auto-generated interaction
+204,114,Moderate,Additive effect,C,Auto-generated interaction
+52,56,Moderate,Metabolism inhibition,C,Auto-generated interaction
+356,127,Low,Unknown,B,Auto-generated interaction
+775,34,Severe,Additive effect,B,Auto-generated interaction
+424,67,Moderate,Additive effect,A,Auto-generated interaction
+938,55,Low,Metabolism inhibition,C,Auto-generated interaction
+952,74,High,Absorption reduction,B,Auto-generated interaction
+342,54,Low,Additive effect,B,Auto-generated interaction
+73,136,Severe,Metabolism inhibition,B,Auto-generated interaction
+607,89,Severe,Unknown,B,Auto-generated interaction
+122,104,Low,Unknown,A,Auto-generated interaction
+804,67,Low,Additive effect,B,Auto-generated interaction
+197,70,Moderate,Metabolism inhibition,B,Auto-generated interaction
+898,98,Low,Unknown,B,Auto-generated interaction
+653,37,High,Unknown,B,Auto-generated interaction
+33,111,Severe,Additive effect,B,Auto-generated interaction
+743,85,Moderate,Unknown,B,Auto-generated interaction
+551,55,Moderate,Metabolism inhibition,B,Auto-generated interaction
+463,39,Low,Absorption reduction,A,Auto-generated interaction
+907,149,Low,Additive effect,A,Auto-generated interaction
+802,49,Severe,Metabolism inhibition,A,Auto-generated interaction
+5,36,Moderate,Additive effect,A,Auto-generated interaction
+107,146,Low,Absorption reduction,B,Auto-generated interaction
+446,117,Severe,Metabolism inhibition,A,Auto-generated interaction
+914,30,Low,Metabolism inhibition,C,Auto-generated interaction
+975,60,Moderate,Absorption reduction,C,Auto-generated interaction
+661,57,High,Additive effect,C,Auto-generated interaction
+109,36,Moderate,Additive effect,B,Auto-generated interaction
+137,58,Moderate,Metabolism inhibition,A,Auto-generated interaction
+81,25,Low,Absorption reduction,A,Auto-generated interaction
+727,24,Severe,Additive effect,B,Auto-generated interaction
+496,139,High,Metabolism inhibition,A,Auto-generated interaction
+866,71,Severe,Metabolism inhibition,C,Auto-generated interaction
+201,103,Moderate,Additive effect,B,Auto-generated interaction
+980,11,High,Unknown,A,Auto-generated interaction
+135,1,High,Metabolism inhibition,B,Auto-generated interaction
+357,17,High,Unknown,A,Auto-generated interaction
+945,44,Severe,Absorption reduction,B,Auto-generated interaction
+279,62,Severe,Absorption reduction,A,Auto-generated interaction
+598,124,High,Additive effect,A,Auto-generated interaction
+145,61,High,Additive effect,B,Auto-generated interaction
+803,112,Moderate,Absorption reduction,B,Auto-generated interaction
+565,56,High,Unknown,C,Auto-generated interaction
+433,5,High,Unknown,A,Auto-generated interaction
+304,53,Severe,Unknown,C,Auto-generated interaction
+511,6,Severe,Unknown,A,Auto-generated interaction
+973,30,High,Additive effect,A,Auto-generated interaction
+16,69,Severe,Additive effect,B,Auto-generated interaction
+386,53,High,Additive effect,B,Auto-generated interaction
+299,70,Moderate,Unknown,C,Auto-generated interaction
+975,53,Severe,Unknown,A,Auto-generated interaction
+111,53,Low,Unknown,A,Auto-generated interaction
+947,134,Severe,Absorption reduction,B,Auto-generated interaction
+274,146,Severe,Absorption reduction,B,Auto-generated interaction
+934,99,High,Absorption reduction,B,Auto-generated interaction
+385,3,Moderate,Absorption reduction,B,Auto-generated interaction
+868,27,High,Additive effect,A,Auto-generated interaction
+795,132,Low,Unknown,B,Auto-generated interaction
+565,149,Low,Unknown,C,Auto-generated interaction
+921,109,High,Metabolism inhibition,C,Auto-generated interaction
+190,62,Moderate,Absorption reduction,B,Auto-generated interaction
+79,109,High,Additive effect,B,Auto-generated interaction
+277,55,Low,Metabolism inhibition,B,Auto-generated interaction
+246,64,Severe,Unknown,B,Auto-generated interaction
+677,22,Severe,Additive effect,B,Auto-generated interaction
+454,115,Low,Absorption reduction,A,Auto-generated interaction
+89,77,Severe,Absorption reduction,A,Auto-generated interaction
+154,17,Moderate,Additive effect,B,Auto-generated interaction
+970,85,High,Absorption reduction,A,Auto-generated interaction
+708,29,High,Additive effect,C,Auto-generated interaction
+939,88,Moderate,Metabolism inhibition,C,Auto-generated interaction
+55,111,Moderate,Metabolism inhibition,B,Auto-generated interaction
+742,148,Low,Metabolism inhibition,A,Auto-generated interaction
+102,34,Severe,Unknown,C,Auto-generated interaction
+110,14,Severe,Additive effect,B,Auto-generated interaction
+928,132,High,Metabolism inhibition,B,Auto-generated interaction
+234,8,Moderate,Metabolism inhibition,C,Auto-generated interaction
+649,12,Severe,Additive effect,B,Auto-generated interaction
+680,55,Low,Additive effect,B,Auto-generated interaction
+199,19,High,Absorption reduction,C,Auto-generated interaction
+344,2,Severe,Metabolism inhibition,A,Auto-generated interaction
+331,147,Severe,Unknown,A,Auto-generated interaction
+767,70,Severe,Additive effect,C,Auto-generated interaction
+457,52,Low,Unknown,C,Auto-generated interaction
+112,6,Severe,Additive effect,A,Auto-generated interaction
+897,100,Severe,Absorption reduction,B,Auto-generated interaction
+41,46,Moderate,Absorption reduction,B,Auto-generated interaction
+593,33,Severe,Absorption reduction,C,Auto-generated interaction
+562,29,Low,Additive effect,A,Auto-generated interaction
+416,101,Moderate,Metabolism inhibition,B,Auto-generated interaction
+215,114,Low,Additive effect,A,Auto-generated interaction
+713,23,Low,Absorption reduction,C,Auto-generated interaction
+926,115,Severe,Metabolism inhibition,C,Auto-generated interaction
+518,149,Low,Absorption reduction,B,Auto-generated interaction
+435,113,Moderate,Additive effect,C,Auto-generated interaction
+123,117,Severe,Unknown,A,Auto-generated interaction
+236,98,Low,Additive effect,C,Auto-generated interaction
+164,133,Low,Metabolism inhibition,A,Auto-generated interaction
+263,148,Low,Absorption reduction,C,Auto-generated interaction
+235,17,High,Absorption reduction,C,Auto-generated interaction
+68,44,Severe,Metabolism inhibition,B,Auto-generated interaction
+888,56,Moderate,Absorption reduction,C,Auto-generated interaction
+587,132,High,Absorption reduction,A,Auto-generated interaction
+585,123,Low,Additive effect,A,Auto-generated interaction
+507,100,Moderate,Additive effect,A,Auto-generated interaction
+79,123,Severe,Metabolism inhibition,C,Auto-generated interaction
+796,94,Low,Additive effect,A,Auto-generated interaction
+978,43,High,Unknown,B,Auto-generated interaction
+225,55,Low,Absorption reduction,A,Auto-generated interaction
+389,56,Severe,Metabolism inhibition,C,Auto-generated interaction
+102,69,High,Absorption reduction,A,Auto-generated interaction
+403,102,Severe,Unknown,C,Auto-generated interaction
+670,105,Moderate,Absorption reduction,A,Auto-generated interaction
+161,8,High,Absorption reduction,C,Auto-generated interaction
+206,5,Severe,Absorption reduction,A,Auto-generated interaction
+57,6,Severe,Absorption reduction,C,Auto-generated interaction
+419,25,Severe,Additive effect,B,Auto-generated interaction
+660,72,Severe,Unknown,C,Auto-generated interaction
+811,4,Moderate,Absorption reduction,A,Auto-generated interaction
+782,104,High,Additive effect,B,Auto-generated interaction
+544,69,High,Metabolism inhibition,C,Auto-generated interaction
+698,145,Low,Absorption reduction,B,Auto-generated interaction
+509,87,Low,Metabolism inhibition,B,Auto-generated interaction
+213,23,High,Unknown,B,Auto-generated interaction
+662,17,Moderate,Additive effect,B,Auto-generated interaction
+237,3,Moderate,Additive effect,C,Auto-generated interaction
+823,53,High,Unknown,C,Auto-generated interaction
+185,76,Low,Absorption reduction,C,Auto-generated interaction
+854,17,Low,Additive effect,B,Auto-generated interaction
+411,23,Low,Absorption reduction,B,Auto-generated interaction
+138,126,High,Metabolism inhibition,A,Auto-generated interaction
+729,92,Low,Absorption reduction,B,Auto-generated interaction
+940,14,Severe,Metabolism inhibition,B,Auto-generated interaction
+770,24,Severe,Additive effect,B,Auto-generated interaction
+581,20,Low,Unknown,C,Auto-generated interaction
+707,101,High,Unknown,A,Auto-generated interaction
+963,43,Severe,Unknown,A,Auto-generated interaction
+71,58,Low,Metabolism inhibition,A,Auto-generated interaction
+325,48,Low,Absorption reduction,B,Auto-generated interaction
+485,56,Moderate,Unknown,B,Auto-generated interaction
+552,45,Severe,Unknown,B,Auto-generated interaction
+366,14,Moderate,Absorption reduction,A,Auto-generated interaction
+846,90,Severe,Additive effect,A,Auto-generated interaction
+465,44,Moderate,Metabolism inhibition,B,Auto-generated interaction
+576,146,High,Additive effect,A,Auto-generated interaction
+638,46,Moderate,Absorption reduction,A,Auto-generated interaction
+300,68,High,Additive effect,C,Auto-generated interaction
+967,85,Severe,Absorption reduction,C,Auto-generated interaction
+354,125,Low,Absorption reduction,B,Auto-generated interaction
+927,129,High,Additive effect,B,Auto-generated interaction
+682,147,Low,Additive effect,B,Auto-generated interaction
+745,40,Moderate,Absorption reduction,A,Auto-generated interaction
+423,79,High,Unknown,B,Auto-generated interaction
+339,54,Low,Metabolism inhibition,A,Auto-generated interaction
+349,57,Moderate,Unknown,A,Auto-generated interaction
+777,139,Severe,Metabolism inhibition,C,Auto-generated interaction
+530,29,Severe,Additive effect,A,Auto-generated interaction
+320,37,Severe,Additive effect,B,Auto-generated interaction
+786,68,High,Unknown,A,Auto-generated interaction
+117,100,Low,Unknown,B,Auto-generated interaction
+191,64,Low,Additive effect,C,Auto-generated interaction
+917,12,High,Absorption reduction,A,Auto-generated interaction
+926,143,Severe,Additive effect,C,Auto-generated interaction
+499,39,Moderate,Metabolism inhibition,B,Auto-generated interaction
+483,133,Low,Unknown,B,Auto-generated interaction
+114,85,Moderate,Unknown,A,Auto-generated interaction
+304,5,Moderate,Unknown,C,Auto-generated interaction
+373,112,Moderate,Additive effect,B,Auto-generated interaction
+229,123,Moderate,Additive effect,C,Auto-generated interaction
+836,68,Severe,Metabolism inhibition,A,Auto-generated interaction
+548,110,Moderate,Absorption reduction,B,Auto-generated interaction
+629,67,Moderate,Metabolism inhibition,B,Auto-generated interaction
+923,100,Moderate,Metabolism inhibition,C,Auto-generated interaction
+782,123,Severe,Additive effect,C,Auto-generated interaction
+737,139,High,Absorption reduction,B,Auto-generated interaction
+325,108,Moderate,Unknown,A,Auto-generated interaction
+537,102,Moderate,Additive effect,B,Auto-generated interaction
+746,47,Moderate,Unknown,A,Auto-generated interaction
+325,138,Low,Absorption reduction,B,Auto-generated interaction
+237,57,Low,Absorption reduction,A,Auto-generated interaction
+976,125,Low,Additive effect,B,Auto-generated interaction
+94,114,High,Absorption reduction,C,Auto-generated interaction
+323,92,Moderate,Additive effect,A,Auto-generated interaction
+725,17,Low,Unknown,B,Auto-generated interaction
+861,129,Moderate,Absorption reduction,B,Auto-generated interaction
+804,27,Severe,Additive effect,C,Auto-generated interaction
+680,55,Low,Absorption reduction,C,Auto-generated interaction
+116,20,Low,Metabolism inhibition,B,Auto-generated interaction
+921,147,Low,Additive effect,A,Auto-generated interaction
+186,116,Low,Unknown,B,Auto-generated interaction
+981,91,Severe,Additive effect,C,Auto-generated interaction
+766,7,Moderate,Metabolism inhibition,C,Auto-generated interaction
+176,82,Low,Additive effect,C,Auto-generated interaction
+626,124,Low,Metabolism inhibition,C,Auto-generated interaction
+388,144,Severe,Metabolism inhibition,C,Auto-generated interaction
+273,75,Low,Metabolism inhibition,B,Auto-generated interaction
+48,5,High,Metabolism inhibition,B,Auto-generated interaction
+465,125,High,Additive effect,A,Auto-generated interaction
+423,119,Severe,Absorption reduction,A,Auto-generated interaction
+885,137,High,Additive effect,B,Auto-generated interaction
+672,96,Moderate,Additive effect,B,Auto-generated interaction
+538,140,Moderate,Metabolism inhibition,B,Auto-generated interaction
+507,45,High,Unknown,A,Auto-generated interaction
+127,121,Low,Unknown,B,Auto-generated interaction
+797,104,High,Absorption reduction,B,Auto-generated interaction
+666,133,Severe,Absorption reduction,C,Auto-generated interaction
+38,139,Severe,Absorption reduction,A,Auto-generated interaction
+844,129,Severe,Absorption reduction,A,Auto-generated interaction
+720,17,Low,Metabolism inhibition,A,Auto-generated interaction
+543,101,Low,Metabolism inhibition,A,Auto-generated interaction
+234,127,Severe,Additive effect,A,Auto-generated interaction
+65,21,Moderate,Absorption reduction,B,Auto-generated interaction
+386,91,Low,Metabolism inhibition,B,Auto-generated interaction
+642,131,Severe,Additive effect,B,Auto-generated interaction
+111,138,Low,Additive effect,A,Auto-generated interaction
+632,91,Moderate,Absorption reduction,A,Auto-generated interaction
+454,67,Severe,Metabolism inhibition,B,Auto-generated interaction
+410,138,Low,Additive effect,A,Auto-generated interaction
+992,49,Moderate,Unknown,A,Auto-generated interaction
+245,17,Severe,Unknown,A,Auto-generated interaction
+375,141,Severe,Unknown,C,Auto-generated interaction
+1,133,Moderate,Additive effect,A,Auto-generated interaction
+437,23,High,Additive effect,C,Auto-generated interaction
+657,73,Moderate,Absorption reduction,C,Auto-generated interaction
+255,4,High,Additive effect,A,Auto-generated interaction
+735,117,Moderate,Unknown,B,Auto-generated interaction
+633,20,Moderate,Additive effect,A,Auto-generated interaction
+930,115,Low,Additive effect,B,Auto-generated interaction
+869,112,High,Absorption reduction,B,Auto-generated interaction
+7,129,High,Absorption reduction,B,Auto-generated interaction
+796,6,Severe,Metabolism inhibition,C,Auto-generated interaction
+413,84,Moderate,Additive effect,C,Auto-generated interaction
+757,20,Severe,Additive effect,A,Auto-generated interaction
+15,14,High,Additive effect,C,Auto-generated interaction
+712,26,Severe,Absorption reduction,A,Auto-generated interaction
+708,136,Low,Absorption reduction,B,Auto-generated interaction
+186,146,Moderate,Additive effect,C,Auto-generated interaction
+988,100,Severe,Unknown,B,Auto-generated interaction
+233,15,Low,Metabolism inhibition,A,Auto-generated interaction
+781,41,Moderate,Additive effect,C,Auto-generated interaction
+176,85,Severe,Absorption reduction,B,Auto-generated interaction
+484,28,High,Metabolism inhibition,A,Auto-generated interaction
+8,23,Low,Absorption reduction,A,Auto-generated interaction
+189,125,Low,Additive effect,C,Auto-generated interaction
+391,28,Low,Metabolism inhibition,C,Auto-generated interaction
+125,106,Severe,Additive effect,C,Auto-generated interaction
+743,54,Low,Unknown,C,Auto-generated interaction
+510,66,High,Unknown,A,Auto-generated interaction
+534,42,High,Additive effect,A,Auto-generated interaction
+199,120,Severe,Absorption reduction,B,Auto-generated interaction
+859,134,Severe,Additive effect,A,Auto-generated interaction
+165,79,Moderate,Additive effect,C,Auto-generated interaction
+457,79,Moderate,Absorption reduction,B,Auto-generated interaction
+628,19,High,Metabolism inhibition,A,Auto-generated interaction
+667,37,Severe,Additive effect,B,Auto-generated interaction
+307,43,Moderate,Metabolism inhibition,C,Auto-generated interaction
+904,49,Moderate,Metabolism inhibition,B,Auto-generated interaction
+378,70,High,Unknown,A,Auto-generated interaction
+12,53,Severe,Absorption reduction,A,Auto-generated interaction
+438,91,Low,Metabolism inhibition,A,Auto-generated interaction
+87,27,Severe,Metabolism inhibition,C,Auto-generated interaction
+259,129,Low,Absorption reduction,C,Auto-generated interaction
+655,34,High,Metabolism inhibition,B,Auto-generated interaction
+94,21,Moderate,Metabolism inhibition,B,Auto-generated interaction
+533,139,Severe,Metabolism inhibition,B,Auto-generated interaction
+281,7,High,Unknown,C,Auto-generated interaction
+561,106,Severe,Metabolism inhibition,C,Auto-generated interaction
+503,17,Moderate,Metabolism inhibition,B,Auto-generated interaction
+620,55,Low,Additive effect,B,Auto-generated interaction
+721,138,Low,Absorption reduction,C,Auto-generated interaction
+621,127,Moderate,Unknown,A,Auto-generated interaction
+802,20,Moderate,Unknown,B,Auto-generated interaction
+251,24,Moderate,Unknown,A,Auto-generated interaction
+297,79,High,Unknown,A,Auto-generated interaction
+187,102,High,Unknown,C,Auto-generated interaction
+95,81,Severe,Absorption reduction,C,Auto-generated interaction
+120,131,High,Unknown,C,Auto-generated interaction
+929,7,High,Additive effect,C,Auto-generated interaction
+491,93,Severe,Metabolism inhibition,A,Auto-generated interaction
+618,9,Severe,Absorption reduction,C,Auto-generated interaction
+82,6,Low,Absorption reduction,A,Auto-generated interaction
+445,6,Severe,Additive effect,B,Auto-generated interaction
+471,106,Severe,Additive effect,B,Auto-generated interaction
+147,150,Moderate,Metabolism inhibition,A,Auto-generated interaction
+587,145,Low,Metabolism inhibition,C,Auto-generated interaction
+318,85,High,Metabolism inhibition,A,Auto-generated interaction
+653,48,High,Additive effect,C,Auto-generated interaction
+594,124,High,Unknown,B,Auto-generated interaction
+366,67,Low,Unknown,A,Auto-generated interaction
+452,75,Low,Metabolism inhibition,A,Auto-generated interaction
+922,90,Moderate,Metabolism inhibition,A,Auto-generated interaction
+191,86,Low,Metabolism inhibition,A,Auto-generated interaction
+720,39,Low,Absorption reduction,C,Auto-generated interaction
+787,83,Severe,Metabolism inhibition,B,Auto-generated interaction
+617,76,High,Unknown,B,Auto-generated interaction
+923,69,High,Metabolism inhibition,B,Auto-generated interaction
+918,63,High,Absorption reduction,C,Auto-generated interaction
+680,64,High,Unknown,A,Auto-generated interaction
+412,101,Low,Additive effect,B,Auto-generated interaction
+546,114,High,Metabolism inhibition,B,Auto-generated interaction
+47,111,Severe,Absorption reduction,C,Auto-generated interaction
+15,101,Low,Unknown,C,Auto-generated interaction
+666,42,Severe,Additive effect,B,Auto-generated interaction
+218,123,Moderate,Metabolism inhibition,C,Auto-generated interaction
+10,69,Moderate,Absorption reduction,C,Auto-generated interaction
+456,98,High,Unknown,A,Auto-generated interaction
+20,84,High,Unknown,A,Auto-generated interaction
+82,78,Moderate,Unknown,B,Auto-generated interaction
+348,18,High,Absorption reduction,A,Auto-generated interaction
+355,124,High,Additive effect,A,Auto-generated interaction
+891,78,Low,Absorption reduction,B,Auto-generated interaction
+908,29,Severe,Additive effect,B,Auto-generated interaction
+189,11,Moderate,Unknown,C,Auto-generated interaction
+404,35,Moderate,Absorption reduction,C,Auto-generated interaction
+945,101,Low,Metabolism inhibition,B,Auto-generated interaction
+980,24,High,Absorption reduction,A,Auto-generated interaction
+299,13,Moderate,Unknown,C,Auto-generated interaction
+11,144,Moderate,Additive effect,B,Auto-generated interaction
+192,60,High,Additive effect,B,Auto-generated interaction
+602,121,Low,Metabolism inhibition,C,Auto-generated interaction
+543,49,Low,Metabolism inhibition,B,Auto-generated interaction
+668,100,Severe,Unknown,A,Auto-generated interaction
+268,29,Severe,Absorption reduction,B,Auto-generated interaction
+151,103,Moderate,Absorption reduction,B,Auto-generated interaction
+287,83,Severe,Absorption reduction,C,Auto-generated interaction
+957,98,Moderate,Additive effect,C,Auto-generated interaction
+577,64,Moderate,Additive effect,A,Auto-generated interaction
+705,27,Severe,Unknown,A,Auto-generated interaction
+702,144,Moderate,Absorption reduction,A,Auto-generated interaction
+92,1,Low,Unknown,A,Auto-generated interaction
+708,125,Moderate,Absorption reduction,A,Auto-generated interaction
+855,113,High,Metabolism inhibition,C,Auto-generated interaction
+595,46,High,Unknown,B,Auto-generated interaction
+669,137,High,Unknown,A,Auto-generated interaction
+202,117,Moderate,Additive effect,A,Auto-generated interaction
+496,125,High,Metabolism inhibition,A,Auto-generated interaction
+537,141,High,Metabolism inhibition,B,Auto-generated interaction
+503,132,Low,Additive effect,A,Auto-generated interaction
+523,78,Low,Unknown,A,Auto-generated interaction
+670,143,Low,Metabolism inhibition,A,Auto-generated interaction
+671,115,High,Absorption reduction,B,Auto-generated interaction
+851,9,High,Absorption reduction,A,Auto-generated interaction
+401,77,Severe,Absorption reduction,B,Auto-generated interaction
+729,112,High,Unknown,C,Auto-generated interaction
+355,132,High,Metabolism inhibition,B,Auto-generated interaction
+396,139,Severe,Absorption reduction,B,Auto-generated interaction
+105,9,Severe,Additive effect,B,Auto-generated interaction
+313,70,Moderate,Unknown,C,Auto-generated interaction
+30,95,Moderate,Absorption reduction,B,Auto-generated interaction
+697,117,Low,Additive effect,B,Auto-generated interaction
+325,13,Low,Unknown,A,Auto-generated interaction
+52,51,High,Additive effect,B,Auto-generated interaction
+726,96,Low,Additive effect,C,Auto-generated interaction
+954,144,Low,Additive effect,A,Auto-generated interaction
+533,114,High,Absorption reduction,A,Auto-generated interaction
+658,57,Moderate,Additive effect,A,Auto-generated interaction
+889,67,Moderate,Additive effect,B,Auto-generated interaction
+430,59,Severe,Unknown,B,Auto-generated interaction
+714,82,Low,Metabolism inhibition,A,Auto-generated interaction
+114,134,High,Unknown,A,Auto-generated interaction
+271,131,Moderate,Additive effect,C,Auto-generated interaction
+407,77,High,Additive effect,A,Auto-generated interaction
+870,27,Low,Additive effect,A,Auto-generated interaction
+11,47,Moderate,Unknown,A,Auto-generated interaction
+204,50,Low,Metabolism inhibition,A,Auto-generated interaction
+440,87,Low,Absorption reduction,B,Auto-generated interaction
+231,132,Severe,Absorption reduction,C,Auto-generated interaction
+678,149,Moderate,Absorption reduction,C,Auto-generated interaction
+995,121,High,Absorption reduction,C,Auto-generated interaction
+680,121,Low,Metabolism inhibition,A,Auto-generated interaction
+857,12,Moderate,Metabolism inhibition,B,Auto-generated interaction
+554,134,High,Additive effect,C,Auto-generated interaction
+691,67,Low,Unknown,B,Auto-generated interaction
+758,140,Severe,Metabolism inhibition,C,Auto-generated interaction
+878,136,Moderate,Unknown,C,Auto-generated interaction
+470,39,Low,Unknown,B,Auto-generated interaction
+285,41,Low,Absorption reduction,A,Auto-generated interaction
+628,92,Severe,Unknown,B,Auto-generated interaction
+708,114,Moderate,Additive effect,B,Auto-generated interaction
+714,50,High,Absorption reduction,A,Auto-generated interaction
+502,58,Severe,Absorption reduction,C,Auto-generated interaction
+7,118,High,Additive effect,A,Auto-generated interaction
+982,78,High,Metabolism inhibition,B,Auto-generated interaction
+22,111,Severe,Unknown,A,Auto-generated interaction
+509,13,Moderate,Additive effect,B,Auto-generated interaction
+856,62,High,Absorption reduction,A,Auto-generated interaction
+295,13,Severe,Unknown,A,Auto-generated interaction
+475,13,Moderate,Metabolism inhibition,C,Auto-generated interaction
+189,25,Moderate,Absorption reduction,A,Auto-generated interaction
+918,47,High,Unknown,A,Auto-generated interaction
+829,73,High,Metabolism inhibition,A,Auto-generated interaction
+953,57,Moderate,Absorption reduction,B,Auto-generated interaction
+282,24,High,Unknown,C,Auto-generated interaction
+930,125,Severe,Unknown,A,Auto-generated interaction
+10,33,High,Unknown,A,Auto-generated interaction
+273,144,Severe,Metabolism inhibition,B,Auto-generated interaction
+412,66,High,Metabolism inhibition,B,Auto-generated interaction
+532,144,Severe,Metabolism inhibition,B,Auto-generated interaction
+635,48,Severe,Metabolism inhibition,B,Auto-generated interaction
+520,39,High,Additive effect,A,Auto-generated interaction
+719,143,Severe,Additive effect,A,Auto-generated interaction
+144,138,Moderate,Absorption reduction,C,Auto-generated interaction
+234,119,Moderate,Absorption reduction,B,Auto-generated interaction
+820,21,Low,Metabolism inhibition,C,Auto-generated interaction
+616,14,High,Unknown,C,Auto-generated interaction
+96,68,Moderate,Additive effect,B,Auto-generated interaction
+85,73,High,Unknown,C,Auto-generated interaction
+476,31,Moderate,Metabolism inhibition,B,Auto-generated interaction
+723,142,High,Metabolism inhibition,C,Auto-generated interaction
+781,62,Low,Unknown,A,Auto-generated interaction
+139,127,High,Unknown,C,Auto-generated interaction
+905,51,High,Metabolism inhibition,B,Auto-generated interaction
+713,132,Low,Absorption reduction,A,Auto-generated interaction
+989,55,Low,Absorption reduction,C,Auto-generated interaction
+530,139,High,Additive effect,B,Auto-generated interaction
+504,102,Severe,Metabolism inhibition,B,Auto-generated interaction
+728,53,High,Absorption reduction,B,Auto-generated interaction
+915,1,Moderate,Unknown,B,Auto-generated interaction
+245,106,Low,Additive effect,C,Auto-generated interaction
+909,56,Moderate,Unknown,C,Auto-generated interaction
+875,40,High,Absorption reduction,A,Auto-generated interaction
+806,91,Moderate,Metabolism inhibition,B,Auto-generated interaction
+905,38,Severe,Metabolism inhibition,A,Auto-generated interaction
+466,85,Moderate,Absorption reduction,C,Auto-generated interaction
+779,33,High,Unknown,A,Auto-generated interaction
+335,72,Low,Additive effect,A,Auto-generated interaction
+14,63,Severe,Metabolism inhibition,A,Auto-generated interaction
+746,96,Low,Unknown,C,Auto-generated interaction
+259,78,High,Additive effect,B,Auto-generated interaction
+941,39,Low,Metabolism inhibition,B,Auto-generated interaction
+164,62,High,Additive effect,A,Auto-generated interaction
+496,138,Severe,Metabolism inhibition,A,Auto-generated interaction
+302,121,High,Absorption reduction,B,Auto-generated interaction
+852,78,High,Unknown,C,Auto-generated interaction
+429,4,Low,Absorption reduction,C,Auto-generated interaction
+882,102,High,Metabolism inhibition,B,Auto-generated interaction
+467,1,Moderate,Absorption reduction,B,Auto-generated interaction
+672,6,Severe,Metabolism inhibition,A,Auto-generated interaction
+570,4,High,Metabolism inhibition,B,Auto-generated interaction
+701,107,Low,Additive effect,B,Auto-generated interaction
+608,10,High,Additive effect,B,Auto-generated interaction
+706,135,High,Additive effect,C,Auto-generated interaction
+283,123,High,Unknown,B,Auto-generated interaction
+330,146,Moderate,Metabolism inhibition,A,Auto-generated interaction
+282,100,Moderate,Additive effect,A,Auto-generated interaction
+866,88,Severe,Metabolism inhibition,A,Auto-generated interaction
+308,130,Severe,Unknown,A,Auto-generated interaction
+777,64,Severe,Unknown,B,Auto-generated interaction
+684,43,Severe,Additive effect,B,Auto-generated interaction
+244,50,Severe,Absorption reduction,B,Auto-generated interaction
+548,147,Moderate,Absorption reduction,B,Auto-generated interaction
+559,85,High,Metabolism inhibition,A,Auto-generated interaction
+333,72,Severe,Unknown,B,Auto-generated interaction
+304,128,Moderate,Unknown,B,Auto-generated interaction
+386,64,Severe,Unknown,C,Auto-generated interaction
+575,65,Moderate,Additive effect,C,Auto-generated interaction
+64,126,Severe,Unknown,B,Auto-generated interaction
+312,74,High,Metabolism inhibition,B,Auto-generated interaction
+769,113,High,Absorption reduction,B,Auto-generated interaction
+573,22,Severe,Absorption reduction,A,Auto-generated interaction
+229,41,Severe,Metabolism inhibition,C,Auto-generated interaction
+147,4,Severe,Unknown,C,Auto-generated interaction
+490,122,Moderate,Metabolism inhibition,B,Auto-generated interaction
+297,115,Moderate,Metabolism inhibition,A,Auto-generated interaction
+565,30,High,Additive effect,B,Auto-generated interaction
+789,76,Low,Absorption reduction,B,Auto-generated interaction
+217,136,Low,Absorption reduction,B,Auto-generated interaction
+606,109,Moderate,Additive effect,B,Auto-generated interaction
+927,3,Severe,Absorption reduction,B,Auto-generated interaction
+738,51,Moderate,Absorption reduction,B,Auto-generated interaction
+857,25,Moderate,Absorption reduction,A,Auto-generated interaction
+655,24,Severe,Additive effect,B,Auto-generated interaction
+32,74,Severe,Additive effect,A,Auto-generated interaction
+627,90,Moderate,Metabolism inhibition,A,Auto-generated interaction
+148,101,Severe,Additive effect,A,Auto-generated interaction
+387,113,Low,Metabolism inhibition,C,Auto-generated interaction
+103,99,Low,Metabolism inhibition,C,Auto-generated interaction
+467,149,Low,Absorption reduction,B,Auto-generated interaction
+418,110,High,Unknown,A,Auto-generated interaction
+564,57,Moderate,Unknown,A,Auto-generated interaction
+185,17,Low,Metabolism inhibition,C,Auto-generated interaction
+165,132,High,Unknown,A,Auto-generated interaction
+419,53,Low,Additive effect,C,Auto-generated interaction
+589,7,High,Unknown,A,Auto-generated interaction
+167,118,Moderate,Unknown,B,Auto-generated interaction
+679,19,Moderate,Metabolism inhibition,C,Auto-generated interaction
+947,39,High,Unknown,A,Auto-generated interaction
+209,25,High,Absorption reduction,A,Auto-generated interaction
+354,126,High,Unknown,A,Auto-generated interaction
+239,16,High,Additive effect,A,Auto-generated interaction
+872,83,Severe,Absorption reduction,C,Auto-generated interaction
+536,142,High,Unknown,B,Auto-generated interaction
+291,66,Severe,Additive effect,B,Auto-generated interaction
+708,68,Moderate,Additive effect,B,Auto-generated interaction
+755,129,Moderate,Additive effect,B,Auto-generated interaction
+15,66,Low,Absorption reduction,B,Auto-generated interaction
+520,92,Moderate,Additive effect,B,Auto-generated interaction
+607,105,Low,Absorption reduction,A,Auto-generated interaction
+110,15,Low,Additive effect,C,Auto-generated interaction
+517,39,Severe,Metabolism inhibition,B,Auto-generated interaction
+381,31,High,Absorption reduction,B,Auto-generated interaction
+671,136,High,Unknown,B,Auto-generated interaction
+81,52,Moderate,Additive effect,A,Auto-generated interaction
+428,63,Low,Unknown,B,Auto-generated interaction
+111,17,Moderate,Unknown,C,Auto-generated interaction
+112,132,Low,Absorption reduction,C,Auto-generated interaction
+559,98,Moderate,Absorption reduction,A,Auto-generated interaction
+577,42,Severe,Additive effect,A,Auto-generated interaction
+369,32,High,Additive effect,B,Auto-generated interaction
+13,95,Severe,Unknown,B,Auto-generated interaction
+768,8,High,Absorption reduction,A,Auto-generated interaction
+972,100,Moderate,Unknown,A,Auto-generated interaction
+808,149,Severe,Metabolism inhibition,A,Auto-generated interaction
+178,86,Severe,Additive effect,A,Auto-generated interaction
+729,32,Severe,Additive effect,C,Auto-generated interaction
+582,146,Low,Additive effect,C,Auto-generated interaction
+35,137,Moderate,Absorption reduction,B,Auto-generated interaction
+794,69,Moderate,Metabolism inhibition,B,Auto-generated interaction
+341,78,Moderate,Unknown,B,Auto-generated interaction
+950,134,High,Absorption reduction,A,Auto-generated interaction
+426,115,Severe,Additive effect,C,Auto-generated interaction
+686,26,Severe,Additive effect,A,Auto-generated interaction
+202,13,Low,Unknown,A,Auto-generated interaction
+323,48,Severe,Absorption reduction,C,Auto-generated interaction
+423,93,Severe,Metabolism inhibition,B,Auto-generated interaction
+168,29,Severe,Unknown,B,Auto-generated interaction
+16,79,Severe,Additive effect,A,Auto-generated interaction
+174,13,Moderate,Unknown,A,Auto-generated interaction
+633,147,Low,Absorption reduction,A,Auto-generated interaction
+451,6,Low,Metabolism inhibition,A,Auto-generated interaction
+144,103,Moderate,Metabolism inhibition,C,Auto-generated interaction
+34,75,Severe,Metabolism inhibition,B,Auto-generated interaction
+809,129,Low,Additive effect,B,Auto-generated interaction
+93,150,Severe,Additive effect,B,Auto-generated interaction
+543,114,Moderate,Unknown,B,Auto-generated interaction
+48,45,Moderate,Additive effect,B,Auto-generated interaction
+386,59,Severe,Unknown,A,Auto-generated interaction
+372,148,Severe,Unknown,B,Auto-generated interaction
+726,147,Severe,Additive effect,A,Auto-generated interaction
+571,33,Low,Unknown,B,Auto-generated interaction
+958,124,Severe,Absorption reduction,B,Auto-generated interaction
+440,65,Moderate,Absorption reduction,C,Auto-generated interaction
+839,62,High,Additive effect,B,Auto-generated interaction
+610,58,Severe,Additive effect,B,Auto-generated interaction
+161,38,Moderate,Absorption reduction,A,Auto-generated interaction
+222,124,Severe,Unknown,B,Auto-generated interaction
+442,130,Low,Additive effect,B,Auto-generated interaction
+264,113,Moderate,Metabolism inhibition,A,Auto-generated interaction
+934,3,Severe,Unknown,B,Auto-generated interaction
+397,117,Severe,Absorption reduction,A,Auto-generated interaction
+79,92,High,Metabolism inhibition,C,Auto-generated interaction
+529,59,Low,Unknown,C,Auto-generated interaction
+940,50,Low,Absorption reduction,B,Auto-generated interaction
+963,79,Moderate,Metabolism inhibition,A,Auto-generated interaction
+443,5,Low,Unknown,B,Auto-generated interaction
+434,106,Moderate,Metabolism inhibition,B,Auto-generated interaction
+296,142,Low,Additive effect,C,Auto-generated interaction
+340,126,Moderate,Absorption reduction,B,Auto-generated interaction
+221,112,Low,Absorption reduction,A,Auto-generated interaction
+500,69,Severe,Unknown,B,Auto-generated interaction
+537,87,High,Unknown,B,Auto-generated interaction
+314,1,Low,Metabolism inhibition,A,Auto-generated interaction
+298,115,Low,Absorption reduction,A,Auto-generated interaction
+168,121,Low,Absorption reduction,A,Auto-generated interaction
+752,69,Low,Metabolism inhibition,B,Auto-generated interaction
+587,82,Low,Metabolism inhibition,B,Auto-generated interaction
+698,98,Low,Metabolism inhibition,A,Auto-generated interaction
+390,8,Low,Absorption reduction,C,Auto-generated interaction
+521,77,High,Unknown,A,Auto-generated interaction
+979,18,High,Metabolism inhibition,C,Auto-generated interaction
+690,128,Severe,Metabolism inhibition,A,Auto-generated interaction
+965,142,Low,Metabolism inhibition,B,Auto-generated interaction
+597,8,Low,Absorption reduction,A,Auto-generated interaction
+921,11,Low,Absorption reduction,C,Auto-generated interaction
+318,149,Severe,Metabolism inhibition,A,Auto-generated interaction
+93,63,Moderate,Metabolism inhibition,C,Auto-generated interaction
+154,96,High,Absorption reduction,A,Auto-generated interaction
+178,91,Moderate,Additive effect,A,Auto-generated interaction
+810,90,Moderate,Additive effect,C,Auto-generated interaction
+107,129,High,Unknown,B,Auto-generated interaction
+799,12,Severe,Absorption reduction,C,Auto-generated interaction
+277,142,Moderate,Absorption reduction,C,Auto-generated interaction
+781,113,High,Unknown,C,Auto-generated interaction
+757,57,High,Absorption reduction,C,Auto-generated interaction
+4,48,Severe,Metabolism inhibition,B,Auto-generated interaction
+434,106,High,Unknown,C,Auto-generated interaction
+242,144,Moderate,Additive effect,C,Auto-generated interaction
+217,13,Moderate,Additive effect,B,Auto-generated interaction
+71,50,Low,Additive effect,A,Auto-generated interaction
+214,53,Moderate,Absorption reduction,A,Auto-generated interaction
+99,94,Low,Unknown,B,Auto-generated interaction
+592,2,Severe,Absorption reduction,B,Auto-generated interaction
+77,59,Severe,Absorption reduction,A,Auto-generated interaction
+586,32,Low,Absorption reduction,A,Auto-generated interaction
+804,76,Moderate,Absorption reduction,C,Auto-generated interaction
+706,72,Moderate,Unknown,C,Auto-generated interaction
+786,120,Low,Unknown,A,Auto-generated interaction
+794,30,Severe,Unknown,A,Auto-generated interaction
+588,118,Low,Metabolism inhibition,B,Auto-generated interaction
+995,30,Moderate,Absorption reduction,A,Auto-generated interaction
+655,6,Low,Additive effect,A,Auto-generated interaction
+959,32,High,Additive effect,A,Auto-generated interaction
+873,36,Severe,Metabolism inhibition,B,Auto-generated interaction
+708,117,Moderate,Metabolism inhibition,B,Auto-generated interaction
+381,18,Moderate,Metabolism inhibition,C,Auto-generated interaction
+602,123,High,Metabolism inhibition,C,Auto-generated interaction
+538,125,Severe,Unknown,A,Auto-generated interaction
+277,105,Severe,Additive effect,C,Auto-generated interaction
+85,99,Severe,Metabolism inhibition,C,Auto-generated interaction
+957,106,High,Absorption reduction,C,Auto-generated interaction
+885,37,Severe,Unknown,B,Auto-generated interaction
+317,85,Severe,Additive effect,A,Auto-generated interaction
+514,9,Low,Additive effect,A,Auto-generated interaction
+426,12,Moderate,Additive effect,C,Auto-generated interaction
+377,42,Low,Metabolism inhibition,A,Auto-generated interaction
+630,143,Moderate,Absorption reduction,B,Auto-generated interaction
+87,120,Low,Unknown,B,Auto-generated interaction
+776,123,Moderate,Unknown,C,Auto-generated interaction
+692,140,High,Absorption reduction,A,Auto-generated interaction
+273,49,Severe,Absorption reduction,B,Auto-generated interaction
+209,23,Moderate,Unknown,B,Auto-generated interaction
+416,32,Low,Unknown,C,Auto-generated interaction
+624,77,Moderate,Absorption reduction,A,Auto-generated interaction
+209,80,Low,Metabolism inhibition,B,Auto-generated interaction
+644,94,Moderate,Absorption reduction,A,Auto-generated interaction
+550,21,Low,Additive effect,C,Auto-generated interaction
+635,131,Moderate,Unknown,A,Auto-generated interaction
+211,97,Moderate,Unknown,C,Auto-generated interaction
+289,133,High,Absorption reduction,A,Auto-generated interaction
+283,94,High,Additive effect,B,Auto-generated interaction
+63,88,Low,Metabolism inhibition,A,Auto-generated interaction
+31,56,Severe,Metabolism inhibition,B,Auto-generated interaction
+509,48,Moderate,Unknown,A,Auto-generated interaction
+695,31,Moderate,Additive effect,A,Auto-generated interaction
+709,126,High,Absorption reduction,A,Auto-generated interaction
+892,25,Moderate,Absorption reduction,B,Auto-generated interaction
+539,40,Moderate,Absorption reduction,A,Auto-generated interaction
+426,13,High,Metabolism inhibition,C,Auto-generated interaction
+185,87,Severe,Metabolism inhibition,B,Auto-generated interaction
+679,20,Severe,Absorption reduction,A,Auto-generated interaction
+276,112,Severe,Absorption reduction,B,Auto-generated interaction
+846,84,Severe,Additive effect,A,Auto-generated interaction
+704,78,Low,Absorption reduction,B,Auto-generated interaction
+479,106,High,Metabolism inhibition,C,Auto-generated interaction
+846,144,Moderate,Unknown,B,Auto-generated interaction
+411,2,Low,Absorption reduction,B,Auto-generated interaction
+630,89,Moderate,Additive effect,C,Auto-generated interaction
+676,145,Severe,Absorption reduction,A,Auto-generated interaction
+453,144,Low,Additive effect,C,Auto-generated interaction
+626,107,High,Metabolism inhibition,B,Auto-generated interaction
+324,103,Low,Absorption reduction,B,Auto-generated interaction
+157,113,Moderate,Absorption reduction,A,Auto-generated interaction
+952,135,Severe,Absorption reduction,C,Auto-generated interaction
+386,144,High,Absorption reduction,C,Auto-generated interaction
+681,147,Severe,Unknown,B,Auto-generated interaction
+678,123,Low,Metabolism inhibition,B,Auto-generated interaction
+82,39,Low,Unknown,C,Auto-generated interaction
+756,39,Severe,Unknown,A,Auto-generated interaction
+430,65,High,Unknown,B,Auto-generated interaction
+589,25,High,Absorption reduction,A,Auto-generated interaction
+995,110,High,Absorption reduction,A,Auto-generated interaction
+487,87,Severe,Additive effect,A,Auto-generated interaction
+474,139,Severe,Additive effect,C,Auto-generated interaction
+522,11,Low,Absorption reduction,A,Auto-generated interaction
+597,144,Low,Metabolism inhibition,A,Auto-generated interaction
+362,72,Moderate,Metabolism inhibition,C,Auto-generated interaction
+818,114,Severe,Absorption reduction,A,Auto-generated interaction
+353,9,Moderate,Absorption reduction,B,Auto-generated interaction
+524,98,Low,Unknown,A,Auto-generated interaction
+454,105,Severe,Metabolism inhibition,B,Auto-generated interaction
+412,45,Low,Additive effect,B,Auto-generated interaction
+795,133,Moderate,Additive effect,C,Auto-generated interaction
+730,74,Low,Absorption reduction,A,Auto-generated interaction
+24,24,High,Unknown,A,Auto-generated interaction
+16,72,Severe,Additive effect,B,Auto-generated interaction
+339,26,Moderate,Unknown,B,Auto-generated interaction
+884,77,High,Unknown,B,Auto-generated interaction
+977,97,Low,Absorption reduction,A,Auto-generated interaction
+779,104,High,Unknown,B,Auto-generated interaction
+570,120,Severe,Additive effect,B,Auto-generated interaction
+58,53,Moderate,Absorption reduction,B,Auto-generated interaction
+453,34,Severe,Metabolism inhibition,A,Auto-generated interaction
+261,103,Low,Metabolism inhibition,A,Auto-generated interaction
+824,45,Low,Unknown,C,Auto-generated interaction
+568,29,Severe,Absorption reduction,B,Auto-generated interaction
+857,132,High,Metabolism inhibition,A,Auto-generated interaction
+346,98,High,Additive effect,A,Auto-generated interaction
+767,96,Low,Metabolism inhibition,B,Auto-generated interaction
+814,50,High,Metabolism inhibition,B,Auto-generated interaction
+300,14,Moderate,Absorption reduction,B,Auto-generated interaction
+247,92,Severe,Additive effect,A,Auto-generated interaction
+60,117,High,Absorption reduction,A,Auto-generated interaction
+355,20,Moderate,Absorption reduction,C,Auto-generated interaction
+186,116,High,Metabolism inhibition,B,Auto-generated interaction
+59,60,High,Additive effect,A,Auto-generated interaction
+413,21,Low,Additive effect,C,Auto-generated interaction
+230,31,Moderate,Absorption reduction,B,Auto-generated interaction
+966,109,Severe,Metabolism inhibition,B,Auto-generated interaction
+533,99,Moderate,Absorption reduction,C,Auto-generated interaction
+193,66,Moderate,Unknown,A,Auto-generated interaction
+946,144,Severe,Additive effect,B,Auto-generated interaction
+656,87,Low,Absorption reduction,A,Auto-generated interaction
+347,119,Moderate,Absorption reduction,A,Auto-generated interaction
+415,150,Low,Metabolism inhibition,A,Auto-generated interaction
+596,37,Severe,Unknown,C,Auto-generated interaction
+110,95,Moderate,Absorption reduction,C,Auto-generated interaction
+806,109,Severe,Additive effect,A,Auto-generated interaction
+996,62,Moderate,Metabolism inhibition,A,Auto-generated interaction
+17,148,Moderate,Metabolism inhibition,B,Auto-generated interaction
+847,80,Low,Additive effect,A,Auto-generated interaction
+512,90,High,Unknown,B,Auto-generated interaction
+633,72,Low,Metabolism inhibition,A,Auto-generated interaction
+597,48,Low,Metabolism inhibition,A,Auto-generated interaction
+246,42,Severe,Additive effect,A,Auto-generated interaction
+188,40,High,Unknown,B,Auto-generated interaction
+486,40,Moderate,Unknown,B,Auto-generated interaction
+367,114,Severe,Additive effect,A,Auto-generated interaction
+136,98,Moderate,Unknown,B,Auto-generated interaction
+883,90,High,Absorption reduction,B,Auto-generated interaction
+687,148,Moderate,Unknown,A,Auto-generated interaction
+567,89,Severe,Absorption reduction,A,Auto-generated interaction
+102,61,Low,Metabolism inhibition,A,Auto-generated interaction
+498,103,Severe,Unknown,C,Auto-generated interaction
+15,106,Severe,Metabolism inhibition,C,Auto-generated interaction
+153,131,Moderate,Absorption reduction,C,Auto-generated interaction
+598,6,Moderate,Additive effect,B,Auto-generated interaction
+47,73,Severe,Metabolism inhibition,A,Auto-generated interaction
+195,8,Low,Metabolism inhibition,B,Auto-generated interaction
+336,143,Moderate,Metabolism inhibition,C,Auto-generated interaction
+470,79,Low,Additive effect,B,Auto-generated interaction
+771,39,Severe,Absorption reduction,A,Auto-generated interaction
+82,14,Moderate,Absorption reduction,A,Auto-generated interaction
+1000,87,High,Metabolism inhibition,A,Auto-generated interaction
+83,65,Low,Metabolism inhibition,B,Auto-generated interaction
+433,102,High,Absorption reduction,A,Auto-generated interaction
+105,123,High,Absorption reduction,B,Auto-generated interaction
+928,16,Low,Additive effect,B,Auto-generated interaction
+819,67,High,Metabolism inhibition,B,Auto-generated interaction
+97,61,Low,Absorption reduction,A,Auto-generated interaction
+39,111,Low,Absorption reduction,B,Auto-generated interaction
+604,5,Moderate,Absorption reduction,C,Auto-generated interaction
+827,123,Moderate,Metabolism inhibition,A,Auto-generated interaction
+514,36,Severe,Unknown,B,Auto-generated interaction
+32,95,Moderate,Absorption reduction,A,Auto-generated interaction
+19,69,Low,Unknown,B,Auto-generated interaction
+375,123,Severe,Additive effect,B,Auto-generated interaction
+212,83,Low,Additive effect,B,Auto-generated interaction
+529,87,Moderate,Metabolism inhibition,B,Auto-generated interaction
+195,23,High,Metabolism inhibition,C,Auto-generated interaction
+464,70,Severe,Additive effect,A,Auto-generated interaction
+259,51,High,Metabolism inhibition,C,Auto-generated interaction
+336,74,High,Additive effect,B,Auto-generated interaction
+514,109,Low,Absorption reduction,A,Auto-generated interaction
+20,12,Moderate,Absorption reduction,A,Auto-generated interaction
+314,84,High,Additive effect,C,Auto-generated interaction
+337,58,Severe,Metabolism inhibition,A,Auto-generated interaction
+487,23,Moderate,Additive effect,A,Auto-generated interaction
+840,18,Severe,Absorption reduction,C,Auto-generated interaction
+682,91,Low,Additive effect,A,Auto-generated interaction
+176,7,Low,Metabolism inhibition,C,Auto-generated interaction
+87,76,Low,Unknown,B,Auto-generated interaction
+700,12,Moderate,Additive effect,C,Auto-generated interaction
+929,25,Severe,Metabolism inhibition,C,Auto-generated interaction
+959,48,Moderate,Unknown,C,Auto-generated interaction
+777,136,High,Metabolism inhibition,B,Auto-generated interaction
+571,116,Moderate,Metabolism inhibition,A,Auto-generated interaction
+998,5,Severe,Absorption reduction,C,Auto-generated interaction
+47,82,Moderate,Unknown,C,Auto-generated interaction
+310,50,High,Additive effect,B,Auto-generated interaction
+838,66,Low,Unknown,B,Auto-generated interaction
+290,138,Severe,Metabolism inhibition,C,Auto-generated interaction
+637,66,Moderate,Absorption reduction,A,Auto-generated interaction
+278,62,Severe,Metabolism inhibition,A,Auto-generated interaction
+539,104,Low,Additive effect,A,Auto-generated interaction
+623,35,Severe,Unknown,A,Auto-generated interaction
+619,149,High,Metabolism inhibition,B,Auto-generated interaction
+485,72,High,Unknown,C,Auto-generated interaction
+515,39,Moderate,Unknown,C,Auto-generated interaction
+666,114,Severe,Absorption reduction,C,Auto-generated interaction
+514,48,Severe,Metabolism inhibition,B,Auto-generated interaction
+856,41,Severe,Absorption reduction,B,Auto-generated interaction
+976,63,Moderate,Absorption reduction,C,Auto-generated interaction
+520,79,High,Additive effect,B,Auto-generated interaction
+467,1,Low,Additive effect,B,Auto-generated interaction
+521,103,Moderate,Absorption reduction,B,Auto-generated interaction
+633,116,Low,Additive effect,A,Auto-generated interaction
+154,72,High,Additive effect,C,Auto-generated interaction
+461,34,Severe,Metabolism inhibition,C,Auto-generated interaction
+439,29,Low,Additive effect,A,Auto-generated interaction
+471,76,Moderate,Absorption reduction,C,Auto-generated interaction
+445,18,High,Unknown,C,Auto-generated interaction
+771,22,Moderate,Metabolism inhibition,A,Auto-generated interaction
+96,72,Low,Additive effect,C,Auto-generated interaction
+386,138,Low,Metabolism inhibition,B,Auto-generated interaction
+663,21,High,Metabolism inhibition,B,Auto-generated interaction
+193,80,Low,Unknown,A,Auto-generated interaction
+821,108,Moderate,Metabolism inhibition,C,Auto-generated interaction
+101,147,Moderate,Absorption reduction,C,Auto-generated interaction
+196,57,High,Additive effect,C,Auto-generated interaction
+460,96,High,Additive effect,C,Auto-generated interaction
+322,20,Severe,Metabolism inhibition,A,Auto-generated interaction
+805,16,Moderate,Additive effect,B,Auto-generated interaction
+710,23,Severe,Absorption reduction,A,Auto-generated interaction
+157,70,High,Additive effect,C,Auto-generated interaction
+15,133,Low,Additive effect,C,Auto-generated interaction
+564,78,Moderate,Unknown,B,Auto-generated interaction
+156,35,Moderate,Additive effect,B,Auto-generated interaction
+590,79,Low,Metabolism inhibition,A,Auto-generated interaction
+724,36,Severe,Metabolism inhibition,B,Auto-generated interaction
+596,67,Severe,Metabolism inhibition,B,Auto-generated interaction
+174,148,High,Additive effect,C,Auto-generated interaction
+38,54,Low,Absorption reduction,B,Auto-generated interaction
+538,125,High,Additive effect,C,Auto-generated interaction
+796,72,High,Metabolism inhibition,C,Auto-generated interaction
+605,66,High,Additive effect,C,Auto-generated interaction
+343,87,High,Additive effect,C,Auto-generated interaction
+614,86,Moderate,Metabolism inhibition,B,Auto-generated interaction
+263,84,High,Additive effect,B,Auto-generated interaction
+874,76,High,Additive effect,C,Auto-generated interaction
+39,28,Moderate,Additive effect,B,Auto-generated interaction
+693,79,Moderate,Unknown,B,Auto-generated interaction
+872,140,Low,Unknown,B,Auto-generated interaction
+406,13,High,Absorption reduction,B,Auto-generated interaction
+625,93,Moderate,Metabolism inhibition,B,Auto-generated interaction
+749,114,Low,Metabolism inhibition,B,Auto-generated interaction
+339,31,Low,Additive effect,A,Auto-generated interaction
+138,61,Severe,Additive effect,C,Auto-generated interaction
+305,84,Low,Additive effect,B,Auto-generated interaction
+2,74,Severe,Absorption reduction,B,Auto-generated interaction
+387,51,Severe,Absorption reduction,A,Auto-generated interaction
+218,59,Moderate,Additive effect,A,Auto-generated interaction
+408,135,High,Absorption reduction,A,Auto-generated interaction
+252,45,Severe,Metabolism inhibition,B,Auto-generated interaction
+386,7,High,Unknown,B,Auto-generated interaction
+892,115,Severe,Additive effect,A,Auto-generated interaction
+53,141,Moderate,Metabolism inhibition,C,Auto-generated interaction
+247,124,Severe,Unknown,A,Auto-generated interaction
+165,15,Moderate,Unknown,B,Auto-generated interaction
+679,104,Moderate,Additive effect,C,Auto-generated interaction
+775,140,Moderate,Unknown,B,Auto-generated interaction
+784,97,High,Absorption reduction,A,Auto-generated interaction
+942,54,Moderate,Unknown,C,Auto-generated interaction
+114,63,Severe,Metabolism inhibition,B,Auto-generated interaction
+746,59,Low,Unknown,C,Auto-generated interaction
+765,99,Severe,Additive effect,C,Auto-generated interaction
+710,84,Low,Unknown,C,Auto-generated interaction
+314,112,Severe,Unknown,B,Auto-generated interaction
+867,109,Moderate,Additive effect,A,Auto-generated interaction
+729,12,Low,Additive effect,A,Auto-generated interaction
+82,118,Severe,Additive effect,C,Auto-generated interaction
+796,105,High,Additive effect,B,Auto-generated interaction
+578,38,High,Absorption reduction,A,Auto-generated interaction
+938,29,High,Additive effect,B,Auto-generated interaction
+846,138,Moderate,Metabolism inhibition,B,Auto-generated interaction
+734,50,High,Unknown,B,Auto-generated interaction
+691,148,Moderate,Additive effect,B,Auto-generated interaction
+148,120,Severe,Metabolism inhibition,C,Auto-generated interaction
+449,98,Severe,Metabolism inhibition,B,Auto-generated interaction
+707,99,Severe,Additive effect,B,Auto-generated interaction
+975,63,Severe,Absorption reduction,B,Auto-generated interaction
+486,92,Severe,Unknown,C,Auto-generated interaction
+343,13,Moderate,Unknown,A,Auto-generated interaction
+67,7,Severe,Absorption reduction,C,Auto-generated interaction
+706,70,Severe,Unknown,C,Auto-generated interaction
+407,136,Low,Additive effect,B,Auto-generated interaction
+850,102,Low,Absorption reduction,C,Auto-generated interaction
+584,67,Moderate,Metabolism inhibition,C,Auto-generated interaction
+245,106,Severe,Metabolism inhibition,A,Auto-generated interaction
+559,119,Moderate,Additive effect,C,Auto-generated interaction
+276,16,Severe,Additive effect,A,Auto-generated interaction
+571,150,Severe,Unknown,C,Auto-generated interaction
+831,146,Low,Unknown,A,Auto-generated interaction
+817,105,Moderate,Unknown,B,Auto-generated interaction
+170,146,High,Metabolism inhibition,A,Auto-generated interaction
+47,12,Moderate,Unknown,C,Auto-generated interaction
+229,127,High,Unknown,C,Auto-generated interaction
+926,66,High,Additive effect,C,Auto-generated interaction
+262,125,High,Absorption reduction,B,Auto-generated interaction
+567,62,High,Metabolism inhibition,C,Auto-generated interaction
+923,23,High,Unknown,A,Auto-generated interaction
+281,96,High,Unknown,A,Auto-generated interaction
+604,108,Low,Metabolism inhibition,C,Auto-generated interaction
+306,121,High,Absorption reduction,B,Auto-generated interaction
+890,33,Low,Absorption reduction,B,Auto-generated interaction
+455,27,Moderate,Absorption reduction,B,Auto-generated interaction
+773,116,Moderate,Absorption reduction,A,Auto-generated interaction
+948,98,Severe,Unknown,C,Auto-generated interaction
+814,86,Low,Unknown,C,Auto-generated interaction
+568,57,High,Additive effect,B,Auto-generated interaction
+886,108,Severe,Unknown,B,Auto-generated interaction
+693,47,High,Metabolism inhibition,C,Auto-generated interaction
+717,50,Moderate,Absorption reduction,A,Auto-generated interaction
+92,77,Severe,Metabolism inhibition,B,Auto-generated interaction
+20,136,High,Additive effect,A,Auto-generated interaction
+885,86,Low,Unknown,A,Auto-generated interaction
+895,124,Moderate,Metabolism inhibition,C,Auto-generated interaction
+131,78,Severe,Metabolism inhibition,C,Auto-generated interaction
+644,123,Moderate,Absorption reduction,A,Auto-generated interaction
+28,116,Severe,Absorption reduction,A,Auto-generated interaction
+903,40,High,Absorption reduction,A,Auto-generated interaction
+490,68,Moderate,Additive effect,B,Auto-generated interaction
+289,79,Moderate,Metabolism inhibition,B,Auto-generated interaction
+929,33,Low,Metabolism inhibition,C,Auto-generated interaction
+901,11,Severe,Unknown,C,Auto-generated interaction
+655,130,High,Additive effect,C,Auto-generated interaction
+382,131,Severe,Metabolism inhibition,C,Auto-generated interaction
+560,82,High,Additive effect,C,Auto-generated interaction
+663,97,Moderate,Unknown,A,Auto-generated interaction
+673,132,Severe,Metabolism inhibition,A,Auto-generated interaction
+408,125,Moderate,Additive effect,C,Auto-generated interaction
+58,117,Severe,Metabolism inhibition,A,Auto-generated interaction
+875,104,Severe,Additive effect,A,Auto-generated interaction
+350,25,Low,Metabolism inhibition,A,Auto-generated interaction
+971,13,Severe,Absorption reduction,C,Auto-generated interaction
+3,10,Low,Unknown,A,Auto-generated interaction
+971,93,Low,Additive effect,A,Auto-generated interaction
+520,125,Severe,Additive effect,B,Auto-generated interaction
+260,23,Low,Metabolism inhibition,C,Auto-generated interaction
+613,84,Moderate,Additive effect,C,Auto-generated interaction
+490,101,High,Metabolism inhibition,A,Auto-generated interaction
+235,84,High,Unknown,C,Auto-generated interaction
+892,72,High,Additive effect,B,Auto-generated interaction
+600,74,Severe,Additive effect,A,Auto-generated interaction
+10,59,High,Unknown,C,Auto-generated interaction
+712,54,Low,Unknown,A,Auto-generated interaction
+558,51,Moderate,Additive effect,A,Auto-generated interaction
+130,150,High,Metabolism inhibition,B,Auto-generated interaction
+772,121,High,Unknown,B,Auto-generated interaction
+950,97,High,Absorption reduction,A,Auto-generated interaction
+815,61,High,Unknown,A,Auto-generated interaction
+845,40,High,Absorption reduction,A,Auto-generated interaction
+110,111,Moderate,Metabolism inhibition,A,Auto-generated interaction
+138,77,Moderate,Unknown,C,Auto-generated interaction
+995,27,Low,Metabolism inhibition,B,Auto-generated interaction
+74,52,Low,Absorption reduction,C,Auto-generated interaction
+642,123,High,Unknown,A,Auto-generated interaction
+787,40,Severe,Absorption reduction,A,Auto-generated interaction
+352,9,Severe,Additive effect,A,Auto-generated interaction
+122,45,Severe,Absorption reduction,A,Auto-generated interaction
+103,108,Severe,Metabolism inhibition,B,Auto-generated interaction
+461,1,Severe,Additive effect,B,Auto-generated interaction
+299,68,High,Metabolism inhibition,A,Auto-generated interaction
+793,83,Severe,Absorption reduction,A,Auto-generated interaction
+593,101,Severe,Unknown,C,Auto-generated interaction
+872,10,Low,Additive effect,C,Auto-generated interaction
+13,108,Low,Metabolism inhibition,C,Auto-generated interaction
+743,81,Moderate,Metabolism inhibition,A,Auto-generated interaction
+211,76,Low,Absorption reduction,A,Auto-generated interaction
+747,32,Moderate,Additive effect,C,Auto-generated interaction
+348,76,Severe,Metabolism inhibition,C,Auto-generated interaction
+405,35,Low,Absorption reduction,A,Auto-generated interaction
+226,54,Severe,Metabolism inhibition,C,Auto-generated interaction
+475,77,High,Absorption reduction,C,Auto-generated interaction
+840,101,Moderate,Metabolism inhibition,C,Auto-generated interaction
+840,141,Low,Metabolism inhibition,B,Auto-generated interaction
+330,83,Severe,Additive effect,B,Auto-generated interaction
+233,96,Moderate,Unknown,A,Auto-generated interaction
+129,24,Moderate,Absorption reduction,C,Auto-generated interaction
+504,53,High,Absorption reduction,C,Auto-generated interaction
+204,120,Moderate,Additive effect,A,Auto-generated interaction
+768,99,Low,Absorption reduction,C,Auto-generated interaction
+81,150,Low,Absorption reduction,B,Auto-generated interaction
+256,131,Moderate,Metabolism inhibition,A,Auto-generated interaction
+852,3,High,Metabolism inhibition,C,Auto-generated interaction
+344,92,Moderate,Metabolism inhibition,B,Auto-generated interaction
+198,11,High,Absorption reduction,A,Auto-generated interaction
+778,77,High,Absorption reduction,C,Auto-generated interaction
+840,39,Moderate,Metabolism inhibition,C,Auto-generated interaction
+795,47,High,Absorption reduction,A,Auto-generated interaction
+165,144,High,Additive effect,C,Auto-generated interaction
+366,94,Low,Unknown,B,Auto-generated interaction
+161,30,High,Unknown,C,Auto-generated interaction
+960,59,Severe,Metabolism inhibition,B,Auto-generated interaction
+35,118,Low,Unknown,B,Auto-generated interaction
+380,33,Moderate,Unknown,C,Auto-generated interaction
+532,123,Moderate,Absorption reduction,C,Auto-generated interaction
+932,133,Severe,Absorption reduction,C,Auto-generated interaction
+144,149,High,Unknown,A,Auto-generated interaction
+571,52,Moderate,Additive effect,C,Auto-generated interaction
+442,50,Low,Metabolism inhibition,A,Auto-generated interaction
+387,63,High,Unknown,B,Auto-generated interaction
+743,46,Moderate,Absorption reduction,B,Auto-generated interaction
+649,135,Severe,Additive effect,A,Auto-generated interaction
+485,134,High,Absorption reduction,B,Auto-generated interaction
+233,118,Low,Metabolism inhibition,C,Auto-generated interaction
+930,86,Severe,Absorption reduction,C,Auto-generated interaction
+91,12,High,Metabolism inhibition,A,Auto-generated interaction
+225,122,Severe,Unknown,B,Auto-generated interaction
+50,30,High,Unknown,C,Auto-generated interaction
+167,138,High,Unknown,A,Auto-generated interaction
+91,106,High,Absorption reduction,B,Auto-generated interaction
+514,55,Severe,Metabolism inhibition,A,Auto-generated interaction
+409,149,Severe,Unknown,A,Auto-generated interaction
+282,26,High,Additive effect,A,Auto-generated interaction
+140,40,Low,Absorption reduction,C,Auto-generated interaction
+22,122,Low,Unknown,A,Auto-generated interaction
+148,49,Severe,Absorption reduction,A,Auto-generated interaction
+147,136,Severe,Absorption reduction,B,Auto-generated interaction
+10,114,Low,Additive effect,C,Auto-generated interaction
+424,26,Severe,Additive effect,B,Auto-generated interaction
+548,150,Moderate,Unknown,B,Auto-generated interaction
+987,48,Low,Metabolism inhibition,A,Auto-generated interaction
+658,104,Moderate,Additive effect,A,Auto-generated interaction
+334,146,Severe,Additive effect,C,Auto-generated interaction
+682,74,High,Unknown,A,Auto-generated interaction
+336,90,High,Absorption reduction,B,Auto-generated interaction
+900,108,High,Additive effect,B,Auto-generated interaction
+893,10,Low,Additive effect,B,Auto-generated interaction
+171,133,High,Absorption reduction,C,Auto-generated interaction
+815,119,Moderate,Additive effect,B,Auto-generated interaction
+713,81,Moderate,Absorption reduction,A,Auto-generated interaction
+852,68,Low,Unknown,B,Auto-generated interaction
+828,37,Low,Absorption reduction,C,Auto-generated interaction
+681,9,Low,Unknown,B,Auto-generated interaction
+799,86,Moderate,Additive effect,A,Auto-generated interaction
+923,35,Low,Unknown,B,Auto-generated interaction
+569,100,Low,Metabolism inhibition,A,Auto-generated interaction
+133,14,High,Additive effect,A,Auto-generated interaction
+510,30,Severe,Metabolism inhibition,A,Auto-generated interaction
+642,45,Low,Absorption reduction,B,Auto-generated interaction
+158,19,Moderate,Additive effect,C,Auto-generated interaction
+176,32,Moderate,Metabolism inhibition,A,Auto-generated interaction
+418,121,Moderate,Metabolism inhibition,A,Auto-generated interaction
+320,138,High,Absorption reduction,A,Auto-generated interaction
+692,108,Moderate,Additive effect,A,Auto-generated interaction
+731,78,High,Absorption reduction,C,Auto-generated interaction
+179,67,Moderate,Metabolism inhibition,B,Auto-generated interaction
+693,27,High,Additive effect,A,Auto-generated interaction
+100,102,Low,Metabolism inhibition,C,Auto-generated interaction
+937,101,Low,Metabolism inhibition,C,Auto-generated interaction
+549,105,Low,Absorption reduction,B,Auto-generated interaction
+692,27,Low,Unknown,A,Auto-generated interaction
+840,52,Low,Additive effect,C,Auto-generated interaction
+433,93,Severe,Absorption reduction,C,Auto-generated interaction
+960,142,Severe,Metabolism inhibition,B,Auto-generated interaction
+783,73,Low,Additive effect,C,Auto-generated interaction
+794,140,Low,Absorption reduction,C,Auto-generated interaction
+744,3,Low,Additive effect,C,Auto-generated interaction
+373,83,Moderate,Unknown,C,Auto-generated interaction
+470,72,High,Metabolism inhibition,C,Auto-generated interaction
+948,23,Severe,Unknown,C,Auto-generated interaction
+834,80,Moderate,Unknown,C,Auto-generated interaction
+157,47,Moderate,Absorption reduction,A,Auto-generated interaction
+295,124,Moderate,Metabolism inhibition,A,Auto-generated interaction
+306,43,Low,Absorption reduction,B,Auto-generated interaction
+927,76,High,Metabolism inhibition,B,Auto-generated interaction
+701,25,Severe,Absorption reduction,C,Auto-generated interaction
+984,60,Severe,Additive effect,B,Auto-generated interaction
+286,74,Moderate,Absorption reduction,C,Auto-generated interaction
+220,30,High,Unknown,C,Auto-generated interaction
+990,62,Low,Metabolism inhibition,C,Auto-generated interaction
+177,132,Low,Metabolism inhibition,C,Auto-generated interaction
+602,125,Severe,Absorption reduction,C,Auto-generated interaction
+883,47,Low,Metabolism inhibition,C,Auto-generated interaction
+364,115,Moderate,Unknown,C,Auto-generated interaction
+265,49,Severe,Additive effect,B,Auto-generated interaction
+176,59,Moderate,Metabolism inhibition,C,Auto-generated interaction
+193,96,Severe,Additive effect,A,Auto-generated interaction
+191,84,Low,Absorption reduction,A,Auto-generated interaction
+812,102,High,Additive effect,C,Auto-generated interaction
+899,139,Severe,Additive effect,C,Auto-generated interaction
+979,18,Low,Additive effect,C,Auto-generated interaction
+514,148,Severe,Metabolism inhibition,C,Auto-generated interaction
+221,60,Severe,Metabolism inhibition,A,Auto-generated interaction
+17,55,Severe,Unknown,B,Auto-generated interaction
+307,111,Severe,Metabolism inhibition,A,Auto-generated interaction
+101,6,High,Unknown,A,Auto-generated interaction
+623,8,High,Additive effect,C,Auto-generated interaction
+165,127,Moderate,Absorption reduction,A,Auto-generated interaction
+43,14,Low,Unknown,A,Auto-generated interaction
+94,41,Moderate,Metabolism inhibition,B,Auto-generated interaction
+822,53,Low,Metabolism inhibition,B,Auto-generated interaction
+278,4,Low,Additive effect,C,Auto-generated interaction
+729,118,High,Absorption reduction,A,Auto-generated interaction
+374,74,Severe,Absorption reduction,A,Auto-generated interaction
+443,123,Severe,Additive effect,A,Auto-generated interaction
+762,135,High,Unknown,B,Auto-generated interaction
+118,78,Moderate,Absorption reduction,C,Auto-generated interaction
+917,74,Low,Unknown,C,Auto-generated interaction
+860,23,High,Unknown,B,Auto-generated interaction
+697,40,Low,Absorption reduction,B,Auto-generated interaction
+652,136,High,Additive effect,B,Auto-generated interaction
+744,135,Severe,Metabolism inhibition,C,Auto-generated interaction
+883,57,Severe,Metabolism inhibition,B,Auto-generated interaction
+259,93,High,Unknown,A,Auto-generated interaction
+521,125,Low,Unknown,B,Auto-generated interaction
+351,21,Severe,Absorption reduction,B,Auto-generated interaction
+171,8,Low,Unknown,A,Auto-generated interaction
+406,27,Moderate,Absorption reduction,A,Auto-generated interaction
+840,89,Severe,Additive effect,B,Auto-generated interaction
+520,53,Low,Absorption reduction,C,Auto-generated interaction
+522,138,Moderate,Metabolism inhibition,C,Auto-generated interaction
+37,140,Severe,Additive effect,A,Auto-generated interaction
+562,72,Severe,Additive effect,C,Auto-generated interaction
+485,50,Severe,Additive effect,A,Auto-generated interaction
+289,82,Severe,Unknown,C,Auto-generated interaction
+293,71,High,Metabolism inhibition,A,Auto-generated interaction
+475,81,Low,Absorption reduction,C,Auto-generated interaction
+394,129,High,Metabolism inhibition,C,Auto-generated interaction
+474,23,High,Additive effect,B,Auto-generated interaction
+266,53,Severe,Metabolism inhibition,A,Auto-generated interaction
+78,16,Severe,Additive effect,B,Auto-generated interaction
+144,89,High,Metabolism inhibition,B,Auto-generated interaction
+959,13,High,Unknown,A,Auto-generated interaction
+19,79,Low,Absorption reduction,B,Auto-generated interaction
+627,142,Low,Unknown,B,Auto-generated interaction
+979,144,Severe,Additive effect,A,Auto-generated interaction
+802,44,High,Metabolism inhibition,C,Auto-generated interaction
+231,106,Low,Absorption reduction,A,Auto-generated interaction
+863,144,Moderate,Unknown,B,Auto-generated interaction
+999,61,Low,Additive effect,B,Auto-generated interaction
+434,150,Severe,Unknown,A,Auto-generated interaction
+585,148,Severe,Metabolism inhibition,A,Auto-generated interaction
+406,125,Moderate,Additive effect,A,Auto-generated interaction
+641,50,Severe,Metabolism inhibition,B,Auto-generated interaction
+120,41,High,Absorption reduction,B,Auto-generated interaction
+907,19,Moderate,Absorption reduction,B,Auto-generated interaction
+410,8,High,Metabolism inhibition,C,Auto-generated interaction
+304,98,Moderate,Metabolism inhibition,B,Auto-generated interaction
+344,6,High,Metabolism inhibition,A,Auto-generated interaction
+23,140,Moderate,Absorption reduction,A,Auto-generated interaction
+708,63,Severe,Absorption reduction,B,Auto-generated interaction
+296,31,Severe,Absorption reduction,A,Auto-generated interaction
+887,31,Moderate,Unknown,A,Auto-generated interaction
+173,31,Low,Absorption reduction,C,Auto-generated interaction
+668,102,Low,Absorption reduction,C,Auto-generated interaction
+43,64,Severe,Absorption reduction,A,Auto-generated interaction
+750,69,High,Additive effect,A,Auto-generated interaction
+586,105,Severe,Absorption reduction,B,Auto-generated interaction
+995,83,Severe,Absorption reduction,A,Auto-generated interaction
+683,41,Severe,Absorption reduction,A,Auto-generated interaction
+523,61,Severe,Absorption reduction,A,Auto-generated interaction
+642,68,Severe,Metabolism inhibition,C,Auto-generated interaction
+37,72,Moderate,Absorption reduction,B,Auto-generated interaction
+16,34,High,Additive effect,B,Auto-generated interaction
+129,31,Low,Unknown,A,Auto-generated interaction
+543,22,Severe,Unknown,C,Auto-generated interaction
+597,76,Moderate,Additive effect,B,Auto-generated interaction
+821,99,High,Absorption reduction,B,Auto-generated interaction
+55,135,High,Additive effect,B,Auto-generated interaction
+855,144,Severe,Unknown,B,Auto-generated interaction
+607,106,Severe,Unknown,B,Auto-generated interaction
+87,31,Severe,Unknown,C,Auto-generated interaction
+532,95,Severe,Unknown,B,Auto-generated interaction
+294,119,Severe,Metabolism inhibition,C,Auto-generated interaction
+875,51,Low,Unknown,C,Auto-generated interaction
+326,4,Moderate,Metabolism inhibition,A,Auto-generated interaction
+491,55,High,Absorption reduction,A,Auto-generated interaction
+468,3,High,Additive effect,B,Auto-generated interaction
+675,46,Moderate,Absorption reduction,B,Auto-generated interaction
+140,30,Moderate,Additive effect,C,Auto-generated interaction
+998,62,Severe,Absorption reduction,B,Auto-generated interaction
+914,61,Severe,Metabolism inhibition,A,Auto-generated interaction
+285,145,Moderate,Absorption reduction,A,Auto-generated interaction
+532,40,Severe,Additive effect,C,Auto-generated interaction
+529,122,Low,Additive effect,C,Auto-generated interaction
+281,69,Moderate,Absorption reduction,C,Auto-generated interaction
+1000,35,Moderate,Absorption reduction,B,Auto-generated interaction
+451,55,High,Metabolism inhibition,B,Auto-generated interaction
+209,45,Low,Unknown,B,Auto-generated interaction
+600,29,Severe,Metabolism inhibition,B,Auto-generated interaction
+28,43,Low,Metabolism inhibition,A,Auto-generated interaction
+779,100,Low,Metabolism inhibition,A,Auto-generated interaction
+790,138,High,Absorption reduction,C,Auto-generated interaction
+731,55,Low,Unknown,A,Auto-generated interaction
+887,131,Moderate,Additive effect,A,Auto-generated interaction
+596,138,Moderate,Additive effect,A,Auto-generated interaction
+746,94,Severe,Metabolism inhibition,A,Auto-generated interaction
+433,60,High,Metabolism inhibition,C,Auto-generated interaction
+616,60,High,Unknown,A,Auto-generated interaction
+662,39,Low,Unknown,C,Auto-generated interaction
+16,84,Low,Unknown,A,Auto-generated interaction
+630,130,Moderate,Metabolism inhibition,A,Auto-generated interaction
+853,131,Low,Absorption reduction,B,Auto-generated interaction
+491,138,High,Unknown,B,Auto-generated interaction
+51,68,Low,Absorption reduction,C,Auto-generated interaction
+50,111,High,Absorption reduction,C,Auto-generated interaction
+141,82,High,Unknown,C,Auto-generated interaction
+490,79,Low,Metabolism inhibition,C,Auto-generated interaction
+385,7,High,Additive effect,B,Auto-generated interaction
+527,102,High,Metabolism inhibition,B,Auto-generated interaction
+904,147,High,Absorption reduction,C,Auto-generated interaction
+252,143,Moderate,Additive effect,A,Auto-generated interaction
+938,6,Low,Unknown,C,Auto-generated interaction
+884,22,High,Metabolism inhibition,B,Auto-generated interaction
+216,114,Low,Unknown,A,Auto-generated interaction
+822,50,High,Absorption reduction,B,Auto-generated interaction
+49,55,High,Unknown,B,Auto-generated interaction
+707,108,Severe,Unknown,C,Auto-generated interaction
+383,147,Low,Absorption reduction,A,Auto-generated interaction
+48,36,High,Unknown,A,Auto-generated interaction
+185,114,Moderate,Absorption reduction,A,Auto-generated interaction
+277,55,High,Metabolism inhibition,A,Auto-generated interaction
+54,86,Low,Additive effect,C,Auto-generated interaction
+970,131,Moderate,Additive effect,C,Auto-generated interaction
+668,11,Severe,Absorption reduction,A,Auto-generated interaction
+666,7,Moderate,Absorption reduction,B,Auto-generated interaction
+421,45,Severe,Metabolism inhibition,C,Auto-generated interaction
+444,132,Moderate,Metabolism inhibition,C,Auto-generated interaction
+726,128,Severe,Absorption reduction,B,Auto-generated interaction
+87,40,Severe,Unknown,C,Auto-generated interaction
+131,127,High,Absorption reduction,C,Auto-generated interaction
+844,100,Low,Absorption reduction,B,Auto-generated interaction
+313,100,Severe,Absorption reduction,A,Auto-generated interaction
+591,81,High,Additive effect,C,Auto-generated interaction
+60,51,Moderate,Metabolism inhibition,C,Auto-generated interaction
+128,25,Severe,Absorption reduction,A,Auto-generated interaction
+38,43,Severe,Absorption reduction,B,Auto-generated interaction
+297,22,Low,Metabolism inhibition,C,Auto-generated interaction
+823,110,Low,Unknown,C,Auto-generated interaction
+182,29,Moderate,Metabolism inhibition,A,Auto-generated interaction
+756,104,Moderate,Additive effect,B,Auto-generated interaction
+731,67,High,Metabolism inhibition,C,Auto-generated interaction
+682,125,Low,Unknown,B,Auto-generated interaction
+759,139,Severe,Absorption reduction,B,Auto-generated interaction
+284,138,Low,Metabolism inhibition,C,Auto-generated interaction
+464,33,Low,Metabolism inhibition,A,Auto-generated interaction
+934,90,Moderate,Metabolism inhibition,C,Auto-generated interaction
+536,38,Low,Additive effect,C,Auto-generated interaction
+821,49,High,Absorption reduction,A,Auto-generated interaction
+8,33,Severe,Additive effect,C,Auto-generated interaction
+590,12,Severe,Unknown,C,Auto-generated interaction
+530,48,Low,Metabolism inhibition,B,Auto-generated interaction
+176,73,Severe,Unknown,B,Auto-generated interaction
+271,18,High,Metabolism inhibition,B,Auto-generated interaction
+36,27,Low,Additive effect,B,Auto-generated interaction
+342,116,High,Unknown,B,Auto-generated interaction
+657,27,High,Additive effect,A,Auto-generated interaction
+1,144,Severe,Additive effect,B,Auto-generated interaction
+153,134,Moderate,Additive effect,C,Auto-generated interaction
+618,128,Low,Metabolism inhibition,B,Auto-generated interaction
+874,147,Low,Additive effect,B,Auto-generated interaction
+161,74,Moderate,Metabolism inhibition,B,Auto-generated interaction
+413,145,High,Additive effect,A,Auto-generated interaction
+567,114,High,Absorption reduction,A,Auto-generated interaction
+688,82,High,Unknown,A,Auto-generated interaction
+173,148,High,Absorption reduction,C,Auto-generated interaction
+110,51,Low,Additive effect,A,Auto-generated interaction
+514,125,High,Unknown,C,Auto-generated interaction
+82,116,High,Metabolism inhibition,A,Auto-generated interaction
+902,49,Severe,Metabolism inhibition,C,Auto-generated interaction
+697,17,Low,Unknown,C,Auto-generated interaction
+289,106,Low,Additive effect,C,Auto-generated interaction
+833,7,Low,Absorption reduction,C,Auto-generated interaction
+784,63,High,Unknown,A,Auto-generated interaction
+783,140,Moderate,Additive effect,C,Auto-generated interaction
+823,99,High,Additive effect,B,Auto-generated interaction
+681,125,Severe,Additive effect,A,Auto-generated interaction
+269,135,Low,Additive effect,C,Auto-generated interaction
+472,50,High,Unknown,B,Auto-generated interaction
+744,84,Severe,Unknown,B,Auto-generated interaction
+764,103,Moderate,Additive effect,A,Auto-generated interaction
+629,126,Severe,Unknown,C,Auto-generated interaction
+664,27,Low,Absorption reduction,C,Auto-generated interaction
+504,19,Low,Absorption reduction,A,Auto-generated interaction
+102,119,Moderate,Metabolism inhibition,A,Auto-generated interaction
+52,24,Severe,Metabolism inhibition,C,Auto-generated interaction
+34,105,Low,Unknown,C,Auto-generated interaction
+777,95,Low,Metabolism inhibition,B,Auto-generated interaction
+27,136,Moderate,Absorption reduction,B,Auto-generated interaction
+78,38,Severe,Unknown,B,Auto-generated interaction
+282,115,Severe,Additive effect,B,Auto-generated interaction
+576,112,Moderate,Unknown,A,Auto-generated interaction
+69,30,Low,Absorption reduction,C,Auto-generated interaction
+272,68,Severe,Metabolism inhibition,A,Auto-generated interaction
+247,146,Severe,Unknown,C,Auto-generated interaction
+787,30,Severe,Unknown,B,Auto-generated interaction
+573,89,Severe,Additive effect,B,Auto-generated interaction
+463,123,Moderate,Unknown,C,Auto-generated interaction
+604,134,Severe,Additive effect,A,Auto-generated interaction
+564,136,Severe,Absorption reduction,C,Auto-generated interaction
+130,142,Moderate,Unknown,A,Auto-generated interaction
+116,116,Moderate,Absorption reduction,B,Auto-generated interaction
+636,140,Severe,Unknown,B,Auto-generated interaction
+393,147,Moderate,Unknown,B,Auto-generated interaction
+591,15,Low,Metabolism inhibition,B,Auto-generated interaction
+20,113,Low,Metabolism inhibition,A,Auto-generated interaction
+659,32,Moderate,Absorption reduction,A,Auto-generated interaction
+459,53,Moderate,Unknown,B,Auto-generated interaction
+777,20,Low,Unknown,B,Auto-generated interaction
+299,59,Moderate,Unknown,A,Auto-generated interaction
+14,100,Moderate,Additive effect,A,Auto-generated interaction
+86,105,High,Absorption reduction,A,Auto-generated interaction
+191,140,Low,Metabolism inhibition,C,Auto-generated interaction
+531,112,Moderate,Additive effect,A,Auto-generated interaction
+430,34,Moderate,Metabolism inhibition,B,Auto-generated interaction
+211,116,Low,Metabolism inhibition,C,Auto-generated interaction
+256,19,Moderate,Metabolism inhibition,C,Auto-generated interaction
+400,61,Low,Unknown,A,Auto-generated interaction
+259,130,Moderate,Unknown,B,Auto-generated interaction
+325,34,High,Absorption reduction,A,Auto-generated interaction
+595,75,Moderate,Metabolism inhibition,C,Auto-generated interaction
+219,31,Low,Absorption reduction,B,Auto-generated interaction
+85,70,Severe,Absorption reduction,B,Auto-generated interaction
+771,144,Low,Additive effect,C,Auto-generated interaction
+788,6,High,Additive effect,A,Auto-generated interaction
+69,129,Severe,Metabolism inhibition,B,Auto-generated interaction
+264,81,Low,Absorption reduction,B,Auto-generated interaction
+192,59,Severe,Metabolism inhibition,A,Auto-generated interaction
+243,81,Low,Unknown,C,Auto-generated interaction
+875,42,Moderate,Absorption reduction,B,Auto-generated interaction
+626,50,Severe,Unknown,C,Auto-generated interaction
+48,20,Severe,Absorption reduction,A,Auto-generated interaction
+851,118,Low,Metabolism inhibition,B,Auto-generated interaction
+198,68,High,Additive effect,A,Auto-generated interaction
+153,95,High,Unknown,B,Auto-generated interaction
+563,69,High,Additive effect,C,Auto-generated interaction
+528,137,Low,Metabolism inhibition,C,Auto-generated interaction
+667,41,Moderate,Unknown,C,Auto-generated interaction
+818,138,Severe,Absorption reduction,B,Auto-generated interaction
+49,29,Moderate,Metabolism inhibition,C,Auto-generated interaction
+196,97,Moderate,Absorption reduction,A,Auto-generated interaction
+956,26,Low,Additive effect,B,Auto-generated interaction
+187,57,Moderate,Absorption reduction,B,Auto-generated interaction
+508,149,High,Metabolism inhibition,C,Auto-generated interaction
+839,16,Moderate,Unknown,A,Auto-generated interaction
+365,60,Low,Metabolism inhibition,B,Auto-generated interaction
+806,149,High,Metabolism inhibition,C,Auto-generated interaction
+764,145,Low,Additive effect,B,Auto-generated interaction
+626,50,Moderate,Metabolism inhibition,B,Auto-generated interaction
+271,133,High,Metabolism inhibition,A,Auto-generated interaction
+5,18,Severe,Absorption reduction,C,Auto-generated interaction
+195,35,Severe,Metabolism inhibition,B,Auto-generated interaction
+662,39,Severe,Additive effect,B,Auto-generated interaction
+207,103,Low,Unknown,A,Auto-generated interaction
+608,7,High,Absorption reduction,B,Auto-generated interaction
+53,29,Severe,Metabolism inhibition,A,Auto-generated interaction
+40,29,Moderate,Additive effect,B,Auto-generated interaction
+3,131,Moderate,Absorption reduction,B,Auto-generated interaction
+666,47,High,Additive effect,C,Auto-generated interaction
+715,76,Low,Absorption reduction,C,Auto-generated interaction
+715,44,Severe,Absorption reduction,B,Auto-generated interaction
+958,112,Severe,Unknown,B,Auto-generated interaction
+936,88,Severe,Metabolism inhibition,B,Auto-generated interaction
+539,46,Low,Absorption reduction,A,Auto-generated interaction
+732,142,Low,Absorption reduction,C,Auto-generated interaction
+902,34,Severe,Metabolism inhibition,A,Auto-generated interaction
+609,138,Moderate,Absorption reduction,C,Auto-generated interaction
+214,70,Moderate,Metabolism inhibition,A,Auto-generated interaction
+319,135,High,Metabolism inhibition,B,Auto-generated interaction
+464,8,Moderate,Additive effect,C,Auto-generated interaction
+446,70,Low,Metabolism inhibition,C,Auto-generated interaction
+763,34,High,Absorption reduction,C,Auto-generated interaction
+47,78,High,Additive effect,B,Auto-generated interaction
+303,64,Moderate,Additive effect,A,Auto-generated interaction
+754,102,Severe,Unknown,B,Auto-generated interaction
+968,124,Moderate,Metabolism inhibition,C,Auto-generated interaction
+148,51,Low,Unknown,C,Auto-generated interaction
+378,103,Moderate,Unknown,B,Auto-generated interaction
+575,57,Low,Additive effect,B,Auto-generated interaction
+420,3,Severe,Metabolism inhibition,C,Auto-generated interaction
+844,14,Low,Metabolism inhibition,B,Auto-generated interaction
+944,17,Severe,Metabolism inhibition,A,Auto-generated interaction
+811,34,Moderate,Absorption reduction,A,Auto-generated interaction
+965,44,High,Unknown,A,Auto-generated interaction
+141,10,Severe,Absorption reduction,A,Auto-generated interaction
+339,26,Moderate,Metabolism inhibition,B,Auto-generated interaction
+451,17,Severe,Additive effect,A,Auto-generated interaction
+779,46,High,Additive effect,C,Auto-generated interaction
+751,91,Low,Metabolism inhibition,C,Auto-generated interaction
+560,147,Moderate,Metabolism inhibition,B,Auto-generated interaction
+425,12,Moderate,Unknown,A,Auto-generated interaction
+234,4,High,Additive effect,A,Auto-generated interaction
+829,54,High,Additive effect,C,Auto-generated interaction
+938,55,Moderate,Metabolism inhibition,A,Auto-generated interaction
+361,45,Severe,Additive effect,B,Auto-generated interaction
+403,2,Severe,Unknown,C,Auto-generated interaction
+489,30,High,Additive effect,B,Auto-generated interaction
+284,149,Severe,Additive effect,A,Auto-generated interaction
+690,130,Moderate,Metabolism inhibition,B,Auto-generated interaction
+766,26,Low,Unknown,A,Auto-generated interaction
+654,63,Low,Additive effect,C,Auto-generated interaction
+866,25,High,Metabolism inhibition,C,Auto-generated interaction
+68,106,Moderate,Unknown,B,Auto-generated interaction
+690,22,Low,Unknown,A,Auto-generated interaction
+785,139,Severe,Absorption reduction,C,Auto-generated interaction
+776,89,Moderate,Additive effect,A,Auto-generated interaction
+189,111,Moderate,Additive effect,B,Auto-generated interaction
+743,135,High,Metabolism inhibition,B,Auto-generated interaction
+666,102,High,Metabolism inhibition,B,Auto-generated interaction
+503,111,Severe,Metabolism inhibition,C,Auto-generated interaction
+299,119,Moderate,Absorption reduction,A,Auto-generated interaction
+578,123,Low,Additive effect,C,Auto-generated interaction
+993,5,Severe,Metabolism inhibition,C,Auto-generated interaction
+196,144,Severe,Metabolism inhibition,B,Auto-generated interaction
+450,112,Low,Additive effect,B,Auto-generated interaction
+159,54,Severe,Additive effect,B,Auto-generated interaction
+879,35,Severe,Additive effect,C,Auto-generated interaction
+702,60,Moderate,Unknown,A,Auto-generated interaction
+568,84,Low,Unknown,A,Auto-generated interaction
+639,69,Severe,Additive effect,C,Auto-generated interaction
+984,85,High,Absorption reduction,B,Auto-generated interaction
+445,111,Severe,Unknown,B,Auto-generated interaction
+890,132,Low,Metabolism inhibition,C,Auto-generated interaction
+233,14,Moderate,Metabolism inhibition,B,Auto-generated interaction
+374,104,Low,Absorption reduction,A,Auto-generated interaction
+828,150,Moderate,Additive effect,B,Auto-generated interaction
+969,67,Low,Absorption reduction,C,Auto-generated interaction
+63,58,Moderate,Additive effect,B,Auto-generated interaction
+10,52,Moderate,Unknown,B,Auto-generated interaction
+554,106,High,Unknown,B,Auto-generated interaction
+844,14,Low,Unknown,A,Auto-generated interaction
+383,137,Moderate,Metabolism inhibition,A,Auto-generated interaction
+514,89,High,Additive effect,C,Auto-generated interaction
+590,13,Low,Metabolism inhibition,B,Auto-generated interaction
+460,70,Severe,Absorption reduction,A,Auto-generated interaction
+350,33,High,Metabolism inhibition,C,Auto-generated interaction
+585,108,Severe,Unknown,B,Auto-generated interaction
+671,46,Low,Metabolism inhibition,B,Auto-generated interaction
+129,133,High,Unknown,B,Auto-generated interaction
+599,126,High,Unknown,A,Auto-generated interaction
+862,60,High,Additive effect,C,Auto-generated interaction
+304,46,Moderate,Additive effect,B,Auto-generated interaction
+489,118,High,Unknown,C,Auto-generated interaction
+341,83,High,Additive effect,A,Auto-generated interaction
+747,47,High,Unknown,B,Auto-generated interaction
+852,128,Severe,Absorption reduction,A,Auto-generated interaction
+348,11,Moderate,Absorption reduction,C,Auto-generated interaction
+878,67,Low,Additive effect,C,Auto-generated interaction
+932,107,High,Unknown,C,Auto-generated interaction
+998,94,High,Absorption reduction,A,Auto-generated interaction
+163,92,Low,Absorption reduction,A,Auto-generated interaction
+439,84,Low,Additive effect,A,Auto-generated interaction
+945,121,Moderate,Unknown,A,Auto-generated interaction
+563,11,Moderate,Absorption reduction,B,Auto-generated interaction
+914,6,High,Metabolism inhibition,B,Auto-generated interaction
+434,132,Low,Metabolism inhibition,B,Auto-generated interaction
+566,45,Moderate,Metabolism inhibition,B,Auto-generated interaction
+183,95,High,Metabolism inhibition,C,Auto-generated interaction
+478,137,Moderate,Unknown,A,Auto-generated interaction
+593,39,Low,Metabolism inhibition,B,Auto-generated interaction
+801,9,Low,Absorption reduction,B,Auto-generated interaction
+374,150,Severe,Unknown,C,Auto-generated interaction
+702,4,Low,Additive effect,C,Auto-generated interaction
+216,98,Severe,Additive effect,B,Auto-generated interaction
+514,16,High,Unknown,B,Auto-generated interaction
+172,136,Severe,Metabolism inhibition,B,Auto-generated interaction
+818,118,Moderate,Additive effect,A,Auto-generated interaction
+516,144,High,Metabolism inhibition,B,Auto-generated interaction
+735,64,Low,Unknown,A,Auto-generated interaction
+731,58,Low,Unknown,B,Auto-generated interaction
+665,93,High,Absorption reduction,C,Auto-generated interaction
+209,102,Low,Additive effect,C,Auto-generated interaction
+265,123,Low,Unknown,A,Auto-generated interaction
+473,118,High,Metabolism inhibition,C,Auto-generated interaction
+427,101,Severe,Metabolism inhibition,C,Auto-generated interaction
+811,37,High,Additive effect,C,Auto-generated interaction
+159,97,Severe,Absorption reduction,B,Auto-generated interaction
+487,2,Severe,Metabolism inhibition,B,Auto-generated interaction
+1000,84,Low,Unknown,B,Auto-generated interaction
+853,56,Severe,Metabolism inhibition,C,Auto-generated interaction
+397,118,Low,Additive effect,C,Auto-generated interaction
+84,23,Low,Metabolism inhibition,C,Auto-generated interaction
+499,96,Low,Metabolism inhibition,A,Auto-generated interaction
+376,31,High,Unknown,C,Auto-generated interaction
+832,10,Severe,Additive effect,C,Auto-generated interaction
+541,107,Severe,Additive effect,A,Auto-generated interaction
+19,13,High,Absorption reduction,B,Auto-generated interaction
+794,146,Severe,Unknown,C,Auto-generated interaction
+140,47,Low,Unknown,A,Auto-generated interaction
+140,134,Severe,Additive effect,C,Auto-generated interaction
+188,137,Low,Unknown,C,Auto-generated interaction
+531,46,Low,Metabolism inhibition,B,Auto-generated interaction
+5,127,Severe,Unknown,C,Auto-generated interaction
+704,111,Low,Metabolism inhibition,C,Auto-generated interaction
+623,70,Low,Unknown,B,Auto-generated interaction
+887,81,Low,Additive effect,A,Auto-generated interaction
+991,64,Low,Metabolism inhibition,B,Auto-generated interaction
+419,51,Moderate,Unknown,B,Auto-generated interaction
+568,53,High,Additive effect,B,Auto-generated interaction
+92,51,Moderate,Absorption reduction,A,Auto-generated interaction
+256,99,Severe,Additive effect,A,Auto-generated interaction
+107,17,Severe,Additive effect,A,Auto-generated interaction
+547,51,High,Absorption reduction,A,Auto-generated interaction
+706,79,Severe,Metabolism inhibition,A,Auto-generated interaction
+321,143,Moderate,Additive effect,A,Auto-generated interaction
+391,88,Low,Absorption reduction,B,Auto-generated interaction
+634,123,Severe,Additive effect,A,Auto-generated interaction
+981,23,Low,Additive effect,C,Auto-generated interaction
+274,52,Low,Unknown,A,Auto-generated interaction
+688,103,Low,Additive effect,C,Auto-generated interaction
+131,125,Moderate,Unknown,B,Auto-generated interaction
+591,54,Low,Absorption reduction,C,Auto-generated interaction
+279,145,High,Metabolism inhibition,C,Auto-generated interaction
+908,69,Moderate,Absorption reduction,C,Auto-generated interaction
+242,1,Low,Unknown,B,Auto-generated interaction
+574,109,Severe,Additive effect,B,Auto-generated interaction
+112,121,Low,Metabolism inhibition,C,Auto-generated interaction
+891,148,Severe,Metabolism inhibition,A,Auto-generated interaction
+958,10,High,Unknown,B,Auto-generated interaction
+49,18,High,Absorption reduction,A,Auto-generated interaction
+987,140,Moderate,Absorption reduction,C,Auto-generated interaction
+974,148,High,Absorption reduction,C,Auto-generated interaction
+117,5,High,Additive effect,A,Auto-generated interaction
+560,77,Moderate,Absorption reduction,B,Auto-generated interaction
+719,78,Low,Additive effect,C,Auto-generated interaction
+641,141,Low,Unknown,C,Auto-generated interaction
+693,25,Low,Unknown,B,Auto-generated interaction
+437,3,Moderate,Metabolism inhibition,B,Auto-generated interaction
+424,104,Severe,Unknown,C,Auto-generated interaction
+244,11,Severe,Additive effect,B,Auto-generated interaction
+203,116,Low,Absorption reduction,C,Auto-generated interaction
+517,46,Severe,Additive effect,C,Auto-generated interaction
+71,107,High,Unknown,B,Auto-generated interaction
+259,94,Low,Metabolism inhibition,B,Auto-generated interaction
+16,22,Severe,Metabolism inhibition,A,Auto-generated interaction
+666,70,Moderate,Absorption reduction,C,Auto-generated interaction
+696,139,Moderate,Absorption reduction,B,Auto-generated interaction
+788,1,Severe,Additive effect,A,Auto-generated interaction
+583,88,Moderate,Unknown,C,Auto-generated interaction
+370,106,Severe,Unknown,B,Auto-generated interaction
+624,145,Moderate,Additive effect,C,Auto-generated interaction
+259,111,Severe,Unknown,B,Auto-generated interaction
+747,42,High,Metabolism inhibition,C,Auto-generated interaction
+330,6,High,Additive effect,B,Auto-generated interaction
+518,92,Severe,Additive effect,C,Auto-generated interaction
+211,44,Low,Additive effect,B,Auto-generated interaction
+403,106,Low,Unknown,B,Auto-generated interaction
+75,87,High,Additive effect,A,Auto-generated interaction
+495,84,Severe,Metabolism inhibition,C,Auto-generated interaction
+832,108,Low,Absorption reduction,A,Auto-generated interaction
+448,53,Low,Metabolism inhibition,C,Auto-generated interaction
+424,92,Moderate,Metabolism inhibition,B,Auto-generated interaction
+16,97,Severe,Absorption reduction,C,Auto-generated interaction
+222,96,Moderate,Unknown,C,Auto-generated interaction
+975,1,Moderate,Unknown,C,Auto-generated interaction
+485,93,Low,Additive effect,A,Auto-generated interaction
+146,114,Severe,Additive effect,B,Auto-generated interaction
+34,21,High,Absorption reduction,B,Auto-generated interaction
+787,103,Low,Absorption reduction,A,Auto-generated interaction
+522,14,Severe,Absorption reduction,B,Auto-generated interaction
+25,101,Low,Additive effect,C,Auto-generated interaction
+525,121,Moderate,Unknown,B,Auto-generated interaction
+337,23,High,Unknown,A,Auto-generated interaction
+291,74,Severe,Additive effect,B,Auto-generated interaction
+921,100,Severe,Metabolism inhibition,B,Auto-generated interaction
+968,115,Low,Additive effect,A,Auto-generated interaction
+798,76,High,Unknown,B,Auto-generated interaction
+346,118,Low,Unknown,C,Auto-generated interaction
+922,82,Severe,Metabolism inhibition,B,Auto-generated interaction
+613,125,Moderate,Absorption reduction,B,Auto-generated interaction
+729,136,Severe,Unknown,C,Auto-generated interaction
+244,5,Low,Metabolism inhibition,C,Auto-generated interaction
+789,18,Low,Absorption reduction,B,Auto-generated interaction
+85,52,Moderate,Unknown,C,Auto-generated interaction
+175,28,Low,Absorption reduction,B,Auto-generated interaction
+168,89,High,Unknown,B,Auto-generated interaction
+186,22,High,Additive effect,A,Auto-generated interaction
+226,143,Moderate,Absorption reduction,C,Auto-generated interaction
+734,13,Moderate,Additive effect,B,Auto-generated interaction
+460,124,Low,Additive effect,B,Auto-generated interaction
+270,24,Low,Absorption reduction,C,Auto-generated interaction
+694,150,Moderate,Metabolism inhibition,B,Auto-generated interaction
+814,125,Severe,Additive effect,A,Auto-generated interaction
+47,139,Moderate,Additive effect,B,Auto-generated interaction
+849,99,High,Unknown,C,Auto-generated interaction
+623,80,Moderate,Unknown,C,Auto-generated interaction
+615,123,Low,Unknown,A,Auto-generated interaction
+68,22,Moderate,Additive effect,A,Auto-generated interaction
+692,79,Severe,Unknown,A,Auto-generated interaction
+652,134,Severe,Absorption reduction,B,Auto-generated interaction
+219,91,Low,Metabolism inhibition,A,Auto-generated interaction
+487,28,Moderate,Additive effect,B,Auto-generated interaction
+82,135,Low,Unknown,A,Auto-generated interaction
+87,22,Moderate,Unknown,A,Auto-generated interaction
+884,50,Moderate,Metabolism inhibition,C,Auto-generated interaction
+17,70,Severe,Metabolism inhibition,B,Auto-generated interaction
+360,11,High,Metabolism inhibition,B,Auto-generated interaction
+681,61,Severe,Unknown,B,Auto-generated interaction
+205,108,Low,Additive effect,C,Auto-generated interaction
+928,148,Low,Additive effect,A,Auto-generated interaction
+247,110,High,Unknown,A,Auto-generated interaction
+125,57,Severe,Additive effect,A,Auto-generated interaction
+655,106,Severe,Unknown,A,Auto-generated interaction
+698,144,Severe,Absorption reduction,C,Auto-generated interaction
+659,36,Severe,Additive effect,A,Auto-generated interaction
+240,101,High,Absorption reduction,C,Auto-generated interaction
+156,47,Low,Unknown,A,Auto-generated interaction
+311,104,High,Additive effect,A,Auto-generated interaction
+325,134,Moderate,Metabolism inhibition,C,Auto-generated interaction
+457,26,Moderate,Additive effect,B,Auto-generated interaction
+215,71,Severe,Additive effect,B,Auto-generated interaction
+948,19,Severe,Absorption reduction,B,Auto-generated interaction
+92,18,Severe,Unknown,B,Auto-generated interaction
+692,105,Severe,Absorption reduction,C,Auto-generated interaction
+262,72,Severe,Metabolism inhibition,B,Auto-generated interaction
+21,55,High,Absorption reduction,B,Auto-generated interaction
+18,135,Low,Absorption reduction,B,Auto-generated interaction
+78,97,Severe,Absorption reduction,C,Auto-generated interaction
+928,57,Severe,Absorption reduction,C,Auto-generated interaction
+241,42,Moderate,Unknown,C,Auto-generated interaction
+33,121,High,Metabolism inhibition,C,Auto-generated interaction
+655,115,Severe,Unknown,C,Auto-generated interaction
+690,150,Moderate,Absorption reduction,C,Auto-generated interaction
+343,34,Moderate,Unknown,B,Auto-generated interaction
+192,148,High,Unknown,C,Auto-generated interaction
+755,10,Low,Additive effect,C,Auto-generated interaction
+331,28,Moderate,Metabolism inhibition,B,Auto-generated interaction
+194,56,High,Metabolism inhibition,B,Auto-generated interaction
+589,8,Severe,Absorption reduction,A,Auto-generated interaction
+541,68,Low,Additive effect,C,Auto-generated interaction
+460,138,Moderate,Metabolism inhibition,A,Auto-generated interaction
+212,65,Low,Additive effect,B,Auto-generated interaction
+669,9,Low,Unknown,C,Auto-generated interaction
+983,145,Low,Absorption reduction,C,Auto-generated interaction
+254,78,Severe,Absorption reduction,C,Auto-generated interaction
+170,85,Moderate,Unknown,A,Auto-generated interaction
+515,27,Moderate,Unknown,A,Auto-generated interaction
+352,91,Moderate,Metabolism inhibition,A,Auto-generated interaction
+162,129,High,Absorption reduction,C,Auto-generated interaction
+678,80,Moderate,Unknown,A,Auto-generated interaction
+204,2,Moderate,Absorption reduction,C,Auto-generated interaction
+629,59,High,Unknown,B,Auto-generated interaction
+100,48,Low,Additive effect,C,Auto-generated interaction
+14,102,Low,Unknown,B,Auto-generated interaction
+486,1,Severe,Additive effect,A,Auto-generated interaction
+857,81,Low,Metabolism inhibition,A,Auto-generated interaction
+610,105,Moderate,Absorption reduction,A,Auto-generated interaction
+711,5,Moderate,Additive effect,C,Auto-generated interaction
+529,45,Severe,Metabolism inhibition,A,Auto-generated interaction
+530,40,High,Absorption reduction,C,Auto-generated interaction
+406,1,High,Additive effect,B,Auto-generated interaction
+976,131,High,Metabolism inhibition,C,Auto-generated interaction
+118,57,Low,Additive effect,A,Auto-generated interaction
+181,136,Severe,Unknown,B,Auto-generated interaction
+68,72,Low,Unknown,C,Auto-generated interaction
+879,86,High,Additive effect,A,Auto-generated interaction
+977,18,Severe,Unknown,B,Auto-generated interaction
+917,71,Low,Additive effect,C,Auto-generated interaction
+325,150,High,Metabolism inhibition,B,Auto-generated interaction
+849,61,Severe,Additive effect,B,Auto-generated interaction
+137,101,Moderate,Metabolism inhibition,A,Auto-generated interaction
+269,41,Severe,Unknown,C,Auto-generated interaction
+698,67,High,Additive effect,C,Auto-generated interaction
+455,123,High,Metabolism inhibition,A,Auto-generated interaction
+86,121,High,Unknown,C,Auto-generated interaction
+568,49,High,Absorption reduction,A,Auto-generated interaction
+3,54,Moderate,Unknown,C,Auto-generated interaction
+356,42,Moderate,Unknown,B,Auto-generated interaction
+525,112,High,Metabolism inhibition,A,Auto-generated interaction
+609,22,Severe,Metabolism inhibition,A,Auto-generated interaction
+810,35,High,Unknown,A,Auto-generated interaction
+188,46,Low,Additive effect,B,Auto-generated interaction
+615,67,Moderate,Additive effect,B,Auto-generated interaction
+775,26,High,Absorption reduction,B,Auto-generated interaction
+249,66,Moderate,Additive effect,A,Auto-generated interaction
+18,51,Low,Absorption reduction,C,Auto-generated interaction
+776,47,Severe,Metabolism inhibition,A,Auto-generated interaction
+851,59,Moderate,Metabolism inhibition,B,Auto-generated interaction
+495,80,Severe,Absorption reduction,A,Auto-generated interaction
+120,28,Severe,Absorption reduction,A,Auto-generated interaction
+8,46,Low,Absorption reduction,A,Auto-generated interaction
+550,80,High,Absorption reduction,C,Auto-generated interaction
+567,59,Severe,Unknown,A,Auto-generated interaction
+202,98,Low,Metabolism inhibition,B,Auto-generated interaction
+693,128,Low,Unknown,C,Auto-generated interaction
+263,55,Moderate,Metabolism inhibition,B,Auto-generated interaction
+178,90,High,Absorption reduction,B,Auto-generated interaction
+6,3,High,Additive effect,C,Auto-generated interaction
+173,95,Moderate,Metabolism inhibition,A,Auto-generated interaction
+107,61,Low,Metabolism inhibition,C,Auto-generated interaction
+246,5,Low,Unknown,A,Auto-generated interaction
+240,44,High,Absorption reduction,B,Auto-generated interaction
+644,76,Low,Additive effect,C,Auto-generated interaction
+34,141,Moderate,Unknown,C,Auto-generated interaction
+501,111,High,Metabolism inhibition,C,Auto-generated interaction
+541,99,High,Additive effect,B,Auto-generated interaction
+911,32,Low,Metabolism inhibition,C,Auto-generated interaction
+6,88,Moderate,Additive effect,B,Auto-generated interaction
+786,114,Moderate,Metabolism inhibition,A,Auto-generated interaction
+187,9,Moderate,Unknown,B,Auto-generated interaction
+831,100,High,Unknown,C,Auto-generated interaction
+723,117,Low,Additive effect,A,Auto-generated interaction
+508,87,Moderate,Additive effect,B,Auto-generated interaction
+416,69,High,Additive effect,C,Auto-generated interaction
+562,65,Severe,Additive effect,C,Auto-generated interaction
+357,110,Moderate,Unknown,B,Auto-generated interaction
+872,25,Low,Absorption reduction,A,Auto-generated interaction
+482,2,Moderate,Additive effect,B,Auto-generated interaction
+588,64,Moderate,Absorption reduction,B,Auto-generated interaction
+900,143,High,Metabolism inhibition,C,Auto-generated interaction
+260,145,Moderate,Metabolism inhibition,A,Auto-generated interaction
+719,92,Low,Metabolism inhibition,B,Auto-generated interaction
+480,90,Moderate,Unknown,A,Auto-generated interaction
+982,73,Severe,Absorption reduction,A,Auto-generated interaction
+105,99,Moderate,Unknown,C,Auto-generated interaction
+59,111,Severe,Additive effect,B,Auto-generated interaction
+124,111,Low,Metabolism inhibition,C,Auto-generated interaction
+59,110,Severe,Absorption reduction,C,Auto-generated interaction
+618,4,Moderate,Absorption reduction,A,Auto-generated interaction
+627,22,Moderate,Metabolism inhibition,C,Auto-generated interaction
+873,10,Low,Additive effect,C,Auto-generated interaction
+347,121,Severe,Unknown,A,Auto-generated interaction
+138,124,Low,Additive effect,C,Auto-generated interaction
+110,146,Moderate,Metabolism inhibition,A,Auto-generated interaction
+836,66,Severe,Absorption reduction,C,Auto-generated interaction
+984,115,Severe,Unknown,B,Auto-generated interaction
+372,64,High,Unknown,B,Auto-generated interaction
+689,46,Low,Absorption reduction,C,Auto-generated interaction
+840,89,Low,Unknown,C,Auto-generated interaction
+743,31,High,Unknown,C,Auto-generated interaction
+276,33,High,Unknown,C,Auto-generated interaction
+145,57,Low,Unknown,B,Auto-generated interaction
+582,130,Moderate,Unknown,A,Auto-generated interaction
+894,82,Low,Metabolism inhibition,A,Auto-generated interaction
+304,103,Moderate,Unknown,B,Auto-generated interaction
+635,95,High,Unknown,A,Auto-generated interaction
+7,119,High,Additive effect,A,Auto-generated interaction
+566,83,Severe,Absorption reduction,B,Auto-generated interaction
+356,140,Severe,Unknown,B,Auto-generated interaction
+743,11,High,Absorption reduction,A,Auto-generated interaction
+154,61,Severe,Additive effect,A,Auto-generated interaction
+854,58,Moderate,Additive effect,B,Auto-generated interaction
+245,69,High,Additive effect,B,Auto-generated interaction
+444,117,Moderate,Unknown,B,Auto-generated interaction
+364,31,Moderate,Unknown,A,Auto-generated interaction
+907,72,High,Unknown,B,Auto-generated interaction
+79,44,High,Metabolism inhibition,C,Auto-generated interaction
+224,41,High,Additive effect,C,Auto-generated interaction
+634,49,Low,Metabolism inhibition,A,Auto-generated interaction
+964,44,High,Additive effect,A,Auto-generated interaction
+465,12,Severe,Unknown,A,Auto-generated interaction
+411,111,High,Absorption reduction,C,Auto-generated interaction
+911,70,Severe,Additive effect,B,Auto-generated interaction
+36,45,High,Absorption reduction,C,Auto-generated interaction
+820,112,Severe,Unknown,B,Auto-generated interaction
+403,95,Moderate,Metabolism inhibition,B,Auto-generated interaction
+88,24,Low,Absorption reduction,C,Auto-generated interaction
+407,108,Severe,Unknown,B,Auto-generated interaction
+606,99,Moderate,Metabolism inhibition,A,Auto-generated interaction
+924,61,Low,Absorption reduction,A,Auto-generated interaction
+45,38,Moderate,Metabolism inhibition,B,Auto-generated interaction
+43,56,High,Additive effect,B,Auto-generated interaction
+846,117,High,Additive effect,C,Auto-generated interaction
+904,87,Moderate,Absorption reduction,A,Auto-generated interaction
+930,86,Low,Additive effect,C,Auto-generated interaction
+656,43,Severe,Absorption reduction,B,Auto-generated interaction
+124,46,High,Unknown,B,Auto-generated interaction
+374,146,Moderate,Additive effect,C,Auto-generated interaction
+330,88,Moderate,Absorption reduction,B,Auto-generated interaction
+464,33,Severe,Metabolism inhibition,B,Auto-generated interaction
+440,110,Severe,Absorption reduction,B,Auto-generated interaction
+609,125,Moderate,Absorption reduction,C,Auto-generated interaction
+559,136,High,Absorption reduction,C,Auto-generated interaction
+555,66,High,Additive effect,A,Auto-generated interaction
+882,15,High,Metabolism inhibition,C,Auto-generated interaction
+102,79,Moderate,Unknown,C,Auto-generated interaction
+773,79,Severe,Unknown,C,Auto-generated interaction
+137,120,High,Unknown,C,Auto-generated interaction
+457,61,Severe,Metabolism inhibition,B,Auto-generated interaction
+558,7,High,Metabolism inhibition,C,Auto-generated interaction
+151,113,Severe,Metabolism inhibition,B,Auto-generated interaction
+75,41,High,Absorption reduction,C,Auto-generated interaction
+516,116,Severe,Unknown,B,Auto-generated interaction
+158,23,High,Absorption reduction,C,Auto-generated interaction
+458,58,Low,Unknown,A,Auto-generated interaction
+612,3,High,Metabolism inhibition,C,Auto-generated interaction
+289,143,Moderate,Metabolism inhibition,C,Auto-generated interaction
+97,22,Severe,Additive effect,B,Auto-generated interaction
+578,59,Low,Unknown,A,Auto-generated interaction
+271,78,Moderate,Unknown,B,Auto-generated interaction
+438,14,High,Unknown,A,Auto-generated interaction
+437,51,Low,Absorption reduction,C,Auto-generated interaction
+866,148,Severe,Unknown,C,Auto-generated interaction
+716,130,Moderate,Absorption reduction,A,Auto-generated interaction
+664,57,High,Unknown,B,Auto-generated interaction
+108,139,High,Absorption reduction,A,Auto-generated interaction
+813,118,Severe,Unknown,A,Auto-generated interaction
+518,13,Low,Metabolism inhibition,A,Auto-generated interaction
+840,32,High,Unknown,B,Auto-generated interaction
+762,1,Severe,Unknown,B,Auto-generated interaction
+210,15,Severe,Unknown,B,Auto-generated interaction
+134,34,Moderate,Absorption reduction,C,Auto-generated interaction
+446,104,Moderate,Metabolism inhibition,A,Auto-generated interaction
+64,16,Severe,Unknown,B,Auto-generated interaction
+930,63,Low,Absorption reduction,B,Auto-generated interaction
+764,18,Severe,Unknown,C,Auto-generated interaction
+865,16,Severe,Unknown,B,Auto-generated interaction
+165,57,High,Absorption reduction,A,Auto-generated interaction
+825,125,Severe,Metabolism inhibition,A,Auto-generated interaction
+163,7,Moderate,Unknown,C,Auto-generated interaction
+195,141,Severe,Metabolism inhibition,C,Auto-generated interaction
+371,86,Low,Metabolism inhibition,A,Auto-generated interaction
+820,145,Severe,Additive effect,B,Auto-generated interaction
+550,1,Low,Absorption reduction,B,Auto-generated interaction
+506,10,Severe,Unknown,A,Auto-generated interaction
+46,30,High,Absorption reduction,C,Auto-generated interaction
+7,61,Severe,Unknown,C,Auto-generated interaction
+835,121,Severe,Unknown,B,Auto-generated interaction
+558,6,Severe,Unknown,B,Auto-generated interaction
+11,36,High,Absorption reduction,B,Auto-generated interaction
+690,141,High,Absorption reduction,B,Auto-generated interaction
+389,92,High,Unknown,A,Auto-generated interaction
+529,52,Moderate,Additive effect,C,Auto-generated interaction
+10,98,High,Additive effect,C,Auto-generated interaction
+993,104,Moderate,Additive effect,B,Auto-generated interaction
+527,104,Moderate,Metabolism inhibition,C,Auto-generated interaction
+101,6,Moderate,Additive effect,B,Auto-generated interaction
+288,116,Low,Metabolism inhibition,A,Auto-generated interaction
+507,66,Low,Unknown,C,Auto-generated interaction
+534,140,Low,Absorption reduction,A,Auto-generated interaction
+125,79,Moderate,Unknown,B,Auto-generated interaction
+985,114,High,Absorption reduction,A,Auto-generated interaction
+438,146,Moderate,Absorption reduction,A,Auto-generated interaction
+665,106,Severe,Unknown,B,Auto-generated interaction
+474,137,High,Additive effect,C,Auto-generated interaction
+463,62,Moderate,Unknown,A,Auto-generated interaction
+499,39,Low,Metabolism inhibition,C,Auto-generated interaction
+780,31,Moderate,Additive effect,B,Auto-generated interaction
+263,111,Moderate,Absorption reduction,B,Auto-generated interaction
+319,121,High,Metabolism inhibition,A,Auto-generated interaction
+315,5,High,Unknown,B,Auto-generated interaction
+929,4,Severe,Unknown,A,Auto-generated interaction
+361,101,Moderate,Absorption reduction,C,Auto-generated interaction
+490,60,High,Additive effect,C,Auto-generated interaction
+430,82,Severe,Unknown,A,Auto-generated interaction
+666,79,Low,Metabolism inhibition,A,Auto-generated interaction
+579,96,High,Absorption reduction,A,Auto-generated interaction
+504,47,Low,Unknown,C,Auto-generated interaction
+293,34,High,Absorption reduction,A,Auto-generated interaction
+428,106,High,Unknown,B,Auto-generated interaction
+354,25,High,Metabolism inhibition,C,Auto-generated interaction
+285,97,Moderate,Additive effect,C,Auto-generated interaction
+316,67,High,Metabolism inhibition,B,Auto-generated interaction
+213,11,Low,Absorption reduction,A,Auto-generated interaction
+350,36,Moderate,Absorption reduction,C,Auto-generated interaction
+840,47,Moderate,Additive effect,B,Auto-generated interaction
+204,138,Severe,Absorption reduction,C,Auto-generated interaction
+123,149,Low,Absorption reduction,A,Auto-generated interaction
+316,113,Moderate,Unknown,C,Auto-generated interaction
+336,21,High,Absorption reduction,B,Auto-generated interaction
+139,16,Low,Unknown,B,Auto-generated interaction
+203,65,Moderate,Additive effect,B,Auto-generated interaction
+433,134,Moderate,Metabolism inhibition,C,Auto-generated interaction
+767,39,Moderate,Metabolism inhibition,A,Auto-generated interaction
+567,131,Severe,Absorption reduction,C,Auto-generated interaction
+695,5,Low,Additive effect,B,Auto-generated interaction
+615,62,Severe,Metabolism inhibition,A,Auto-generated interaction
+371,103,High,Absorption reduction,C,Auto-generated interaction
+86,113,Low,Additive effect,B,Auto-generated interaction
+107,68,High,Absorption reduction,C,Auto-generated interaction
+842,125,Low,Metabolism inhibition,A,Auto-generated interaction
+702,75,High,Unknown,A,Auto-generated interaction
+923,95,Low,Absorption reduction,B,Auto-generated interaction
+741,89,High,Additive effect,B,Auto-generated interaction
+69,150,High,Unknown,A,Auto-generated interaction
+471,21,High,Unknown,C,Auto-generated interaction
+21,134,High,Metabolism inhibition,B,Auto-generated interaction
+601,85,High,Metabolism inhibition,B,Auto-generated interaction
+229,123,Moderate,Unknown,C,Auto-generated interaction
+696,29,High,Absorption reduction,A,Auto-generated interaction
+376,67,Low,Additive effect,C,Auto-generated interaction
+468,109,Moderate,Absorption reduction,A,Auto-generated interaction
+52,132,Moderate,Absorption reduction,C,Auto-generated interaction
+841,109,Moderate,Additive effect,B,Auto-generated interaction
+3,56,High,Metabolism inhibition,B,Auto-generated interaction
+764,15,Low,Metabolism inhibition,B,Auto-generated interaction
+738,40,Low,Unknown,B,Auto-generated interaction
+216,83,High,Unknown,B,Auto-generated interaction
+133,1,Severe,Absorption reduction,A,Auto-generated interaction
+863,139,Moderate,Additive effect,B,Auto-generated interaction
+639,9,Low,Absorption reduction,B,Auto-generated interaction
+326,9,High,Metabolism inhibition,C,Auto-generated interaction
+114,50,High,Metabolism inhibition,C,Auto-generated interaction
+46,37,High,Additive effect,A,Auto-generated interaction
+26,150,Moderate,Additive effect,C,Auto-generated interaction
+373,41,High,Unknown,C,Auto-generated interaction
+285,5,High,Unknown,B,Auto-generated interaction
+432,116,Severe,Unknown,A,Auto-generated interaction
+203,39,Severe,Additive effect,B,Auto-generated interaction
+236,38,Low,Additive effect,B,Auto-generated interaction
+618,113,Low,Unknown,B,Auto-generated interaction
+366,33,Severe,Absorption reduction,B,Auto-generated interaction
+74,110,Moderate,Metabolism inhibition,A,Auto-generated interaction

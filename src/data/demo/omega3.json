@@ -1,0 +1,23 @@
+{
+  "substance": "Omega-3 (Fish Oil)",
+  "interactions": [
+    {
+      "with": "Warfarin",
+      "severity": "caution",
+      "summary_short": "Omega-3 fatty acids may increase bleeding risk when used with warfarin.",
+      "mechanism": "Omega-3 fatty acids reduce platelet aggregation and may enhance anticoagulant effects.",
+      "clinical_effect": "Easy bruising, prolonged bleeding, increased INR in some patients.",
+      "management": "Use standard doses only. Monitor INR closely. Inform prescribing clinician.",
+      "evidence_grade": "B",
+      "confidence": 75,
+      "citations": [
+        {
+          "title": "Omega-3 fatty acids and bleeding—cause for concern?",
+          "journal": "Am J Cardiol",
+          "year": 2007,
+          "pmid": "17950855"
+        }
+      ]
+    }
+  ]
+}

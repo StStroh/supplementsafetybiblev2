@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Singleton Test</title>
+</head>
+<body>
+  <h1>Supabase Singleton Test</h1>
+  <div id="results"></div>
+  <script type="module">
+    import { supabase } from './src/lib/supabase.ts';
+
+    const results = document.getElementById('results');
+
+    function log(msg, type = 'info') {
+      const p = document.createElement('p');
+      p.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+      p.textContent = msg;
+      results.appendChild(p);
+    }
+
+    log('✓ Module imported successfully', 'success');
+
+    try {
+      const instance1 = supabase;
+      const instance2 = supabase;
+
+      log(`Instance 1: ${typeof instance1}`, 'info');
+      log(`Instance 2: ${typeof instance2}`, 'info');
+      log(`Instances are identical: ${instance1 === instance2}`, instance1 === instance2 ? 'success' : 'error');
+
+      if (typeof window.__supabase_client !== 'undefined') {
+        log('✓ Global client stored in window.__supabase_client', 'success');
+      } else {
+        log('✗ Global client NOT stored yet (lazy initialization)', 'info');
+      }
+
+      log('Testing lazy initialization by accessing auth property...', 'info');
+      const auth1 = instance1.auth;
+      const auth2 = instance2.auth;
+
+      log(`Auth 1 type: ${typeof auth1}`, 'info');
+      log(`Auth 2 type: ${typeof auth2}`, 'info');
+      log(`Auth instances are identical: ${auth1 === auth2}`, auth1 === auth2 ? 'success' : 'error');
+
+      if (typeof window.__supabase_client !== 'undefined') {
+        log('✓ Global client now stored after first access', 'success');
+      }
+
+      setTimeout(() => {
+        const consoleWarnings = window.console.warn.toString();
+        if (consoleWarnings.includes('Multiple GoTrueClient instances')) {
+          log('✗ WARNING: Multiple GoTrueClient instances detected!', 'error');
+        } else {
+          log('✓ No multiple instance warnings detected', 'success');
+        }
+      }, 1000);
+
+    } catch (error) {
+      log(`✗ Error: ${error.message}`, 'error');
+    }
+  </script>
+</body>
+</html>

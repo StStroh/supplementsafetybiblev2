@@ -1,0 +1,1525 @@
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Fish Oil')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'high',
+  'Increased bleeding risk due to antiplatelet effects',
+  'Monitor INR closely; report unusual bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Fish Oil (Omega-3)')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'high',
+  'Increased bleeding risk due to antiplatelet effects',
+  'Monitor INR closely; report unusual bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Omega-3')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'high',
+  'Increased bleeding risk due to antiplatelet effects',
+  'Monitor INR closely; report unusual bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Garlic')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May potentiate anticoagulant effect',
+  'Avoid high-dose garlic supplements; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginkgo Biloba')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'high',
+  'Increased bleeding risk',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin E')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'High doses may increase bleeding risk',
+  'Limit vitamin E >400 IU; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin K')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'high',
+  'Directly antagonizes warfarin anticoagulant effect',
+  'Maintain consistent vitamin K intake; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin K2')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'high',
+  'Directly antagonizes warfarin anticoagulant effect',
+  'Maintain consistent vitamin K intake; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Fish Oil')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Aspirin')),
+  'moderate',
+  'Additive antiplatelet effects increase bleeding risk',
+  'Monitor for bleeding signs; separate timing if possible. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Omega-3')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Aspirin')),
+  'moderate',
+  'Additive antiplatelet effects increase bleeding risk',
+  'Monitor for bleeding signs; separate timing if possible. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Garlic')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Clopidogrel')),
+  'moderate',
+  'May enhance antiplatelet effects',
+  'Avoid high-dose supplements; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Garlic')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Clopidogrel (Plavix)')),
+  'moderate',
+  'May enhance antiplatelet effects',
+  'Avoid high-dose supplements; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginkgo Biloba')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Aspirin')),
+  'moderate',
+  'Increased bleeding risk',
+  'Use cautiously; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginkgo Biloba')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Clopidogrel')),
+  'moderate',
+  'Increased bleeding risk',
+  'Use cautiously; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Sertraline')),
+  'severe',
+  'Risk of serotonin syndrome; CYP inducer reduces drug levels',
+  'Do not combine; consult prescriber immediately. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Sertraline (Zoloft)')),
+  'severe',
+  'Risk of serotonin syndrome; CYP inducer reduces drug levels',
+  'Do not combine; consult prescriber immediately. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Fluoxetine')),
+  'severe',
+  'Risk of serotonin syndrome; CYP inducer reduces drug levels',
+  'Do not combine; consult prescriber immediately. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Escitalopram')),
+  'severe',
+  'Risk of serotonin syndrome; CYP inducer reduces drug levels',
+  'Do not combine; consult prescriber immediately. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Venlafaxine')),
+  'severe',
+  'Risk of serotonin syndrome; CYP inducer reduces drug levels',
+  'Do not combine; consult prescriber immediately. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Duloxetine')),
+  'severe',
+  'Risk of serotonin syndrome; CYP inducer reduces drug levels',
+  'Do not combine; consult prescriber immediately. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('5-HTP')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Sertraline')),
+  'high',
+  'Risk of serotonin syndrome',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('5-HTP')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Fluoxetine')),
+  'high',
+  'Risk of serotonin syndrome',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('5-HTP')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Escitalopram')),
+  'high',
+  'Risk of serotonin syndrome',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Calcium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levothyroxine')),
+  'moderate',
+  'Reduces absorption of thyroid medication',
+  'Separate by at least 4 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Iron')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levothyroxine')),
+  'moderate',
+  'Reduces absorption of thyroid medication',
+  'Separate by at least 4 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Magnesium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levothyroxine')),
+  'moderate',
+  'May reduce absorption of thyroid medication',
+  'Separate by at least 2-4 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Fiber')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levothyroxine')),
+  'low',
+  'High-fiber supplements may reduce absorption',
+  'Take levothyroxine on empty stomach; separate fiber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Iron')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Omeprazole')),
+  'moderate',
+  'Reduced iron absorption due to increased gastric pH',
+  'Consider iron supplementation timing or formulation. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Iron')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Omeprazole (Prilosec)')),
+  'moderate',
+  'Reduced iron absorption due to increased gastric pH',
+  'Consider iron supplementation timing or formulation. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Calcium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Ciprofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Calcium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Calcium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Doxycycline')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Iron')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Ciprofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Iron')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Iron')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Doxycycline')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Magnesium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Ciprofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Magnesium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Zinc')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Ciprofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Zinc')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Levofloxacin')),
+  'moderate',
+  'Chelation reduces antibiotic absorption',
+  'Separate by at least 2 hours. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Probiotics')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Amoxicillin')),
+  'low',
+  'Antibiotics may reduce probiotic viability',
+  'Take probiotics several hours apart from antibiotic. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Probiotics')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Azithromycin')),
+  'low',
+  'Antibiotics may reduce probiotic viability',
+  'Take probiotics several hours apart from antibiotic. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Probiotics')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Ciprofloxacin')),
+  'low',
+  'Antibiotics may reduce probiotic viability',
+  'Take probiotics several hours apart from antibiotic. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Niacin')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Atorvastatin')),
+  'moderate',
+  'Increased risk of myopathy',
+  'Use cautiously; monitor for muscle pain. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Niacin')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Atorvastatin (Lipitor)')),
+  'moderate',
+  'Increased risk of myopathy',
+  'Use cautiously; monitor for muscle pain. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Niacin')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Simvastatin')),
+  'moderate',
+  'Increased risk of myopathy',
+  'Use cautiously; monitor for muscle pain. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Niacin')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Rosuvastatin')),
+  'moderate',
+  'Increased risk of myopathy',
+  'Use cautiously; monitor for muscle pain. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('CoQ10')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May reduce anticoagulant effect',
+  'Monitor INR if starting/stopping CoQ10. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Coenzyme Q10 (CoQ10)')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May reduce anticoagulant effect',
+  'Monitor INR if starting/stopping CoQ10. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Potassium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Lisinopril')),
+  'moderate',
+  'Risk of hyperkalemia',
+  'Monitor potassium levels; avoid high-dose supplements. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Potassium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Losartan')),
+  'moderate',
+  'Risk of hyperkalemia',
+  'Monitor potassium levels; avoid high-dose supplements. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Potassium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Spironolactone')),
+  'high',
+  'Significant risk of hyperkalemia',
+  'Avoid potassium supplements; monitor levels closely. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Magnesium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Hydrochlorothiazide')),
+  'low',
+  'Diuretic may deplete magnesium',
+  'Magnesium supplementation may be beneficial; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Potassium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Hydrochlorothiazide')),
+  'low',
+  'Diuretic may deplete potassium',
+  'Potassium supplementation may be needed; monitor levels. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Potassium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Furosemide')),
+  'low',
+  'Diuretic may deplete potassium',
+  'Potassium supplementation may be needed; monitor levels. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Magnesium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Furosemide')),
+  'low',
+  'Diuretic may deplete magnesium',
+  'Magnesium supplementation may be beneficial; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Melatonin')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Zolpidem')),
+  'moderate',
+  'Additive sedative effects',
+  'Use cautiously; avoid driving. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Valerian Root')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Zolpidem')),
+  'moderate',
+  'Additive sedative effects',
+  'Use cautiously; avoid driving. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Valerian Root')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Alprazolam')),
+  'moderate',
+  'Additive sedative effects',
+  'Use cautiously; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Valerian Root')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Lorazepam')),
+  'moderate',
+  'Additive sedative effects',
+  'Use cautiously; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Valerian Root')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Diazepam')),
+  'moderate',
+  'Additive sedative effects',
+  'Use cautiously; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Valerian Root')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Clonazepam')),
+  'moderate',
+  'Additive sedative effects',
+  'Use cautiously; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Magnesium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Metformin')),
+  'low',
+  'Metformin may reduce magnesium absorption',
+  'Consider magnesium supplementation; monitor levels. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin B12')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Metformin')),
+  'low',
+  'Long-term metformin may deplete B12',
+  'Consider B12 supplementation; monitor levels annually. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Chromium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Insulin')),
+  'moderate',
+  'May enhance insulin effect; hypoglycemia risk',
+  'Monitor blood glucose closely. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Chromium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Metformin')),
+  'low',
+  'May enhance glucose-lowering effect',
+  'Monitor blood glucose; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginseng')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Insulin')),
+  'moderate',
+  'May affect blood glucose control',
+  'Monitor blood glucose closely. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginseng')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Metformin')),
+  'low',
+  'May affect blood glucose control',
+  'Monitor blood glucose; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin C')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'low',
+  'High doses (>1g/day) may affect INR',
+  'Keep vitamin C intake consistent; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Green Tea Extract')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'Contains vitamin K; may reduce anticoagulant effect',
+  'Avoid high doses; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Zinc')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Amoxicillin')),
+  'low',
+  'May reduce antibiotic absorption',
+  'Separate by 2 hours if possible. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Calcium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Verapamil')),
+  'moderate',
+  'May reduce effectiveness of calcium channel blocker',
+  'Consult prescriber before high-dose calcium. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Calcium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Diltiazem')),
+  'moderate',
+  'May reduce effectiveness of calcium channel blocker',
+  'Consult prescriber before high-dose calcium. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Digoxin')),
+  'high',
+  'CYP inducer reduces digoxin levels',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Verapamil')),
+  'high',
+  'CYP inducer reduces drug levels',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Atorvastatin')),
+  'moderate',
+  'CYP inducer may reduce statin levels',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('St. John''s Wort')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Simvastatin')),
+  'moderate',
+  'CYP inducer may reduce statin levels',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginkgo Biloba')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Ibuprofen')),
+  'moderate',
+  'Increased bleeding risk',
+  'Use cautiously; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginkgo Biloba')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Naproxen')),
+  'moderate',
+  'Increased bleeding risk',
+  'Use cautiously; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Garlic')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Aspirin')),
+  'moderate',
+  'Additive antiplatelet effects',
+  'Avoid high-dose garlic; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginger')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May enhance anticoagulant effect',
+  'Avoid high doses; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginger')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Aspirin')),
+  'low',
+  'May enhance antiplatelet effects',
+  'Use moderate amounts; monitor for bleeding. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Turmeric')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May enhance anticoagulant effect',
+  'Avoid high doses; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Turmeric (Curcumin)')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May enhance anticoagulant effect',
+  'Avoid high doses; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Curcumin')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May enhance anticoagulant effect',
+  'Avoid high doses; monitor INR. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin D3')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Digoxin')),
+  'moderate',
+  'Hypercalcemia from vitamin D may increase digoxin toxicity',
+  'Monitor calcium and digoxin levels. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Calcium')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Digoxin')),
+  'moderate',
+  'Hypercalcemia may increase digoxin toxicity',
+  'Avoid high-dose calcium; monitor levels. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('SAMe')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Sertraline')),
+  'moderate',
+  'Risk of serotonin syndrome',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('SAMe')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Escitalopram')),
+  'moderate',
+  'Risk of serotonin syndrome',
+  'Avoid combination; consult prescriber. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Niacin')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Pravastatin')),
+  'moderate',
+  'Increased risk of myopathy',
+  'Use cautiously; monitor for muscle pain. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Ginseng')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Warfarin')),
+  'moderate',
+  'May affect INR variability',
+  'Monitor INR closely; maintain consistent use. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin C')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Lisinopril')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin C')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Losartan')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin C')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Metoprolol')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin C')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Amlodipine')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin D3')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Lisinopril')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin D3')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Losartan')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin D3')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Metoprolol')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin D3')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Amlodipine')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin B12')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Lisinopril')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin B12')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Losartan')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin B12')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Metoprolol')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;
+
+
+INSERT INTO interactions (supplement_id, medication_id, severity, description, recommendation)
+VALUES (
+  (SELECT id FROM supplements WHERE lower(name) = lower('Vitamin B12')),
+  (SELECT id FROM medications WHERE lower(name) = lower('Amlodipine')),
+  'low',
+  'No well-documented significant interaction',
+  'Generally safe to combine; consult healthcare provider. Not medical advice.'
+)
+ON CONFLICT (supplement_id, medication_id)
+DO UPDATE SET
+  severity = EXCLUDED.severity,
+  description = EXCLUDED.description,
+  recommendation = EXCLUDED.recommendation;

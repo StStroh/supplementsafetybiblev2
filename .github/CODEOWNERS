@@ -1,0 +1,30 @@
+# CODEOWNERS - Require review for critical files
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Billing Flow - LOCKED AND VERIFIED 2025-12-14
+# These files control customer payments and premium access
+# Changes require full staging validation with real Stripe test payments
+# See: /docs/BILLING_FLOW_LOCKED.md
+
+netlify/functions/stripe-webhook.cjs @OWNER
+netlify/functions/retrieve-session.cjs @OWNER
+netlify/functions/_lib/upsertEntitlement.cjs @OWNER
+netlify/functions/_lib/plan-map.cjs @OWNER
+netlify/functions/create-checkout-session.cjs @OWNER
+netlify/functions/me.cjs @OWNER
+src/lib/stripe/plan-map.cjs @OWNER
+src/lib/stripe/plan-map.ts @OWNER
+src/pages/PremiumDashboard.tsx @OWNER
+
+# Supabase Database Migrations
+# Changes to profiles table affect billing entitlements
+supabase/migrations/*.sql @OWNER
+
+# Critical Configuration
+# CSP headers and environment settings affect Stripe integration
+netlify.toml @OWNER
+.env @OWNER
+.env.example @OWNER
+
+# Note: Replace @OWNER with actual GitHub username/team
+# If using GitLab, create .gitlab/CODEOWNERS instead

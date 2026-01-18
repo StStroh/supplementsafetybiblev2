@@ -1,0 +1,60 @@
+import { Link, NavLink } from "react-router-dom";
+import { BRAND_NAME_FULL } from '../lib/brand';
+import '../styles/logo.css';
+import Logo from './Logo';
+
+export default function NavClinical() {
+  return (
+    <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3">
+          <Logo variant="dark" className="logo--nav" />
+          <span className="font-semibold text-[#2E2555] text-lg md:text-xl leading-tight tracking-tight">
+            {BRAND_NAME_FULL}
+          </span>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-6 text-sm">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-700 font-medium"
+                : "text-slate-700 hover:text-blue-700"
+            }
+          >
+            Home
+          </NavLink>
+
+          <NavLink
+            to="/pricing"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-700 font-medium"
+                : "text-slate-700 hover:text-blue-700"
+            }
+          >
+            Pricing
+          </NavLink>
+
+          <a href="#features" className="text-slate-700 hover:text-blue-700">
+            Features
+          </a>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link to="/login" className="text-sm">
+            Sign in
+          </Link>
+
+          <Link
+            to="/pricing"
+            className="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm hover:bg-blue-700 shadow-sm"
+          >
+            Get Premium
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}

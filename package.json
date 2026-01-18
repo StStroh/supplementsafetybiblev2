@@ -1,0 +1,52 @@
+{
+  "name": "vite-react-typescript-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node scripts/gen-sitemap.cjs && node scripts/prebuild-guard.cjs && node scripts/assert-hero.mjs",
+    "build": "tsc && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "netlify:dev": "netlify dev",
+    "db:harden": "node scripts/run_db_hardening.cjs",
+    "db:harden:skip": "HARDENING_SKIP=true node scripts/run_db_hardening.cjs",
+    "seed:substances": "node scripts/seed-substances.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "@types/qrcode": "^1.5.6",
+    "dotenv": "^17.2.3",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.474.0",
+    "node-fetch": "^2.7.0",
+    "nodemailer": "^7.0.11",
+    "pdf-lib": "^1.17.1",
+    "pg": "^8.12.0",
+    "qrcode": "^1.5.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
+    "react-helmet-async": "^2.0.5",
+    "react-router-dom": "^6.21.1",
+    "recharts": "^2.12.7",
+    "stripe": "^14.11.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@types/react-helmet": "^6.1.11",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  }
+}

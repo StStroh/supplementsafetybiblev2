@@ -1,0 +1,94 @@
+═══════════════════════════════════════════════════════════════
+            PRICING ALIGNMENT - CHANGES APPLIED
+═══════════════════════════════════════════════════════════════
+
+FILE: netlify/functions/create-checkout-session.cjs
+
+DIFF:
+─────────────────────────────────────────────────────────────
+
+REMOVED (lines 41-48):
+-   const interval = body.interval || 'month';
+-
+-   let priceId;
+-   if (interval === 'year') {
+-     priceId = PLAN_PRICE_MAP.PREMIUM_YEARLY;
+-   } else {
+-     priceId = PLAN_PRICE_MAP.PREMIUM_MONTHLY;
+-   }
+
+ADDED (lines 41-73):
++   const tier = body.tier;
++   if (!tier) {
++     return fail(400, 'Missing required parameter: tier', origin);
++   }
++
++   const tierMap = {
++     'pro_monthly': PLAN_PRICE_MAP.PRO_MONTHLY,
++     'pro_annual': PLAN_PRICE_MAP.PRO_YEARLY,
++     'premium_monthly': PLAN_PRICE_MAP.PREMIUM_MONTHLY,
++     'premium_annual': PLAN_PRICE_MAP.PREMIUM_YEARLY,
++   };
++
++   const priceId = tierMap[tier];
++   if (!priceId) {
++     return fail(400, `Invalid tier: "${tier}"...`, origin, { tier });
++   }
++
++   const EXPECTED = {
++     pro_monthly: 1499,
++     pro_annual: 14900,
++     premium_monthly: 2499,
++     premium_annual: 24900,
++   };
++
++   try {
++     const stripePrice = await stripe.prices.retrieve(priceId);
++     const amount = stripePrice.unit_amount;
++     if (EXPECTED[tier] && amount !== EXPECTED[tier]) {
++       return fail(400, `Price mismatch for "${tier}": 
++         expected ${EXPECTED[tier]} cents but price ID ${priceId}
++         is ${amount} cents`, origin, { tier, priceId, amount });
++     }
++   } catch (err) {
++     return fail(500, 'Failed to verify price with Stripe',
++       origin, { details: err.message });
++   }
+
+═══════════════════════════════════════════════════════════════
+                    WHAT CHANGED
+═══════════════════════════════════════════════════════════════
+
+BEFORE:
+  ❌ Only accepted { interval: 'month' | 'year' }
+  ❌ Always created PREMIUM checkout
+  ❌ Ignored tier parameter
+  ❌ $14.99 button opened $24.99 checkout
+
+AFTER:
+  ✅ Accepts { tier: 'pro_monthly' | 'pro_annual' | ... }
+  ✅ Maps tier to correct price ID
+  ✅ pro_monthly → PRO_MONTHLY ($14.99)
+  ✅ pro_annual → PRO_YEARLY ($149)
+  ✅ premium_monthly → PREMIUM_MONTHLY ($24.99)
+  ✅ premium_annual → PREMIUM_YEARLY ($249)
+  ✅ Verifies price amounts with Stripe before checkout
+  ✅ Fails with clear error if price mismatch detected
+
+═══════════════════════════════════════════════════════════════
+                    SANITY GUARD
+═══════════════════════════════════════════════════════════════
+
+The function now:
+1. Retrieves the price from Stripe API
+2. Checks unit_amount matches expected value
+3. Returns 400 error if mismatch with details:
+   - Expected amount
+   - Actual amount
+   - Price ID
+   - Tier
+
+This prevents future misconfigurations from silently charging
+wrong amounts.
+
+═══════════════════════════════════════════════════════════════

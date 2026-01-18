@@ -1,0 +1,11 @@
+supplement_name,medication_name,severity,description,recommendation
+Vitamin C,Warfarin,Moderate,May reduce INR; monitor clotting,Check INR and consult physician
+Magnesium,Metformin,Minor,Possible GI upset,Take with food if needed
+Fish Oil,Aspirin,Moderate,Increased bleeding risk,Monitor for bleeding signs
+Vitamin K,Warfarin,High,Directly antagonizes anticoagulant effect,Maintain consistent vitamin K intake
+Calcium,Levothyroxine,Moderate,Reduces absorption of thyroid medication,Take at least 4 hours apart
+Iron,Omeprazole,Moderate,Reduced iron absorption,Consider iron supplementation timing
+Ginseng,Warfarin,Moderate,May affect INR variability,Monitor INR closely
+St Johns Wort,Sertraline,High,Risk of serotonin syndrome,Do not combine without medical supervision
+Garlic,Clopidogrel,Moderate,May enhance antiplatelet effect,Monitor for bleeding
+Melatonin,Zolpidem,Moderate,Additive sedative effects,Use caution with combined use
