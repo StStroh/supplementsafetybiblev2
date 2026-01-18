@@ -15,6 +15,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 const { getPlanInfo } = require('./_lib/plan-map.cjs');
+const { trackPurchase } = require('./_lib/tiktokTracking.cjs');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 
 const SITE_URL = process.env.SITE_URL || 'https://supplementsafetybible.com';
@@ -266,6 +267,33 @@ exports.handler = async (event) => {
         }
 
         console.log('[StripeWebhook] ✅ Profile updated successfully');
+      }
+
+      // Track TikTok purchase event (non-blocking)
+      try {
+        const amountTotal = obj.amount_total ? obj.amount_total / 100 : 0; // Convert cents to dollars
+        const currency = obj.currency || 'usd';
+
+        if (amountTotal > 0) {
+          const tiktokResult = await trackPurchase({
+            email,
+            currency,
+            value: amountTotal,
+            eventId: checkoutSessionId,
+            ip: obj.customer_details?.address?.country || null,
+            userAgent: null, // Not available in webhook
+            ttclid: obj.metadata?.ttclid || null,
+          });
+
+          if (tiktokResult.success) {
+            console.log('[StripeWebhook] ✅ TikTok purchase event tracked');
+          } else {
+            console.warn('[StripeWebhook] ⚠️ TikTok tracking failed (non-critical):', tiktokResult.error);
+          }
+        }
+      } catch (tiktokError) {
+        // TikTok tracking errors should NOT break the webhook
+        console.error('[StripeWebhook] ⚠️ TikTok tracking error (non-critical):', tiktokError.message);
       }
 
       // Mark event as completed
