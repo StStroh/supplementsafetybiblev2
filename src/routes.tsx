@@ -58,6 +58,9 @@ import EveningPrimroseSeizureRisk from './pages/EveningPrimroseSeizureRisk';
 import CalciumIronTiming from './pages/CalciumIronTiming';
 import EveningPrimrosePhenothiazines from './pages/EveningPrimrosePhenothiazines';
 import SupplementDrugInteractions from './pages/SupplementDrugInteractions';
+import CanSupplementsInteract from './pages/CanSupplementsInteract';
+import StJohnsWortInteractions from './pages/StJohnsWortInteractions';
+import SupplementsPregnancySafety from './pages/SupplementsPregnancySafety';
 import Pregnancy from './pages/Pregnancy';
 import PregnancyHowItWorks from './pages/PregnancyHowItWorks';
 import PregnancyDisclaimer from './pages/PregnancyDisclaimer';
@@ -235,6 +238,18 @@ export const router = createBrowserRouter([
       {
         path: 'supplement-drug-interactions',
         element: <SupplementDrugInteractions />
+      },
+      {
+        path: 'can-supplements-interact-with-prescription-drugs',
+        element: <CanSupplementsInteract />
+      },
+      {
+        path: 'st-johns-wort-drug-interactions',
+        element: <StJohnsWortInteractions />
+      },
+      {
+        path: 'are-supplements-safe-during-pregnancy',
+        element: <SupplementsPregnancySafety />
       },
       {
         path: 'pregnancy',
