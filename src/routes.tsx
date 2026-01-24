@@ -57,6 +57,7 @@ import StackMode from './pages/StackMode';
 import EveningPrimroseSeizureRisk from './pages/EveningPrimroseSeizureRisk';
 import CalciumIronTiming from './pages/CalciumIronTiming';
 import EveningPrimrosePhenothiazines from './pages/EveningPrimrosePhenothiazines';
+import SupplementDrugInteractions from './pages/SupplementDrugInteractions';
 
 export const router = createBrowserRouter([
   {
@@ -226,6 +227,10 @@ export const router = createBrowserRouter([
       {
         path: 'preview/feed',
         element: <PreviewFeed />
+      },
+      {
+        path: 'supplement-drug-interactions',
+        element: <SupplementDrugInteractions />
       },
       {
         path: 'pregnancy-lactation-safety',
