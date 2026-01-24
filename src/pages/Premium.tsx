@@ -527,8 +527,202 @@ export default function Premium() {
           </div>
         </section>
 
+        {/* Free vs Premium Comparison */}
+        <section id="free-vs-premium" className="max-w-5xl mx-auto px-4 sm:px-6 mb-20 scroll-mt-20">
+          <h2 className="text-3xl font-bold text-center mb-4" style={{ color: 'var(--color-text-primary)' }}>
+            Free vs Professional
+          </h2>
+          <p className="text-center mb-12 max-w-2xl mx-auto" style={{ color: 'var(--color-text-secondary)' }}>
+            Professional provides deeper interaction analysis with mechanism-level details, multi-supplement screening, and exportable reports for comprehensive safety review.
+          </p>
+
+          {/* Desktop/Tablet: Side-by-side table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="text-left p-4 font-semibold border-b-2" style={{ color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
+                    Feature
+                  </th>
+                  <th className="text-center p-4 font-semibold border-b-2" style={{ color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
+                    Free
+                  </th>
+                  <th className="text-center p-4 font-semibold border-b-2 bg-blue-50" style={{ color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
+                    Professional
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="p-4 border-b" style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}>
+                    Basic interaction flags
+                  </td>
+                  <td className="p-4 border-b text-center" style={{ borderColor: 'var(--color-border)' }}>
+                    <Check className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="p-4 border-b text-center bg-blue-50" style={{ borderColor: 'var(--color-border)' }}>
+                    <Check className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-4 border-b" style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}>
+                    Mechanism-level explanations (absorption/metabolism)
+                  </td>
+                  <td className="p-4 border-b text-center" style={{ borderColor: 'var(--color-border)' }}>
+                    <span className="text-gray-400">—</span>
+                  </td>
+                  <td className="p-4 border-b text-center bg-blue-50" style={{ borderColor: 'var(--color-border)' }}>
+                    <Check className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-4 border-b" style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}>
+                    Supplement stack support (multiple supplements)
+                  </td>
+                  <td className="p-4 border-b text-center" style={{ borderColor: 'var(--color-border)' }}>
+                    <span className="text-gray-400">—</span>
+                  </td>
+                  <td className="p-4 border-b text-center bg-blue-50" style={{ borderColor: 'var(--color-border)' }}>
+                    <Check className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-4 border-b" style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}>
+                    Printable shareable report (PDF)
+                  </td>
+                  <td className="p-4 border-b text-center" style={{ borderColor: 'var(--color-border)' }}>
+                    <span className="text-gray-400">—</span>
+                  </td>
+                  <td className="p-4 border-b text-center bg-blue-50" style={{ borderColor: 'var(--color-border)' }}>
+                    <Check className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-4 border-b" style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}>
+                    Updates as evidence evolves
+                  </td>
+                  <td className="p-4 border-b text-center" style={{ borderColor: 'var(--color-border)' }}>
+                    <span className="text-sm text-gray-500">Periodic</span>
+                  </td>
+                  <td className="p-4 border-b text-center bg-blue-50" style={{ borderColor: 'var(--color-border)' }}>
+                    <span className="text-sm font-semibold text-blue-600">Immediate</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-4" style={{ color: 'var(--color-text-secondary)' }}>
+                    Priority support & guidance resources
+                  </td>
+                  <td className="p-4 text-center">
+                    <span className="text-gray-400">—</span>
+                  </td>
+                  <td className="p-4 text-center bg-blue-50">
+                    <Check className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile: Stacked cards */}
+          <div className="md:hidden space-y-6">
+            {/* Free Card */}
+            <div className="rounded-xl border-2 p-6" style={{ borderColor: 'var(--color-border)', background: 'white' }}>
+              <h3 className="text-xl font-bold mb-4 text-center" style={{ color: 'var(--color-text-primary)' }}>
+                Free
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Basic interaction flags</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-300">✕</span>
+                  <span className="text-sm text-gray-400 line-through">Mechanism-level explanations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-300">✕</span>
+                  <span className="text-sm text-gray-400 line-through">Supplement stack support</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-300">✕</span>
+                  <span className="text-sm text-gray-400 line-through">Printable PDF reports</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Periodic updates</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-300">✕</span>
+                  <span className="text-sm text-gray-400 line-through">Priority support</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Professional Card */}
+            <div className="rounded-xl border-2 p-6 relative" style={{ borderColor: '#3b82f6', background: 'linear-gradient(to bottom, #eff6ff, white)' }}>
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                  Recommended
+                </div>
+              </div>
+              <h3 className="text-xl font-bold mb-4 text-center text-blue-900">
+                Professional
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Basic interaction flags</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Mechanism-level explanations (absorption/metabolism)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Supplement stack support (multiple supplements)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Printable shareable report (PDF)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium text-blue-600">Immediate updates as evidence evolves</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Priority support & guidance resources</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <p className="text-center text-sm mt-8 mb-8" style={{ color: 'var(--color-text-secondary)' }}>
+            Educational information only. Not medical advice.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => handleCheckout('pro')}
+              disabled={loading !== null}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg text-lg"
+            >
+              {loading === 'pro' ? 'Processing...' : 'Unlock Professional'}
+              <ChevronRight className="w-5 h-5" />
+            </button>
+            <a
+              href="#features-detail"
+              className="text-blue-600 hover:text-blue-700 font-semibold text-lg hover:underline"
+            >
+              See what Professional includes
+            </a>
+          </div>
+        </section>
+
         {/* Value Propositions */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
+        <section id="features-detail" className="max-w-6xl mx-auto px-4 sm:px-6 mb-20 scroll-mt-20">
           <h2 className="text-3xl font-bold text-center mb-12" style={{ color: 'var(--color-text-primary)' }}>
             Why Healthcare Professionals Choose Professional
           </h2>

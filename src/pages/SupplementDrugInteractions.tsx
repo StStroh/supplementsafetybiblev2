@@ -356,13 +356,70 @@ export default function SupplementDrugInteractions() {
                     Access comprehensive supplement-medication interaction analysis based on current scientific evidence. Get detailed risk assessments, severity ratings, and clinical guidance for your complete supplement and medication regimen.
                   </p>
                   <Link
-                    to="/premium"
+                    to="/premium#free-vs-premium"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors"
                   >
-                    Learn About Professional Screening
+                    Compare Free vs Professional
                     <ChevronRight className="w-5 h-5" />
                   </Link>
                 </div>
+              </div>
+            </div>
+
+            {/* Mini Comparison Preview */}
+            <div className="my-12 p-6 rounded-xl border-2" style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg)' }}>
+              <h3 className="text-xl font-bold mb-6 text-center" style={{ color: 'var(--color-text-primary)' }}>
+                Quick Comparison: Free vs Professional
+              </h3>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Free */}
+                <div className="bg-white rounded-lg p-4">
+                  <h4 className="font-semibold mb-3 text-center" style={{ color: 'var(--color-text-primary)' }}>Free</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span style={{ color: 'var(--color-text-secondary)' }}>Basic interaction flags</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-300">✕</span>
+                      <span className="text-gray-400">Mechanism details</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-300">✕</span>
+                      <span className="text-gray-400">PDF reports</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Professional */}
+                <div className="rounded-lg p-4" style={{ background: 'linear-gradient(to bottom, #eff6ff, #dbeafe)' }}>
+                  <h4 className="font-semibold mb-3 text-center text-blue-900">Professional</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>Basic interaction flags</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span className="font-medium text-blue-900">Mechanism details (absorption/metabolism)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span className="font-medium text-blue-900">PDF reports & stack support</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="text-center mt-6">
+                <Link
+                  to="/premium#free-vs-premium"
+                  className="text-blue-600 hover:text-blue-800 font-semibold hover:underline inline-flex items-center gap-1"
+                >
+                  See full comparison
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
               </div>
             </div>
 
