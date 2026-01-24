@@ -260,7 +260,7 @@ export default function FloatingStarter({
               >
                 <Shield className="w-4 h-4" style={{ color: 'var(--color-brand)', flexShrink: 0 }} />
                 <span style={{ fontSize: '12px', color: 'var(--color-brand)', fontWeight: 500 }}>
-                  Built by nutraceutical & quality experts
+                  Independent educational resource
                 </span>
               </div>
             )}
@@ -342,7 +342,7 @@ export default function FloatingStarter({
                   lineHeight: 1.3,
                 }}
               >
-                Built by nutraceutical & quality experts
+                Independent educational resource
               </p>
             )}
           </div>
@@ -475,7 +475,7 @@ export default function FloatingStarter({
                 textAlign: 'center',
               }}
             >
-              Built by nutraceutical & quality experts
+              Independent educational resource
             </p>
           </div>
         ) : (
