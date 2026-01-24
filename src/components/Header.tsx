@@ -39,6 +39,9 @@ export default function Header() {
             <a href="/search" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
               Search
             </a>
+            <a href="/pregnancy" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
+              Pregnancy
+            </a>
             <a href="/premium" className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition">
               Premium
             </a>
@@ -76,6 +79,13 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Search
+              </a>
+              <a
+                href="/pregnancy"
+                className="text-sm font-medium text-[#8B7BA8] hover:text-[#A89FC4] transition"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pregnancy
               </a>
               <a
                 href="/premium"

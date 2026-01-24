@@ -58,6 +58,10 @@ import EveningPrimroseSeizureRisk from './pages/EveningPrimroseSeizureRisk';
 import CalciumIronTiming from './pages/CalciumIronTiming';
 import EveningPrimrosePhenothiazines from './pages/EveningPrimrosePhenothiazines';
 import SupplementDrugInteractions from './pages/SupplementDrugInteractions';
+import Pregnancy from './pages/Pregnancy';
+import PregnancyHowItWorks from './pages/PregnancyHowItWorks';
+import PregnancyDisclaimer from './pages/PregnancyDisclaimer';
+import PregnancySupplementSafety from './pages/PregnancySupplementSafety';
 
 export const router = createBrowserRouter([
   {
@@ -231,6 +235,22 @@ export const router = createBrowserRouter([
       {
         path: 'supplement-drug-interactions',
         element: <SupplementDrugInteractions />
+      },
+      {
+        path: 'pregnancy',
+        element: <Pregnancy />
+      },
+      {
+        path: 'pregnancy/how-it-works',
+        element: <PregnancyHowItWorks />
+      },
+      {
+        path: 'pregnancy/disclaimer',
+        element: <PregnancyDisclaimer />
+      },
+      {
+        path: 'pregnancy/supplement-safety',
+        element: <PregnancySupplementSafety />
       },
       {
         path: 'pregnancy-lactation-safety',

@@ -326,7 +326,7 @@ export default function SupplementDrugInteractions() {
               <li>Using medications with narrow therapeutic windows</li>
               <li>Taking medications for serious conditions (heart disease, diabetes, seizures, organ transplants, cancer)</li>
               <li>Planning surgery (some supplements affect bleeding or anesthesia)</li>
-              <li>Pregnancy or breastfeeding</li>
+              <li>Pregnancy or breastfeeding (see our <Link to="/pregnancy" className="text-blue-600 hover:text-blue-800 underline">pregnancy supplement safety guide</Link> for specialized information)</li>
               <li>Managing complex or multiple health conditions</li>
               <li>Experiencing unexplained symptoms or changes in medication effectiveness</li>
             </ul>
