@@ -4,6 +4,8 @@
  * Stripe collects email during checkout
  */
 
+import { supabase } from '../lib/supabase';
+
 type Plan = "pro" | "premium";
 type Interval = "monthly" | "annual";
 
@@ -51,7 +53,6 @@ export async function startCheckout(
     // Try to get auth token if user is logged in (optional)
     let authToken: string | null = null;
     try {
-      const { supabase } = await import('../lib/supabase');
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.access_token) {
         authToken = session.access_token;
