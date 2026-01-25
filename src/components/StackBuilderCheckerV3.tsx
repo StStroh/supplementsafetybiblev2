@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X, Filter, Crown, MessageSquare } from 'lucide-react';
+import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X, Filter, Crown, MessageSquare, Lock } from 'lucide-react';
 import SubstanceCombobox from './SubstanceCombobox';
 import NotFoundCard from './NotFoundCard';
 import GlobalTrustStatement from './GlobalTrustStatement';
@@ -8,12 +8,14 @@ import InlineUpgradeCard from './InlineUpgradeCard';
 import FeatureGateUpsell from './FeatureGateUpsell';
 import InteractionResultCard from './check/InteractionResultCard';
 import RequestReviewModal from './check/RequestReviewModal';
+import UpgradeModal from './UpgradeModal';
 import { useTranslation } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
 import { useAuthUser } from '../hooks/useAuthUser';
 import { ContextFlags } from '../utils/contextKeywords';
 import { trackBehavior } from '../lib/salesIntent';
 import { getSubstanceLabel } from '../utils/substanceHelpers';
+import { PLAN, getPlanLimits, isFree } from '../config/plan';
 
 interface Substance {
   substance_id: string;
@@ -144,6 +146,13 @@ export default function StackBuilderCheckerV3() {
     substanceName: string;
     interactionWith: string;
   }>({ substanceName: '', interactionWith: '' });
+
+  // Upgrade modal (for FREE tier limits)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeModalTrigger, setUpgradeModalTrigger] = useState<'limit' | 'results' | 'action'>('limit');
+
+  // Get plan limits
+  const planLimits = getPlanLimits(PLAN);
 
   // Initialize filters and query from URL on mount
   useEffect(() => {
@@ -285,6 +294,33 @@ export default function StackBuilderCheckerV3() {
     return filtered;
   }, [results, selectedSeverities, minConfidence]);
 
+  // Split results by risk level for FREE tier
+  const { highRiskResults, lockedResults } = useMemo(() => {
+    if (!filteredResults || !isFree(PLAN)) {
+      return { highRiskResults: filteredResults || [], lockedResults: [] };
+    }
+
+    const high: Interaction[] = [];
+    const locked: Interaction[] = [];
+
+    filteredResults.forEach((interaction) => {
+      const severity = interaction.severity_norm?.toLowerCase();
+      if (severity === 'major') {
+        high.push(interaction);
+      } else {
+        locked.push(interaction);
+      }
+    });
+
+    return { highRiskResults: high, lockedResults: locked };
+  }, [filteredResults]);
+
+  const lockedCount = lockedResults.length;
+  const moderateLockedCount = lockedResults.filter(i => i.severity_norm?.toLowerCase() === 'moderate').length;
+  const lowLockedCount = lockedResults.filter(i =>
+    ['minor', 'monitor'].includes(i.severity_norm?.toLowerCase() || '')
+  ).length;
+
   // Toggle severity filter
   const toggleSeverity = (severity: string) => {
     if (!isPremiumUser()) return;
@@ -347,6 +383,12 @@ export default function StackBuilderCheckerV3() {
   const handleSupplementChange = (substance: Substance | null) => {
     setCurrentSupplement(substance);
     if (substance && !supplements.find((s) => s.substance_id === substance.substance_id)) {
+      // Check FREE tier limits
+      if (isFree(PLAN) && supplements.length >= planLimits.maxSupplements) {
+        setUpgradeModalTrigger('limit');
+        setShowUpgradeModal(true);
+        return;
+      }
       setSupplements([...supplements, substance]);
       setCurrentSupplement(null);
     }
@@ -356,6 +398,12 @@ export default function StackBuilderCheckerV3() {
   const handleMedicationChange = (substance: Substance | null) => {
     setCurrentMedication(substance);
     if (substance && !medications.find((m) => m.substance_id === substance.substance_id)) {
+      // Check FREE tier limits
+      if (isFree(PLAN) && medications.length >= planLimits.maxMedications) {
+        setUpgradeModalTrigger('limit');
+        setShowUpgradeModal(true);
+        return;
+      }
       setMedications([...medications, substance]);
       setCurrentMedication(null);
     }
@@ -1164,15 +1212,16 @@ export default function StackBuilderCheckerV3() {
             </div>
           </div>
           <div className="divide-y divide-slate-200">
-            {filteredResults.length > 0 ? (
-              filteredResults.map((interaction) => (
+            {/* High Risk Results (always shown) */}
+            {highRiskResults.length > 0 ? (
+              highRiskResults.map((interaction) => (
                 <InteractionResultCard
                   key={interaction.interaction_id}
                   interaction={interaction}
                   contextFlags={contextFlags}
                 />
               ))
-            ) : (
+            ) : filteredResults && filteredResults.length === 0 ? (
               <div className="p-6 text-center">
                 <p className="text-slate-600">No interactions match your filters.</p>
                 <button
@@ -1182,6 +1231,48 @@ export default function StackBuilderCheckerV3() {
                 >
                   Clear filters
                 </button>
+              </div>
+            ) : null}
+
+            {/* Locked Results Summary (FREE tier only) */}
+            {isFree(PLAN) && lockedCount > 0 && (
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-t-2 border-blue-200">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                    <Lock className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      {lockedCount} More {lockedCount === 1 ? 'Interaction' : 'Interactions'} Found
+                    </h3>
+                    <p className="text-sm text-gray-700 mb-4">
+                      We found {moderateLockedCount > 0 && `${moderateLockedCount} moderate`}
+                      {moderateLockedCount > 0 && lowLockedCount > 0 && ' and '}
+                      {lowLockedCount > 0 && `${lowLockedCount} low-risk`} {lockedCount === 1 ? 'interaction' : 'interactions'}.
+                      {' '}Unlock Pro to see full details, timing guidance, and download a printable report.
+                    </p>
+
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        onClick={() => {
+                          setUpgradeModalTrigger('results');
+                          setShowUpgradeModal(true);
+                        }}
+                        className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                      >
+                        Unlock Pro Results
+                      </button>
+                      <button
+                        onClick={() => {
+                          // Collapse the locked section or do nothing
+                        }}
+                        className="px-6 py-2 bg-white text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors border border-gray-300"
+                      >
+                        Continue with Free
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -1249,6 +1340,13 @@ export default function StackBuilderCheckerV3() {
         interactionWith={reviewModalSubstances.interactionWith}
         userTier={getUserTier()}
         userId={profile?.id}
+      />
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        trigger={upgradeModalTrigger}
       />
     </div>
   );
