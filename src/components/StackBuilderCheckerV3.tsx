@@ -173,6 +173,52 @@ export default function StackBuilderCheckerV3() {
     }
   }, []);
 
+  // Prefill substances from med/sup query params
+  useEffect(() => {
+    const medParam = searchParams.get('med');
+    const supParam = searchParams.get('sup');
+
+    const prefillSubstances = async () => {
+      if (!medParam && !supParam) return;
+
+      try {
+        // Search for medication
+        if (medParam) {
+          const { data: medData } = await supabase
+            .from('checker_substances')
+            .select('*')
+            .or(`display_name.ilike.%${medParam}%,canonical_name.ilike.%${medParam}%`)
+            .eq('type', 'drug')
+            .limit(1)
+            .maybeSingle();
+
+          if (medData && !medications.find(m => m.substance_id === medData.substance_id)) {
+            setMedications([medData as Substance]);
+          }
+        }
+
+        // Search for supplement
+        if (supParam) {
+          const { data: supData } = await supabase
+            .from('checker_substances')
+            .select('*')
+            .or(`display_name.ilike.%${supParam}%,canonical_name.ilike.%${supParam}%`)
+            .eq('type', 'supplement')
+            .limit(1)
+            .maybeSingle();
+
+          if (supData && !supplements.find(s => s.substance_id === supData.substance_id)) {
+            setSupplements([supData as Substance]);
+          }
+        }
+      } catch (error) {
+        console.error('Error prefilling substances:', error);
+      }
+    };
+
+    prefillSubstances();
+  }, [searchParams]);
+
   // Update URL when filters change
   useEffect(() => {
     if (results === null) return;
