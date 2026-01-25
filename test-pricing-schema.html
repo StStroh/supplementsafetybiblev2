@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing Schema Verification</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4299e1;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2d3748;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+    }
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 8px 0;
+      margin: 5px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .checklist li:before {
+      content: "☐ ";
+      font-size: 1.2em;
+      margin-right: 8px;
+      color: #4299e1;
+    }
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+    .success {
+      background: #e6fffa;
+      border-left: 4px solid #38b2ac;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .info {
+      background: #ebf8ff;
+      border-left: 4px solid #4299e1;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .warning {
+      background: #fefcbf;
+      border-left: 4px solid #ecc94b;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    code {
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #4299e1;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 5px;
+      transition: background 0.2s;
+    }
+    .button:hover {
+      background: #3182ce;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Pricing Schema Verification Guide</h1>
+
+  <div class="success">
+    <strong>✅ Product Schema Removed</strong>
+    <p>All Product schema has been removed from the codebase and replaced with correct SoftwareApplication schema.</p>
+  </div>
+
+  <div class="test-section">
+    <h2>Manual Verification Steps</h2>
+    <ul class="checklist">
+      <li>Start dev server: <code>npm run dev</code></li>
+      <li>Open <a href="http://localhost:5173/pricing" class="button">localhost:5173/pricing</a></li>
+      <li>Right-click page → "View Page Source"</li>
+      <li>Search for <code>application/ld+json</code></li>
+      <li>Verify <code>"@type": "SoftwareApplication"</code> appears</li>
+      <li>Verify NO <code>"@type": "Product"</code> appears</li>
+      <li>Verify <code>offers</code> array has 5 items</li>
+      <li>Verify each offer has <code>priceValidUntil</code></li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>Expected Schema Output</h2>
+    <p>The /pricing page should contain this JSON-LD:</p>
+    <pre>{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Supplement Safety Bible",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Web",
+  "url": "https://supplementsafetybible.com",
+  "description": "Professional supplement-medication...",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Starter Plan",
+      "price": "0",
+      "priceCurrency": "USD",
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      ...
+    },
+    // ... 4 more offers
+  ]
+}</pre>
+  </div>
+
+  <div class="test-section">
+    <h2>Online Validators</h2>
+    <div class="info">
+      <p><strong>After deploying to production, test with these tools:</strong></p>
+    </div>
+    <a href="https://search.google.com/test/rich-results" target="_blank" class="button">Google Rich Results Test</a>
+    <a href="https://validator.schema.org/" target="_blank" class="button">Schema.org Validator</a>
+    <a href="https://search.google.com/search-console" target="_blank" class="button">Google Search Console</a>
+
+    <p style="margin-top: 20px;">
+      <strong>Instructions:</strong>
+    </p>
+    <ol>
+      <li>Copy your pricing page URL: <code>https://supplementsafetybible.com/pricing</code></li>
+      <li>Paste into any validator above</li>
+      <li>Click "Test URL" or "Validate"</li>
+      <li>Should show: <strong>SoftwareApplication</strong> detected</li>
+      <li>Should NOT show: Product errors</li>
+    </ol>
+  </div>
+
+  <div class="test-section">
+    <h2>Browser Console Check</h2>
+    <p>Open browser console on /pricing and run:</p>
+    <pre>// Extract and parse all JSON-LD scripts
+const scripts = Array.from(
+  document.querySelectorAll('script[type="application/ld+json"]')
+);
+
+scripts.forEach((script, i) => {
+  const data = JSON.parse(script.textContent);
+  console.log(`Schema ${i + 1}:`, data['@type']);
+
+  if (data['@type'] === 'Product') {
+    console.error('❌ Found Product schema!', data);
+  } else if (data['@type'] === 'SoftwareApplication') {
+    console.log('✅ Correct SoftwareApplication schema');
+    if (data.offers) {
+      console.log(`   Has ${data.offers.length} offers`);
+      data.offers.forEach(offer => {
+        console.log(`   - ${offer.name}: $${offer.price}`);
+        if (!offer.priceValidUntil) {
+          console.error('   ⚠️  Missing priceValidUntil!');
+        }
+      });
+    }
+  }
+});</pre>
+  </div>
+
+  <div class="test-section">
+    <h2>Search Console Monitoring</h2>
+    <div class="warning">
+      <p><strong>⏰ Timeline for Google to Process Changes:</strong></p>
+      <ul>
+        <li>Deploy changes to production</li>
+        <li>Wait 24-48 hours for Google to recrawl</li>
+        <li>Check Search Console → Enhancements → Product</li>
+        <li>Warnings should disappear or show "0 issues"</li>
+        <li>If warnings persist after 7 days, request reindexing</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Files Changed</h2>
+    <ul>
+      <li><code>src/lib/testimonialSchema.ts</code> - Changed from Product to SoftwareApplication</li>
+      <li><code>src/pages/Pricing.tsx</code> - Added SoftwareApplication schema with offers</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>Verification Commands</h2>
+    <p>Run these commands to verify no Product schema remains:</p>
+    <pre># Search for Product schema in source code
+grep -r "@type.*Product" src/
+
+# Should return: No results ✅
+
+# Search in built output
+npm run build
+grep -i "Product" dist/index.html
+
+# Should return: No results ✅
+
+# Build status
+npm run build
+
+# Should complete with no errors ✅</pre>
+  </div>
+
+  <div class="success">
+    <h3>✅ Success Criteria</h3>
+    <ul>
+      <li><strong>Zero</strong> <code>@type: Product</code> in source code</li>
+      <li><strong>One</strong> <code>@type: SoftwareApplication</code> on /pricing</li>
+      <li><strong>Five</strong> offers with priceValidUntil</li>
+      <li><strong>Build</strong> completes successfully</li>
+      <li><strong>Google</strong> Search Console warnings stop</li>
+    </ul>
+  </div>
+</body>
+</html>

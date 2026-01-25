@@ -7,7 +7,7 @@ import { useAlert } from '../state/AlertProvider';
 import { getPricingFlags } from '../lib/pricingFlags';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { SEO } from '../lib/seo';
+import { SEO, StructuredData } from '../lib/seo';
 import Logo from '../components/Logo';
 import { BRAND_NAME_FULL } from '../lib/brand';
 import PricingPageChecker from '../components/PricingPageChecker';
@@ -113,6 +113,69 @@ export default function Pricing() {
 
   const annualSavings = Math.round(((proMonthly * 12 - proAnnual) / (proMonthly * 12)) * 100);
 
+  // Structured data for pricing page - SoftwareApplication with subscription offers
+  const pricingSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    'name': 'Supplement Safety Bible',
+    'applicationCategory': 'HealthApplication',
+    'operatingSystem': 'Web',
+    'url': 'https://supplementsafetybible.com',
+    'description': 'Professional supplement-medication interaction screening tool for healthcare providers and individuals',
+    'offers': [
+      {
+        '@type': 'Offer',
+        'name': 'Starter Plan',
+        'description': 'Free plan with basic interaction checking',
+        'url': 'https://supplementsafetybible.com/pricing',
+        'priceCurrency': 'USD',
+        'price': '0',
+        'priceValidUntil': '2027-12-31',
+        'availability': 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        'name': 'Pro Plan - Monthly',
+        'description': 'Unlimited interaction checks with evidence-based insights',
+        'url': 'https://supplementsafetybible.com/pricing',
+        'priceCurrency': 'USD',
+        'price': proMonthly.toString(),
+        'priceValidUntil': '2027-12-31',
+        'availability': 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        'name': 'Pro Plan - Annual',
+        'description': 'Unlimited interaction checks with evidence-based insights (annual)',
+        'url': 'https://supplementsafetybible.com/pricing',
+        'priceCurrency': 'USD',
+        'price': proAnnual.toString(),
+        'priceValidUntil': '2027-12-31',
+        'availability': 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        'name': 'Premium Plan - Monthly',
+        'description': 'Advanced features for healthcare professionals',
+        'url': 'https://supplementsafetybible.com/pricing',
+        'priceCurrency': 'USD',
+        'price': premiumMonthly.toString(),
+        'priceValidUntil': '2027-12-31',
+        'availability': 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        'name': 'Premium Plan - Annual',
+        'description': 'Advanced features for healthcare professionals (annual)',
+        'url': 'https://supplementsafetybible.com/pricing',
+        'priceCurrency': 'USD',
+        'price': premiumAnnual.toString(),
+        'priceValidUntil': '2027-12-31',
+        'availability': 'https://schema.org/InStock'
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen" style={{background: 'var(--color-bg)'}}>
       <SEO
@@ -120,6 +183,7 @@ export default function Pricing() {
         description="Professional supplement-medication interaction screening for healthcare providers and individuals."
         canonical="/pricing"
       />
+      <StructuredData data={pricingSchema} />
       <Navbar />
 
       {showCancelledAlert && (

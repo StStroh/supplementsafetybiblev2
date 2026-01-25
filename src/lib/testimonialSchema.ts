@@ -29,9 +29,12 @@ export function generateTestimonialSchema() {
 
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
+    '@type': 'SoftwareApplication',
     'name': 'Supplement Safety Bible',
+    'applicationCategory': 'HealthApplication',
+    'operatingSystem': 'Web',
     'description': 'Evidence-based supplement and medication interaction checker for safety-conscious users',
+    'url': 'https://supplementsafetybible.com',
     'brand': {
       '@type': 'Brand',
       'name': 'Supplement Safety Bible'
