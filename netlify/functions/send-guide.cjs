@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
+const nodemailer = require('nodemailer');
 
 exports.handler = async (event) => {
-  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -9,7 +9,6 @@ exports.handler = async (event) => {
     };
   }
 
-  // Parse request body
   let payload;
   try {
     payload = JSON.parse(event.body || '{}');
@@ -22,7 +21,6 @@ exports.handler = async (event) => {
 
   const { email, leadMagnet = 'top-20-dangerous-interactions', source = 'homepage' } = payload;
 
-  // Validate email
   if (!email || !email.includes('@')) {
     return {
       statusCode: 400,
@@ -32,29 +30,29 @@ exports.handler = async (event) => {
 
   const DEBUG = process.env.DEBUG_EMAIL === 'true';
 
-  // Initialize Supabase client
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
-  // Determine email provider
   const API = process.env.EMAIL_API_KEY;
+  const SMTP_HOST = process.env.SMTP_HOST;
+  const SMTP_USER = process.env.SMTP_USER;
+
   const PROVIDER = API?.startsWith('SG.') ? 'sendgrid' :
-                   API?.startsWith('key-') || API?.startsWith('mg_') ? 'mailgun' : 'disabled';
+                   API?.startsWith('key-') || API?.startsWith('mg_') ? 'mailgun' :
+                   SMTP_HOST && SMTP_USER ? 'smtp' : 'disabled';
 
   const GUIDE_URL = process.env.GUIDE_URL || 'https://supplementsafetybible.com/guides/top-20-dangerous-interactions.pdf';
-  const FROM_EMAIL = process.env.EMAIL_FROM || 'noreply@supplementsafetybible.com';
-  const FROM_NAME = 'Supplement Safety Bible';
+  const FROM_EMAIL = process.env.SMTP_FROM_EMAIL || process.env.EMAIL_FROM || 'noreply@supplementsafetybible.com';
+  const FROM_NAME = process.env.SMTP_FROM_NAME || 'Supplement Safety Bible';
 
   if (DEBUG) {
     console.log('[send-guide] Processing request:', { email, leadMagnet, source, provider: PROVIDER });
   }
 
-  // Insert or update lead_magnet record
   let leadId;
   try {
-    // Try to insert, on conflict do nothing (already exists)
     const { data: insertData, error: insertError } = await supabase
       .from('lead_magnets')
       .insert({
@@ -67,9 +65,7 @@ exports.handler = async (event) => {
       .single();
 
     if (insertError) {
-      // Check if it's a unique constraint violation
       if (insertError.code === '23505') {
-        // Record already exists, get the existing one
         const { data: existingData } = await supabase
           .from('lead_magnets')
           .select('id, status, sent_at')
@@ -80,7 +76,6 @@ exports.handler = async (event) => {
         if (existingData) {
           leadId = existingData.id;
 
-          // If already sent within last 24 hours, return success without resending
           if (existingData.status === 'sent' && existingData.sent_at) {
             const sentTime = new Date(existingData.sent_at);
             const hoursSinceSent = (Date.now() - sentTime.getTime()) / (1000 * 60 * 60);
@@ -114,9 +109,8 @@ exports.handler = async (event) => {
     };
   }
 
-  // If provider is disabled, log and return mock success
   if (PROVIDER === 'disabled') {
-    console.warn('[send-guide] EMAIL_API_KEY not configured, returning mock response');
+    console.warn('[send-guide] No email provider configured, returning mock response');
 
     if (DEBUG) {
       console.log('[send-guide] Mock email content:');
@@ -125,7 +119,6 @@ exports.handler = async (event) => {
       console.log(`  Download: ${GUIDE_URL}`);
     }
 
-    // Update status to sent (mock)
     await supabase
       .from('lead_magnets')
       .update({ status: 'sent', sent_at: new Date().toISOString() })
@@ -137,7 +130,6 @@ exports.handler = async (event) => {
     };
   }
 
-  // Prepare email content
   const subject = 'Your Free Guide: Top 20 Dangerous Supplement Interactions';
 
   const textContent = `Hi there,
@@ -219,8 +211,45 @@ No spam. Unsubscribe anytime.`;
 </body>
 </html>`;
 
-  // Send email based on provider
   try {
+    if (PROVIDER === 'smtp') {
+      const transporter = nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_PORT === '465',
+        auth: {
+          user: SMTP_USER,
+          pass: process.env.SMTP_PASS
+        }
+      });
+
+      await transporter.sendMail({
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: email,
+        subject,
+        text: textContent,
+        html: htmlContent
+      });
+
+      await supabase
+        .from('lead_magnets')
+        .update({
+          status: 'sent',
+          sent_at: new Date().toISOString(),
+          error: null
+        })
+        .eq('id', leadId);
+
+      if (DEBUG) {
+        console.log('[send-guide] Email sent successfully via SMTP:', { email, leadId, host: SMTP_HOST });
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ ok: true, sent: true, provider: 'smtp' })
+      };
+    }
+
     if (PROVIDER === 'sendgrid') {
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
@@ -246,7 +275,6 @@ No spam. Unsubscribe anytime.`;
         throw new Error(`SendGrid error ${response.status}: ${errorText}`);
       }
 
-      // Update status to sent
       await supabase
         .from('lead_magnets')
         .update({
@@ -293,7 +321,6 @@ No spam. Unsubscribe anytime.`;
         throw new Error(`Mailgun error ${response.status}: ${errorText}`);
       }
 
-      // Update status to sent
       await supabase
         .from('lead_magnets')
         .update({
@@ -315,7 +342,6 @@ No spam. Unsubscribe anytime.`;
   } catch (err) {
     console.error('[send-guide] Email send error:', err);
 
-    // Update status to failed
     await supabase
       .from('lead_magnets')
       .update({
