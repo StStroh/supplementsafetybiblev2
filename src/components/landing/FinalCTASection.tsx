@@ -9,7 +9,7 @@ export default function FinalCTASection() {
           Ready to Check Your Supplements?
         </h2>
         <p className="text-lg text-gray-600 mb-8">
-          Join thousands who've checked their supplement safety for free.
+          Take control of your supplement safety with our free checker.
         </p>
 
         <Link

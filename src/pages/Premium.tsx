@@ -877,7 +877,7 @@ export default function Premium() {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Join thousands of healthcare professionals using evidence-based interaction screening.
+              Used by healthcare professionals for evidence-based interaction screening.
             </p>
             <button
               onClick={() => handleCheckout('pro')}

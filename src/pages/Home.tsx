@@ -54,7 +54,7 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <SEO
         title="Free Supplement-Drug Interaction Checker | Supplement Safety Bible"
-        description="Check dangerous supplement-medication interactions in 60 seconds. Free, evidence-based tool trusted by thousands. No signup required."
+        description="Check dangerous supplement-medication interactions in 60 seconds. Free, evidence-based tool used by healthcare professionals and individuals. No signup required."
         canonical="/"
       />
       <StructuredData data={[websiteSchema, organizationSchema, appSchema]} />
@@ -74,7 +74,7 @@ export default function Home() {
             </h1>
 
             <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              We help you check interactions before they cause problems. Free, evidence-based, and trusted by thousands.
+              We help you check interactions before they cause problems. Free, evidence-based, and safety-first.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600 mb-8">

@@ -17,7 +17,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
-              Check dangerous supplement-drug interactions in seconds. Free, evidence-based, and trusted by thousands.
+              Check dangerous supplement-drug interactions in seconds. Free, evidence-based, and safety-first.
             </p>
 
             <Link
