@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2, AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, X, Filter, Crown, MessageSquare, Lock } from 'lucide-react';
 import SubstanceCombobox from './SubstanceCombobox';
 import NotFoundCard from './NotFoundCard';
@@ -99,6 +99,8 @@ export default function StackBuilderCheckerV3() {
   const t = useTranslation();
   const { profile } = useAuthUser();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const checkButtonRef = useRef<HTMLButtonElement>(null);
   const [mode, setMode] = useState<CheckerMode>('supplements-drugs');
 
   // Selected substances
@@ -182,7 +184,7 @@ export default function StackBuilderCheckerV3() {
     }
   }, []);
 
-  // Prefill substances from med/sup query params
+  // Prefill substances from med/sup query params (only on initial mount)
   useEffect(() => {
     const medParam = searchParams.get('med');
     const supParam = searchParams.get('sup');
@@ -190,19 +192,22 @@ export default function StackBuilderCheckerV3() {
     const prefillSubstances = async () => {
       if (!medParam && !supParam) return;
 
+      const newMedications: Substance[] = [];
+      const newSupplements: Substance[] = [];
+
       try {
         // Search for medication
         if (medParam) {
           const { data: medData } = await supabase
             .from('checker_substances')
             .select('*')
-            .or(`display_name.ilike.%${medParam}%,canonical_name.ilike.%${medParam}%`)
+            .or(`display_name.ilike.%${medParam}%,canonical_name.ilike.%${medParam}%,aliases.cs.{${medParam}}`)
             .eq('type', 'drug')
             .limit(1)
             .maybeSingle();
 
-          if (medData && !medications.find(m => m.substance_id === medData.substance_id)) {
-            setMedications([medData as Substance]);
+          if (medData) {
+            newMedications.push(medData as Substance);
           }
         }
 
@@ -211,14 +216,39 @@ export default function StackBuilderCheckerV3() {
           const { data: supData } = await supabase
             .from('checker_substances')
             .select('*')
-            .or(`display_name.ilike.%${supParam}%,canonical_name.ilike.%${supParam}%`)
+            .or(`display_name.ilike.%${supParam}%,canonical_name.ilike.%${supParam}%,aliases.cs.{${supParam}}`)
             .eq('type', 'supplement')
             .limit(1)
             .maybeSingle();
 
-          if (supData && !supplements.find(s => s.substance_id === supData.substance_id)) {
-            setSupplements([supData as Substance]);
+          if (supData) {
+            newSupplements.push(supData as Substance);
           }
+        }
+
+        // Update state if we found substances
+        if (newMedications.length > 0) {
+          setMedications(newMedications);
+        }
+        if (newSupplements.length > 0) {
+          setSupplements(newSupplements);
+        }
+
+        // Clear URL params after prefilling
+        if (medParam || supParam) {
+          const newParams = new URLSearchParams(searchParams);
+          newParams.delete('med');
+          newParams.delete('sup');
+          newParams.delete('from');
+          navigate('/check?' + newParams.toString(), { replace: true });
+
+          // Scroll to check button after a short delay
+          setTimeout(() => {
+            checkButtonRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }, 500);
         }
       } catch (error) {
         console.error('Error prefilling substances:', error);
@@ -226,7 +256,8 @@ export default function StackBuilderCheckerV3() {
     };
 
     prefillSubstances();
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Update URL when filters change
   useEffect(() => {
@@ -936,6 +967,7 @@ export default function StackBuilderCheckerV3() {
           </div>
 
           <button
+            ref={checkButtonRef}
             onClick={runCheck}
             disabled={loading || (mode === 'supplements-drugs' ? supplements.length === 0 || medications.length === 0 : supplements.length < 2)}
             className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-6"

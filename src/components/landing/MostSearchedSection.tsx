@@ -83,8 +83,9 @@ export default function MostSearchedSection() {
           {searchCards.map((card, index) => (
             <Link
               key={index}
-              to={`/check?med=${encodeURIComponent(card.medParam)}&sup=${encodeURIComponent(card.suppParam)}`}
-              className={`block p-6 ${card.bgColor} border-2 rounded-xl transition-all hover:shadow-lg transform hover:-translate-y-1`}
+              to={`/check?med=${encodeURIComponent(card.medParam)}&sup=${encodeURIComponent(card.suppParam)}&from=popular`}
+              className={`block p-6 ${card.bgColor} border-2 rounded-xl transition-all hover:shadow-lg transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50`}
+              aria-label={`Check interaction between ${card.medParam} and ${card.suppParam}`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
