@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Popular Interactions</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4299e1;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2d3748;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+    }
+    .test-link {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 5px;
+      background: #4299e1;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .test-link:hover {
+      background: #3182ce;
+    }
+    .description {
+      color: #666;
+      margin: 10px 0;
+      font-size: 0.95em;
+    }
+    .expected {
+      background: #e6fffa;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 4px solid #38b2ac;
+      border-radius: 4px;
+    }
+    .expected strong {
+      color: #234e52;
+    }
+    ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    li {
+      margin: 5px 0;
+      color: #4a5568;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Popular Interactions Testing Page</h1>
+
+  <div class="test-section">
+    <h2>Test 1: Blood Thinners + Fish Oil</h2>
+    <p class="description">Click to test Warfarin and Fish Oil auto-prefill</p>
+    <a href="/check?med=Warfarin&sup=Fish%20Oil&from=popular" class="test-link">
+      Test Warfarin + Fish Oil
+    </a>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>✓ Navigates to /check page</li>
+        <li>✓ Warfarin appears in medications list</li>
+        <li>✓ Fish Oil appears in supplements list</li>
+        <li>✓ URL params are cleared</li>
+        <li>✓ Page scrolls to Check button</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 2: Antidepressants + St. John's Wort</h2>
+    <p class="description">Click to test Sertraline and St. John's Wort auto-prefill</p>
+    <a href="/check?med=Sertraline&sup=St.%20John%27s%20Wort&from=popular" class="test-link">
+      Test Sertraline + St. John's Wort
+    </a>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>✓ Navigates to /check page</li>
+        <li>✓ Sertraline appears in medications list</li>
+        <li>✓ St. John's Wort appears in supplements list</li>
+        <li>✓ URL params are cleared</li>
+        <li>✓ Page scrolls to Check button</li>
+        <li>✓ High risk interaction exists in database</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 3: Thyroid Medication + Calcium</h2>
+    <p class="description">Click to test Levothyroxine and Calcium auto-prefill</p>
+    <a href="/check?med=Levothyroxine&sup=Calcium&from=popular" class="test-link">
+      Test Levothyroxine + Calcium
+    </a>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>✓ Navigates to /check page</li>
+        <li>✓ Levothyroxine appears in medications list</li>
+        <li>✓ Calcium appears in supplements list</li>
+        <li>✓ URL params are cleared</li>
+        <li>✓ Page scrolls to Check button</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 4: Medication Only</h2>
+    <p class="description">Test with only medication parameter (no supplement)</p>
+    <a href="/check?med=Metformin&from=popular" class="test-link">
+      Test Metformin Only
+    </a>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>✓ Navigates to /check page</li>
+        <li>✓ Metformin appears in medications list</li>
+        <li>✓ Supplements list is empty</li>
+        <li>✓ URL params are cleared</li>
+        <li>✓ Page scrolls to input area</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 5: Supplement Only</h2>
+    <p class="description">Test with only supplement parameter (no medication)</p>
+    <a href="/check?sup=CoQ10&from=popular" class="test-link">
+      Test CoQ10 Only
+    </a>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>✓ Navigates to /check page</li>
+        <li>✓ CoQ10 appears in supplements list</li>
+        <li>✓ Medications list is empty</li>
+        <li>✓ URL params are cleared</li>
+        <li>✓ Page scrolls to input area</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 6: Invalid Substances</h2>
+    <p class="description">Test with non-existent substances (error handling)</p>
+    <a href="/check?med=NonExistentDrug123&sup=FakeSupp456&from=popular" class="test-link">
+      Test Invalid Substances
+    </a>
+    <div class="expected">
+      <strong>Expected Result:</strong>
+      <ul>
+        <li>✓ Navigates to /check page</li>
+        <li>✓ No crash or error displayed</li>
+        <li>✓ Both lists remain empty</li>
+        <li>✓ URL params are cleared</li>
+        <li>✓ User can manually add substances</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 7: All Popular Combinations</h2>
+    <p class="description">Test all 6 popular interaction cards</p>
+    <a href="/check?med=Warfarin&sup=Fish%20Oil&from=popular" class="test-link">Warfarin + Fish Oil</a>
+    <a href="/check?med=Lisinopril&sup=Vitamin%20D&from=popular" class="test-link">Lisinopril + Vitamin D</a>
+    <a href="/check?med=Atorvastatin&sup=CoQ10&from=popular" class="test-link">Atorvastatin + CoQ10</a>
+    <a href="/check?med=Levothyroxine&sup=Calcium&from=popular" class="test-link">Levothyroxine + Calcium</a>
+    <a href="/check?med=Sertraline&sup=St.%20John%27s%20Wort&from=popular" class="test-link">Sertraline + St. John's Wort</a>
+    <a href="/check?med=Metformin&sup=Chromium&from=popular" class="test-link">Metformin + Chromium</a>
+  </div>
+
+  <div class="test-section" style="background: #fff5f5; border-left: 4px solid #fc8181;">
+    <h2>⚠️ Manual Testing Steps</h2>
+    <ol>
+      <li>Start dev server: <code>npm run dev</code></li>
+      <li>Open this file in browser: <code>http://localhost:5173/test-popular-interactions.html</code></li>
+      <li>Click each test link above</li>
+      <li>Verify expected results</li>
+      <li>Check browser console for errors</li>
+      <li>Test keyboard navigation (Tab, Enter)</li>
+      <li>Test mobile responsiveness</li>
+    </ol>
+  </div>
+
+  <div class="test-section" style="background: #fefcbf; border-left: 4px solid #ecc94b;">
+    <h2>📋 Accessibility Checklist</h2>
+    <ul>
+      <li>☐ All cards are keyboard accessible (Tab to reach, Enter to activate)</li>
+      <li>☐ Focus indicators are visible</li>
+      <li>☐ Screen reader announces card labels correctly</li>
+      <li>☐ Links have descriptive aria-labels</li>
+      <li>☐ Hover states work properly</li>
+      <li>☐ Touch targets are large enough (mobile)</li>
+    </ul>
+  </div>
+</body>
+</html>
