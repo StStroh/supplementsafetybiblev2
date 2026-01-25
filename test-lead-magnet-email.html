@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lead Magnet Email - Test Guide</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f8fafc;
+    }
+    h1 {
+      color: #1e293b;
+      border-bottom: 3px solid #3b82f6;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #334155;
+      margin-top: 30px;
+    }
+    .test-case {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .success {
+      background: #dcfce7;
+      border-left: 4px solid #22c55e;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .info {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .error {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85em;
+      line-height: 1.5;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .button:hover {
+      background: #2563eb;
+    }
+    .button.secondary {
+      background: #64748b;
+    }
+    .button.secondary:hover {
+      background: #475569;
+    }
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 8px 0;
+      margin: 5px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .checklist li:before {
+      content: "☐ ";
+      font-size: 1.2em;
+      margin-right: 8px;
+      color: #3b82f6;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+    .step {
+      background: #f1f5f9;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 3px solid #3b82f6;
+    }
+  </style>
+</head>
+<body>
+  <h1>📧 Lead Magnet Email - Testing Guide</h1>
+
+  <div class="success">
+    <strong>✅ System Complete</strong>
+    <p>Email delivery system is ready for testing and production use.</p>
+  </div>
+
+  <h2>🚀 Quick Start</h2>
+
+  <div class="test-case">
+    <h3>Step 1: Verify Database Table</h3>
+    <pre>-- Run in Supabase SQL Editor
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name = 'lead_magnets'
+ORDER BY ordinal_position;</pre>
+
+    <div class="success">
+      <strong>Expected:</strong> Table exists with 8 columns (id, email, source, lead_magnet, status, error, created_at, sent_at)
+    </div>
+  </div>
+
+  <div class="test-case">
+    <h3>Step 2: Test Frontend Form</h3>
+
+    <div class="step">
+      <strong>A. Dev Mode (Mock Email)</strong>
+      <ol>
+        <li>Start dev server: <code>npm run dev</code></li>
+        <li>Navigate to: <code>http://localhost:5173</code></li>
+        <li>Scroll to "Get Our Free Safety Checklist"</li>
+        <li>Enter email: <code>test@example.com</code></li>
+        <li>Click "Get Free Guide"</li>
+        <li>Open DevTools Console</li>
+      </ol>
+    </div>
+
+    <div class="info">
+      <strong>Expected Results (Mock Mode):</strong>
+      <ul class="checklist">
+        <li>Button shows "Sending..." briefly</li>
+        <li>Success message appears</li>
+        <li>Console shows: [EmailCaptureSection] Guide request submitted</li>
+        <li>Row appears in lead_magnets table with status='sent'</li>
+        <li>No actual email sent (EMAIL_API_KEY not configured)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-case">
+    <h3>Step 3: Verify Database Record</h3>
+    <pre>-- Run in Supabase SQL Editor
+SELECT
+  id,
+  email,
+  source,
+  lead_magnet,
+  status,
+  created_at,
+  sent_at
+FROM lead_magnets
+ORDER BY created_at DESC
+LIMIT 5;</pre>
+
+    <div class="success">
+      <strong>Expected:</strong>
+      <ul>
+        <li>Row with test@example.com</li>
+        <li>status = 'sent'</li>
+        <li>source = 'homepage'</li>
+        <li>lead_magnet = 'top-20-dangerous-interactions'</li>
+        <li>sent_at has timestamp</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>🧪 Comprehensive Test Cases</h2>
+
+  <div class="test-case">
+    <h3>Test 1: Success Flow</h3>
+    <ol>
+      <li>Open homepage</li>
+      <li>Enter valid email</li>
+      <li>Submit form</li>
+      <li>Verify success message</li>
+      <li>Check database for record</li>
+    </ol>
+    <div class="success">✅ Pass: Email submitted, success message shown, record in database</div>
+  </div>
+
+  <div class="test-case">
+    <h3>Test 2: Loading State</h3>
+    <ol>
+      <li>Open DevTools → Network tab</li>
+      <li>Throttle to "Slow 3G"</li>
+      <li>Submit form</li>
+      <li>Observe button during request</li>
+    </ol>
+    <div class="success">✅ Pass: Button shows "Sending...", is disabled during request</div>
+  </div>
+
+  <div class="test-case">
+    <h3>Test 3: Duplicate Prevention</h3>
+    <ol>
+      <li>Submit email: <code>duplicate@test.com</code></li>
+      <li>Wait for success message</li>
+      <li>Submit SAME email again immediately</li>
+      <li>Check database for duplicates</li>
+    </ol>
+    <div class="success">✅ Pass: Success message shown, only ONE record in database, no duplicate email sent</div>
+
+    <pre>-- Verify no duplicates
+SELECT email, COUNT(*) as count
+FROM lead_magnets
+WHERE email = 'duplicate@test.com'
+GROUP BY email;</pre>
+
+    <div class="info"><strong>Expected:</strong> count = 1 (not 2)</div>
+  </div>
+
+  <div class="test-case">
+    <h3>Test 4: Error Handling</h3>
+    <ol>
+      <li>Disconnect internet</li>
+      <li>Submit form</li>
+      <li>Observe error state</li>
+    </ol>
+    <div class="success">✅ Pass: Error message shown, "Try Again" button appears</div>
+  </div>
+
+  <div class="test-case">
+    <h3>Test 5: Email Validation</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Input</th>
+          <th>Expected</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>test@example.com</code></td>
+          <td>✅ Valid - submits</td>
+        </tr>
+        <tr>
+          <td><code>not-an-email</code></td>
+          <td>❌ Invalid - browser blocks</td>
+        </tr>
+        <tr>
+          <td><code>test@</code></td>
+          <td>❌ Invalid - browser blocks</td>
+        </tr>
+        <tr>
+          <td><code>@example.com</code></td>
+          <td>❌ Invalid - browser blocks</td>
+        </tr>
+        <tr>
+          <td><em>empty</em></td>
+          <td>❌ Invalid - browser blocks</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>🔍 Function Testing</h2>
+
+  <div class="test-case">
+    <h3>Test Function Directly (cURL)</h3>
+
+    <strong>Local Testing:</strong>
+    <pre>curl -X POST http://localhost:8888/.netlify/functions/send-guide \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "leadMagnet": "top-20-dangerous-interactions",
+    "source": "homepage"
+  }'</pre>
+
+    <strong>Production Testing:</strong>
+    <pre>curl -X POST https://supplementsafetybible.com/.netlify/functions/send-guide \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "leadMagnet": "top-20-dangerous-interactions",
+    "source": "homepage"
+  }'</pre>
+
+    <div class="success">
+      <strong>Expected Response:</strong>
+      <pre>{
+  "ok": true,
+  "sent": true,
+  "provider": "sendgrid"
+}</pre>
+    </div>
+
+    <div class="info">
+      <strong>Or (if EMAIL_API_KEY not set):</strong>
+      <pre>{
+  "ok": true,
+  "mocked": true
+}</pre>
+    </div>
+  </div>
+
+  <h2>📊 Database Verification Queries</h2>
+
+  <div class="test-case">
+    <h3>Recent Submissions</h3>
+    <pre>SELECT
+  email,
+  source,
+  status,
+  created_at,
+  sent_at
+FROM lead_magnets
+WHERE created_at > NOW() - INTERVAL '24 hours'
+ORDER BY created_at DESC;</pre>
+
+    <button class="button" onclick="copyQuery(this)">Copy Query</button>
+  </div>
+
+  <div class="test-case">
+    <h3>Failed Deliveries</h3>
+    <pre>SELECT
+  email,
+  status,
+  error,
+  created_at
+FROM lead_magnets
+WHERE status = 'failed'
+ORDER BY created_at DESC
+LIMIT 20;</pre>
+
+    <button class="button" onclick="copyQuery(this)">Copy Query</button>
+  </div>
+
+  <div class="test-case">
+    <h3>Success Rate</h3>
+    <pre>SELECT
+  status,
+  COUNT(*) as count,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) as percentage
+FROM lead_magnets
+GROUP BY status
+ORDER BY count DESC;</pre>
+
+    <button class="button" onclick="copyQuery(this)">Copy Query</button>
+
+    <div class="success">
+      <strong>Healthy Success Rate:</strong> 95%+ with status='sent'
+    </div>
+  </div>
+
+  <div class="test-case">
+    <h3>Source Performance</h3>
+    <pre>SELECT
+  source,
+  COUNT(*) as submissions,
+  COUNT(CASE WHEN status = 'sent' THEN 1 END) as sent,
+  COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed,
+  ROUND(COUNT(CASE WHEN status = 'sent' THEN 1 END) * 100.0 / COUNT(*), 2) as success_rate
+FROM lead_magnets
+GROUP BY source
+ORDER BY submissions DESC;</pre>
+
+    <button class="button" onclick="copyQuery(this)">Copy Query</button>
+  </div>
+
+  <h2>🔐 Production Setup</h2>
+
+  <div class="test-case">
+    <h3>Environment Variables (Netlify Dashboard)</h3>
+
+    <div class="warning">
+      <strong>⚠️ Required for Production Email Delivery</strong>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Value</th>
+          <th>Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>EMAIL_API_KEY</code></td>
+          <td>SG.your_sendgrid_key_here</td>
+          <td>✅ Yes</td>
+        </tr>
+        <tr>
+          <td><code>EMAIL_FROM</code></td>
+          <td>noreply@supplementsafetybible.com</td>
+          <td>✅ Yes</td>
+        </tr>
+        <tr>
+          <td><code>GUIDE_URL</code></td>
+          <td>https://supplementsafetybible.com/guides/top-20.pdf</td>
+          <td>✅ Yes</td>
+        </tr>
+        <tr>
+          <td><code>DEBUG_EMAIL</code></td>
+          <td>true (dev) / false (prod)</td>
+          <td>❌ Optional</td>
+        </tr>
+        <tr>
+          <td><code>MAILGUN_DOMAIN</code></td>
+          <td>mg.yourdomain.com</td>
+          <td>❌ Only if using Mailgun</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info">
+      <strong>How to Get API Keys:</strong>
+      <ul>
+        <li><strong>SendGrid:</strong> https://sendgrid.com → Settings → API Keys</li>
+        <li><strong>Mailgun:</strong> https://mailgun.com → Settings → API Keys</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>📧 Real Email Test</h2>
+
+  <div class="test-case">
+    <h3>Send Test Email to Yourself</h3>
+
+    <div class="step">
+      <strong>Steps:</strong>
+      <ol>
+        <li>Set EMAIL_API_KEY in Netlify (or local .env)</li>
+        <li>Deploy to production (or restart local dev)</li>
+        <li>Open homepage</li>
+        <li>Enter YOUR real email address</li>
+        <li>Submit form</li>
+        <li>Check inbox (and spam folder)</li>
+      </ol>
+    </div>
+
+    <div class="success">
+      <strong>Email Should Contain:</strong>
+      <ul class="checklist">
+        <li>Subject: "Your Free Guide: Top 20 Dangerous Supplement Interactions"</li>
+        <li>Professional HTML design with blue gradient header</li>
+        <li>Download button (blue CTA)</li>
+        <li>Link to interaction checker</li>
+        <li>Unsubscribe text at bottom</li>
+        <li>No broken images or links</li>
+      </ul>
+    </div>
+
+    <div class="warning">
+      <strong>If email not received within 5 minutes:</strong>
+      <ol>
+        <li>Check spam folder</li>
+        <li>Check database: <code>SELECT status, error FROM lead_magnets WHERE email = 'your@email.com'</code></li>
+        <li>Check Netlify function logs</li>
+        <li>Check SendGrid/Mailgun dashboard</li>
+      </ol>
+    </div>
+  </div>
+
+  <h2>🐛 Troubleshooting</h2>
+
+  <div class="test-case">
+    <h3>Issue: "Something went wrong" error</h3>
+
+    <strong>Check 1: Function Logs</strong>
+    <ol>
+      <li>Open Netlify Dashboard</li>
+      <li>Go to Functions → send-guide</li>
+      <li>Check recent logs</li>
+    </ol>
+
+    <strong>Check 2: Database Connection</strong>
+    <pre>-- Test in Supabase SQL Editor
+SELECT 1;</pre>
+    <div class="info">Expected: Returns 1 (connection works)</div>
+
+    <strong>Check 3: RLS Policies</strong>
+    <pre>-- Verify INSERT policy exists
+SELECT * FROM pg_policies
+WHERE tablename = 'lead_magnets'
+AND cmd = 'INSERT';</pre>
+    <div class="info">Expected: Policy "Anyone can submit lead magnet requests" exists</div>
+  </div>
+
+  <div class="test-case">
+    <h3>Issue: Email not received (status='sent')</h3>
+
+    <strong>Possible Causes:</strong>
+    <ul>
+      <li>In spam folder</li>
+      <li>SendGrid/Mailgun domain not verified</li>
+      <li>Email blocked by recipient server</li>
+      <li>Invalid GUIDE_URL returns 404</li>
+    </ul>
+
+    <strong>Check SendGrid Dashboard:</strong>
+    <ol>
+      <li>Go to Activity → Search</li>
+      <li>Enter recipient email</li>
+      <li>Check delivery status</li>
+      <li>Look for bounces or spam reports</li>
+    </ol>
+  </div>
+
+  <div class="test-case">
+    <h3>Issue: Database shows status='failed'</h3>
+
+    <strong>Check error message:</strong>
+    <pre>SELECT email, error, created_at
+FROM lead_magnets
+WHERE status = 'failed'
+ORDER BY created_at DESC
+LIMIT 5;</pre>
+
+    <strong>Common Errors:</strong>
+    <table>
+      <thead>
+        <tr>
+          <th>Error</th>
+          <th>Solution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SendGrid error 401</td>
+          <td>Invalid API key</td>
+        </tr>
+        <tr>
+          <td>SendGrid error 403</td>
+          <td>Sender not verified</td>
+        </tr>
+        <tr>
+          <td>Connection timeout</td>
+          <td>Network issue, retry</td>
+        </tr>
+        <tr>
+          <td>MAILGUN_DOMAIN missing</td>
+          <td>Set MAILGUN_DOMAIN env var</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>✅ Success Checklist</h2>
+
+  <div class="test-case">
+    <ul class="checklist">
+      <li>Database table created with RLS policies</li>
+      <li>Netlify function deploys without errors</li>
+      <li>Frontend form submits to backend</li>
+      <li>Success message appears after submission</li>
+      <li>Loading state works (button shows "Sending...")</li>
+      <li>Error state works (shows error message + retry)</li>
+      <li>Database record created with correct data</li>
+      <li>Email sent successfully (or mocked in dev)</li>
+      <li>Status updated to 'sent' or 'failed'</li>
+      <li>Duplicate prevention works (24 hour window)</li>
+      <li>Console logging works in debug mode</li>
+      <li>No TypeScript errors</li>
+      <li>Build succeeds</li>
+      <li>Production deployment works</li>
+    </ul>
+  </div>
+
+  <h2>📚 Documentation</h2>
+
+  <div class="test-case">
+    <p>For complete technical details, see:</p>
+    <ul>
+      <li><code>LEAD_MAGNET_EMAIL_COMPLETE.md</code> - Full implementation guide</li>
+      <li><code>.env.example</code> - Environment variables</li>
+      <li><code>netlify/functions/send-guide.cjs</code> - Function code</li>
+      <li><code>supabase/migrations/create_lead_magnets_table.sql</code> - Database schema</li>
+    </ul>
+  </div>
+
+  <div class="success">
+    <h3>🎉 Ready to Deploy!</h3>
+    <p>Once all tests pass, deploy to production:</p>
+    <pre>npm run build
+git add .
+git commit -m "feat: Add email delivery for lead magnet guide"
+git push origin main</pre>
+  </div>
+
+  <script>
+    function copyQuery(button) {
+      const pre = button.previousElementSibling;
+      const text = pre.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.textContent;
+        button.textContent = '✅ Copied!';
+        button.style.background = '#22c55e';
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = '#3b82f6';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
