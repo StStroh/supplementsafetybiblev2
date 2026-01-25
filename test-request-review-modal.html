@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Review Modal - Test Guide</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f8fafc;
+    }
+    h1 {
+      color: #1e293b;
+      border-bottom: 3px solid #3b82f6;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #334155;
+      margin-top: 30px;
+    }
+    .test-case {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .success {
+      background: #dcfce7;
+      border-left: 4px solid #22c55e;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .info {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .error {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85em;
+      line-height: 1.5;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .button:hover {
+      background: #2563eb;
+    }
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 8px 0;
+      margin: 5px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .checklist li:before {
+      content: "☐ ";
+      font-size: 1.2em;
+      margin-right: 8px;
+      color: #3b82f6;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔧 Request Review Modal - Fix Verification</h1>
+
+  <div class="success">
+    <strong>✅ Fix Applied</strong>
+    <p>The status constraint has been updated to allow 'new' and 'priority_new' values.</p>
+  </div>
+
+  <div class="info">
+    <strong>📋 What Was Fixed</strong>
+    <p><strong>Root Cause:</strong> Database constraint only allowed old status values</p>
+    <ul>
+      <li>Old constraint: 'pending', 'in_review', 'added', 'declined'</li>
+      <li>Frontend sends: 'new', 'priority_new'</li>
+      <li>Result: INSERT failed with misleading "user_id not in schema cache" error</li>
+    </ul>
+  </div>
+
+  <h2>🧪 Manual Test Cases</h2>
+
+  <div class="test-case">
+    <h3>Test 1: Free User Request</h3>
+
+    <div class="info">
+      <strong>Setup:</strong>
+      <ol>
+        <li>Open the app (sign out if needed)</li>
+        <li>Navigate to <code>/check</code> page</li>
+      </ol>
+    </div>
+
+    <strong>Steps:</strong>
+    <ol>
+      <li>Search for: <code>Vitamin K</code></li>
+      <li>Add: <code>Warfarin</code></li>
+      <li>Click "Check Interactions" or find "Request Review" button</li>
+      <li>Fill in the Request Review modal:
+        <ul>
+          <li>Reason: "Missing interaction"</li>
+          <li>Note: "I'm taking both of these together"</li>
+        </ul>
+      </li>
+      <li>Click "Submit Request"</li>
+      <li>Open DevTools → Console (check for errors)</li>
+    </ol>
+
+    <strong>Expected Results:</strong>
+    <ul class="checklist">
+      <li>Modal submits without errors</li>
+      <li>Success message appears: "Thank you! Your request has been submitted for review."</li>
+      <li>No console errors</li>
+      <li>Modal closes after 2.5 seconds</li>
+    </ul>
+
+    <button class="button" onclick="testFreeUser()">🧪 Run Test Query</button>
+    <div id="test1-result"></div>
+  </div>
+
+  <div class="test-case">
+    <h3>Test 2: Pro User Priority Request</h3>
+
+    <div class="info">
+      <strong>Setup:</strong>
+      <ol>
+        <li>Sign in as a Pro user</li>
+        <li>Navigate to <code>/check</code> page</li>
+      </ol>
+    </div>
+
+    <strong>Steps:</strong>
+    <ol>
+      <li>Search for: <code>St John's Wort</code></li>
+      <li>Add: <code>Birth Control</code></li>
+      <li>Click "Request Review" button</li>
+      <li>Look for the priority badge (gold crown icon)</li>
+      <li>Fill in the modal:
+        <ul>
+          <li>Reason: "Missing interaction"</li>
+          <li>Note: "Need this urgently"</li>
+        </ul>
+      </li>
+      <li>Click "Submit Request"</li>
+    </ol>
+
+    <strong>Expected Results:</strong>
+    <ul class="checklist">
+      <li>Modal shows "Priority Review" badge with crown icon</li>
+      <li>Success message: "Your request has been submitted with priority status"</li>
+      <li>No console errors</li>
+      <li>Request saved with status='priority_new'</li>
+    </ul>
+  </div>
+
+  <div class="test-case">
+    <h3>Test 3: Status Constraint Verification</h3>
+
+    <strong>Database Check:</strong>
+    <pre>-- Run this query in Supabase SQL Editor
+SELECT conname, pg_get_constraintdef(oid) as definition
+FROM pg_constraint
+WHERE conrelid = 'interaction_requests'::regclass
+AND contype = 'c';</pre>
+
+    <strong>Expected Output:</strong>
+    <pre>conname: interaction_requests_status_check
+definition: CHECK ((status = ANY (ARRAY[
+  'pending'::text,
+  'new'::text,
+  'priority_new'::text,
+  'in_review'::text,
+  'added'::text,
+  'completed'::text,
+  'declined'::text
+])))</pre>
+
+    <button class="button" onclick="checkConstraint()">🔍 Check Constraint</button>
+    <div id="constraint-result"></div>
+  </div>
+
+  <div class="test-case">
+    <h3>Test 4: Recent Requests Verification</h3>
+
+    <strong>Check Recent Submissions:</strong>
+    <pre>-- Run this query in Supabase SQL Editor
+SELECT
+  id,
+  token_a,
+  token_b,
+  status,
+  user_tier,
+  user_id IS NOT NULL as authenticated,
+  created_at
+FROM interaction_requests
+ORDER BY created_at DESC
+LIMIT 10;</pre>
+
+    <strong>What to Check:</strong>
+    <ul class="checklist">
+      <li>Recent requests appear in the list</li>
+      <li>Status values are 'new' or 'priority_new' (not 'pending')</li>
+      <li>user_tier matches the user's plan</li>
+      <li>user_id is present for authenticated users, NULL for anonymous</li>
+    </ul>
+
+    <button class="button" onclick="checkRecentRequests()">📊 View Recent Requests</button>
+    <div id="recent-result"></div>
+  </div>
+
+  <h2>🐛 Debugging</h2>
+
+  <div class="test-case">
+    <h3>Console Logging</h3>
+
+    <p>The RequestReviewModal now includes debug logging. Open DevTools Console and look for:</p>
+
+    <strong>Success Log:</strong>
+    <pre>// No errors should appear in console</pre>
+
+    <strong>Error Log (if submission fails):</strong>
+    <pre>[RequestReviewModal] Insert error: &lt;error details&gt;
+[RequestReviewModal] Submit failed: &lt;error details&gt;</pre>
+
+    <div class="info">
+      <strong>Common Errors & Solutions:</strong>
+      <table>
+        <thead>
+          <tr>
+            <th>Error</th>
+            <th>Cause</th>
+            <th>Solution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>new violates check constraint</td>
+            <td>Constraint not updated</td>
+            <td>Re-run migration</td>
+          </tr>
+          <tr>
+            <td>user_id not in schema cache</td>
+            <td>Stale PostgREST cache</td>
+            <td>Restart Supabase or wait for cache refresh</td>
+          </tr>
+          <tr>
+            <td>null value in column "token_a"</td>
+            <td>Missing substance name</td>
+            <td>Ensure substanceName prop is passed</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2>📦 What Changed</h2>
+
+  <div class="test-case">
+    <h3>Files Modified</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Change</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>supabase/migrations/fix_*.sql</code></td>
+          <td>Updated status constraint</td>
+          <td>Allow 'new' and 'priority_new' values</td>
+        </tr>
+        <tr>
+          <td><code>src/components/check/RequestReviewModal.tsx</code></td>
+          <td>Added debug logging</td>
+          <td>Easier troubleshooting</td>
+        </tr>
+        <tr>
+          <td><code>src/components/check/RequestReviewModal.tsx</code></td>
+          <td>Cleaned up payload</td>
+          <td>Explicit null values</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="test-case">
+    <h3>Status Values</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Used By</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>new</code></td>
+          <td>Free users</td>
+          <td>New request, normal priority</td>
+        </tr>
+        <tr>
+          <td><code>priority_new</code></td>
+          <td>Pro/Clinical users</td>
+          <td>New request, high priority</td>
+        </tr>
+        <tr>
+          <td><code>in_review</code></td>
+          <td>Admin</td>
+          <td>Being reviewed by team</td>
+        </tr>
+        <tr>
+          <td><code>completed</code></td>
+          <td>Admin</td>
+          <td>Interaction was added</td>
+        </tr>
+        <tr>
+          <td><code>declined</code></td>
+          <td>Admin</td>
+          <td>Request was declined</td>
+        </tr>
+        <tr>
+          <td><code>pending</code></td>
+          <td>Legacy</td>
+          <td>Old status (backwards compatible)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>✅ Success Criteria</h2>
+
+  <div class="success">
+    <strong>All of these should be true:</strong>
+    <ul class="checklist">
+      <li>Request Review modal submits without errors</li>
+      <li>Success message appears after submission</li>
+      <li>No console errors with prefix [RequestReviewModal]</li>
+      <li>Requests appear in database with correct status</li>
+      <li>Free users get status='new'</li>
+      <li>Pro users get status='priority_new'</li>
+      <li>Anonymous users can submit (user_id=NULL)</li>
+      <li>Build passes: <code>npm run build</code></li>
+    </ul>
+  </div>
+
+  <h2>🚀 Deployment</h2>
+
+  <div class="test-case">
+    <pre># Verify build
+npm run build
+
+# Deploy
+git add .
+git commit -m "fix: Request Review modal status constraint"
+git push origin main
+
+# Netlify auto-deploys
+# Supabase migration runs automatically</pre>
+  </div>
+
+  <div class="info">
+    <strong>📖 Full Documentation:</strong>
+    <p>See <code>REQUEST_REVIEW_MODAL_FIX_COMPLETE.md</code> for complete technical details.</p>
+  </div>
+
+  <script>
+    function testFreeUser() {
+      const result = document.getElementById('test1-result');
+      result.innerHTML = '<div class="info" style="margin-top: 15px;"><strong>🧪 Test Instructions</strong><br><br>';
+      result.innerHTML += '1. Open <code>/check</code> in the app<br>';
+      result.innerHTML += '2. Search for "Vitamin K" and "Warfarin"<br>';
+      result.innerHTML += '3. Click "Request Review"<br>';
+      result.innerHTML += '4. Fill in and submit the form<br>';
+      result.innerHTML += '5. Check the console for logs<br><br>';
+      result.innerHTML += '<strong>Expected:</strong> No errors, success message appears<br>';
+      result.innerHTML += '</div>';
+    }
+
+    function checkConstraint() {
+      const result = document.getElementById('constraint-result');
+      result.innerHTML = '<div class="info" style="margin-top: 15px;"><strong>🔍 Constraint Check</strong><br><br>';
+      result.innerHTML += 'Run this query in Supabase SQL Editor:<br><br>';
+      result.innerHTML += '<pre>SELECT conname, pg_get_constraintdef(oid) as definition\n';
+      result.innerHTML += 'FROM pg_constraint\n';
+      result.innerHTML += 'WHERE conrelid = \'interaction_requests\'::regclass\n';
+      result.innerHTML += 'AND contype = \'c\';</pre>';
+      result.innerHTML += '<strong>Expected:</strong> Constraint should include \'new\' and \'priority_new\'<br>';
+      result.innerHTML += '</div>';
+    }
+
+    function checkRecentRequests() {
+      const result = document.getElementById('recent-result');
+      result.innerHTML = '<div class="info" style="margin-top: 15px;"><strong>📊 Recent Requests</strong><br><br>';
+      result.innerHTML += 'Run this query in Supabase SQL Editor:<br><br>';
+      result.innerHTML += '<pre>SELECT id, token_a, token_b, status, user_tier, created_at\n';
+      result.innerHTML += 'FROM interaction_requests\n';
+      result.innerHTML += 'ORDER BY created_at DESC\n';
+      result.innerHTML += 'LIMIT 10;</pre>';
+      result.innerHTML += '<strong>What to check:</strong><br>';
+      result.innerHTML += '• Status values are \'new\' or \'priority_new\'<br>';
+      result.innerHTML += '• Free users have status=\'new\'<br>';
+      result.innerHTML += '• Pro users have status=\'priority_new\'<br>';
+      result.innerHTML += '</div>';
+    }
+  </script>
+</body>
+</html>

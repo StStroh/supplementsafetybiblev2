@@ -45,22 +45,20 @@ export default function RequestReviewModal({
 
       const payload: any = {
         token_a: substanceName,
-        token_b: interactionWith,
+        token_b: interactionWith || null,
         token_a_norm: normalizeToken(substanceName),
         token_b_norm: interactionWith ? normalizeToken(interactionWith) : null,
         status,
-        note: note.trim() || '',
+        reason: reason || null,
+        note: note.trim() || null,
         user_tier: userTier,
         user_id: userId || null,
       };
 
-      if (reason) {
-        payload.reason = reason;
-      }
-
       const { error: insertError } = await supabase.from('interaction_requests').insert(payload);
 
       if (insertError) {
+        console.error('[RequestReviewModal] Insert error:', insertError);
         throw insertError;
       }
 
@@ -72,7 +70,9 @@ export default function RequestReviewModal({
         setNote('');
       }, 2500);
     } catch (err: any) {
-      setError(err.message || 'Failed to submit request');
+      console.error('[RequestReviewModal] Submit failed:', err);
+      const errorMessage = err.message || 'Failed to submit request. Please try again.';
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
