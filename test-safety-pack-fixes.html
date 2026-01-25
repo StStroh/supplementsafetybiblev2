@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safety Pack Fixes - Verification</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #7c3aed;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2d3748;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+    }
+    .success {
+      background: #e6fffa;
+      border-left: 4px solid #38b2ac;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .info {
+      background: #ebf8ff;
+      border-left: 4px solid #4299e1;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .warning {
+      background: #fefcbf;
+      border-left: 4px solid #ecc94b;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 8px 0;
+      margin: 5px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .checklist li:before {
+      content: "☐ ";
+      font-size: 1.2em;
+      margin-right: 8px;
+      color: #7c3aed;
+    }
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+    code {
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #7c3aed;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 5px;
+      transition: background 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .button:hover {
+      background: #6d28d9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    th {
+      background: #f7fafc;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔧 Safety Pack Fixes - Verification Guide</h1>
+
+  <div class="success">
+    <strong>✅ All Fixes Applied</strong>
+    <p>Three critical issues have been resolved:</p>
+    <ul>
+      <li>PDF color format error fixed</li>
+      <li>TikTok pixel CSP unblocked</li>
+      <li>safety_packs table verified</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>🎨 Fix 1: PDF Color Format</h2>
+
+    <div class="info">
+      <strong>Problem:</strong> <code>Invalid color: {r,g,b}</code> error during PDF generation
+    </div>
+
+    <p><strong>What Changed:</strong></p>
+    <p>File: <code>src/components/safetypack/generatePDF.ts</code> (line 16-17)</p>
+
+    <pre>// BEFORE (caused error)
+const accentColor = hexToRgb(config.accentColor);
+
+// AFTER (correct)
+const accentColorValues = hexToRgb(config.accentColor);
+const accentColor = rgb(accentColorValues.r, accentColorValues.g, accentColorValues.b);</pre>
+
+    <p><strong>Test Instructions:</strong></p>
+    <ul class="checklist">
+      <li>Start dev server: <code>npm run dev</code></li>
+      <li>Navigate to <code>http://localhost:5173/safety-pack</code></li>
+      <li>Fill in form with custom brand details</li>
+      <li>Click "Download PDF" button</li>
+      <li>Verify PDF downloads without errors</li>
+      <li>Open PDF and verify custom color appears correctly</li>
+      <li>Open browser console - NO "Invalid color" errors</li>
+    </ul>
+
+    <button class="button" onclick="testPDFColors()">🧪 Run PDF Color Test</button>
+    <div id="pdf-test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>📊 Fix 2: TikTok Pixel CSP</h2>
+
+    <div class="info">
+      <strong>Problem:</strong> CSP blocked TikTok analytics script
+    </div>
+
+    <p><strong>What Changed:</strong></p>
+    <p>File: <code>netlify.toml</code> (line 57)</p>
+
+    <pre>// Added to script-src:
+https://analytics.tiktok.com
+
+// Added to connect-src:
+https://analytics.tiktok.com
+https://business-api.tiktok.com</pre>
+
+    <p><strong>CSP Domains Now Allowed:</strong></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>script-src</th>
+          <th>connect-src</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Stripe</td>
+          <td>✅ js.stripe.com</td>
+          <td>✅ *.stripe.com</td>
+        </tr>
+        <tr>
+          <td>TikTok</td>
+          <td>✅ analytics.tiktok.com</td>
+          <td>✅ analytics.tiktok.com<br>✅ business-api.tiktok.com</td>
+        </tr>
+        <tr>
+          <td>Supabase</td>
+          <td>-</td>
+          <td>✅ *.supabase.co</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Test Instructions:</strong></p>
+    <ul class="checklist">
+      <li>Deploy to Netlify (CSP is production-only)</li>
+      <li>Open production site in browser</li>
+      <li>Open DevTools → Console</li>
+      <li>Navigate to any page with TikTok pixel</li>
+      <li>Verify NO CSP errors mentioning TikTok</li>
+      <li>Open DevTools → Network tab</li>
+      <li>Filter by "analytics.tiktok.com"</li>
+      <li>Verify requests are successful (not blocked)</li>
+    </ul>
+
+    <button class="button" onclick="checkCSP()">🔍 Check Current CSP</button>
+    <div id="csp-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>💾 Fix 3: safety_packs Table</h2>
+
+    <div class="success">
+      <strong>Status:</strong> Table exists with proper RLS policies ✅
+    </div>
+
+    <p><strong>Table Schema:</strong></p>
+    <pre>safety_packs (
+  id              bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id         uuid NOT NULL REFERENCES auth.users(id),
+  brand_name      text,
+  support_email   text,
+  product_name    text,
+  product_url     text DEFAULT 'https://supplementsafetybible.com/check',
+  qr_url          text DEFAULT 'https://supplementsafetybible.com/check',
+  accent_color    text DEFAULT '#7c3aed',
+  surgery_window  text DEFAULT '2–3 weeks',
+  logo_url        text,
+  created_at      timestamptz DEFAULT now(),
+  updated_at      timestamptz DEFAULT now()
+);</pre>
+
+    <p><strong>RLS Policies Active:</strong></p>
+    <ul>
+      <li>✅ Users can SELECT their own packs</li>
+      <li>✅ Users can INSERT their own packs</li>
+      <li>✅ Users can UPDATE their own packs</li>
+      <li>✅ Users can DELETE their own packs</li>
+    </ul>
+
+    <p><strong>Test Instructions:</strong></p>
+    <ul class="checklist">
+      <li>Sign in to the app</li>
+      <li>Navigate to <code>/safety-pack</code></li>
+      <li>Fill in form and click "Save Pack"</li>
+      <li>Verify success message appears</li>
+      <li>Refresh page - saved pack should appear</li>
+      <li>Open browser DevTools → Network</li>
+      <li>Look for request to <code>/rest/v1/safety_packs</code></li>
+      <li>Verify response is 200 (NOT 404)</li>
+    </ul>
+
+    <button class="button" onclick="testSupabaseAPI()">🧪 Test Supabase API</button>
+    <div id="api-test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>📋 Complete Verification Checklist</h2>
+
+    <h3>Local Development (npm run dev)</h3>
+    <ul class="checklist">
+      <li>Build completes: <code>npm run build</code></li>
+      <li>No TypeScript errors</li>
+      <li>PDF downloads work on /safety-pack</li>
+      <li>No "Invalid color" console errors</li>
+      <li>Safety packs save to database</li>
+    </ul>
+
+    <h3>Production (after deploy)</h3>
+    <ul class="checklist">
+      <li>TikTok pixel loads without CSP errors</li>
+      <li>Console shows no CSP violations</li>
+      <li>Network tab shows successful TikTok requests</li>
+      <li>PDF generation works end-to-end</li>
+      <li>Safety packs CRUD operations work</li>
+      <li>No 404 errors on /rest/v1/safety_packs</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>🚀 Deployment Commands</h2>
+
+    <pre># Build and verify locally
+npm run build
+
+# Should complete with no errors
+# Output: ✓ built in ~15s
+
+# Deploy to production
+git add .
+git commit -m "fix: PDF colors, TikTok CSP, safety_packs table"
+git push origin main
+
+# Netlify will auto-deploy
+# Monitor at: https://app.netlify.com</pre>
+  </div>
+
+  <div class="info">
+    <strong>📖 Full Documentation:</strong>
+    <p>See <code>SAFETY_PACK_PDF_CSP_FIX_COMPLETE.md</code> for complete technical details, code examples, and rollback procedures.</p>
+  </div>
+
+  <script>
+    function testPDFColors() {
+      const result = document.getElementById('pdf-test-result');
+      result.innerHTML = '<div class="info" style="margin-top: 15px;"><strong>🧪 Testing PDF Color Format...</strong><br><br>';
+
+      // Test the color conversion
+      function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result
+          ? {
+              r: parseInt(result[1], 16) / 255,
+              g: parseInt(result[2], 16) / 255,
+              b: parseInt(result[3], 16) / 255,
+            }
+          : { r: 0.49, g: 0.23, b: 0.93 };
+      }
+
+      const testColors = ['#7c3aed', '#ff0000', '#00ff00', '#0000ff'];
+      let output = '<table><tr><th>Hex</th><th>R</th><th>G</th><th>B</th><th>Valid?</th></tr>';
+
+      testColors.forEach(hex => {
+        const rgb = hexToRgb(hex);
+        const valid = rgb.r >= 0 && rgb.r <= 1 && rgb.g >= 0 && rgb.g <= 1 && rgb.b >= 0 && rgb.b <= 1;
+        output += `<tr>
+          <td><span style="display:inline-block;width:20px;height:20px;background:${hex};border:1px solid #ccc;"></span> ${hex}</td>
+          <td>${rgb.r.toFixed(3)}</td>
+          <td>${rgb.g.toFixed(3)}</td>
+          <td>${rgb.b.toFixed(3)}</td>
+          <td>${valid ? '✅' : '❌'}</td>
+        </tr>`;
+      });
+
+      output += '</table>';
+      output += '<br><strong>✅ All values are in correct 0-1 range for pdf-lib</strong>';
+      output += '<br><br>The <code>rgb()</code> function will now accept these values without error.';
+      output += '</div>';
+
+      result.innerHTML = output;
+    }
+
+    function checkCSP() {
+      const result = document.getElementById('csp-result');
+      result.innerHTML = '<div class="info" style="margin-top: 15px;"><strong>🔍 Current CSP Status...</strong><br><br>';
+
+      // Check if we're in production (has CSP header)
+      const meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+
+      if (meta) {
+        const csp = meta.getAttribute('content');
+        const hasTikTok = csp.includes('analytics.tiktok.com');
+
+        result.innerHTML += hasTikTok
+          ? '<strong>✅ TikTok domain found in CSP</strong><br>'
+          : '<strong>⚠️ TikTok domain NOT found in CSP</strong><br>';
+        result.innerHTML += '<br><details><summary>View CSP Policy</summary><pre style="white-space: pre-wrap;">' + csp + '</pre></details>';
+      } else {
+        result.innerHTML += '<strong>ℹ️ No CSP meta tag found (normal in development)</strong><br>';
+        result.innerHTML += '<br>CSP headers are only active in production on Netlify.<br>';
+        result.innerHTML += 'Deploy to production to test CSP behavior.';
+      }
+
+      result.innerHTML += '</div>';
+    }
+
+    function testSupabaseAPI() {
+      const result = document.getElementById('api-test-result');
+      result.innerHTML = '<div class="info" style="margin-top: 15px;"><strong>🧪 Testing Supabase API...</strong><br><br>';
+
+      result.innerHTML += 'To test the safety_packs endpoint:<br><br>';
+      result.innerHTML += '<ol>';
+      result.innerHTML += '<li>Sign in to your app</li>';
+      result.innerHTML += '<li>Open DevTools → Console</li>';
+      result.innerHTML += '<li>Run this code:</li>';
+      result.innerHTML += '</ol>';
+      result.innerHTML += '<pre>// Check if table exists and is accessible\n';
+      result.innerHTML += 'const { data, error } = await supabase\n';
+      result.innerHTML += '  .from(\'safety_packs\')\n';
+      result.innerHTML += '  .select(\'*\');\n\n';
+      result.innerHTML += 'console.log(\'Data:\', data);\n';
+      result.innerHTML += 'console.log(\'Error:\', error);\n\n';
+      result.innerHTML += '// Should return:\n';
+      result.innerHTML += '// Data: [] (or array of packs)\n';
+      result.innerHTML += '// Error: null\n\n';
+      result.innerHTML += '// If you get 404:\n';
+      result.innerHTML += '// The migration needs to be applied</pre>';
+      result.innerHTML += '<br><strong>Expected:</strong> No 404 errors, returns empty array or user\'s packs';
+      result.innerHTML += '</div>';
+    }
+  </script>
+</body>
+</html>

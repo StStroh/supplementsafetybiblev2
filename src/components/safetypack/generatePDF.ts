@@ -13,7 +13,8 @@ export async function generateSafetyPackPDF(config: SafetyPackConfig): Promise<B
   const margin = 50;
   let yPosition = height - margin;
 
-  const accentColor = hexToRgb(config.accentColor);
+  const accentColorValues = hexToRgb(config.accentColor);
+  const accentColor = rgb(accentColorValues.r, accentColorValues.g, accentColorValues.b);
 
   // Header with optional logo
   if (config.logoDataUrl) {
