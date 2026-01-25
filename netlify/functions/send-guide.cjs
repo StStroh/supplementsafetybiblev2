@@ -36,10 +36,12 @@ exports.handler = async (event) => {
   );
 
   const API = process.env.EMAIL_API_KEY;
+  const RESEND_KEY = process.env.RESEND_API_KEY;
   const SMTP_HOST = process.env.SMTP_HOST;
   const SMTP_USER = process.env.SMTP_USER;
 
-  const PROVIDER = API?.startsWith('SG.') ? 'sendgrid' :
+  const PROVIDER = RESEND_KEY?.startsWith('re_') ? 'resend' :
+                   API?.startsWith('SG.') ? 'sendgrid' :
                    API?.startsWith('key-') || API?.startsWith('mg_') ? 'mailgun' :
                    SMTP_HOST && SMTP_USER ? 'smtp' : 'disabled';
 
@@ -212,6 +214,46 @@ No spam. Unsubscribe anytime.`;
 </html>`;
 
   try {
+    if (PROVIDER === 'resend') {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: `${FROM_NAME} <${FROM_EMAIL}>`,
+          to: [email],
+          subject,
+          text: textContent,
+          html: htmlContent
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Resend error ${response.status}: ${errorData.message || await response.text()}`);
+      }
+
+      await supabase
+        .from('lead_magnets')
+        .update({
+          status: 'sent',
+          sent_at: new Date().toISOString(),
+          error: null
+        })
+        .eq('id', leadId);
+
+      if (DEBUG) {
+        console.log('[send-guide] Email sent successfully via Resend:', { email, leadId });
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ ok: true, sent: true, provider: 'resend' })
+      };
+    }
+
     if (PROVIDER === 'smtp') {
       const transporter = nodemailer.createTransport({
         host: SMTP_HOST,
