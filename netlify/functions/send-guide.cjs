@@ -1,10 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
-const nodemailer = require('nodemailer');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ok: false, message: 'Method Not Allowed' })
     };
   }
@@ -15,6 +15,7 @@ exports.handler = async (event) => {
   } catch {
     return {
       statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ok: false, message: 'Invalid JSON' })
     };
   }
@@ -24,44 +25,37 @@ exports.handler = async (event) => {
   if (!email || !email.includes('@')) {
     return {
       statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ok: false, message: 'Valid email is required' })
     };
   }
 
-  const DEBUG = process.env.DEBUG_EMAIL === 'true';
+  const normalizedEmail = email.trim().toLowerCase();
 
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
-  const API = process.env.EMAIL_API_KEY;
-  const RESEND_KEY = process.env.RESEND_API_KEY;
-  const SMTP_HOST = process.env.SMTP_HOST;
-  const SMTP_USER = process.env.SMTP_USER;
+  const API = process.env.EMAIL_API_KEY || process.env.SENDGRID_API_KEY;
+  const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@supplementsafetybible.com';
+  const FROM_NAME = 'Supplement Safety Bible';
+  const GUIDE_URL = process.env.GUIDE_URL || '/guides/Top-20-Dangerous-Supplement-Interactions.pdf';
 
-  const PROVIDER = RESEND_KEY?.startsWith('re_') ? 'resend' :
-                   API?.startsWith('SG.') ? 'sendgrid' :
-                   API?.startsWith('key-') || API?.startsWith('mg_') ? 'mailgun' :
-                   SMTP_HOST && SMTP_USER ? 'smtp' : 'disabled';
+  const PROVIDER = API?.startsWith('SG.') ? 'sendgrid' : 'disabled';
 
-  const GUIDE_URL = process.env.GUIDE_URL || 'https://supplementsafetybible.com/guides/top-20-dangerous-interactions.pdf';
-  const FROM_EMAIL = process.env.SMTP_FROM_EMAIL || process.env.EMAIL_FROM || 'noreply@supplementsafetybible.com';
-  const FROM_NAME = process.env.SMTP_FROM_NAME || 'Supplement Safety Bible';
+  let subscriberId;
+  let isNewSubscriber = true;
 
-  if (DEBUG) {
-    console.log('[send-guide] Processing request:', { email, leadMagnet, source, provider: PROVIDER });
-  }
-
-  let leadId;
   try {
     const { data: insertData, error: insertError } = await supabase
-      .from('lead_magnets')
+      .from('email_subscribers')
       .insert({
-        email,
-        lead_magnet: leadMagnet,
+        email: normalizedEmail,
         source,
-        status: 'pending'
+        guide_requested: leadMagnet,
+        status: 'active',
+        subscribed_at: new Date().toISOString()
       })
       .select()
       .single();
@@ -69,66 +63,35 @@ exports.handler = async (event) => {
     if (insertError) {
       if (insertError.code === '23505') {
         const { data: existingData } = await supabase
-          .from('lead_magnets')
-          .select('id, status, sent_at')
-          .eq('email', email)
-          .eq('lead_magnet', leadMagnet)
+          .from('email_subscribers')
+          .select('id, status')
+          .eq('email', normalizedEmail)
           .single();
 
         if (existingData) {
-          leadId = existingData.id;
+          subscriberId = existingData.id;
+          isNewSubscriber = false;
 
-          if (existingData.status === 'sent' && existingData.sent_at) {
-            const sentTime = new Date(existingData.sent_at);
-            const hoursSinceSent = (Date.now() - sentTime.getTime()) / (1000 * 60 * 60);
-
-            if (hoursSinceSent < 24) {
-              if (DEBUG) {
-                console.log('[send-guide] Email already sent recently:', { email, hoursSinceSent });
-              }
-              return {
-                statusCode: 200,
-                body: JSON.stringify({ ok: true, alreadySent: true })
-              };
-            }
-          }
+          await supabase
+            .from('email_subscribers')
+            .update({
+              updated_at: new Date().toISOString(),
+              guide_requested: leadMagnet
+            })
+            .eq('id', subscriberId);
         }
       } else {
         throw insertError;
       }
     } else {
-      leadId = insertData.id;
-    }
-
-    if (DEBUG) {
-      console.log('[send-guide] Lead record created/found:', { leadId, email });
+      subscriberId = insertData.id;
     }
   } catch (err) {
     console.error('[send-guide] Database error:', err);
     return {
       statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ok: false, message: 'Database error' })
-    };
-  }
-
-  if (PROVIDER === 'disabled') {
-    console.warn('[send-guide] No email provider configured, returning mock response');
-
-    if (DEBUG) {
-      console.log('[send-guide] Mock email content:');
-      console.log(`  To: ${email}`);
-      console.log(`  Subject: Your Free Guide: Top 20 Dangerous Supplement Interactions`);
-      console.log(`  Download: ${GUIDE_URL}`);
-    }
-
-    await supabase
-      .from('lead_magnets')
-      .update({ status: 'sent', sent_at: new Date().toISOString() })
-      .eq('id', leadId);
-
-    return {
-      statusCode: 202,
-      body: JSON.stringify({ ok: true, mocked: true })
     };
   }
 
@@ -140,7 +103,7 @@ Thank you for your interest in supplement safety!
 
 Your free guide "Top 20 Dangerous Supplement Interactions" is ready to download:
 
-${GUIDE_URL}
+${GUIDE_URL.startsWith('http') ? GUIDE_URL : `https://supplementsafetybible.com${GUIDE_URL}`}
 
 This guide covers:
 • The most critical supplement-drug interactions
@@ -164,11 +127,11 @@ No spam. Unsubscribe anytime.`;
   <meta charset="utf-8">
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+    .header { background: linear-gradient(135deg, #5e2b7e 0%, #8b4d9f 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
     .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
-    .cta-button { display: inline-block; background: #3b82f6; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
-    .cta-button:hover { background: #2563eb; }
-    .benefits { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 20px 0; }
+    .cta-button { display: inline-block; background: #4caf50; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+    .cta-button:hover { background: #45a049; }
+    .benefits { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #8b4d9f; }
     .benefits li { margin: 10px 0; }
     .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
   </style>
@@ -186,7 +149,7 @@ No spam. Unsubscribe anytime.`;
     <p>Your free guide <strong>"Top 20 Dangerous Supplement Interactions"</strong> is ready to download:</p>
 
     <div style="text-align: center;">
-      <a href="${GUIDE_URL}" class="cta-button">Download Your Free Guide</a>
+      <a href="${GUIDE_URL.startsWith('http') ? GUIDE_URL : `https://supplementsafetybible.com${GUIDE_URL}`}" class="cta-button">Download Your Free Guide</a>
     </div>
 
     <div class="benefits">
@@ -200,7 +163,7 @@ No spam. Unsubscribe anytime.`;
     </div>
 
     <p>Need to check an interaction right now?</p>
-    <p><a href="https://supplementsafetybible.com/check" style="color: #3b82f6;">Use our free interaction checker →</a></p>
+    <p><a href="https://supplementsafetybible.com/check" style="color: #8b4d9f;">Use our free interaction checker →</a></p>
 
     <p>Stay safe,<br>
     <strong>The Supplement Safety Bible Team</strong></p>
@@ -213,86 +176,10 @@ No spam. Unsubscribe anytime.`;
 </body>
 </html>`;
 
-  try {
-    if (PROVIDER === 'resend') {
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${RESEND_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: `${FROM_NAME} <${FROM_EMAIL}>`,
-          to: [email],
-          subject,
-          text: textContent,
-          html: htmlContent
-        })
-      });
+  let emailSent = false;
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Resend error ${response.status}: ${errorData.message || await response.text()}`);
-      }
-
-      await supabase
-        .from('lead_magnets')
-        .update({
-          status: 'sent',
-          sent_at: new Date().toISOString(),
-          error: null
-        })
-        .eq('id', leadId);
-
-      if (DEBUG) {
-        console.log('[send-guide] Email sent successfully via Resend:', { email, leadId });
-      }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ ok: true, sent: true, provider: 'resend' })
-      };
-    }
-
-    if (PROVIDER === 'smtp') {
-      const transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: process.env.SMTP_PORT === '465',
-        auth: {
-          user: SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      });
-
-      await transporter.sendMail({
-        from: `${FROM_NAME} <${FROM_EMAIL}>`,
-        to: email,
-        subject,
-        text: textContent,
-        html: htmlContent
-      });
-
-      await supabase
-        .from('lead_magnets')
-        .update({
-          status: 'sent',
-          sent_at: new Date().toISOString(),
-          error: null
-        })
-        .eq('id', leadId);
-
-      if (DEBUG) {
-        console.log('[send-guide] Email sent successfully via SMTP:', { email, leadId, host: SMTP_HOST });
-      }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ ok: true, sent: true, provider: 'smtp' })
-      };
-    }
-
-    if (PROVIDER === 'sendgrid') {
+  if (PROVIDER === 'sendgrid' && API) {
+    try {
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
         headers: {
@@ -301,7 +188,7 @@ No spam. Unsubscribe anytime.`;
         },
         body: JSON.stringify({
           personalizations: [{
-            to: [{ email }]
+            to: [{ email: normalizedEmail }]
           }],
           from: { email: FROM_EMAIL, name: FROM_NAME },
           subject,
@@ -312,94 +199,28 @@ No spam. Unsubscribe anytime.`;
         })
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`SendGrid error ${response.status}: ${errorText}`);
+      if (response.ok || response.status === 202) {
+        emailSent = true;
+        console.log('[send-guide] Email sent successfully via SendGrid');
+      } else {
+        console.error('[send-guide] SendGrid error:', response.status, await response.text());
       }
-
-      await supabase
-        .from('lead_magnets')
-        .update({
-          status: 'sent',
-          sent_at: new Date().toISOString(),
-          error: null
-        })
-        .eq('id', leadId);
-
-      if (DEBUG) {
-        console.log('[send-guide] Email sent successfully via SendGrid:', { email, leadId });
-      }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ ok: true, sent: true, provider: 'sendgrid' })
-      };
+    } catch (err) {
+      console.error('[send-guide] Email send error:', err);
     }
-
-    if (PROVIDER === 'mailgun') {
-      const domain = process.env.MAILGUN_DOMAIN;
-      if (!domain) {
-        throw new Error('MAILGUN_DOMAIN not configured');
-      }
-
-      const formData = new URLSearchParams();
-      formData.append('from', `${FROM_NAME} <${FROM_EMAIL}>`);
-      formData.append('to', email);
-      formData.append('subject', subject);
-      formData.append('text', textContent);
-      formData.append('html', htmlContent);
-
-      const response = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${Buffer.from(`api:${API}`).toString('base64')}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: formData.toString()
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Mailgun error ${response.status}: ${errorText}`);
-      }
-
-      await supabase
-        .from('lead_magnets')
-        .update({
-          status: 'sent',
-          sent_at: new Date().toISOString(),
-          error: null
-        })
-        .eq('id', leadId);
-
-      if (DEBUG) {
-        console.log('[send-guide] Email sent successfully via Mailgun:', { email, leadId });
-      }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ ok: true, sent: true, provider: 'mailgun' })
-      };
-    }
-  } catch (err) {
-    console.error('[send-guide] Email send error:', err);
-
-    await supabase
-      .from('lead_magnets')
-      .update({
-        status: 'failed',
-        error: err.message || 'Unknown error'
-      })
-      .eq('id', leadId);
-
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ ok: false, message: 'Failed to send email' })
-    };
+  } else {
+    console.log('[send-guide] No email provider configured');
   }
 
   return {
-    statusCode: 500,
-    body: JSON.stringify({ ok: false, message: 'Unknown error' })
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ok: true,
+      emailSent,
+      isNewSubscriber,
+      downloadUrl: GUIDE_URL,
+      message: emailSent ? 'Guide sent to your email!' : 'Your download is ready!'
+    })
   };
 };
