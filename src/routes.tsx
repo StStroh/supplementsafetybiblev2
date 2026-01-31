@@ -67,6 +67,8 @@ import Pregnancy from './pages/Pregnancy';
 import PregnancyHowItWorks from './pages/PregnancyHowItWorks';
 import PregnancyDisclaimer from './pages/PregnancyDisclaimer';
 import PregnancySupplementSafety from './pages/PregnancySupplementSafety';
+import Download from './pages/Download';
+import DownloadThanks from './pages/DownloadThanks';
 
 export const router = createBrowserRouter([
   {
@@ -340,6 +342,14 @@ export const router = createBrowserRouter([
       {
         path: 'demo/omega-3',
         element: <DemoOmega3 />
+      },
+      {
+        path: 'download',
+        element: <Download />
+      },
+      {
+        path: 'download/thanks',
+        element: <DownloadThanks />
       },
       {
         path: '*',

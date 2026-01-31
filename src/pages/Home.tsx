@@ -15,38 +15,32 @@ const websiteSchema = {
   "@type": "WebSite",
   "name": "Supplement Safety Bible",
   "url": "https://supplementsafetybible.com",
+  "description": "Free evidence-based supplement-medication interaction checker. Check 15,000+ verified interactions instantly.",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://supplementsafetybible.com/search?q={query}",
-    "query-input": "required name=query"
+    "target": "https://supplementsafetybible.com/check?q={search_term_string}",
+    "query-input": "required name=search_term_string"
   }
 };
 
-const organizationSchema = {
+const medicalWebPageSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Supplement Safety Bible",
+  "@type": "MedicalWebPage",
+  "name": "Supplement Safety Bible - Free Supplement-Medication Interaction Checker",
+  "description": "Check 15,000+ verified supplement-medication interactions. Created by NSF GMP certified manufacturing professionals.",
   "url": "https://supplementsafetybible.com",
-  "logo": "https://supplementsafetybible.com/brand/logo.jpg",
-  "sameAs": []
-};
-
-const appSchema = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Supplement Safety Bible Interaction Checker",
-  "applicationCategory": "HealthApplication",
-  "operatingSystem": "Web",
-  "description": "Free supplement-drug interaction checker. Check dangerous interactions in seconds with evidence-based data.",
-  "offers": {
-    "@type": "Offer",
-    "priceCurrency": "USD",
-    "price": "0",
-    "category": "Free"
+  "author": {
+    "@type": "Person",
+    "name": "Stefan Stroh",
+    "jobTitle": "Plant Manager - NSF GMP Certified Nutraceutical Facility"
   },
-  "brand": {
-    "@type": "Brand",
+  "publisher": {
+    "@type": "Organization",
     "name": "Supplement Safety Bible"
+  },
+  "mainEntity": {
+    "@type": "MedicalRiskCalculator",
+    "name": "Supplement-Medication Interaction Checker"
   }
 };
 
@@ -58,7 +52,7 @@ export default function Home() {
         description="Check dangerous supplement-medication interactions in 60 seconds. Free, evidence-based tool used by healthcare professionals and individuals. No signup required."
         canonical="/"
       />
-      <StructuredData data={[websiteSchema, organizationSchema, appSchema]} />
+      <StructuredData data={[websiteSchema, medicalWebPageSchema]} />
 
       <Navbar />
 
