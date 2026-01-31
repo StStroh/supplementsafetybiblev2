@@ -132,7 +132,23 @@
     <h1>📦 Get Project Archive</h1>
 
     <div class="link-box">
-      <h2>Direct Download Link</h2>
+      <h2>Production Direct Download Link (HTTPS)</h2>
+      <div class="link-wrapper">
+        <input type="text" class="link-input" id="prodDirectLink" readonly value="https://supplementsafetybible.com/COPY-THIS-PROJECT.tar.gz">
+        <button class="copy-btn" onclick="copyLink('prodDirectLink', this)">Copy</button>
+      </div>
+    </div>
+
+    <div class="link-box">
+      <h2>Production Download Page (HTTPS)</h2>
+      <div class="link-wrapper">
+        <input type="text" class="link-input" id="prodPageLink" readonly value="https://supplementsafetybible.com/download.html">
+        <button class="copy-btn" onclick="copyLink('prodPageLink', this)">Copy</button>
+      </div>
+    </div>
+
+    <div class="link-box">
+      <h2>Local Direct Download Link</h2>
       <div class="link-wrapper">
         <input type="text" class="link-input" id="directLink" readonly>
         <button class="copy-btn" onclick="copyLink('directLink', this)">Copy</button>
@@ -140,7 +156,7 @@
     </div>
 
     <div class="link-box">
-      <h2>Download Page Link</h2>
+      <h2>Local Download Page Link</h2>
       <div class="link-wrapper">
         <input type="text" class="link-input" id="pageLink" readonly>
         <button class="copy-btn" onclick="copyLink('pageLink', this)">Copy</button>
@@ -157,7 +173,7 @@
   </div>
 
   <script>
-    // Set the links based on current location
+    // Set the local links based on current location
     const baseUrl = window.location.origin;
     document.getElementById('directLink').value = baseUrl + '/COPY-THIS-PROJECT.tar.gz';
     document.getElementById('pageLink').value = baseUrl + '/download.html';
