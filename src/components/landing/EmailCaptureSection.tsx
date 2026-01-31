@@ -1,15 +1,37 @@
 import { useState, FormEvent } from 'react';
+import { Download, CheckCircle, AlertCircle, Loader2, Mail } from 'lucide-react';
 
 export default function EmailCaptureSection() {
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setStatus('idle');
+    setErrorMessage('');
+
+    if (!email.trim()) {
+      setErrorMessage('Please enter your email address');
+      setStatus('error');
+      setLoading(false);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setErrorMessage('Please enter a valid email address');
+      setStatus('error');
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch('/.netlify/functions/send-guide', {
@@ -18,7 +40,7 @@ export default function EmailCaptureSection() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
+          email: email.trim().toLowerCase(),
           leadMagnet: 'top-20-dangerous-interactions',
           source: 'homepage'
         }),
@@ -27,93 +49,151 @@ export default function EmailCaptureSection() {
       const data = await response.json();
 
       if (!response.ok || !data.ok) {
-        throw new Error(data.message || 'Failed to send guide');
+        throw new Error(data.message || 'Failed to process your request');
       }
 
-      console.log('[EmailCaptureSection] Guide request submitted:', {
+      setStatus('success');
+      setDownloadUrl(data.downloadUrl || '/guides/Top-20-Dangerous-Supplement-Interactions.pdf');
+
+      console.log('[EmailCapture] Success:', {
         email,
-        source: 'homepage',
-        timestamp: new Date().toISOString(),
-        mocked: data.mocked,
-        alreadySent: data.alreadySent
+        downloadUrl: data.downloadUrl,
+        timestamp: new Date().toISOString()
       });
 
-      setSubmitted(true);
-      setEmail('');
-
-      // Reset after 5 seconds
-      setTimeout(() => setSubmitted(false), 5000);
     } catch (err: any) {
-      console.error('[EmailCaptureSection] Error:', err);
-      setError(err.message || 'Something went wrong. Please try again.');
-      setLoading(false);
+      console.error('[EmailCapture] Error:', err);
+      setStatus('error');
+      setErrorMessage(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <section className="w-full bg-gradient-to-r from-blue-600 to-blue-700 py-16 sm:py-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-          Get Our Free Safety Checklist
-        </h2>
-        <p className="text-lg text-blue-100 mb-8">
-          Download "Top 20 Dangerous Supplement Interactions" + weekly safety tips
-        </p>
+  const handleDownload = () => {
+    console.log('[EmailCapture] Download clicked:', { email, downloadUrl });
+    window.open(downloadUrl, '_blank');
+  };
 
-        {submitted ? (
-          <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
-            <div className="flex flex-col items-center justify-center gap-2 text-green-600">
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span className="font-semibold text-lg">Thanks! Check your inbox.</span>
-              <span className="text-sm text-gray-600">If you don't see it, check spam.</span>
+  const resetForm = () => {
+    setEmail('');
+    setStatus('idle');
+    setErrorMessage('');
+    setDownloadUrl('');
+  };
+
+  return (
+    <section className="w-full bg-gradient-to-br from-[#5e2b7e] via-[#7a3d96] to-[#8b4d9f] py-16 sm:py-20 lg:py-24">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4">
+            Get Your Free Safety Guide
+          </h2>
+          <p className="text-lg sm:text-xl text-purple-100 max-w-2xl mx-auto">
+            Download "Top 20 Dangerous Supplement Interactions" and learn which combinations to avoid
+          </p>
+        </div>
+
+        {status === 'success' ? (
+          <div className="bg-white rounded-2xl shadow-2xl p-8 sm:p-10 max-w-md mx-auto transform transition-all">
+            <div className="flex flex-col items-center text-center space-y-6">
+              <div className="bg-green-100 rounded-full p-4">
+                <CheckCircle className="w-16 h-16 text-green-600" />
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Success! Check Your Email
+                </h3>
+                <p className="text-gray-600">
+                  We've sent the guide to <span className="font-semibold">{email}</span>
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  (Check your spam folder if you don't see it)
+                </p>
+              </div>
+
+              <button
+                onClick={handleDownload}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors shadow-lg hover:shadow-xl"
+              >
+                <Download className="w-5 h-5" />
+                Download PDF Now
+              </button>
+
+              <button
+                onClick={resetForm}
+                className="text-purple-600 hover:text-purple-700 font-semibold transition-colors"
+              >
+                Submit another email
+              </button>
             </div>
-          </div>
-        ) : error ? (
-          <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
-            <div className="flex flex-col items-center justify-center gap-2 text-red-600 mb-4">
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              <span className="font-semibold text-lg">Oops!</span>
-              <span className="text-sm text-gray-600">{error}</span>
-            </div>
-            <button
-              onClick={() => setError(null)}
-              className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Try Again
-            </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                className="flex-1 px-4 py-3 rounded-lg border-2 border-blue-300 focus:border-white focus:ring-2 focus:ring-white focus:outline-none text-gray-900"
-                style={{ minHeight: '48px' }}
-                aria-label="Email address"
-              />
+          <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-md mx-auto">
+            {status === 'error' && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-red-800 font-semibold">Error</p>
+                  <p className="text-red-700 text-sm">{errorMessage}</p>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    disabled={loading}
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-4 focus:ring-purple-200 focus:outline-none text-gray-900 placeholder-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
+                    aria-label="Email address"
+                  />
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
-                className="px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ minHeight: '48px' }}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#ff6b6b] hover:bg-[#ff5252] text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#ff6b6b]"
               >
-                {loading ? 'Sending...' : 'Get Free Guide'}
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-5 h-5" />
+                    Get Free Guide
+                  </>
+                )}
               </button>
+
+              <p className="text-xs text-gray-500 text-center">
+                No spam. Unsubscribe anytime. Your privacy is protected.
+              </p>
+            </form>
+
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                <span>Instant access • No credit card required</span>
+              </div>
             </div>
-            <p className="text-sm text-blue-100 mt-3">
-              No spam. Unsubscribe anytime.
-            </p>
-          </form>
+          </div>
         )}
       </div>
     </section>
