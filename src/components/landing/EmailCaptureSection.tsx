@@ -103,13 +103,13 @@ export default function EmailCaptureSection() {
 
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Success! Check Your Email
+                  Success! Your Guide is Ready
                 </h3>
                 <p className="text-gray-600">
-                  We've sent the guide to <span className="font-semibold">{email}</span>
+                  Thank you, <span className="font-semibold">{email}</span>!
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                  (Check your spam folder if you don't see it)
+                  Click below to download your free guide
                 </p>
               </div>
 
