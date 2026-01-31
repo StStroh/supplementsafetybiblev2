@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Project Archive</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 48px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .icon svg {
+      width: 40px;
+      height: 40px;
+      color: white;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .download-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 16px 48px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+    }
+
+    .download-btn:active {
+      transform: translateY(0);
+    }
+
+    .file-info {
+      margin-top: 32px;
+      padding: 24px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .file-info h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+
+    .file-info ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .file-info li {
+      font-size: 14px;
+      color: #666;
+      padding: 6px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .file-info li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .instructions {
+      margin-top: 24px;
+      padding: 24px;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .instructions h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #856404;
+      margin-bottom: 12px;
+    }
+
+    .instructions code {
+      display: block;
+      background: #1a1a1a;
+      color: #00ff00;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin-top: 12px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+    </div>
+
+    <h1>Download Your Project</h1>
+    <p>Click the button below to download the complete project archive</p>
+
+    <a href="/COPY-THIS-PROJECT.tar.gz" class="download-btn" download>
+      Download Project (6.9 MB)
+    </a>
+
+    <div class="file-info">
+      <h2>What's Included:</h2>
+      <ul>
+        <li>Complete source code</li>
+        <li>All Netlify serverless functions</li>
+        <li>Database migrations and schema</li>
+        <li>Configuration files (.env.example)</li>
+        <li>Public assets and brand files</li>
+        <li>Scripts and documentation</li>
+      </ul>
+    </div>
+
+    <div class="instructions">
+      <h3>After Download:</h3>
+      <code>tar -xzf COPY-THIS-PROJECT.tar.gz
+cd project/
+npm install
+cp .env.example .env
+# Edit .env with your API keys
+npm run dev</code>
+    </div>
+  </div>
+</body>
+</html>
