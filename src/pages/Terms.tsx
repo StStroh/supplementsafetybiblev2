@@ -1,6 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import { INFO_EMAIL } from '../lib/support';
 
 export default function Terms() {
   return (
@@ -194,7 +195,7 @@ export default function Terms() {
                 If you have any questions about these Terms of Service, please contact us at:
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Email: <a href="mailto:legal@supplementsafetybible.com" className="text-blue-600 hover:text-blue-700">legal@supplementsafetybible.com</a>
+                Email: <a href={`mailto:${INFO_EMAIL}`} className="text-blue-600 hover:text-blue-700">{INFO_EMAIL}</a>
               </p>
             </section>
           </div>

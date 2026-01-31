@@ -1,6 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import { INFO_EMAIL } from '../lib/support';
 
 export default function Privacy() {
   return (
@@ -144,7 +145,7 @@ export default function Privacy() {
                 If you have any questions about this Privacy Policy or our privacy practices, please contact us at:
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Email: <a href="mailto:privacy@supplementsafetybible.com" className="text-blue-600 hover:text-blue-700">privacy@supplementsafetybible.com</a>
+                Email: <a href={`mailto:${INFO_EMAIL}`} className="text-blue-600 hover:text-blue-700">{INFO_EMAIL}</a>
               </p>
             </section>
           </div>

@@ -13,7 +13,7 @@ import { BRAND_NAME_FULL } from '../lib/brand';
 import PricingPageChecker from '../components/PricingPageChecker';
 import { trackBehavior, resetPageTimer } from '../lib/salesIntent';
 import { trackInitiateCheckout } from '../lib/tiktok';
-import { SALES_EMAIL } from '../lib/support';
+import { INFO_EMAIL } from '../lib/support';
 
 type BillingInterval = 'monthly' | 'annual';
 
@@ -543,9 +543,9 @@ export default function Pricing() {
             Supplement Safety Bible provides evidence-based educational guidance to support informed clinical decisions. This tool does not replace professional medical judgment, official prescribing information, or consultation with qualified healthcare providers.
           </p>
           <p className="text-xs" style={{color: 'var(--color-text-muted)'}}>
-            Questions about pricing?{' '}
-            <a href={`mailto:${SALES_EMAIL}`} className="hover:underline" style={{color: 'var(--color-trial)'}}>
-              {SALES_EMAIL}
+            Questions? Contact us at{' '}
+            <a href={`mailto:${INFO_EMAIL}`} className="hover:underline" style={{color: 'var(--color-trial)'}}>
+              {INFO_EMAIL}
             </a>
           </p>
         </div>

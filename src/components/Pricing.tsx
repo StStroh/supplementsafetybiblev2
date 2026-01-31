@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Check, Loader2, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { SALES_EMAIL } from "../lib/support";
+import { INFO_EMAIL } from "../lib/support";
 import { startTrialCheckout } from "../utils/checkout";
 import { useAlert } from "../state/AlertProvider";
 import Toast from "./Toast";
@@ -487,8 +487,8 @@ const Pricing: React.FC = () => {
           encrypted data handling.
         </p>
         <p className="mt-3 text-center text-sm text-slate-600">
-          Questions about pricing?{' '}
-          <a href={`mailto:${SALES_EMAIL}`} className="text-blue-600 hover:underline">{SALES_EMAIL}</a>
+          Questions? Contact us at{' '}
+          <a href={`mailto:${INFO_EMAIL}`} className="text-blue-600 hover:underline">{INFO_EMAIL}</a>
         </p>
       </div>
 
