@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Download, CheckCircle, AlertCircle, Loader2, Mail } from 'lucide-react';
+import { SITE_URL } from '../../lib/siteUrl';
 
 export default function EmailCaptureSection() {
   const [email, setEmail] = useState('');
@@ -53,7 +54,7 @@ export default function EmailCaptureSection() {
       }
 
       setStatus('success');
-      setDownloadUrl(data.downloadUrl || '/guides/Top-20-Dangerous-Supplement-Interactions.pdf');
+      setDownloadUrl(data.downloadUrl || `${SITE_URL}/guides/Top-20-Dangerous-Supplement-Interactions.pdf`);
 
       console.log('[EmailCapture] Success:', {
         email,

@@ -37,7 +37,8 @@ exports.handler = async (event) => {
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
-  const DOWNLOAD_URL = '/guides/Top-20-Dangerous-Supplement-Interactions.pdf';
+  const SITE_URL = process.env.URL || process.env.VITE_SITE_URL || 'https://supplementsafetybible.com';
+  const DOWNLOAD_URL = `${SITE_URL}/guides/Top-20-Dangerous-Supplement-Interactions.pdf`;
 
   let isNewSubscriber = true;
 
