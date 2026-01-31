@@ -77,11 +77,22 @@ export default function CheckV2() {
 
         {/* Medical Disclaimer */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-          <div className="bg-gray-100 border border-gray-300 rounded-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Medical Disclaimer</h3>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              This tool is for informational purposes only and does not constitute medical advice. Always consult your healthcare provider before starting, stopping, or changing any medications or supplements. The absence of an interaction in our database does not guarantee safety.
+          <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span>⚠️</span>
+              Important Disclaimer
+            </h3>
+            <p className="text-sm text-gray-700 leading-relaxed mb-4">
+              This information is for educational purposes only and does not constitute medical advice. Always consult your healthcare provider before making changes to your supplement or medication regimen.
             </p>
+            <div className="flex flex-wrap gap-4 text-xs text-gray-600">
+              <div>
+                <span className="font-semibold">Last Updated:</span> January 2026
+              </div>
+              <div>
+                <span className="font-semibold">Reviewed By:</span> NSF GMP Certified Manufacturing Professional
+              </div>
+            </div>
           </div>
         </div>
       </main>

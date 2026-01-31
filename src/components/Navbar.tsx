@@ -62,6 +62,12 @@ export default function Navbar() {
           <a href="/check" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
             Check Interactions
           </a>
+          <a href="/about" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+            About
+          </a>
+          <a href="/how-it-works" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+            How It Works
+          </a>
           <a href="/faq" className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
             FAQ
           </a>
@@ -142,6 +148,24 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Check Interactions
+            </a>
+
+            <a
+              href="/about"
+              className="font-medium transition-colors"
+              style={{ color: 'var(--brand-purple)' }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              About
+            </a>
+
+            <a
+              href="/how-it-works"
+              className="font-medium transition-colors"
+              style={{ color: 'var(--brand-purple)' }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              How It Works
             </a>
 
             <a

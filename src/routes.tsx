@@ -10,6 +10,8 @@ import Premium from './pages/Premium';
 import PremiumThanks from './pages/PremiumThanks';
 import PremiumDashboard from './pages/PremiumDashboard';
 import FAQ from './pages/FAQ';
+import About from './pages/About';
+import HowItWorks from './pages/HowItWorks';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Check from './pages/Check';
@@ -142,6 +144,14 @@ export const router = createBrowserRouter([
       {
         path: 'faq',
         element: <FAQ />
+      },
+      {
+        path: 'about',
+        element: <About />
+      },
+      {
+        path: 'how-it-works',
+        element: <HowItWorks />
       },
       {
         path: 'privacy',

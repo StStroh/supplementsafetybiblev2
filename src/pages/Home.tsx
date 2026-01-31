@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import StackBuilderCheckerV3 from '../components/StackBuilderCheckerV3';
 import HowItWorks from '../components/HowItWorks';
+import TrustBadges from '../components/TrustBadges';
 import StatsBar from '../components/landing/StatsBar';
 import MostSearchedSection from '../components/landing/MostSearchedSection';
 import EmailCaptureSection from '../components/landing/EmailCaptureSection';
@@ -106,6 +107,7 @@ export default function Home() {
         </div>
       </section>
 
+      <TrustBadges />
       <StatsBar />
       <HowItWorks />
       <MostSearchedSection />
