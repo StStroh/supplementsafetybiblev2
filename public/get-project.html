@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Project Archive</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #1e293b;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      padding: 48px;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .link-box {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .link-box h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .link-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .link-input {
+      flex: 1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .copy-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      background: #2563eb;
+    }
+
+    .copy-btn:active {
+      transform: scale(0.98);
+    }
+
+    .copy-btn.copied {
+      background: #10b981;
+    }
+
+    .download-btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 32px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6);
+    }
+
+    .file-size {
+      text-align: center;
+      color: #94a3b8;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📦 Get Project Archive</h1>
+
+    <div class="link-box">
+      <h2>Direct Download Link</h2>
+      <div class="link-wrapper">
+        <input type="text" class="link-input" id="directLink" readonly>
+        <button class="copy-btn" onclick="copyLink('directLink', this)">Copy</button>
+      </div>
+    </div>
+
+    <div class="link-box">
+      <h2>Download Page Link</h2>
+      <div class="link-wrapper">
+        <input type="text" class="link-input" id="pageLink" readonly>
+        <button class="copy-btn" onclick="copyLink('pageLink', this)">Copy</button>
+      </div>
+    </div>
+
+    <a href="/COPY-THIS-PROJECT.tar.gz" class="download-btn" download>
+      ⬇️ Download Now (6.9 MB)
+    </a>
+
+    <div class="file-size">
+      COPY-THIS-PROJECT.tar.gz • 6.9 MB
+    </div>
+  </div>
+
+  <script>
+    // Set the links based on current location
+    const baseUrl = window.location.origin;
+    document.getElementById('directLink').value = baseUrl + '/COPY-THIS-PROJECT.tar.gz';
+    document.getElementById('pageLink').value = baseUrl + '/download.html';
+
+    function copyLink(inputId, button) {
+      const input = document.getElementById(inputId);
+      input.select();
+      input.setSelectionRange(0, 99999); // For mobile devices
+
+      navigator.clipboard.writeText(input.value).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
