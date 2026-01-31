@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 type VerificationState = 'loading' | 'verifying_payment' | 'provisioning' | 'success' | 'payment_pending' | 'error' | 'missing_session';
 
@@ -310,8 +311,8 @@ export default function BillingSuccess() {
               </div>
               <p className="text-xs text-gray-500 text-center mt-6">
                 Need help? Email{' '}
-                <a href="mailto:support@supplementsafetybible.com" className="text-emerald-600 hover:underline">
-                  support@supplementsafetybible.com
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:underline">
+                  {SUPPORT_EMAIL}
                 </a>
               </p>
             </div>
@@ -346,8 +347,8 @@ export default function BillingSuccess() {
               </button>
               <p className="text-xs text-gray-500 text-center mt-6">
                 Need help? Email{' '}
-                <a href="mailto:support@supplementsafetybible.com" className="text-emerald-600 hover:underline">
-                  support@supplementsafetybible.com
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:underline">
+                  {SUPPORT_EMAIL}
                 </a>
               </p>
             </div>
@@ -398,8 +399,8 @@ export default function BillingSuccess() {
               </div>
               <p className="text-xs text-gray-500 text-center mt-6">
                 Need help? Email{' '}
-                <a href="mailto:support@supplementsafetybible.com" className="text-emerald-600 hover:underline">
-                  support@supplementsafetybible.com
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:underline">
+                  {SUPPORT_EMAIL}
                 </a>
               </p>
             </div>
@@ -559,10 +560,10 @@ export default function BillingSuccess() {
                 <p className="text-xs text-gray-500">
                   Questions? Email{' '}
                   <a
-                    href="mailto:support@supplementsafetybible.com"
+                    href={`mailto:${SUPPORT_EMAIL}`}
                     className="text-emerald-600 hover:underline font-medium"
                   >
-                    support@supplementsafetybible.com
+                    {SUPPORT_EMAIL}
                   </a>
                 </p>
               </div>

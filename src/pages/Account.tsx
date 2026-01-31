@@ -255,7 +255,7 @@ const Account: React.FC = () => {
                         60-day money-back guarantee · Change or cancel anytime
                       </p>
                       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                        Individual-use subscription. <a href="mailto:support@supplementsafetybible.com" className="hover:underline" style={{ color: 'var(--color-trial)' }}>Contact support</a> for team access.
+                        Individual-use subscription. <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline" style={{ color: 'var(--color-trial)' }}>Contact support</a> for team access.
                       </p>
                     </div>
                   </div>

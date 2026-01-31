@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { isPaid, roleName } from '../lib/roles';
 import { useAuth } from '../state/AuthProvider';
 import Autocomplete from './Autocomplete';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 type State = 'loading' | 'free_locked' | 'paid' | 'data_error' | 'result';
 
@@ -236,7 +237,7 @@ export default function InteractionChecker() {
             <p className="text-sm text-gray-600 font-mono text-left">{dataErrorDetails}</p>
           </div>
           <a
-            href="mailto:support@supplementsafetybible.com"
+            href={`mailto:${SUPPORT_EMAIL}`}
             className="inline-block px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
           >
             Contact Support

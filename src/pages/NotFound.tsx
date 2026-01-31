@@ -3,6 +3,7 @@ import { Home, Search, FileQuestion } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 export default function NotFound() {
   const navigate = useNavigate();
@@ -58,7 +59,17 @@ export default function NotFound() {
           </div>
 
           <div className="mt-12 pt-8" style={{borderTop: '1px solid var(--color-border)'}}>
-            <p className="text-sm mb-4" style={{color: 'var(--color-text-muted)'}}>
+            <p className="text-sm mb-2" style={{color: 'var(--color-text-muted)'}}>
+              Need help? Contact support:{' '}
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="hover:underline font-medium"
+                style={{color: 'var(--color-brand)'}}
+              >
+                {SUPPORT_EMAIL}
+              </a>
+            </p>
+            <p className="text-sm mb-4 mt-6" style={{color: 'var(--color-text-muted)'}}>
               Common pages you might be looking for:
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { SUPPORT_EMAIL } from '../lib/support';
+import { INFO_EMAIL } from '../lib/support';
 import { BRAND_NAME_FULL } from '../lib/brand';
 import { Linkedin, Instagram, Shield, Lock, CreditCard, Award } from 'lucide-react';
 import '../styles/logo.css';
@@ -169,9 +169,9 @@ export default function Footer() {
           </p>
 
           <p className="text-[#4A4A4A] mt-3">
-            Support:{' '}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#5E3B76] hover:underline">
-              {SUPPORT_EMAIL}
+            General inquiries:{' '}
+            <a href={`mailto:${INFO_EMAIL}`} className="text-[#5E3B76] hover:underline">
+              {INFO_EMAIL}
             </a>
           </p>
 

@@ -1,7 +1,7 @@
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { SUPPORT_EMAIL } from '../lib/support';
+import { INFO_EMAIL } from '../lib/support';
 import { BRAND_NAME_FULL } from '../lib/brand';
 
 export default function Navbar() {
@@ -100,7 +100,7 @@ export default function Navbar() {
             </a>
           )}
 
-          <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
+          <a href={`mailto:${INFO_EMAIL}`} className="font-medium transition-colors" style={{ color: 'var(--brand-purple)' }}>
             Contact
           </a>
 
@@ -230,7 +230,7 @@ export default function Navbar() {
             )}
 
             <a
-              href={`mailto:${SUPPORT_EMAIL}`}
+              href={`mailto:${INFO_EMAIL}`}
               className="font-medium transition-colors"
               style={{ color: 'var(--brand-purple)' }}
               onClick={() => setMobileMenuOpen(false)}

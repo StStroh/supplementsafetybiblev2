@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 interface FAQItem {
   question: string;
@@ -141,7 +142,7 @@ export default function FAQ() {
               We're here to help! Reach out to our support team.
             </p>
             <a
-              href="mailto:support@supplementsafetybible.com"
+              href={`mailto:${SUPPORT_EMAIL}`}
               className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               Contact Support

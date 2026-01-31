@@ -1,6 +1,7 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 export default function RefundPolicy() {
   return (
@@ -47,9 +48,13 @@ export default function RefundPolicy() {
                 To request a refund, please contact us at:
               </p>
               <div className="p-4 rounded-lg" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
-                <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                  support@supplementsafetybible.com
-                </p>
+                <a
+                  href={`mailto:${SUPPORT_EMAIL}`}
+                  className="font-semibold hover:underline"
+                  style={{ color: 'var(--color-brand)' }}
+                >
+                  {SUPPORT_EMAIL}
+                </a>
               </div>
               <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', marginTop: '1rem' }}>
                 Include your account email and the reason for your refund request (optional). We'll process your request within 3-5 business days.

@@ -3,6 +3,7 @@ import { XCircle, ArrowLeft } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { SEO } from '../lib/seo';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 export default function BillingCancel() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export default function BillingCancel() {
             <div className="mt-8 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-600 mb-2">Have questions?</p>
               <a
-                href="mailto:support@supplementsafetybible.com"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
               >
                 Contact Support

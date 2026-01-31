@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, AlertTriangle, Loader2, ArrowLeft } from 'lucide-react';
+import { SUPPORT_EMAIL } from '../lib/support';
 
 type AuthState = 'loading' | 'success' | 'error' | 'no_session';
 
@@ -209,7 +210,7 @@ export default function AuthCallback() {
 
           <p className="mt-6 text-center text-xs text-gray-500">
             Still having issues?{' '}
-            <a href="mailto:support@supplementsafetybible.com" className="text-blue-600 hover:underline">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">
               Contact support
             </a>
           </p>
